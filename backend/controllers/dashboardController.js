@@ -2,6 +2,7 @@ const School = require('../models/School');
 const User = require('../models/User');
 const Campus = require('../models/Campus');
 const Subject = require('../models/Subject');
+const Student = require('../models/Student');
 const { buildAdminDashboardData } = require('../utils/dashboardDataBuilder');
 
 const getSuperAdminStats = async (req, res) => {
@@ -40,7 +41,7 @@ const getAdminStats = async (req, res) => {
     const [school, totalTeachers, totalStudents, campuses, totalSubjects] = await Promise.all([
       School.findById(schoolId),
       User.countDocuments({ role: 'Teacher', school_id: schoolId }),
-      User.countDocuments({ role: 'Student', school_id: schoolId }),
+      Student.countDocuments({ school_id: schoolId }),
       Campus.find({ school_id: schoolId }).sort({ createdAt: -1 }),
       Subject.countDocuments({ school_id: schoolId })
     ]);

@@ -1,106 +1,111 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, UserPlus, AlertCircle } from 'lucide-react';
-import api from '../../services/api';
-import { isValidEmail } from '../../utils/validators';
+import { useParams, useNavigate } from 'react-router-dom';
+import { AlertCircle } from 'lucide-react';
+import { useTeacherForm } from '../../hooks/useTeacherForm';
+import PageLoader from '../../components/common/PageLoader';
+import TeacherTopActionBar from '../../components/admin/teachers/TeacherTopActionBar';
+import TeacherTabsNav from '../../components/admin/teachers/TeacherTabsNav';
+import TeacherProfileTab from '../../components/admin/teachers/TeacherProfileTab';
+import TeacherClassesTab from '../../components/admin/teachers/TeacherClassesTab';
+import TeacherAppSettingsTab from '../../components/admin/teachers/TeacherAppSettingsTab';
+import TeacherPayrollTab from '../../components/admin/teachers/TeacherPayrollTab';
+import TeacherDependentTabs from '../../components/admin/teachers/TeacherDependentTabs';
 
 const AddTeacherPage = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const { id } = useParams();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('profile');
 
-  const isEmailValid = !email || isValidEmail(email);
-  const isFormValid = name.trim().length > 0 && email.trim().length > 0 && isValidEmail(email);
+  const {
+    formData, campuses, subjects, grades,
+    loading, submitting, error, setError, saveTeacher,
+    handleField, handleEmergency, handleBank,
+    isEditMode, schoolType
+  } = useTeacherForm(id);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!isFormValid) return;
-    setError('');
-    setLoading(true);
+  if (loading) return <PageLoader text="Loading staff records..." />;
 
+  const handleSaveAndUnlock = async () => {
     try {
-      await api.post('/teachers', { name: name.trim(), email: email.toLowerCase().trim() });
-      navigate('/admin/teachers');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to add teacher');
-    } finally {
-      setLoading(false);
+      const saved = await saveTeacher(false);
+      if (saved?._id && !id) {
+        navigate(`/admin/teachers/${saved._id}/edit`, { replace: true });
+      }
+    } catch (e) {
+      setError(e.message);
     }
   };
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-ink dark:text-ink-dark">Onboard Teacher</h1>
-          <p className="text-sm text-ink-muted dark:text-ink-muted-dark">Register a new faculty member to your institution.</p>
-        </div>
-        <Link
-          to="/admin/teachers"
-          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-line dark:border-line-dark text-sm font-medium text-ink-sub dark:text-ink-sub-dark hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark transition-colors w-fit"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Directory</span>
-        </Link>
-      </div>
+    <div className="w-full space-y-6 pb-16">
+      <TeacherTopActionBar
+        isEditMode={isEditMode}
+        staffName={formData.name}
+        schoolType={schoolType}
+        onSave={() => saveTeacher(true)}
+        submitting={submitting}
+      />
+
+      <TeacherTabsNav activeTab={activeTab} onTabChange={setActiveTab} schoolType={schoolType} />
 
       {error && (
-        <div className="p-4 rounded-xl bg-bad-soft dark:bg-bad/10 text-bad border border-bad/20 flex items-center gap-2 text-sm">
-          <AlertCircle className="w-5 h-5 shrink-0" />
-          <span>{error}</span>
+        <div className="p-3.5 rounded-xl bg-bad-soft dark:bg-bad/10 text-bad border border-bad/20 text-xs flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{error}</span>
+          </div>
+          <button type="button" onClick={() => setError('')} className="underline font-semibold">Dismiss</button>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-xl p-6 shadow-sm space-y-5">
-        <div>
-          <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark uppercase tracking-wider mb-2">
-            Teacher Full Name *
-          </label>
-          <input
-            type="text"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Dr. Ayesha Khan"
-            className="w-full px-4 py-2.5 rounded-lg border border-line dark:border-line-dark bg-surface-secondary dark:bg-surface-secondary-dark text-ink dark:text-ink-dark focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
-          />
-        </div>
+      {activeTab === 'profile' && (
+        <TeacherProfileTab
+          formData={formData}
+          onFieldChange={handleField}
+          onEmergencyChange={handleEmergency}
+          campuses={campuses}
+          schoolType={schoolType}
+        />
+      )}
 
-        <div>
-          <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark uppercase tracking-wider mb-2">
-            Email Address *
-          </label>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="e.g. ayesha.khan@school.edu"
-            className={`w-full px-4 py-2.5 rounded-lg border bg-surface-secondary dark:bg-surface-secondary-dark text-ink dark:text-ink-dark focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm ${
-              !isEmailValid ? 'border-bad focus:border-bad' : 'border-line dark:border-line-dark focus:border-primary'
-            }`}
-          />
-          {!isEmailValid && (
-            <p className="mt-1.5 text-xs text-bad">Please enter a valid email address.</p>
-          )}
-        </div>
+      {activeTab === 'classes' && (
+        <TeacherClassesTab
+          subjects={subjects}
+          grades={grades}
+          assignments={formData.class_assignments || []}
+          onAssignmentsChange={(a) => handleField('class_assignments', a)}
+        />
+      )}
 
-        <div className="flex items-center gap-4 pt-2">
-          <button
-            type="submit"
-            disabled={loading || !isFormValid}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors disabled:opacity-50 shadow-sm"
-          >
-            <UserPlus className="w-4 h-4" />
-            <span>{loading ? 'Adding Teacher...' : 'Add Teacher'}</span>
-          </button>
-          <Link to="/admin/teachers" className="text-sm text-ink-muted hover:text-ink dark:hover:text-ink-dark font-medium">
-            Cancel
-          </Link>
-        </div>
-      </form>
+      {activeTab === 'app_settings' && (
+        <TeacherAppSettingsTab
+          permissions={formData.app_permissions}
+          onChange={(p) => handleField('app_permissions', p)}
+          schoolType={schoolType}
+        />
+      )}
+
+      {activeTab === 'payroll' && schoolType !== 'Government' && (
+        <TeacherPayrollTab
+          payrollConfig={formData.payroll_config}
+          onPayrollChange={(p) => handleField('payroll_config', p)}
+          basicSalary={formData.basic_salary}
+          onSalaryChange={(s) => handleField('basic_salary', s)}
+          bankDetails={formData.bank_details}
+          onBankChange={handleBank}
+          staffName={formData.name}
+        />
+      )}
+
+      {['security_deposit', 'increment_history', 'loan_advance', 'follow_up', 'documents', 'active_sessions'].includes(activeTab) && (
+        <TeacherDependentTabs
+          activeTab={activeTab}
+          teacherId={id}
+          formData={formData}
+          onSaveNow={handleSaveAndUnlock}
+          onUpdateField={handleField}
+        />
+      )}
     </div>
   );
 };

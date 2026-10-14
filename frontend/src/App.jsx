@@ -56,6 +56,7 @@ function App() {
               <Route path="/admin/subjects" element={<SubjectsPage />} />
               <Route path="/admin/teachers" element={<TeachersList />} />
               <Route path="/admin/teachers/new" element={<AddTeacherPage />} />
+              <Route path="/admin/teachers/:id/edit" element={<AddTeacherPage />} />
               {adminDynamicRoutes.map((r) => (
                 <Route key={r.path} path={r.path} element={<ComingSoonPage title={r.name} />} />
               ))}

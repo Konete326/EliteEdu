@@ -5,10 +5,9 @@ const {
   getGrades,
   createGrade,
   updateGrade,
-  toggleGradeStatus,
   deleteGrade
 } = require('../controllers/gradeController');
-const { bulkSeedGrades } = require('../controllers/gradeActionController');
+const { bulkSeedGrades, toggleGradeStatus } = require('../controllers/gradeActionController');
 
 const router = express.Router();
 

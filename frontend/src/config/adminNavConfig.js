@@ -204,8 +204,12 @@ export const getAllAdminRoutes = () => {
 
 export const getRouteTitle = (pathname) => {
   if (pathname === '/admin') return 'Dashboard';
+  if (pathname === '/admin/campus') return 'Campus Management';
+  if (pathname === '/admin/subjects') return 'Subjects';
+  if (pathname === '/admin/grades') return 'Grades & Sections';
   if (pathname === '/admin/teachers') return 'Teachers';
   if (pathname === '/admin/teachers/new') return 'Add Teacher';
+  if (pathname.startsWith('/admin/teachers/') && pathname.endsWith('/edit')) return 'Edit Teacher';
   if (pathname === '/superadmin') return 'Dashboard';
   if (pathname === '/superadmin/schools') return 'Schools';
   if (pathname === '/superadmin/schools/new') return 'New School';

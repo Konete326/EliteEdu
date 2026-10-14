@@ -9,6 +9,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const campusRoutes = require('./routes/campusRoutes');
 const subjectRoutes = require('./routes/subjectRoutes');
 const gradeRoutes = require('./routes/gradeRoutes');
+const studentRoutes = require('./routes/studentRoutes');
 const seedSuperAdmin = require('./utils/seedSuperAdmin');
 
 const app = express();
@@ -62,6 +63,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/campuses', campusRoutes);
 app.use('/api/subjects', subjectRoutes);
 app.use('/api/grades', gradeRoutes);
+app.use('/api/students', studentRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Server error:', err);

@@ -7,6 +7,8 @@ export const SUBJECT_NAME_REGEX = /^[a-zA-Z0-9\s\-&]{1,50}$/;
 export const SUBJECT_CODE_REGEX = /^[a-zA-Z0-9\s\-]{1,20}$/;
 export const GRADE_NAME_REGEX = /^[A-Za-z0-9\s\-()]{1,40}$/;
 export const SECTION_NAME_REGEX = /^[A-Za-z0-9\s\-_]{1,25}$/;
+export const CNIC_REGEX = /^\d{5}-\d{7}-\d{1}$/;
+export const IBAN_ACCOUNT_REGEX = /^[A-Za-z0-9\s\-]{8,34}$/;
 
 export const isValidEmail = (email) => {
   return EMAIL_REGEX.test(String(email).trim());
@@ -50,6 +52,25 @@ export const isValidSections = (sections) => {
   return sections.every(
     (s) => typeof s === 'string' && s.trim().length >= 1 && SECTION_NAME_REGEX.test(s.trim())
   );
+};
+
+export const formatCnic = (val) => {
+  if (!val) return '';
+  const digits = String(val).replace(/\D/g, '').slice(0, 13);
+  if (digits.length <= 5) return digits;
+  if (digits.length <= 12) return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+  return `${digits.slice(0, 5)}-${digits.slice(5, 12)}-${digits.slice(12)}`;
+};
+
+export const isValidCnic = (val) => {
+  if (!val || !String(val).trim()) return true;
+  const trimmed = String(val).trim();
+  return CNIC_REGEX.test(trimmed) || /^\d{13}$/.test(trimmed);
+};
+
+export const isValidIbanOrAccount = (val) => {
+  if (!val || !String(val).trim()) return true;
+  return IBAN_ACCOUNT_REGEX.test(String(val).trim());
 };
 
 export const generateSubjectCode = (name) => {
