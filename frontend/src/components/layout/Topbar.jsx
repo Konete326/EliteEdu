@@ -1,13 +1,15 @@
 import { useLocation } from 'react-router-dom';
 import {
   PanelLeft, Home, Search, Building2, ChevronsUpDown,
-  LayoutGrid, MessageCircle, PhoneCall, Bell, Moon, Sun
+  LayoutGrid, MessageCircle, PhoneCall, Bell, Moon, Sun, Download
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { usePwaInstall } from '../../hooks/usePwaInstall';
 import { getRouteTitle } from '../../config/adminNavConfig';
 
 const Topbar = ({ setMobileOpen, setIsDesktopOpen, isDark, toggleTheme }) => {
   const { user } = useAuth();
+  const { isInstalled, promptInstall } = usePwaInstall();
   const location = useLocation();
   const pageTitle = getRouteTitle(location.pathname);
 
@@ -88,6 +90,18 @@ const Topbar = ({ setMobileOpen, setIsDesktopOpen, isDark, toggleTheme }) => {
         <button type="button" title="Notifications" className="p-1.5 rounded-lg text-ink-sub hover:bg-surface-secondary dark:text-ink-sub-dark dark:hover:bg-surface-secondary-dark transition-colors">
           <Bell className="w-4 h-4" />
         </button>
+
+        {!isInstalled && (
+          <button
+            type="button"
+            onClick={promptInstall}
+            title="Install EliteEdu App"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-white transition-all text-xs font-bold shadow-sm"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span className="hidden xl:inline text-[11px]">Install App</span>
+          </button>
+        )}
 
         <button type="button" onClick={toggleTheme} title={isDark ? 'Light Mode' : 'Dark Mode'} className="p-1.5 rounded-lg text-ink-sub hover:bg-surface-secondary dark:text-ink-sub-dark dark:hover:bg-surface-secondary-dark transition-transform active:scale-95">
           {isDark ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4" />}

@@ -56,14 +56,14 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.use('/api/auth', authRoutes);
-app.use('/api/schools', schoolRoutes);
-app.use('/api/teachers', teacherRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/campuses', campusRoutes);
-app.use('/api/subjects', subjectRoutes);
-app.use('/api/grades', gradeRoutes);
-app.use('/api/students', studentRoutes);
+app.use(['/api/auth', '/auth'], authRoutes);
+app.use(['/api/schools', '/schools'], schoolRoutes);
+app.use(['/api/teachers', '/teachers'], teacherRoutes);
+app.use(['/api/dashboard', '/dashboard'], dashboardRoutes);
+app.use(['/api/campuses', '/campuses'], campusRoutes);
+app.use(['/api/subjects', '/subjects'], subjectRoutes);
+app.use(['/api/grades', '/grades'], gradeRoutes);
+app.use(['/api/students', '/students'], studentRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Server error:', err);

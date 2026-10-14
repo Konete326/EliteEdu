@@ -15,6 +15,7 @@ import GradesPage from './pages/admin/GradesPage';
 import StudentsList from './pages/admin/StudentsList';
 import AddStudentPage from './pages/admin/AddStudentPage';
 import ComingSoonPage from './pages/admin/ComingSoonPage';
+import PwaInstallPrompt from './components/common/PwaInstallPrompt';
 import { getAllAdminRoutes } from './config/adminNavConfig';
 import { Agentation } from 'agentation';
 
@@ -40,6 +41,7 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <PwaInstallPrompt />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
