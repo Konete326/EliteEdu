@@ -1,0 +1,84 @@
+import { Gift, Video } from 'lucide-react';
+import CalendarWidget from './CalendarWidget';
+import StudentStatisticsWidget from './StudentStatisticsWidget';
+import CrmPipelineWidget from './CrmPipelineWidget';
+
+const DashboardRightColumn = ({ birthdaysToday, upcomingClasses, studentStats, crmPipeline }) => {
+  const birthdays = birthdaysToday || [];
+  const classes = upcomingClasses || [];
+
+  return (
+    <div className="space-y-6">
+      <CalendarWidget />
+
+      <div className="p-4 sm:p-5 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-pink-50 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400">
+              <Gift className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-ink dark:text-ink-dark">Birthdays Today</h3>
+              <p className="text-[10px] text-ink-muted">Celebrations - Classroom</p>
+            </div>
+          </div>
+          <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-surface-secondary text-ink dark:text-ink-dark">
+            {birthdays.length}
+          </span>
+        </div>
+
+        {birthdays.length === 0 ? (
+          <div className="py-6 flex flex-col items-center justify-center text-ink-muted">
+            <Gift className="w-8 h-8 stroke-[1.5] mb-2 opacity-40" />
+            <p className="text-xs font-medium">No birthdays today</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {birthdays.map((b, i) => (
+              <div key={i} className="flex items-center justify-between p-2 rounded-xl bg-surface-secondary text-xs">
+                <span className="font-semibold text-ink dark:text-ink-dark">{b.name}</span>
+                <span className="text-[11px] text-pink-600 font-bold">{b.role}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="p-4 sm:p-5 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
+              <Video className="w-4 h-4" />
+            </div>
+            <h3 className="text-sm font-bold text-ink dark:text-ink-dark">Upcoming Classes</h3>
+          </div>
+          <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-surface-secondary text-ink dark:text-ink-dark">
+            {classes.length}
+          </span>
+        </div>
+
+        {classes.length === 0 ? (
+          <div className="py-6 flex flex-col items-center justify-center text-ink-muted">
+            <Video className="w-8 h-8 stroke-[1.5] mb-2 opacity-40" />
+            <p className="text-xs font-medium">No upcoming classes</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {classes.map((c, i) => (
+              <div key={i} className="p-2 rounded-xl bg-surface-secondary text-xs">
+                <p className="font-semibold text-ink dark:text-ink-dark">{c.title}</p>
+                <p className="text-[10px] text-ink-muted">{c.time}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <StudentStatisticsWidget studentStats={studentStats} />
+
+      <CrmPipelineWidget crmPipeline={crmPipeline} />
+    </div>
+  );
+};
+
+export default DashboardRightColumn;

@@ -1,113 +1,74 @@
 import { useState, useEffect } from 'react';
-import { Users, GraduationCap, PlusCircle, ArrowRight, AlertCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { AlertCircle } from 'lucide-react';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import PageLoader from '../../components/common/PageLoader';
+import DashboardKpiRow from '../../components/admin/dashboard/DashboardKpiRow';
+import AppStatsWidget from '../../components/admin/dashboard/AppStatsWidget';
+import AdmissionsChartWidget from '../../components/admin/dashboard/AdmissionsChartWidget';
+import FinancialOverviewWidget from '../../components/admin/dashboard/FinancialOverviewWidget';
+import AttendanceHomeworkWidget from '../../components/admin/dashboard/AttendanceHomeworkWidget';
+import DashboardRightColumn from '../../components/admin/dashboard/DashboardRightColumn';
 
 const AdminDashboard = () => {
+  const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
+    let isMounted = true;
     const fetchStats = async () => {
       try {
         const res = await api.get('/dashboard/admin');
-        setStats(res.data);
+        if (isMounted) setStats(res.data);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load metrics');
+        if (isMounted) setError(err.response?.data?.message || 'Failed to load dashboard metrics');
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
     fetchStats();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  if (loading) return <PageLoader text="Loading institutional dashboard..." />;
+
+  const isPrivate = (user?.school_type || stats?.school?.school_type) === 'Private';
+
   return (
-    <div className="space-y-6">
-      <div className="sticky top-0 z-10 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-sm pb-4 pt-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 -mt-1">
-        <div>
-          <h1 className="text-2xl font-bold text-ink dark:text-ink-dark">Principal & Admin Dashboard</h1>
-          <p className="text-sm text-ink-muted dark:text-ink-muted-dark">Live institutional metrics for your registered school.</p>
-        </div>
-        <Link
-          to="/admin/teachers/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-colors shadow-sm w-fit"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>Add Teacher</span>
-        </Link>
-      </div>
-
+    <div className="space-y-6 pb-12">
       {error && (
-        <div className="p-4 rounded-xl bg-bad-soft dark:bg-bad/10 text-bad border border-bad/20 flex items-center gap-2 text-sm">
+        <div className="p-4 rounded-2xl bg-bad-soft dark:bg-bad/10 text-bad border border-bad/20 flex items-center gap-3 text-sm">
           <AlertCircle className="w-5 h-5 shrink-0" />
-          <span>{error}</span>
+          <span className="font-medium">{error}</span>
         </div>
       )}
 
-      {loading ? (
-        <PageLoader text="Loading institutional metrics..." />
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          <div className="p-5 rounded-xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm hover:border-primary/40 hover:shadow-md transition-all group">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-ink-sub dark:text-ink-sub-dark uppercase tracking-wider">Faculty Members</span>
-              <div className="p-2 rounded-lg bg-surface-secondary dark:bg-surface-secondary-dark text-primary dark:text-primary-dark group-hover:scale-105 transition-transform">
-                <Users className="w-5 h-5" />
-              </div>
-            </div>
-            <div className="mt-4">
-              <span className="text-3xl font-extrabold text-ink dark:text-ink-dark">{stats?.totalTeachers ?? 0}</span>
-              <p className="mt-1 text-xs text-ink-muted dark:text-ink-muted-dark">Active registered teachers</p>
-            </div>
-            <div className="mt-4 pt-4 border-t border-line dark:border-line-dark">
-              <Link to="/admin/teachers" className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-hover">
-                <span>Manage teachers</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
+      <DashboardKpiRow topKpis={stats?.topKpis} />
 
-          <div className="p-5 rounded-xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm hover:border-primary/40 hover:shadow-md transition-all group">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-ink-sub dark:text-ink-sub-dark uppercase tracking-wider">Enrolled Students</span>
-              <div className="p-2 rounded-lg bg-surface-secondary dark:bg-surface-secondary-dark text-primary dark:text-primary-dark group-hover:scale-105 transition-transform">
-                <GraduationCap className="w-5 h-5" />
-              </div>
-            </div>
-            <div className="mt-4">
-              <span className="text-3xl font-extrabold text-ink dark:text-ink-dark">{stats?.totalStudents ?? 0}</span>
-              <p className="mt-1 text-xs text-ink-muted dark:text-ink-muted-dark">Enrolled student records</p>
-            </div>
-            <div className="mt-4 pt-4 border-t border-line dark:border-line-dark">
-              <Link to="/admin/students" className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-hover">
-                <span>Manage students</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-
-          <div className="p-5 rounded-xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm hover:border-primary/40 hover:shadow-md transition-all group">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-ink-sub dark:text-ink-sub-dark uppercase tracking-wider">Quick Actions</span>
-              <div className="p-2 rounded-lg bg-surface-secondary dark:bg-surface-secondary-dark text-primary dark:text-primary-dark group-hover:scale-105 transition-transform">
-                <PlusCircle className="w-5 h-5" />
-              </div>
-            </div>
-            <div className="mt-4">
-              <span className="text-xl font-bold text-ink dark:text-ink-dark">Add New Teacher</span>
-              <p className="mt-1 text-xs text-ink-muted dark:text-ink-muted-dark">Onboard staff with role-based access</p>
-            </div>
-            <div className="mt-4 pt-4 border-t border-line dark:border-line-dark">
-              <Link to="/admin/teachers/new" className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-hover">
-                <span>Onboard now</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+        <div className="xl:col-span-8 space-y-6">
+          <AppStatsWidget appStats={stats?.appDownloadStats} />
+          <AdmissionsChartWidget admissionsStats={stats?.admissionsStats} />
+          {isPrivate && <FinancialOverviewWidget financialOverview={stats?.financialOverview} />}
+          <AttendanceHomeworkWidget
+            attendanceSummary={stats?.attendanceSummary}
+            homeworkSummary={stats?.homeworkSummary}
+          />
         </div>
-      )}
+
+        <div className="xl:col-span-4">
+          <DashboardRightColumn
+            birthdaysToday={stats?.birthdaysToday}
+            upcomingClasses={stats?.upcomingClasses}
+            studentStats={stats?.studentStats}
+            crmPipeline={stats?.crmPipeline}
+          />
+        </div>
+      </div>
     </div>
   );
 };

@@ -9,6 +9,9 @@ import SchoolsPage from './pages/superadmin/SchoolsPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import TeachersList from './pages/admin/TeachersList';
 import AddTeacherPage from './pages/admin/AddTeacherPage';
+import CampusPage from './pages/admin/CampusPage';
+import SubjectsPage from './pages/admin/SubjectsPage';
+import GradesPage from './pages/admin/GradesPage';
 import ComingSoonPage from './pages/admin/ComingSoonPage';
 import { getAllAdminRoutes } from './config/adminNavConfig';
 import { Agentation } from 'agentation';
@@ -48,6 +51,9 @@ function App() {
 
             <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/campus" element={<CampusPage />} />
+              <Route path="/admin/grades" element={<GradesPage />} />
+              <Route path="/admin/subjects" element={<SubjectsPage />} />
               <Route path="/admin/teachers" element={<TeachersList />} />
               <Route path="/admin/teachers/new" element={<AddTeacherPage />} />
               {adminDynamicRoutes.map((r) => (

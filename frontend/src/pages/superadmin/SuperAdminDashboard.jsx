@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Building2, Users, PlusCircle, ArrowRight, AlertCircle } from 'lucide-react';
+import { PlusCircle, AlertCircle, School } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import PageLoader from '../../components/common/PageLoader';
+import SuperAdminKpiCards from '../../components/superadmin/SuperAdminKpiCards';
 
 const SuperAdminDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -10,17 +11,21 @@ const SuperAdminDashboard = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    let isMounted = true;
     const fetchStats = async () => {
       try {
         const res = await api.get('/dashboard/superadmin');
-        setStats(res.data);
+        if (isMounted) setStats(res.data);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load dashboard metrics');
+        if (isMounted) setError(err.response?.data?.message || 'Failed to load dashboard metrics');
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
     fetchStats();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
@@ -28,12 +33,9 @@ const SuperAdminDashboard = () => {
       <div className="sticky top-0 z-10 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-sm pb-4 pt-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 -mt-1">
         <div>
           <h1 className="text-2xl font-bold text-ink dark:text-ink-dark">Super Admin Dashboard</h1>
-          <p className="text-sm text-ink-muted dark:text-ink-muted-dark">Live overview of educational institutions and user accounts across the platform.</p>
+          <p className="text-sm text-ink-muted dark:text-ink-muted-dark">Live multi-tenant institutional overview and ecosystem controls.</p>
         </div>
-        <Link
-          to="/superadmin/schools/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-colors shadow-sm w-fit"
-        >
+        <Link to="/superadmin/schools/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-colors shadow-sm w-fit">
           <PlusCircle className="w-4 h-4" />
           <span>Register School</span>
         </Link>
@@ -47,72 +49,36 @@ const SuperAdminDashboard = () => {
       )}
 
       {loading ? (
-        <PageLoader text="Loading dashboard metrics..." />
+        <PageLoader text="Loading live ecosystem metrics..." />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          <div className="p-5 rounded-xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm hover:border-primary/40 hover:shadow-md transition-all group">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-ink-sub dark:text-ink-sub-dark uppercase tracking-wider">Registered Schools</span>
-              <div className="p-2 rounded-lg bg-surface-secondary dark:bg-surface-secondary-dark text-primary dark:text-primary-dark group-hover:scale-105 transition-transform">
-                <Building2 className="w-5 h-5" />
-              </div>
-            </div>
-            <div className="mt-4">
-              <span className="text-3xl font-extrabold text-ink dark:text-ink-dark">{stats?.totalSchools ?? 0}</span>
-              <p className="mt-1 text-xs text-ink-muted dark:text-ink-muted-dark">
-                {stats?.privateSchools ?? 0} Private • {stats?.governmentSchools ?? 0} Government
-              </p>
-            </div>
-            <div className="mt-4 pt-4 border-t border-line dark:border-line-dark">
-              <Link to="/superadmin/schools" className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-hover">
-                <span>View schools directory</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
+        <div className="space-y-6">
+          <SuperAdminKpiCards stats={stats} />
 
-          <div className="p-5 rounded-xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm hover:border-primary/40 hover:shadow-md transition-all group">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-ink-sub dark:text-ink-sub-dark uppercase tracking-wider">Total Users</span>
-              <div className="p-2 rounded-lg bg-surface-secondary dark:bg-surface-secondary-dark text-primary dark:text-primary-dark group-hover:scale-105 transition-transform">
-                <Users className="w-5 h-5" />
+          {stats?.recentSchools?.length > 0 && (
+            <div className="p-5 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm">
+              <h2 className="text-sm font-bold text-ink dark:text-ink-dark mb-3">Recently Registered Institutions</h2>
+              <div className="divide-y divide-line dark:divide-line-dark">
+                {stats.recentSchools.map((school) => (
+                  <div key={school._id} className="py-2.5 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2.5">
+                      <School className="w-4 h-4 text-primary shrink-0" />
+                      <div>
+                        <span className="font-semibold text-ink dark:text-ink-dark">{school.name}</span>
+                        <span className="ml-2 text-ink-muted">{school.school_type}</span>
+                      </div>
+                    </div>
+                    <span className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${school.is_active ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-bad-soft text-bad'}`}>
+                      {school.is_active ? 'Active' : 'Paused'}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
-            <div className="mt-4">
-              <span className="text-3xl font-extrabold text-ink dark:text-ink-dark">{stats?.totalUsers ?? 0}</span>
-              <p className="mt-1 text-xs text-ink-muted dark:text-ink-muted-dark">
-                {stats?.totalTeachers ?? 0} Teachers • {stats?.totalAdmins ?? 0} Principals
-              </p>
-            </div>
-            <div className="mt-4 pt-4 border-t border-line dark:border-line-dark">
-              <Link to="/superadmin/schools" className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-hover">
-                <span>Inspect user distribution</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-
-          <div className="p-5 rounded-xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm hover:border-primary/40 hover:shadow-md transition-all group">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-ink-sub dark:text-ink-sub-dark uppercase tracking-wider">Institution Onboarding</span>
-              <div className="p-2 rounded-lg bg-surface-secondary dark:bg-surface-secondary-dark text-primary dark:text-primary-dark group-hover:scale-105 transition-transform">
-                <PlusCircle className="w-5 h-5" />
-              </div>
-            </div>
-            <div className="mt-4">
-              <span className="text-xl font-bold text-ink dark:text-ink-dark">Add New School</span>
-              <p className="mt-1 text-xs text-ink-muted dark:text-ink-muted-dark">Register a campus and configure principal credentials</p>
-            </div>
-            <div className="mt-4 pt-4 border-t border-line dark:border-line-dark">
-              <Link to="/superadmin/schools/new" className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-hover">
-                <span>Start onboarding</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
+          )}
         </div>
       )}
     </div>
   );
 };
+
 export default SuperAdminDashboard;

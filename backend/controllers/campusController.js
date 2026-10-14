@@ -1,0 +1,109 @@
+const Campus = require('../models/Campus');
+
+const getCampuses = async (req, res) => {
+  try {
+    const schoolId = req.user?.school_id;
+    if (!schoolId) {
+      return res.status(403).json({ message: 'School association required' });
+    }
+
+    const campuses = await Campus.find({ school_id: schoolId }).sort({ createdAt: -1 });
+    res.status(200).json({ success: true, campuses });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch campuses', error: error.message });
+  }
+};
+
+const createCampus = async (req, res) => {
+  try {
+    const schoolId = req.user?.school_id;
+    if (!schoolId) {
+      return res.status(403).json({ message: 'School association required' });
+    }
+
+    const { name, email, website, address, contact_number, status } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: 'Campus name is required' });
+    }
+
+    if (status && !['Active', 'Inactive'].includes(status)) {
+      return res.status(400).json({ message: 'Status must be either Active or Inactive' });
+    }
+
+    const campus = await Campus.create({
+      school_id: schoolId,
+      name: name.trim(),
+      email: email ? email.trim().toLowerCase() : '',
+      website: website ? website.trim() : '',
+      address: address ? address.trim() : '',
+      contact_number: contact_number ? contact_number.trim() : '',
+      status: status || 'Active'
+    });
+
+    res.status(201).json({ success: true, campus });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to create campus', error: error.message });
+  }
+};
+
+const updateCampus = async (req, res) => {
+  try {
+    const schoolId = req.user?.school_id;
+    const { id } = req.params;
+    const { name, email, website, address, contact_number, status } = req.body;
+
+    if (name !== undefined && !name.trim()) {
+      return res.status(400).json({ message: 'Campus name cannot be empty' });
+    }
+
+    if (status && !['Active', 'Inactive'].includes(status)) {
+      return res.status(400).json({ message: 'Status must be either Active or Inactive' });
+    }
+
+    const updateData = {};
+    if (name !== undefined) updateData.name = name.trim();
+    if (email !== undefined) updateData.email = email.trim().toLowerCase();
+    if (website !== undefined) updateData.website = website.trim();
+    if (address !== undefined) updateData.address = address.trim();
+    if (contact_number !== undefined) updateData.contact_number = contact_number.trim();
+    if (status !== undefined) updateData.status = status;
+
+    const campus = await Campus.findOneAndUpdate(
+      { _id: id, school_id: schoolId },
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    if (!campus) {
+      return res.status(404).json({ message: 'Campus not found or unauthorized' });
+    }
+
+    res.status(200).json({ success: true, campus });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update campus', error: error.message });
+  }
+};
+
+const deleteCampus = async (req, res) => {
+  try {
+    const schoolId = req.user?.school_id;
+    const { id } = req.params;
+
+    const campus = await Campus.findOneAndDelete({ _id: id, school_id: schoolId });
+    if (!campus) {
+      return res.status(404).json({ message: 'Campus not found or unauthorized' });
+    }
+
+    res.status(200).json({ success: true, message: 'Campus deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete campus', error: error.message });
+  }
+};
+
+module.exports = {
+  getCampuses,
+  createCampus,
+  updateCampus,
+  deleteCampus
+};

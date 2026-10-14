@@ -1,0 +1,58 @@
+const mongoose = require('mongoose');
+const Grade = require('../models/Grade');
+const Campus = require('../models/Campus');
+
+const DEFAULT_GRADES = [
+  'Nursery', 'Prep', 'Class 1', 'Class 2', 'Class 3', 'Class 4',
+  'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'
+];
+
+const bulkSeedGrades = async (req, res) => {
+  try {
+    const schoolId = req.user?.school_id;
+    const { campus_id } = req.body;
+    let campusRef = null;
+    if (campus_id && mongoose.Types.ObjectId.isValid(campus_id)) {
+      const campus = await Campus.findOne({ _id: campus_id, school_id: schoolId });
+      if (campus) campusRef = campus._id;
+    }
+
+    const existing = await Grade.find({ school_id: schoolId, campus_id: campusRef });
+    const existingNames = new Set(existing.map((g) => g.name.toLowerCase()));
+
+    const toInsert = DEFAULT_GRADES
+      .filter((name) => !existingNames.has(name.toLowerCase()))
+      .map((name) => ({
+        school_id: schoolId,
+        campus_id: campusRef,
+        name,
+        sections: ['A', 'B'],
+        status: 'Active'
+      }));
+
+    if (toInsert.length > 0) {
+      await Grade.insertMany(toInsert);
+    }
+
+    res.status(200).json({ success: true, count: toInsert.length, message: `Added ${toInsert.length} standard grades` });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to seed grades', error: error.message });
+  }
+};
+
+const toggleGradeStatus = async (req, res) => {
+  try {
+    const schoolId = req.user?.school_id;
+    const { id } = req.params;
+    const { status } = req.body;
+    const grade = await Grade.findOne({ _id: id, school_id: schoolId });
+    if (!grade) return res.status(404).json({ message: 'Grade not found' });
+    grade.status = status !== undefined ? status : grade.status === 'Active' ? 'Inactive' : 'Active';
+    await grade.save();
+    res.status(200).json({ success: true, grade });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update grade status', error: error.message });
+  }
+};
+
+module.exports = { bulkSeedGrades, toggleGradeStatus };

@@ -188,7 +188,13 @@ export const getAllAdminRoutes = () => {
   const routes = [];
   allGroups.forEach((group) => {
     group.subItems.forEach((sub) => {
-      if (sub.path !== '/admin' && sub.path !== '/admin/teachers') {
+      if (
+        sub.path !== '/admin' &&
+        sub.path !== '/admin/teachers' &&
+        sub.path !== '/admin/campus' &&
+        sub.path !== '/admin/subjects' &&
+        sub.path !== '/admin/grades'
+      ) {
         routes.push(sub);
       }
     });

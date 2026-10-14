@@ -26,15 +26,17 @@ const SidebarAccordion = ({ category, isOpen, onToggle, isExpanded, onNavigate }
       </button>
 
       {isExpanded && isOpen && (
-        <div className="pl-7 pr-1 space-y-1 py-0.5">
+        <div className="ml-4 pl-3 border-l border-line/70 dark:border-line-dark/70 space-y-1 py-1">
           {category.subItems.map((sub) => (
             <NavLink
               key={sub.path}
               to={sub.path}
               onClick={onNavigate}
               className={({ isActive }) =>
-                `block px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                  isActive ? 'bg-primary-soft text-primary dark:bg-primary/20 dark:text-primary-dark font-semibold' : 'text-ink-muted hover:text-ink hover:bg-surface-secondary dark:text-ink-muted-dark dark:hover:text-ink-dark'
+                `flex items-center px-3 py-2 rounded-lg text-[13px] font-medium transition-colors ${
+                  isActive
+                    ? 'bg-primary-soft text-primary dark:bg-primary/20 dark:text-primary-dark font-semibold'
+                    : 'text-ink-sub hover:text-ink hover:bg-surface-secondary dark:text-ink-sub-dark dark:hover:text-ink-dark dark:hover:bg-surface-secondary-dark'
                 }`
               }
             >

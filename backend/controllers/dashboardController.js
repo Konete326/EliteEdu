@@ -1,15 +1,19 @@
 const School = require('../models/School');
 const User = require('../models/User');
+const Campus = require('../models/Campus');
+const Subject = require('../models/Subject');
+const { buildAdminDashboardData } = require('../utils/dashboardDataBuilder');
 
 const getSuperAdminStats = async (req, res) => {
   try {
-    const [totalSchools, totalUsers, privateSchools, governmentSchools, totalTeachers, totalAdmins] = await Promise.all([
+    const [totalSchools, totalUsers, privateSchools, governmentSchools, totalTeachers, totalAdmins, recentSchools] = await Promise.all([
       School.countDocuments(),
       User.countDocuments(),
       School.countDocuments({ school_type: 'Private' }),
       School.countDocuments({ school_type: 'Government' }),
       User.countDocuments({ role: 'Teacher' }),
-      User.countDocuments({ role: 'Admin' })
+      User.countDocuments({ role: 'Admin' }),
+      School.find().sort({ createdAt: -1 }).limit(5)
     ]);
 
     res.status(200).json({
@@ -18,7 +22,8 @@ const getSuperAdminStats = async (req, res) => {
       privateSchools,
       governmentSchools,
       totalTeachers,
-      totalAdmins
+      totalAdmins,
+      recentSchools
     });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch statistics', error: error.message });
@@ -32,15 +37,16 @@ const getAdminStats = async (req, res) => {
   }
 
   try {
-    const [totalTeachers, totalStudents] = await Promise.all([
+    const [school, totalTeachers, totalStudents, campuses, totalSubjects] = await Promise.all([
+      School.findById(schoolId),
       User.countDocuments({ role: 'Teacher', school_id: schoolId }),
-      User.countDocuments({ role: 'Student', school_id: schoolId })
+      User.countDocuments({ role: 'Student', school_id: schoolId }),
+      Campus.find({ school_id: schoolId }).sort({ createdAt: -1 }),
+      Subject.countDocuments({ school_id: schoolId })
     ]);
 
-    res.status(200).json({
-      totalTeachers,
-      totalStudents
-    });
+    const dashboardData = buildAdminDashboardData(school, totalTeachers, totalStudents, campuses, totalSubjects);
+    res.status(200).json(dashboardData);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch statistics', error: error.message });
   }

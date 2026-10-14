@@ -2,6 +2,11 @@ export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const PASSWORD_REGEX = /^.{6,}$/;
 export const PHONE_REGEX = /^(\+92|0)?[0-9]{10,11}$/;
 export const CODE_REGEX = /^[A-Za-z0-9_-]{2,10}$/;
+export const WEBSITE_REGEX = /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/;
+export const SUBJECT_NAME_REGEX = /^[a-zA-Z0-9\s\-&]{1,50}$/;
+export const SUBJECT_CODE_REGEX = /^[a-zA-Z0-9\s\-]{1,20}$/;
+export const GRADE_NAME_REGEX = /^[A-Za-z0-9\s\-()]{1,40}$/;
+export const SECTION_NAME_REGEX = /^[A-Za-z0-9\s\-_]{1,25}$/;
 
 export const isValidEmail = (email) => {
   return EMAIL_REGEX.test(String(email).trim());
@@ -18,4 +23,55 @@ export const isValidPhone = (phone) => {
 
 export const isValidCode = (code) => {
   return CODE_REGEX.test(String(code).trim());
+};
+
+export const isValidWebsite = (url) => {
+  if (!url || !String(url).trim()) return true;
+  return WEBSITE_REGEX.test(String(url).trim());
+};
+
+export const isValidSubjectName = (name) => {
+  if (!name) return false;
+  return SUBJECT_NAME_REGEX.test(String(name).trim());
+};
+
+export const isValidSubjectCode = (code) => {
+  if (!code) return false;
+  return SUBJECT_CODE_REGEX.test(String(code).trim());
+};
+
+export const isValidGradeName = (name) => {
+  if (!name || !String(name).trim()) return false;
+  return GRADE_NAME_REGEX.test(String(name).trim());
+};
+
+export const isValidSections = (sections) => {
+  if (!Array.isArray(sections) || sections.length === 0) return false;
+  return sections.every(
+    (s) => typeof s === 'string' && s.trim().length >= 1 && SECTION_NAME_REGEX.test(s.trim())
+  );
+};
+
+export const generateSubjectCode = (name) => {
+  if (!name || !name.trim()) return '';
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  if (words.length > 1) {
+    return words.map((w) => w[0]).join('').toUpperCase().slice(0, 10);
+  }
+  const single = words[0].toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (single.length <= 4) return single;
+  const commonMap = {
+    MATHEMATICS: 'MATH',
+    PHYSICS: 'PHY',
+    CHEMISTRY: 'CHEM',
+    BIOLOGY: 'BIO',
+    ISLAMIYAT: 'ISL',
+    ENGLISH: 'ENG',
+    SCIENCE: 'SCI',
+    ARABIC: 'ARB',
+    HISTORY: 'HIST',
+    GEOGRAPHY: 'GEOG',
+    PAKISTAN: 'PST'
+  };
+  return commonMap[single] || single.slice(0, 4);
 };
