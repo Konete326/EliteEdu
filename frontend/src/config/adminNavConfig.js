@@ -193,7 +193,8 @@ export const getAllAdminRoutes = () => {
         sub.path !== '/admin/teachers' &&
         sub.path !== '/admin/campus' &&
         sub.path !== '/admin/subjects' &&
-        sub.path !== '/admin/grades'
+        sub.path !== '/admin/grades' &&
+        sub.path !== '/admin/students'
       ) {
         routes.push(sub);
       }
@@ -210,6 +211,9 @@ export const getRouteTitle = (pathname) => {
   if (pathname === '/admin/teachers') return 'Teachers';
   if (pathname === '/admin/teachers/new') return 'Add Teacher';
   if (pathname.startsWith('/admin/teachers/') && pathname.endsWith('/edit')) return 'Edit Teacher';
+  if (pathname === '/admin/students') return 'Students';
+  if (pathname === '/admin/students/new') return 'Enroll Student';
+  if (pathname.startsWith('/admin/students/') && pathname.endsWith('/edit')) return 'Edit Student';
   if (pathname === '/superadmin') return 'Dashboard';
   if (pathname === '/superadmin/schools') return 'Schools';
   if (pathname === '/superadmin/schools/new') return 'New School';

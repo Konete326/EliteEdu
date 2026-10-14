@@ -12,6 +12,8 @@ import AddTeacherPage from './pages/admin/AddTeacherPage';
 import CampusPage from './pages/admin/CampusPage';
 import SubjectsPage from './pages/admin/SubjectsPage';
 import GradesPage from './pages/admin/GradesPage';
+import StudentsList from './pages/admin/StudentsList';
+import AddStudentPage from './pages/admin/AddStudentPage';
 import ComingSoonPage from './pages/admin/ComingSoonPage';
 import { getAllAdminRoutes } from './config/adminNavConfig';
 import { Agentation } from 'agentation';
@@ -57,6 +59,9 @@ function App() {
               <Route path="/admin/teachers" element={<TeachersList />} />
               <Route path="/admin/teachers/new" element={<AddTeacherPage />} />
               <Route path="/admin/teachers/:id/edit" element={<AddTeacherPage />} />
+              <Route path="/admin/students" element={<StudentsList />} />
+              <Route path="/admin/students/new" element={<AddStudentPage />} />
+              <Route path="/admin/students/:id/edit" element={<AddStudentPage />} />
               {adminDynamicRoutes.map((r) => (
                 <Route key={r.path} path={r.path} element={<ComingSoonPage title={r.name} />} />
               ))}
