@@ -96,14 +96,23 @@ const registerSchool = async (req, res) => {
 };
 
 const getSchools = async (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ message: 'Database connecting, please retry shortly' });
+  }
+
   try {
-    const schools = await School.find().sort({ createdAt: -1 }).lean();
-    const admins = await User.find({ role: 'Admin' }).select('name email school_id').lean();
-    const adminMap = new Map(admins.map((a) => [String(a.school_id), a]));
+    const [schools, admins] = await Promise.all([
+      School.find().sort({ createdAt: -1 }).lean(),
+      User.find({ role: 'Admin' }).select('name email school_id').lean()
+    ]);
+    const adminMap = new Map(
+      admins.filter((a) => a && a.school_id).map((a) => [String(a.school_id), a])
+    );
     const result = schools.map((s) => ({ ...s, admin: adminMap.get(String(s._id)) || null }));
     res.status(200).json({ schools: result });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch schools' });
+    console.error('getSchools error:', error);
+    res.status(500).json({ message: 'Failed to fetch schools', error: error.message });
   }
 };
 

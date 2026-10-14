@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
 const schoolRoutes = require('./routes/schoolRoutes');
 const teacherRoutes = require('./routes/teacherRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 const seedSuperAdmin = require('./utils/seedSuperAdmin');
 
 const app = express();
@@ -17,6 +18,12 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/schools', schoolRoutes);
 app.use('/api/teachers', teacherRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(err.status || 500).json({ message: err.message || 'Internal Server Error' });
+});
 
 mongoose
   .connect(MONGO_URI)

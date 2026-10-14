@@ -9,6 +9,8 @@ import SchoolsPage from './pages/superadmin/SchoolsPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import TeachersList from './pages/admin/TeachersList';
 import AddTeacherPage from './pages/admin/AddTeacherPage';
+import ComingSoonPage from './pages/admin/ComingSoonPage';
+import { getAllAdminRoutes } from './config/adminNavConfig';
 import { Agentation } from 'agentation';
 
 const TeacherDashboard = () => (
@@ -26,6 +28,8 @@ const UnauthorizedPage = () => (
     </div>
   </div>
 );
+
+const adminDynamicRoutes = getAllAdminRoutes();
 
 function App() {
   return (
@@ -46,6 +50,9 @@ function App() {
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/teachers" element={<TeachersList />} />
               <Route path="/admin/teachers/new" element={<AddTeacherPage />} />
+              {adminDynamicRoutes.map((r) => (
+                <Route key={r.path} path={r.path} element={<ComingSoonPage title={r.name} />} />
+              ))}
             </Route>
 
             <Route element={<ProtectedRoute allowedRoles={['Teacher']} />}>

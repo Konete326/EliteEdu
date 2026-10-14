@@ -14,7 +14,7 @@ const AdminInfoForm = ({ admin, setAdmin, errors = {} }) => {
         <User className="w-5 h-5 text-primary" />
         <h2>Principal / Admin Credentials</h2>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="space-y-4">
         <div>
           <label className="block text-xs font-medium text-ink-sub dark:text-ink-sub-dark mb-1">Admin Name *</label>
           <input required value={admin.name} onChange={(e) => setAdmin({ ...admin, name: e.target.value })} className={getFieldClass(false)} placeholder="Full Name" />

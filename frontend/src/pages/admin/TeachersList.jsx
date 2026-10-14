@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Plus, Users, Trash2 } from 'lucide-react';
 import api from '../../services/api';
 import ConfirmModal from '../../components/common/ConfirmModal';
+import PageLoader from '../../components/common/PageLoader';
 
 const TeachersList = () => {
   const [teachers, setTeachers] = useState([]);
@@ -31,7 +32,7 @@ const TeachersList = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="sticky top-0 z-10 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-sm pb-4 pt-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 -mt-1">
         <div>
           <h1 className="text-2xl font-bold text-ink dark:text-ink-dark">Teachers Directory</h1>
           <p className="text-sm text-ink-muted dark:text-ink-muted-dark">Faculty members registered under your school.</p>
@@ -53,9 +54,7 @@ const TeachersList = () => {
 
       <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-xl overflow-hidden shadow-sm">
         {loading ? (
-          <div className="p-8 text-center text-sm text-ink-muted dark:text-ink-muted-dark">
-            Loading teachers...
-          </div>
+          <PageLoader text="Loading teachers directory..." />
         ) : teachers.length === 0 ? (
           <div className="p-12 text-center space-y-3">
             <Users className="w-10 h-10 mx-auto text-ink-muted" />

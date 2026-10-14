@@ -1,116 +1,109 @@
-import { NavLink } from 'react-router-dom';
-import {
-  LayoutDashboard,
-  Building2,
-  Users,
-  GraduationCap,
-  CalendarCheck,
-  DollarSign,
-  CalendarDays,
-  X,
-  School
-} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { School, X, Search } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { getNavCategories } from '../../config/adminNavConfig';
+import SidebarAccordion from './SidebarAccordion';
+import SidebarFooter from './SidebarFooter';
 
-const Sidebar = ({ mobileOpen, setMobileOpen }) => {
+const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, isDark, toggleTheme, onLogoutClick }) => {
   const { user } = useAuth();
+  const location = useLocation();
+  const [openGroup, setOpenGroup] = useState('Main');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const getNavItems = () => {
-    if (!user) return [];
+  const allCategories = getNavCategories(user);
 
-    if (user.role === 'SuperAdmin') {
-      return [
-        { name: 'Dashboard', path: '/superadmin', icon: LayoutDashboard },
-        { name: 'Schools', path: '/superadmin/schools', icon: Building2 }
-      ];
-    }
+  useEffect(() => {
+    if (!user || searchQuery.trim()) return;
+    const active = allCategories.find((cat) => cat.subItems?.some((sub) => sub.path === location.pathname));
+    if (active) setOpenGroup(active.title);
+  }, [location.pathname, user]);
 
-    if (user.role === 'Admin') {
-      const items = [
-        { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
-        { name: 'Teachers', path: '/admin/teachers', icon: Users },
-        { name: 'Students', path: '/admin/students', icon: GraduationCap },
-        { name: 'Attendance', path: '/admin/attendance', icon: CalendarCheck }
-      ];
+  const filteredCategories = !searchQuery.trim()
+    ? allCategories
+    : allCategories.map((cat) => {
+        const titleMatch = cat.title.toLowerCase().includes(searchQuery.toLowerCase().trim());
+        const matchedSubs = cat.subItems?.filter((sub) => sub.name.toLowerCase().includes(searchQuery.toLowerCase().trim())) || [];
+        if (titleMatch) return cat;
+        if (matchedSubs.length > 0) return { ...cat, subItems: matchedSubs };
+        return null;
+      }).filter(Boolean);
 
-      if (user.school_type === 'Private') {
-        items.push({ name: 'Fees & Invoices', path: '/admin/fees', icon: DollarSign });
-      }
+  const toggleGroup = (title) => setOpenGroup((prev) => (prev === title ? null : title));
 
-      items.push({ name: 'Timetable', path: '/admin/timetable', icon: CalendarDays });
-      return items;
-    }
-
-    if (user.role === 'Teacher') {
-      return [
-        { name: 'Dashboard', path: '/teacher', icon: LayoutDashboard },
-        { name: 'Attendance', path: '/teacher/attendance', icon: CalendarCheck },
-        { name: 'Timetable', path: '/teacher/timetable', icon: CalendarDays }
-      ];
-    }
-
-    return [];
-  };
-
-  const navItems = getNavItems();
-
-  const content = (
-    <div className="flex flex-col h-full bg-surface dark:bg-surface-dark border-r border-line dark:border-line-dark w-64">
-      <div className="flex items-center justify-between h-16 px-6 border-b border-line dark:border-line-dark">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">
+  const navBody = (isExpanded) => (
+    <div className={`flex flex-col h-full bg-surface dark:bg-surface-dark border-r border-line dark:border-line-dark transition-all duration-300 ${isExpanded ? 'w-64' : 'w-16'}`}>
+      <div className="flex items-center justify-between h-16 px-4 border-b border-line dark:border-line-dark shrink-0 overflow-hidden">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold shrink-0">
             <School className="w-4 h-4" />
           </div>
-          <span className="font-bold text-lg text-ink dark:text-ink-dark">EliteEdu</span>
+          {isExpanded && (
+            <span className="font-bold text-base text-ink dark:text-ink-dark truncate">
+              {user?.school_name || 'EliteEdu'}
+            </span>
+          )}
         </div>
-        {mobileOpen && (
-          <button
-            type="button"
-            onClick={() => setMobileOpen(false)}
-            className="lg:hidden text-ink-muted hover:text-ink"
-          >
+        {isExpanded && mobileOpen && (
+          <button type="button" onClick={() => setMobileOpen(false)} className="lg:hidden text-ink-muted hover:text-ink">
             <X className="w-5 h-5" />
           </button>
         )}
       </div>
 
-      <nav className="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.path.split('/').length === 2}
-              onClick={() => setMobileOpen(false)}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'bg-primary-soft text-primary dark:bg-primary/20 dark:text-primary-dark'
-                    : 'text-ink-sub hover:bg-surface-secondary dark:text-ink-sub-dark dark:hover:bg-surface-secondary-dark'
-                }`
-              }
-            >
-              <Icon className="w-4 h-4 shrink-0" />
-              <span>{item.name}</span>
-            </NavLink>
-          );
-        })}
+      {isExpanded && (
+        <div className="px-3 pt-3 pb-1 shrink-0">
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search menu..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark text-ink dark:text-ink-dark placeholder:text-ink-muted focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+          </div>
+        </div>
+      )}
+
+      <nav className="flex-1 px-2.5 py-3 space-y-1 overflow-y-auto overflow-x-hidden">
+        {filteredCategories.map((cat, idx) => (
+          <SidebarAccordion
+            key={cat.title || idx}
+            category={cat}
+            isOpen={searchQuery.trim() ? true : openGroup === cat.title}
+            onToggle={toggleGroup}
+            isExpanded={isExpanded}
+            onNavigate={() => setMobileOpen(false)}
+          />
+        ))}
       </nav>
+
+      <SidebarFooter
+        user={user}
+        isExpanded={isExpanded}
+        onToggleCollapse={() => {
+          if (window.innerWidth >= 1024) setIsDesktopOpen((prev) => !prev);
+          else setMobileOpen(false);
+        }}
+        isDark={isDark}
+        toggleTheme={toggleTheme}
+        onLogoutClick={onLogoutClick}
+      />
     </div>
   );
 
   return (
     <>
-      <aside className="hidden lg:flex shrink-0">{content}</aside>
+      <aside className={`hidden lg:flex shrink-0 h-full transition-all duration-300 ${isDesktopOpen ? 'w-64' : 'w-16'}`}>
+        {navBody(isDesktopOpen)}
+      </aside>
 
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex">
-          <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setMobileOpen(false)}
-          />
-          <div className="relative z-10 flex">{content}</div>
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <div className="relative z-10 h-full">{navBody(true)}</div>
         </div>
       )}
     </>

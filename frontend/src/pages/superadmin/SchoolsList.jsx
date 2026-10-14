@@ -1,59 +1,74 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, School } from 'lucide-react';
+import { Plus, School, Pencil, Trash2 } from 'lucide-react';
 import api from '../../services/api';
+import EditSchoolModal from '../../components/superadmin/EditSchoolModal';
+import ConfirmModal from '../../components/common/ConfirmModal';
+import PageLoader from '../../components/common/PageLoader';
 
 const SchoolsList = () => {
   const [schools, setSchools] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [schoolToEdit, setSchoolToEdit] = useState(null);
+  const [schoolToDelete, setSchoolToDelete] = useState(null);
 
   useEffect(() => {
-    const fetchSchools = async () => {
-      try {
-        const res = await api.get('/schools');
-        setSchools(res.data.schools || []);
-      } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load schools');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchSchools();
   }, []);
 
+  const fetchSchools = async () => {
+    try {
+      const res = await api.get('/schools');
+      setSchools(res.data.schools || []);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load schools');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleStatus = async (school) => {
+    try {
+      const res = await api.patch(`/schools/${school._id}/status`);
+      setSchools(schools.map((s) => (s._id === school._id ? { ...s, is_active: res.data.is_active } : s)));
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update status');
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!schoolToDelete) return;
+    try {
+      await api.delete(`/schools/${schoolToDelete._id}`);
+      setSchools(schools.filter((s) => s._id !== schoolToDelete._id));
+      setSchoolToDelete(null);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete school');
+    }
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="sticky top-0 z-10 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-sm pb-4 pt-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 -mt-1">
         <div>
           <h1 className="text-2xl font-bold text-ink dark:text-ink-dark">Institutions Directory</h1>
-          <p className="text-sm text-ink-muted dark:text-ink-muted-dark">Manage all onboarded schools and their primary administrators.</p>
+          <p className="text-sm text-ink-muted dark:text-ink-muted-dark">Manage schools, hold/pause accounts, edit details, or delete.</p>
         </div>
-        <Link
-          to="/superadmin/schools/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-colors shadow-sm w-fit"
-        >
+        <Link to="/superadmin/schools/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-colors shadow-sm w-fit">
           <Plus className="w-4 h-4" />
           <span>Add New School</span>
         </Link>
       </div>
-
-      {error && (
-        <div className="p-4 rounded-xl bg-bad-soft dark:bg-bad/10 text-bad border border-bad/20 text-sm">
-          {error}
-        </div>
-      )}
+      {error && <div className="p-4 rounded-xl bg-bad-soft dark:bg-bad/10 text-bad border border-bad/20 text-sm">{error}</div>}
 
       <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-xl overflow-hidden shadow-sm">
         {loading ? (
-          <div className="p-8 text-center text-sm text-ink-muted dark:text-ink-muted-dark">
-            Loading institutions...
-          </div>
+          <PageLoader text="Loading institutions directory..." />
         ) : schools.length === 0 ? (
           <div className="p-12 text-center space-y-3">
             <School className="w-10 h-10 mx-auto text-ink-muted" />
             <p className="text-base font-semibold text-ink dark:text-ink-dark">No schools registered yet</p>
-            <p className="text-sm text-ink-muted dark:text-ink-muted-dark">Click "Add New School" above to onboard your first school.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -63,8 +78,9 @@ const SchoolsList = () => {
                   <th className="px-6 py-3.5">Code</th>
                   <th className="px-6 py-3.5">School Name</th>
                   <th className="px-6 py-3.5">Type</th>
-                  <th className="px-6 py-3.5">Board</th>
+                  <th className="px-6 py-3.5">Status</th>
                   <th className="px-6 py-3.5">Admin Email</th>
+                  <th className="px-6 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line dark:divide-line-dark">
@@ -73,18 +89,21 @@ const SchoolsList = () => {
                     <td className="px-6 py-4 font-mono font-medium text-ink dark:text-ink-dark">{s.code}</td>
                     <td className="px-6 py-4 font-medium text-ink dark:text-ink-dark">{s.name}</td>
                     <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          s.school_type === 'Government'
-                            ? 'bg-info-soft dark:bg-info/10 text-info dark:text-info-dark'
-                            : 'bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark'
-                        }`}
-                      >
-                        {s.school_type}
-                      </span>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${s.school_type === 'Government' ? 'bg-info-soft dark:bg-info/10 text-info dark:text-info-dark' : 'bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark'}`}>{s.school_type}</span>
                     </td>
-                    <td className="px-6 py-4 text-ink-muted dark:text-ink-muted-dark">{s.board || '—'}</td>
+                    <td className="px-6 py-4">
+                      <button onClick={() => handleToggleStatus(s)} title="Click to Toggle Active / On Hold" className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${s.is_active ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20'}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${s.is_active ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                        {s.is_active ? 'Active' : 'On Hold'}
+                      </button>
+                    </td>
                     <td className="px-6 py-4 text-ink-sub dark:text-ink-sub-dark">{s.admin?.email || '—'}</td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => setSchoolToEdit(s)} className="p-1.5 rounded-lg text-ink-muted hover:text-primary hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark transition-colors" title="Edit School"><Pencil className="w-4 h-4" /></button>
+                        <button onClick={() => setSchoolToDelete(s)} className="p-1.5 rounded-lg text-ink-muted hover:text-bad hover:bg-bad-soft dark:hover:bg-bad/10 transition-colors" title="Delete School"><Trash2 className="w-4 h-4" /></button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -92,8 +111,9 @@ const SchoolsList = () => {
           </div>
         )}
       </div>
+      <EditSchoolModal isOpen={!!schoolToEdit} school={schoolToEdit} onClose={() => setSchoolToEdit(null)} onUpdated={(updated) => setSchools(schools.map((s) => (s._id === updated._id ? { ...s, ...updated } : s)))} />
+      <ConfirmModal isOpen={!!schoolToDelete} onClose={() => setSchoolToDelete(null)} onConfirm={handleDelete} title="Delete School" message={`Are you sure you want to permanently delete "${schoolToDelete?.name}"? All associated data and admin accounts will be removed.`} confirmText="Delete" confirmStyle="danger" />
     </div>
   );
 };
-
 export default SchoolsList;
