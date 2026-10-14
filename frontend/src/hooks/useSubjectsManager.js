@@ -44,16 +44,16 @@ export const useSubjectsManager = () => {
     }
   }, [selectedCampus, searchQuery]);
 
-  useEffect(() => {
-    fetchCampuses();
-  }, []);
+  useEffect(() => { fetchCampuses(); }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    if (!searchQuery) {
       fetchSubjects(1);
-    }, 250);
+      return;
+    }
+    const timer = setTimeout(() => { fetchSubjects(1); }, 150);
     return () => clearTimeout(timer);
-  }, [fetchSubjects]);
+  }, [fetchSubjects, searchQuery]);
 
   const handleToggle = async (id, field) => {
     const target = subjects.find((s) => s._id === id);

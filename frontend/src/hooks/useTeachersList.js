@@ -51,11 +51,15 @@ export const useTeachersList = () => {
   }, []);
 
   useEffect(() => {
+    if (!searchQuery) {
+      fetchTeachers();
+      return;
+    }
     const timer = setTimeout(() => {
       fetchTeachers();
-    }, 250);
+    }, 150);
     return () => clearTimeout(timer);
-  }, [fetchTeachers]);
+  }, [fetchTeachers, searchQuery]);
 
   const handleToggleStatus = async (id, currentStatus) => {
     const nextStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';

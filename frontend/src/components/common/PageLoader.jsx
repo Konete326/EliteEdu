@@ -1,4 +1,4 @@
-export const EliteSpinner = ({ size = 48, className = '' }) => (
+export const EliteSpinner = ({ size = 42, className = '' }) => (
   <div
     className={`loader text-primary dark:text-primary-dark ${className}`}
     style={{ width: size, height: size }}
@@ -16,19 +16,14 @@ export const EliteSpinner = ({ size = 48, className = '' }) => (
   </div>
 );
 
-const PageLoader = ({ text = 'Loading data...' }) => (
-  <div className="flex flex-col items-center justify-center min-h-[380px] w-full py-12 px-4 space-y-4">
-    <EliteSpinner size={52} />
-    <div className="flex flex-col items-center gap-1 text-center">
-      <span className="text-xl font-extrabold tracking-wider bg-gradient-to-r from-[#973BED] via-[#007CFF] to-[#00DA72] bg-clip-text text-transparent select-none animate-pulse">
-        EliteEdu
-      </span>
-      {text && (
-        <p className="text-xs font-medium text-ink-muted dark:text-ink-muted-dark">
-          {text}
-        </p>
-      )}
-    </div>
+const PageLoader = ({ text }) => (
+  <div className="flex flex-col items-center justify-center min-h-[220px] w-full py-8 px-4 space-y-3">
+    <EliteSpinner size={46} />
+    {text && (
+      <p className="text-xs font-semibold text-ink-muted dark:text-ink-muted-dark tracking-wide">
+        {text}
+      </p>
+    )}
   </div>
 );
 
