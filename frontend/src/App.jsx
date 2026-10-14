@@ -15,6 +15,7 @@ import GradesPage from './pages/admin/GradesPage';
 import StudentsList from './pages/admin/StudentsList';
 import AddStudentPage from './pages/admin/AddStudentPage';
 import ComingSoonPage from './pages/admin/ComingSoonPage';
+import NotFoundPage from './pages/common/NotFoundPage';
 import PwaInstallPrompt from './components/common/PwaInstallPrompt';
 import { getAllAdminRoutes } from './config/adminNavConfig';
 import { Agentation } from 'agentation';
@@ -74,7 +75,7 @@ function App() {
             </Route>
           </Route>
 
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
       {import.meta.env.DEV && <Agentation endpoint="http://localhost:4747" />}
