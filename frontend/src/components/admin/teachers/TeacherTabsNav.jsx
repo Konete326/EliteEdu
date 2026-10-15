@@ -34,7 +34,7 @@ const TeacherTabsNav = ({ activeTab, onTabChange, schoolType }) => {
               className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap ${
                 isActive
                   ? 'border-primary text-primary dark:text-primary-dark'
-                  : 'border-transparent text-ink-muted hover:text-ink hover:border-line dark:hover:border-line-dark'
+                  : 'border-transparent text-ink-muted dark:text-ink-muted-dark hover:text-ink dark:hover:text-white hover:border-line dark:hover:border-white/20'
               }`}
             >
               <Icon className="w-4 h-4" />

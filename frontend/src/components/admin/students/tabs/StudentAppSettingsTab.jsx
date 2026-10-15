@@ -43,7 +43,7 @@ const StudentAppSettingsTab = ({ appSettings = {}, onToggleSetting, onToggleAll 
         <button
           type="button"
           onClick={handleMasterToggle}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 bg-surface-secondary text-xs font-bold hover:text-primary transition-all self-start sm:self-auto"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 bg-surface-secondary dark:bg-[#141414] text-xs font-bold text-ink dark:text-ink-dark hover:text-primary dark:hover:text-primary-dark hover:bg-surface-secondary/80 dark:hover:bg-white/10 transition-all self-start sm:self-auto"
         >
           <CheckSquare className="w-3.5 h-3.5" />
           <span>{allActive ? 'Deselect All' : 'Select All'}</span>
@@ -57,7 +57,7 @@ const StudentAppSettingsTab = ({ appSettings = {}, onToggleSetting, onToggleAll 
             <div
               key={perm.key}
               onClick={() => onToggleSetting(perm.key)}
-              className="flex items-center justify-between p-3 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary/40 cursor-pointer transition-colors select-none"
+              className="flex items-center justify-between p-3 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary/40 dark:hover:bg-white/[0.04] cursor-pointer transition-colors select-none"
             >
               <span className="text-xs font-semibold text-ink dark:text-ink-dark">{perm.label}</span>
               <div

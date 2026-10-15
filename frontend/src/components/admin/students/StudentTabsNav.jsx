@@ -21,13 +21,13 @@ const StudentTabsNav = ({ activeTab, onTabChange }) => {
             key={tab.id}
             type="button"
             onClick={() => onTabChange(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+            className={`group flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
               isActive
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-ink-sub hover:text-ink hover:bg-surface-secondary dark:hover:bg-[#141414]'
+                ? 'bg-primary text-white border-primary shadow-sm shadow-primary/20'
+                : 'border-transparent text-ink-muted dark:text-ink-muted-dark hover:text-ink dark:hover:text-white hover:bg-surface-secondary dark:hover:bg-white/[0.08] dark:hover:border-white/10'
             }`}
           >
-            <Icon className="w-3.5 h-3.5" />
+            <Icon className={`w-3.5 h-3.5 transition-colors ${isActive ? 'text-white' : 'text-ink-muted dark:text-ink-muted-dark group-hover:text-ink dark:group-hover:text-white'}`} />
             <span>{tab.label}</span>
           </button>
         );

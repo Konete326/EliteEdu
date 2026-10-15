@@ -10,7 +10,7 @@ const StudentTopActionBar = ({ isEditMode, studentName, onSave, submitting }) =>
         <button
           type="button"
           onClick={() => navigate('/admin/students')}
-          className="p-2 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary text-ink-muted hover:text-ink transition-colors"
+          className="p-2 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary dark:hover:bg-white/10 text-ink-muted dark:text-ink-muted-dark hover:text-ink dark:hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
@@ -28,7 +28,7 @@ const StudentTopActionBar = ({ isEditMode, studentName, onSave, submitting }) =>
         <button
           type="button"
           onClick={() => navigate('/admin/students')}
-          className="px-4 py-2 rounded-xl border border-line dark:border-white/10 text-xs font-semibold hover:bg-surface-secondary text-ink-sub transition-colors"
+          className="px-4 py-2 rounded-xl border border-line dark:border-white/10 text-xs font-semibold hover:bg-surface-secondary dark:hover:bg-white/10 text-ink-sub dark:text-ink-muted-dark hover:text-ink dark:hover:text-white transition-colors"
         >
           Cancel
         </button>

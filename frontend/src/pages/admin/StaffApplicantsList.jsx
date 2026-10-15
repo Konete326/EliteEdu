@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { UserCheck, AlertCircle, CheckCircle, MapPin } from 'lucide-react';
 import { useStaffApplicantsList } from '../../hooks/useStaffApplicantsList';
+import { useComingSoon } from '../../context/ComingSoonContext';
 import ApplicantTopBar from '../../components/admin/applicants/ApplicantTopBar';
 import ApplicantTable from '../../components/admin/applicants/ApplicantTable';
 import ApplicantPagination from '../../components/admin/applicants/ApplicantPagination';
@@ -12,6 +13,7 @@ import PageLoader from '../../components/common/PageLoader';
 
 const StaffApplicantsList = () => {
   const navigate = useNavigate();
+  const { openComingSoon } = useComingSoon();
   const {
     applicants, campuses, selectedCampus, setSelectedCampus, selectedStatus,
     setSelectedStatus, selectedDepartment, setSelectedDepartment, selectedAvailability,
@@ -40,7 +42,11 @@ const StaffApplicantsList = () => {
         onCopyLink={copyApplicationLink}
         onOpenCustomize={() => setIsCustomizeModalOpen(true)}
         isMapView={isMapView}
-        onToggleMapView={() => setIsMapView((prev) => !prev)}
+        onToggleMapView={() => openComingSoon({
+          title: 'Applicant Geospatial Map View',
+          description: 'Visual mapping of applicant addresses, travel distance to campuses, and location clusters is coming soon in an upcoming release.',
+          badge: 'Map View'
+        })}
       />
 
       {toastMessage && (

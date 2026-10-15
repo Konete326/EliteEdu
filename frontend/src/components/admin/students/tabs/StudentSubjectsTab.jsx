@@ -32,7 +32,7 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
             <button
               type="button"
               onClick={() => onChange('subjects', subjects.map((s) => s._id))}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary text-ink dark:text-ink-dark font-medium transition-colors"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary dark:hover:bg-white/10 text-ink dark:text-ink-dark font-medium transition-colors"
             >
               <CheckCheck className="w-3.5 h-3.5 text-good" />
               <span>Select All</span>
@@ -40,7 +40,7 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
             <button
               type="button"
               onClick={() => onChange('subjects', [])}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary text-ink dark:text-ink-dark font-medium transition-colors"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary dark:hover:bg-white/10 text-ink dark:text-ink-dark font-medium transition-colors"
             >
               <X className="w-3.5 h-3.5 text-bad" />
               <span>Clear</span>

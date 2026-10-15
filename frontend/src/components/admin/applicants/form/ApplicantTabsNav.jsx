@@ -22,7 +22,7 @@ const ApplicantTabsNav = ({ activeTab, onTabChange }) => {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
               isActive
                 ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary-dark border-b-2 border-primary shadow-xs'
-                : 'text-ink-muted dark:text-ink-muted-dark hover:text-ink dark:hover:text-ink-dark hover:bg-surface-secondary dark:hover:bg-white/5'
+                : 'text-ink-muted dark:text-ink-muted-dark hover:text-ink dark:hover:text-white hover:bg-surface-secondary dark:hover:bg-white/[0.08]'
             }`}
           >
             <Icon className="w-4 h-4 shrink-0" />

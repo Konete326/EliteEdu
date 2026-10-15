@@ -7,7 +7,7 @@ const StudentSubjectCard = ({ sub, isSelected, onToggle }) => {
       className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between text-xs select-none ${
         isSelected
           ? 'border-primary bg-primary-soft/40 dark:bg-primary/10 shadow-sm'
-          : 'border-line dark:border-white/10 bg-surface-secondary/30 dark:bg-[#141414]/50 hover:bg-surface-secondary'
+          : 'border-line dark:border-white/10 bg-surface-secondary/30 dark:bg-[#141414]/50 hover:bg-surface-secondary dark:hover:bg-white/[0.08]'
       }`}
     >
       <div className="space-y-0.5">
