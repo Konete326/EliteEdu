@@ -1,7 +1,6 @@
 import { ArrowLeft, Printer, SlidersHorizontal, Search, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-const STYLES = ['Default', 'Style 1', 'Style 2', 'Style 3', 'Style 4'];
+import IdCardsStyleSwitcher from './IdCardsStyleSwitcher';
 
 const IdCardsToolbar = ({
   selectedStyle,
@@ -41,22 +40,7 @@ const IdCardsToolbar = ({
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark rounded-2xl p-3 shadow-sm">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-          {STYLES.map((style) => (
-            <button
-              key={style}
-              type="button"
-              onClick={() => onSelectStyle(style)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
-                selectedStyle === style
-                  ? 'bg-primary text-white shadow-xs'
-                  : 'bg-surface-secondary/60 dark:bg-[#16161d] text-ink dark:text-ink-dark hover:bg-surface-secondary'
-              }`}
-            >
-              {style}
-            </button>
-          ))}
-        </div>
+        <IdCardsStyleSwitcher selectedStyle={selectedStyle} onSelectStyle={onSelectStyle} />
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <div className="relative flex-1 sm:w-48">

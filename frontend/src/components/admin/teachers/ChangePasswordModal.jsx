@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { X, KeyRound, Eye, EyeOff, Check, AlertCircle } from 'lucide-react';
-import axios from 'axios';
+import api from '../../../services/api';
 
 const ChangePasswordModal = ({ isOpen, teacher, onClose, onSuccess }) => {
   const [password, setPassword] = useState('');
@@ -20,12 +20,7 @@ const ChangePasswordModal = ({ isOpen, teacher, onClose, onSuccess }) => {
     try {
       setSubmitting(true);
       setError('');
-      const token = localStorage.getItem('token');
-      await axios.patch(
-        `/api/teachers/${teacher._id}/password`,
-        { password: password.trim() },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.patch(`/teachers/${teacher._id}/password`, { password: password.trim() });
       if (onSuccess) onSuccess('Teacher password updated successfully');
       setPassword('');
       onClose();

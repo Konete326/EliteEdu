@@ -1,4 +1,4 @@
-import { renderSvgBarcode, renderSvgQrCode, generateStudentVerifyUrl } from '../../../utils/idCardCodeGenerator';
+import { renderSvgBarcode, renderSvgQrCode, generateStudentVerifyUrl } from '../../../../utils/idCardCodeGenerator';
 
 const Style2Card = ({ student, config = {} }) => {
   const campus = student?.campus_id || {};

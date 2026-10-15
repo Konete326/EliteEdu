@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api';
 import { ShieldCheck, ShieldAlert, GraduationCap, Building2, Calendar, Hash, ArrowLeft } from 'lucide-react';
 import EmergencyMedicalCard from '../../components/public/EmergencyMedicalCard';
 
@@ -12,7 +12,7 @@ const StudentEmergencyVerifyPage = () => {
 
   useEffect(() => {
     let isMounted = true;
-    axios.get(`/api/public/verify-student/${id}`)
+    api.get(`/public/verify-student/${id}`)
       .then((res) => {
         if (isMounted && res.data.success) setData(res.data.data);
       })

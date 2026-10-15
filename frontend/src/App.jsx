@@ -87,6 +87,7 @@ function App() {
                 <Route path="/admin/exam-management/grading-policies" element={<GradingPoliciesPage />} />
                 <Route path="/admin/exams/grading-policies" element={<GradingPoliciesPage />} />
                 <Route path="/admin/students/admission-letter" element={<AdmissionLetterPage />} />
+                <Route path="/admin/students/id-cards" element={<StudentIdCardsPage />} />
                 <Route path="/admin/settings/appearance" element={<ThemeSettingsPage />} />
                 <Route path="/admin/control-panel/branding" element={<ThemeSettingsPage />} />
                 <Route path="/admin/profile" element={<MyProfilePage />} />

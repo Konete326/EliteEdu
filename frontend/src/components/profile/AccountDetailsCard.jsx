@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Check, AlertCircle } from 'lucide-react';
 import ProfileAvatarSection from './ProfileAvatarSection';
 import AccountDetailsForm from './AccountDetailsForm';
-import axios from 'axios';
+import api from '../../services/api';
 
 const AccountDetailsCard = ({ user, onUserUpdated }) => {
   const [name, setName] = useState(user?.name || '');
@@ -43,12 +43,11 @@ const AccountDetailsCard = ({ user, onUserUpdated }) => {
       setSubmitting(true);
       setError('');
       setSuccess('');
-      const token = localStorage.getItem('token');
-      const res = await axios.put(
-        '/api/auth/profile',
-        { name: name.trim(), contact_number: contactNumber.trim(), photo_url: photoUrl },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await api.put('/auth/profile', {
+        name: name.trim(),
+        contact_number: contactNumber.trim(),
+        photo_url: photoUrl
+      });
       if (res.data?.user && onUserUpdated) onUserUpdated(res.data.user);
       setSuccess('Profile updated successfully');
     } catch (err) {
