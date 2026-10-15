@@ -18,6 +18,7 @@ export const getAdminNavItems = (schoolType) => [
       { name: 'Staff Applicants', path: '/admin/staff-applicants' },
       { name: 'Students', path: '/admin/students' },
       { name: 'Admission Letter', path: '/admin/students/admission-letter' },
+      { name: 'Student ID Cards', path: '/admin/students/id-cards' },
       { name: 'Online Classes', path: '/admin/online-classes' },
       { name: 'News Feed', path: '/admin/news-feed' },
       { name: 'Consent', path: '/admin/consent' },
@@ -198,6 +199,7 @@ export const getAllAdminRoutes = () => {
         sub.path !== '/admin/grades' &&
         sub.path !== '/admin/students' &&
         sub.path !== '/admin/students/admission-letter' &&
+        sub.path !== '/admin/students/id-cards' &&
         sub.path !== '/admin/staff-applicants' &&
         sub.path !== '/admin/exam-management/grading-policies' &&
         sub.path !== '/admin/exams/grading-policies' &&
@@ -226,6 +228,7 @@ export const getRouteTitle = (pathname) => {
   if (pathname === '/admin/students/new') return 'Enroll Student';
   if (pathname.startsWith('/admin/students/') && pathname.endsWith('/edit')) return 'Edit Student';
   if (pathname === '/admin/students/admission-letter') return 'Admission Letter';
+  if (pathname === '/admin/students/id-cards') return 'Student ID Cards';
   if (pathname === '/admin/settings/appearance' || pathname === '/admin/control-panel/branding') return 'Theme & Appearance';
   if (pathname === '/admin/exam-management/grading-policies' || pathname === '/admin/exams/grading-policies') return 'Exam Grading';
   if (pathname === '/admin/profile' || pathname === '/superadmin/profile' || pathname === '/teacher/profile') return 'My Profile';

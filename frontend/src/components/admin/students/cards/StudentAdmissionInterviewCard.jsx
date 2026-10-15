@@ -11,7 +11,7 @@ const StudentAdmissionInterviewCard = ({ interview = {}, onNestedChange }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Interview Date
+            Interview Date (Optional)
           </label>
           <input
             type="date"
@@ -23,7 +23,7 @@ const StudentAdmissionInterviewCard = ({ interview = {}, onNestedChange }) => {
 
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Interview Status
+            Interview Status (Optional)
           </label>
           <select
             value={interview.status || 'Pending'}
@@ -39,7 +39,7 @@ const StudentAdmissionInterviewCard = ({ interview = {}, onNestedChange }) => {
 
         <div className="md:col-span-3">
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Interview Remarks / Observations
+            Interview Remarks / Observations (Optional)
           </label>
           <input
             type="text"

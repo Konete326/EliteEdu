@@ -13,7 +13,7 @@ const StudentParentsIdentityCard = ({ formData, onNestedChange, onChange }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Family Code / Number
+            Family Code / Number (Optional)
           </label>
           <input
             type="text"
@@ -26,7 +26,7 @@ const StudentParentsIdentityCard = ({ formData, onNestedChange, onChange }) => {
 
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Mother / Guardian Name
+            Mother / Guardian Name (Optional)
           </label>
           <input
             type="text"
@@ -39,7 +39,7 @@ const StudentParentsIdentityCard = ({ formData, onNestedChange, onChange }) => {
 
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Emergency Contact No.
+            Emergency Contact No. (Optional)
           </label>
           <input
             type="text"
@@ -52,7 +52,7 @@ const StudentParentsIdentityCard = ({ formData, onNestedChange, onChange }) => {
 
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Father CNIC
+            Father CNIC (Optional)
           </label>
           <input
             type="text"
@@ -65,7 +65,7 @@ const StudentParentsIdentityCard = ({ formData, onNestedChange, onChange }) => {
 
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Mother CNIC
+            Mother CNIC (Optional)
           </label>
           <input
             type="text"
@@ -78,7 +78,7 @@ const StudentParentsIdentityCard = ({ formData, onNestedChange, onChange }) => {
 
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Guardian CNIC (if applicable)
+            Guardian CNIC (Optional)
           </label>
           <input
             type="text"

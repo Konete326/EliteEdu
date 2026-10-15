@@ -57,6 +57,10 @@ const CampusModal = ({ isOpen, mode = 'add', campus = null, onClose, onSubmit, i
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.name.trim()) {
+      setTouched((prev) => ({ ...prev, name: true }));
+      return;
+    }
     if (!isFormValid || isSubmitting) return;
     onSubmit(formData);
   };

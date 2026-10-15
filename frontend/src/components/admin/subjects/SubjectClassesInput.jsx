@@ -32,7 +32,7 @@ const SubjectClassesInput = ({ selectedClasses = [], onChange }) => {
     <div className="space-y-2.5 p-3.5 rounded-xl bg-surface-secondary/70 dark:bg-[#141414] border border-line dark:border-white/10">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <label className="text-xs font-semibold text-ink-sub dark:text-ink-sub-dark">
-          Target Classes ({selectedClasses.length} selected)
+          Target Classes (Optional - {selectedClasses.length} selected)
         </label>
         <button
           type="button"

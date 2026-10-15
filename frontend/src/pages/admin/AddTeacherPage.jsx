@@ -18,20 +18,19 @@ const AddTeacherPage = () => {
 
   const {
     formData, campuses, subjects, grades,
-    loading, submitting, error, setError, saveTeacher,
+    loading, submitting, error, setError, errors, saveTeacher,
     handleField, handleEmergency, handleBank,
     isEditMode, schoolType
   } = useTeacherForm(id);
 
   if (loading) return <PageLoader text="Loading staff records..." />;
 
-  const handleSaveAndUnlock = async () => {
+  const handleSaveAction = async (customRedirect) => {
     try {
-      const saved = await saveTeacher(false);
-      if (saved?._id && !id) {
-        navigate(`/admin/teachers/${saved._id}/edit`, { replace: true });
-      }
+      const saved = await saveTeacher(customRedirect);
+      if (!customRedirect && saved?._id && !id) navigate(`/admin/teachers/${saved._id}/edit`, { replace: true });
     } catch (e) {
+      setActiveTab('profile');
       setError(e.message);
     }
   };
@@ -42,7 +41,7 @@ const AddTeacherPage = () => {
         isEditMode={isEditMode}
         staffName={formData.name}
         schoolType={schoolType}
-        onSave={() => saveTeacher(true)}
+        onSave={() => handleSaveAction(true)}
         submitting={submitting}
       />
 
@@ -50,17 +49,15 @@ const AddTeacherPage = () => {
 
       {error && (
         <div className="p-3.5 rounded-xl bg-bad-soft dark:bg-bad/10 text-bad border border-bad/20 text-xs flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{error}</span>
-          </div>
-          <button type="button" onClick={() => setError('')} className="underline font-semibold">Dismiss</button>
+          <div className="flex items-center gap-2"><AlertCircle className="w-4 h-4 shrink-0" /><span>{error}</span></div>
+          <button type="button" onClick={() => setError('')} className="underline font-semibold cursor-pointer">Dismiss</button>
         </div>
       )}
 
       {activeTab === 'profile' && (
         <TeacherProfileTab
           formData={formData}
+          errors={errors}
           onFieldChange={handleField}
           onEmergencyChange={handleEmergency}
           campuses={campuses}
@@ -102,7 +99,7 @@ const AddTeacherPage = () => {
           activeTab={activeTab}
           teacherId={id}
           formData={formData}
-          onSaveNow={handleSaveAndUnlock}
+          onSaveNow={() => handleSaveAction(false)}
           onUpdateField={handleField}
         />
       )}

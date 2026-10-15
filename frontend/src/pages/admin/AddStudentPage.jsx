@@ -19,7 +19,7 @@ const AddStudentPage = () => {
 
   const {
     formData, campuses, grades, subjects, loading, submitting, error, setError,
-    saveStudent, handleField, handleNestedField, handleToggleAppSetting,
+    errors, saveStudent, handleField, handleNestedField, handleToggleAppSetting,
     handleToggleAllAppSettings, handleToggleSubject
   } = useStudentForm(id);
 
@@ -33,6 +33,7 @@ const AddStudentPage = () => {
     try {
       await saveStudent();
     } catch (e) {
+      setActiveTab('profile');
       setError(e.message);
     }
   };
@@ -53,12 +54,12 @@ const AddStudentPage = () => {
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
-          <button type="button" onClick={() => setError('')} className="underline font-semibold">Dismiss</button>
+          <button type="button" onClick={() => setError('')} className="underline font-semibold cursor-pointer">Dismiss</button>
         </div>
       )}
 
       {activeTab === 'profile' && (
-        <StudentProfileTab formData={formData} campuses={campuses} grades={grades} onChange={handleField} />
+        <StudentProfileTab formData={formData} errors={errors} campuses={campuses} grades={grades} onChange={handleField} />
       )}
       {activeTab === 'family' && (
         <StudentFamilyTab formData={formData} onNestedChange={handleNestedField} onChange={handleField} />

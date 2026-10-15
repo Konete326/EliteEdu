@@ -67,6 +67,7 @@ const StudentsList = () => {
               onView={setViewStudent}
               onOpenLedger={setLedgerStudent}
               onOpenAdmissionLetter={(s) => navigate(`/admin/students/admission-letter?studentId=${s._id}`)}
+              onOpenIdCard={(s) => navigate(`/admin/students/id-cards?studentId=${s._id}`)}
             />
             <StudentPagination
               currentPage={page}

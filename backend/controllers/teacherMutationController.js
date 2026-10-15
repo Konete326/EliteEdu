@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const { generateNextEmployeeCode } = require('../utils/employeeCodeGenerator');
+const { sanitizeTeacherPayload } = require('../utils/sanitizeData');
 
 const syncAssignments = (data) => {
   if (Array.isArray(data.class_assignments)) {
@@ -15,7 +16,7 @@ const addTeacher = async (req, res) => {
     const { email, name, password, employee_code, ...rest } = req.body;
 
     if (!name?.trim() || !email?.trim()) {
-      return res.status(400).json({ message: 'Name and email are required' });
+      return res.status(400).json({ message: 'Full Name and work email are required.' });
     }
 
     const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
@@ -27,7 +28,7 @@ const addTeacher = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password || 'Teacher123', salt);
 
-    const payload = {
+    const rawPayload = {
       ...rest,
       name: name.trim(),
       email: email.toLowerCase().trim(),
@@ -39,6 +40,7 @@ const addTeacher = async (req, res) => {
       is_active: rest.status !== 'Inactive'
     };
 
+    const payload = sanitizeTeacherPayload(rawPayload);
     syncAssignments(payload);
     const teacher = await User.create(payload);
 
@@ -69,11 +71,12 @@ const updateTeacher = async (req, res) => {
       updateData.is_active = updateData.status === 'Active';
     }
 
-    syncAssignments(updateData);
+    const cleanUpdateData = sanitizeTeacherPayload(updateData);
+    syncAssignments(cleanUpdateData);
 
     const teacher = await User.findOneAndUpdate(
       { _id: id, school_id: schoolId, role: 'Teacher' },
-      updateData,
+      cleanUpdateData,
       { new: true, runValidators: true }
     ).select('-password');
 

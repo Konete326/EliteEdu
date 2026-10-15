@@ -23,7 +23,9 @@ import NotFoundPage from './pages/common/NotFoundPage';
 import MyProfilePage from './pages/common/MyProfilePage';
 import GradingPoliciesPage from './pages/admin/GradingPoliciesPage';
 import AdmissionLetterPage from './pages/admin/AdmissionLetterPage';
+import StudentIdCardsPage from './pages/admin/StudentIdCardsPage';
 import ThemeSettingsPage from './pages/admin/ThemeSettingsPage';
+import StudentEmergencyVerifyPage from './pages/public/StudentEmergencyVerifyPage';
 import RootRedirect from './components/common/RootRedirect';
 import PwaInstallPrompt from './components/common/PwaInstallPrompt';
 import { getAllAdminRoutes } from './config/adminNavConfig';
@@ -58,6 +60,7 @@ function App() {
             <Route path="/" element={<RootRedirect />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            <Route path="/verify/student/:id" element={<StudentEmergencyVerifyPage />} />
 
             <Route element={<DashboardLayout />}>
               <Route element={<ProtectedRoute allowedRoles={['SuperAdmin']} />}>

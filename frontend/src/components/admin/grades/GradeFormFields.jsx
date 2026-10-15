@@ -21,7 +21,7 @@ const GradeFormFields = ({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1">Campus</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1">Campus (Optional)</label>
           <select
             value={campusId}
             onChange={(e) => setCampusId(e.target.value)}
@@ -35,7 +35,7 @@ const GradeFormFields = ({
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1">Class Teacher</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1">Class Teacher (Optional)</label>
           <select
             value={classTeacher}
             onChange={(e) => setClassTeacher(e.target.value)}

@@ -1,6 +1,6 @@
 import StudentTableRow from './StudentTableRow';
 
-const StudentTable = ({ students, onEdit, onDelete, onView, onOpenLedger, onOpenAttendance, onOpenAdmissionLetter }) => {
+const StudentTable = ({ students, onEdit, onDelete, onView, onOpenLedger, onOpenAttendance, onOpenAdmissionLetter, onOpenIdCard }) => {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
@@ -30,6 +30,7 @@ const StudentTable = ({ students, onEdit, onDelete, onView, onOpenLedger, onOpen
               onOpenLedger={onOpenLedger}
               onOpenAttendance={onOpenAttendance}
               onOpenAdmissionLetter={onOpenAdmissionLetter}
+              onOpenIdCard={onOpenIdCard}
             />
           ))}
         </tbody>

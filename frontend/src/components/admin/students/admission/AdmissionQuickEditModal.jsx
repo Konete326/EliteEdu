@@ -57,43 +57,43 @@ const AdmissionQuickEditModal = ({ isOpen, student, onClose, onSuccess }) => {
         <form onSubmit={handleSubmit} className="space-y-3 text-xs">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-[10px] font-bold text-ink-muted mb-1">Blood Group</label>
+              <label className="block text-[10px] font-bold text-ink-muted mb-1">Blood Group (Optional)</label>
               <input type="text" value={form.blood_group || ''} onChange={(e) => setForm({ ...form, blood_group: e.target.value })} placeholder="e.g. B+" className="w-full px-3 py-1.5 rounded-lg border border-line bg-surface dark:bg-[#16161d]" />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-ink-muted mb-1">Identification Mark</label>
+              <label className="block text-[10px] font-bold text-ink-muted mb-1">Identification Mark (Optional)</label>
               <input type="text" value={form.identification_mark || ''} onChange={(e) => setForm({ ...form, identification_mark: e.target.value })} placeholder="Nil" className="w-full px-3 py-1.5 rounded-lg border border-line bg-surface dark:bg-[#16161d]" />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-ink-muted mb-1">Disease If Any?</label>
+              <label className="block text-[10px] font-bold text-ink-muted mb-1">Disease If Any? (Optional)</label>
               <input type="text" value={form.disease_if_any || ''} onChange={(e) => setForm({ ...form, disease_if_any: e.target.value })} placeholder="None" className="w-full px-3 py-1.5 rounded-lg border border-line bg-surface dark:bg-[#16161d]" />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-ink-muted mb-1">Caste / Cast</label>
+              <label className="block text-[10px] font-bold text-ink-muted mb-1">Caste / Cast (Optional)</label>
               <input type="text" value={form.caste || ''} onChange={(e) => setForm({ ...form, caste: e.target.value })} placeholder="e.g. Memon" className="w-full px-3 py-1.5 rounded-lg border border-line bg-surface dark:bg-[#16161d]" />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-ink-muted mb-1">Orphan Student?</label>
+              <label className="block text-[10px] font-bold text-ink-muted mb-1">Orphan Student? (Optional)</label>
               <select value={form.is_orphan || 'No'} onChange={(e) => setForm({ ...form, is_orphan: e.target.value })} className="w-full px-3 py-1.5 rounded-lg border border-line bg-surface dark:bg-[#16161d]">
                 <option value="No">No</option><option value="Yes">Yes</option>
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-ink-muted mb-1">Out of School (OSC)?</label>
+              <label className="block text-[10px] font-bold text-ink-muted mb-1">Out of School (OSC)? (Optional)</label>
               <select value={form.is_osc || 'No'} onChange={(e) => setForm({ ...form, is_osc: e.target.value })} className="w-full px-3 py-1.5 rounded-lg border border-line bg-surface dark:bg-[#16161d]">
                 <option value="No">No</option><option value="Yes">Yes</option>
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-ink-muted mb-1">Total Siblings</label>
+              <label className="block text-[10px] font-bold text-ink-muted mb-1">Total Siblings (Optional)</label>
               <input type="number" min="0" value={form.total_siblings || 0} onChange={(e) => setForm({ ...form, total_siblings: Number(e.target.value) })} className="w-full px-3 py-1.5 rounded-lg border border-line bg-surface dark:bg-[#16161d]" />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-ink-muted mb-1">Father Profession</label>
+              <label className="block text-[10px] font-bold text-ink-muted mb-1">Father Profession (Optional)</label>
               <input type="text" value={form.father_details?.profession || ''} onChange={(e) => setForm({ ...form, father_details: { ...form.father_details, profession: e.target.value } })} placeholder="e.g. Teacher" className="w-full px-3 py-1.5 rounded-lg border border-line bg-surface dark:bg-[#16161d]" />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-ink-muted mb-1">Father Income (Rs.)</label>
+              <label className="block text-[10px] font-bold text-ink-muted mb-1">Father Income (Rs.) (Optional)</label>
               <input type="number" min="0" value={form.father_details?.income || 0} onChange={(e) => setForm({ ...form, father_details: { ...form.father_details, income: Number(e.target.value) } })} className="w-full px-3 py-1.5 rounded-lg border border-line bg-surface dark:bg-[#16161d]" />
             </div>
           </div>

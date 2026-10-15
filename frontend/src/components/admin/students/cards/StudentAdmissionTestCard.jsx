@@ -11,7 +11,7 @@ const StudentAdmissionTestCard = ({ test = {}, onNestedChange }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Test Date
+            Test Date (Optional)
           </label>
           <input
             type="date"
@@ -23,7 +23,7 @@ const StudentAdmissionTestCard = ({ test = {}, onNestedChange }) => {
 
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Test Status
+            Test Status (Optional)
           </label>
           <select
             value={test.status || 'Pending'}
@@ -60,7 +60,7 @@ const StudentAdmissionTestCard = ({ test = {}, onNestedChange }) => {
 
         <div className="md:col-span-3">
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Admission Test Remarks
+            Admission Test Remarks (Optional)
           </label>
           <input
             type="text"

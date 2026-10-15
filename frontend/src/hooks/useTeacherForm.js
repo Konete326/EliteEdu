@@ -32,6 +32,7 @@ export const useTeacherForm = (id) => {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const init = async () => {
@@ -68,13 +69,31 @@ export const useTeacherForm = (id) => {
     init();
   }, [id, isEditMode]);
 
-  const handleField = (f, v) => setFormData((p) => ({ ...p, [f]: v }));
+  const handleField = (f, v) => {
+    setFormData((p) => ({ ...p, [f]: v }));
+    if (errors[f]) setErrors((p) => ({ ...p, [f]: '' }));
+  };
   const handleEmergency = (f, v) => setFormData((p) => ({ ...p, emergency_contact: { ...p.emergency_contact, [f]: v } }));
   const handleBank = (f, v) => setFormData((p) => ({ ...p, bank_details: { ...p.bank_details, [f]: v } }));
 
+  const validate = () => {
+    const errs = {};
+    if (!formData.name?.trim()) errs.name = 'Full Name is required.';
+    if (!formData.email?.trim()) {
+      errs.email = 'Work email is required.';
+    } else if (!isValidEmail(formData.email)) {
+      errs.email = 'Please enter a valid email address.';
+    }
+    setErrors(errs);
+    return errs;
+  };
+
   const saveTeacher = async (customRedirect = true) => {
-    if (!formData.name?.trim()) throw new Error('Full Name is required');
-    if (!isValidEmail(formData.email)) throw new Error('A valid email address is required');
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setError('Please fill in all required fields highlighted in red.');
+      throw new Error('Please fill in all required fields highlighted in red.');
+    }
 
     setSubmitting(true);
     setError('');
@@ -96,7 +115,7 @@ export const useTeacherForm = (id) => {
 
   return {
     formData, campuses, subjects, grades,
-    loading, submitting, error, setError, saveTeacher,
+    loading, submitting, error, setError, errors, saveTeacher,
     handleField, handleEmergency, handleBank,
     isEditMode, schoolType: user?.school_type || 'Private'
   };

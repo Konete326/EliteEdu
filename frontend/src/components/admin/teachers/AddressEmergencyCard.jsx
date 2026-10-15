@@ -13,7 +13,7 @@ const AddressEmergencyCard = ({ formData, onChange, onEmergencyChange }) => {
         </h3>
 
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Current Address</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Current Address (Optional)</label>
           <textarea
             rows={2}
             value={formData.current_address || ''}
@@ -25,8 +25,8 @@ const AddressEmergencyCard = ({ formData, onChange, onEmergencyChange }) => {
 
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="text-[11px] font-semibold text-ink dark:text-ink-dark">Permanent Address</label>
-            <button type="button" onClick={copyCurrentToPermanent} className="text-[10px] text-primary hover:underline flex items-center gap-1 font-semibold">
+            <label className="text-[11px] font-semibold text-ink dark:text-ink-dark">Permanent Address (Optional)</label>
+            <button type="button" onClick={copyCurrentToPermanent} className="text-[10px] text-primary hover:underline flex items-center gap-1 font-semibold cursor-pointer">
               <Copy className="w-3 h-3" /> Same as Current
             </button>
           </div>
@@ -40,7 +40,7 @@ const AddressEmergencyCard = ({ formData, onChange, onEmergencyChange }) => {
         </div>
 
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Administrative Notes</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Administrative Notes (Optional)</label>
           <textarea
             rows={2}
             value={formData.notes || ''}
@@ -59,7 +59,7 @@ const AddressEmergencyCard = ({ formData, onChange, onEmergencyChange }) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Contact Name</label>
+            <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Contact Name (Optional)</label>
             <input
               type="text"
               value={formData.emergency_contact?.name || ''}
@@ -69,7 +69,7 @@ const AddressEmergencyCard = ({ formData, onChange, onEmergencyChange }) => {
             />
           </div>
           <div>
-            <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Relationship</label>
+            <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Relationship (Optional)</label>
             <input
               type="text"
               value={formData.emergency_contact?.relation || ''}
@@ -79,7 +79,7 @@ const AddressEmergencyCard = ({ formData, onChange, onEmergencyChange }) => {
             />
           </div>
           <div>
-            <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Emergency Phone</label>
+            <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Emergency Phone (Optional)</label>
             <input
               type="text"
               value={formData.emergency_contact?.phone || ''}

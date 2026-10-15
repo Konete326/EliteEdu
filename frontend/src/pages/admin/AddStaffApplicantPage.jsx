@@ -17,7 +17,7 @@ const AddStaffApplicantPage = () => {
 
   const {
     formData, campuses, teachers, loading, submitting, error, setError,
-    handleField, handleAddDocument, handleRemoveDocument, handleAddFollowUp,
+    errors, handleField, handleAddDocument, handleRemoveDocument, handleAddFollowUp,
     handleRemoveFollowUp, saveApplicant
   } = useStaffApplicantForm(id);
 
@@ -28,6 +28,7 @@ const AddStaffApplicantPage = () => {
       await saveApplicant();
     } catch (e) {
       setError(e.message);
+      setActiveTab('personal');
     }
   };
 
@@ -55,6 +56,7 @@ const AddStaffApplicantPage = () => {
       {activeTab === 'personal' && (
         <ApplicantPersonalInfoTab
           formData={formData}
+          errors={errors}
           onChange={handleField}
           teachers={teachers}
         />

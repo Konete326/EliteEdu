@@ -1,6 +1,6 @@
 import { Copy } from 'lucide-react';
 
-const BasicContactFields = ({ formData, onChange }) => {
+const BasicContactFields = ({ formData, errors = {}, onChange }) => {
   const formatCnic = (val) => {
     const raw = val.replace(/\D/g, '').slice(0, 13);
     if (raw.length > 12) return `${raw.slice(0, 5)}-${raw.slice(5, 12)}-${raw.slice(12)}`;
@@ -16,11 +16,11 @@ const BasicContactFields = ({ formData, onChange }) => {
     <div className="space-y-3 pt-2 border-t border-line dark:border-line-dark">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Marital Status</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Marital Status (Optional)</label>
           <select
             value={formData.marital_status || 'Single'}
             onChange={(e) => onChange('marital_status', e.target.value)}
-            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none"
+            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none cursor-pointer"
           >
             <option value="Single">Single</option>
             <option value="Married">Married</option>
@@ -29,7 +29,7 @@ const BasicContactFields = ({ formData, onChange }) => {
           </select>
         </div>
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Contact Number</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Contact Number (Optional)</label>
           <div className="flex">
             <span className="px-2.5 py-1.5 rounded-l-xl border border-r-0 border-line dark:border-line-dark bg-surface-secondary text-xs text-ink-muted">PK +92</span>
             <input
@@ -43,7 +43,7 @@ const BasicContactFields = ({ formData, onChange }) => {
         </div>
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="text-[11px] font-semibold text-ink dark:text-ink-dark">WhatsApp</label>
+            <label className="text-[11px] font-semibold text-ink dark:text-ink-dark">WhatsApp (Optional)</label>
             <button type="button" onClick={copyContact} className="text-[10px] text-primary hover:underline flex items-center gap-1 font-semibold">
               <Copy className="w-3 h-3" /> Same
             </button>
@@ -60,7 +60,7 @@ const BasicContactFields = ({ formData, onChange }) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">CNIC No</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">CNIC No (Optional)</label>
           <input
             type="text"
             value={formData.cnic || ''}
@@ -70,7 +70,7 @@ const BasicContactFields = ({ formData, onChange }) => {
           />
         </div>
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">CNIC Expiry Date</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">CNIC Expiry (Optional)</label>
           <input
             type="date"
             value={formData.cnic_expiry ? formData.cnic_expiry.slice(0, 10) : ''}
@@ -79,15 +79,22 @@ const BasicContactFields = ({ formData, onChange }) => {
           />
         </div>
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Email *</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">
+            Work Email <span className="text-bad">*</span>
+          </label>
           <input
             type="email"
             value={formData.email || ''}
             onChange={(e) => onChange('email', e.target.value)}
             placeholder="teacher@school.edu.pk"
             required
-            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none"
+            className={`w-full px-3 py-1.5 rounded-xl border text-xs text-ink dark:text-ink-dark outline-none transition-all ${
+              errors.email
+                ? 'border-bad ring-2 ring-bad/20 bg-bad/5'
+                : 'border-line dark:border-line-dark bg-surface-secondary/40 focus:ring-1 focus:ring-primary'
+            }`}
           />
+          {errors.email && <p className="text-[10px] text-bad font-semibold mt-1">{errors.email}</p>}
         </div>
       </div>
 

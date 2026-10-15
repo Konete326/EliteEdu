@@ -72,22 +72,22 @@ const EditSchoolModal = ({ isOpen, onClose, school, onUpdated }) => {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Board</label>
+              <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Board (Optional)</label>
               <input value={formData.board} onChange={(e) => setFormData({ ...formData, board: e.target.value })} className={inputClass} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Phone</label>
+              <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Phone (Optional)</label>
               <input value={formData.contact_number} onChange={(e) => setFormData({ ...formData, contact_number: e.target.value })} className={inputClass} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Email</label>
+              <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Email (Optional)</label>
               <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className={inputClass} />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Campus Address</label>
+            <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Campus Address (Optional)</label>
             <input value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className={inputClass} />
           </div>
 

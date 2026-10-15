@@ -15,7 +15,7 @@ const ApplicantAddressTab = ({ formData, onChange }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">City</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">City (Optional)</label>
           <input
             type="text"
             value={formData.city || ''}
@@ -26,7 +26,7 @@ const ApplicantAddressTab = ({ formData, onChange }) => {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Area / Town</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Area / Town (Optional)</label>
           <input
             type="text"
             value={formData.area || ''}
@@ -39,7 +39,7 @@ const ApplicantAddressTab = ({ formData, onChange }) => {
 
       <div className="space-y-4">
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Current Address</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Current Address (Optional)</label>
           <textarea
             rows={3}
             value={formData.current_address || ''}
@@ -50,7 +50,7 @@ const ApplicantAddressTab = ({ formData, onChange }) => {
         </div>
 
         <div className="flex items-center justify-between pt-1">
-          <label className="text-xs font-semibold text-ink dark:text-ink-dark">Permanent Address</label>
+          <label className="text-xs font-semibold text-ink dark:text-ink-dark">Permanent Address (Optional)</label>
           <button
             type="button"
             onClick={copyCurrentToPermanent}

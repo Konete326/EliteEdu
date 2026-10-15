@@ -11,7 +11,7 @@ const StudentAcademicHistoryCard = ({ academic = {}, onNestedChange }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Last Institute Attended
+            Last Institute Attended (Optional)
           </label>
           <input
             type="text"
@@ -24,7 +24,7 @@ const StudentAcademicHistoryCard = ({ academic = {}, onNestedChange }) => {
 
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Previous School Name
+            Previous School Name (Optional)
           </label>
           <input
             type="text"
@@ -37,7 +37,7 @@ const StudentAcademicHistoryCard = ({ academic = {}, onNestedChange }) => {
 
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Previous Student ID / Roll No.
+            Previous Student ID / Roll No. (Optional)
           </label>
           <input
             type="text"
@@ -50,7 +50,7 @@ const StudentAcademicHistoryCard = ({ academic = {}, onNestedChange }) => {
 
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Last Class Completed
+            Last Class Completed (Optional)
           </label>
           <input
             type="text"
@@ -63,7 +63,7 @@ const StudentAcademicHistoryCard = ({ academic = {}, onNestedChange }) => {
 
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Last Academic Session
+            Last Academic Session (Optional)
           </label>
           <input
             type="text"
@@ -76,7 +76,7 @@ const StudentAcademicHistoryCard = ({ academic = {}, onNestedChange }) => {
 
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Last Examination Result / Grade
+            Last Examination Result / Grade (Optional)
           </label>
           <input
             type="text"

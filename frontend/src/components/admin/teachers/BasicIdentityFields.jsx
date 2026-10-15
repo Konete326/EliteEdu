@@ -1,6 +1,6 @@
 import AvatarUploadField from '../../common/AvatarUploadField';
 
-const BasicIdentityFields = ({ formData, onChange }) => {
+const BasicIdentityFields = ({ formData, errors = {}, onChange }) => {
   return (
     <div className="space-y-3">
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
@@ -11,18 +11,25 @@ const BasicIdentityFields = ({ formData, onChange }) => {
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1 w-full">
           <div>
-            <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Name *</label>
+            <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">
+              Full Name <span className="text-bad">*</span>
+            </label>
             <input
               type="text"
               value={formData.name || ''}
               onChange={(e) => onChange('name', e.target.value)}
               placeholder="Full name"
               required
-              className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none focus:ring-1 focus:ring-primary"
+              className={`w-full px-3 py-1.5 rounded-xl border text-xs text-ink dark:text-ink-dark outline-none transition-all ${
+                errors.name
+                  ? 'border-bad ring-2 ring-bad/20 bg-bad/5'
+                  : 'border-line dark:border-line-dark bg-surface-secondary/40 focus:ring-1 focus:ring-primary'
+              }`}
             />
+            {errors.name && <p className="text-[10px] text-bad font-semibold mt-1">{errors.name}</p>}
           </div>
           <div>
-            <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Father Name</label>
+            <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Father Name (Optional)</label>
             <input
               type="text"
               value={formData.father_name || ''}
@@ -36,7 +43,7 @@ const BasicIdentityFields = ({ formData, onChange }) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Surname</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Surname (Optional)</label>
           <input
             type="text"
             value={formData.surname || ''}
@@ -45,7 +52,7 @@ const BasicIdentityFields = ({ formData, onChange }) => {
           />
         </div>
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Spouse Name</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Spouse Name (Optional)</label>
           <input
             type="text"
             value={formData.spouse_name || ''}
@@ -54,7 +61,7 @@ const BasicIdentityFields = ({ formData, onChange }) => {
           />
         </div>
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Employee Code</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Employee Code (Optional)</label>
           <input
             type="text"
             value={formData.employee_code || ''}
@@ -67,11 +74,11 @@ const BasicIdentityFields = ({ formData, onChange }) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Gender</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Gender (Optional)</label>
           <select
             value={formData.gender || 'Male'}
             onChange={(e) => onChange('gender', e.target.value)}
-            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none"
+            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none cursor-pointer"
           >
             <option value="Male">Male</option>
             <option value="Female">Female</option>
@@ -79,7 +86,7 @@ const BasicIdentityFields = ({ formData, onChange }) => {
           </select>
         </div>
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Date of Birth</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Date of Birth (Optional)</label>
           <input
             type="date"
             value={formData.dob ? formData.dob.slice(0, 10) : ''}

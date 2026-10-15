@@ -8,7 +8,7 @@ const DESIGNATIONS = [
 
 const BPS_GRADES = Array.from({ length: 21 }, (_, i) => `BPS-${i + 1}`);
 
-const EmploymentDetailsCard = ({ formData, onChange, campuses = [], schoolType }) => {
+const EmploymentDetailsCard = ({ formData, errors = {}, onChange, campuses = [], schoolType }) => {
   const isGovt = schoolType === 'Government';
 
   return (
@@ -24,11 +24,11 @@ const EmploymentDetailsCard = ({ formData, onChange, campuses = [], schoolType }
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Campus</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Campus (Optional)</label>
           <select
             value={formData.campus_id || ''}
             onChange={(e) => onChange('campus_id', e.target.value)}
-            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none"
+            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none cursor-pointer"
           >
             <option value="">Main / Unassigned</option>
             {campuses.map((c) => (
@@ -37,7 +37,7 @@ const EmploymentDetailsCard = ({ formData, onChange, campuses = [], schoolType }
           </select>
         </div>
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Department</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Department (Optional)</label>
           <input
             type="text"
             value={formData.department || ''}
@@ -51,7 +51,7 @@ const EmploymentDetailsCard = ({ formData, onChange, campuses = [], schoolType }
           <select
             value={formData.designation || 'PST'}
             onChange={(e) => onChange('designation', e.target.value)}
-            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none font-semibold"
+            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none font-semibold cursor-pointer"
           >
             {DESIGNATIONS.map((d) => (
               <option key={d} value={d}>{d.replace('_', ' ')}</option>
@@ -62,11 +62,11 @@ const EmploymentDetailsCard = ({ formData, onChange, campuses = [], schoolType }
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">BPS Grade</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">BPS Grade (Optional)</label>
           <select
             value={formData.bps_grade || ''}
             onChange={(e) => onChange('bps_grade', e.target.value)}
-            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none"
+            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none cursor-pointer"
           >
             <option value="">Select BPS Grade</option>
             {BPS_GRADES.map((g) => (
@@ -75,7 +75,7 @@ const EmploymentDetailsCard = ({ formData, onChange, campuses = [], schoolType }
           </select>
         </div>
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Personal ID / Bio</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Personal ID / Bio (Optional)</label>
           <input
             type="text"
             value={formData.personal_id || ''}
@@ -85,7 +85,7 @@ const EmploymentDetailsCard = ({ formData, onChange, campuses = [], schoolType }
           />
         </div>
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Qualification</label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Qualification (Optional)</label>
           <input
             type="text"
             value={formData.qualification || ''}

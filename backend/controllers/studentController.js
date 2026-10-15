@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Student = require('../models/Student');
 const { generateNextGrNumber } = require('../utils/grNumberGenerator');
+const { sanitizeStudentPayload } = require('../utils/sanitizeData');
 
 const getStudents = async (req, res) => {
   try {
@@ -66,7 +67,7 @@ const createStudent = async (req, res) => {
     const schoolId = req.user?.school_id;
     const { name, father_name, gr_number, campus_id, serial_no, portal_username, portal_temp_password, ...rest } = req.body;
     if (!name?.trim() || !father_name?.trim() || !campus_id) {
-      return res.status(400).json({ message: 'Name, father name, and campus are required' });
+      return res.status(400).json({ message: 'Student Name, Father Name, and Campus are required' });
     }
 
     const finalGr = gr_number?.trim() || (await generateNextGrNumber(schoolId));
@@ -76,7 +77,7 @@ const createStudent = async (req, res) => {
     const finalUsername = portal_username?.trim() || `${finalGr}${cleanName}`;
     const finalPassword = portal_temp_password?.trim() || `Edu@${finalGr}`;
 
-    const student = await Student.create({
+    const rawStudent = {
       ...rest,
       school_id: schoolId,
       campus_id,
@@ -86,8 +87,9 @@ const createStudent = async (req, res) => {
       serial_no: finalSerial,
       portal_username: finalUsername,
       portal_temp_password: finalPassword
-    });
+    };
 
+    const student = await Student.create(sanitizeStudentPayload(rawStudent));
     res.status(201).json({ success: true, student });
   } catch (error) {
     res.status(500).json({ message: 'Failed to create student', error: error.message });
@@ -97,9 +99,10 @@ const createStudent = async (req, res) => {
 const updateStudent = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
+    const cleanBody = sanitizeStudentPayload(req.body);
     const student = await Student.findOneAndUpdate(
       { _id: req.params.id, school_id: schoolId },
-      req.body,
+      cleanBody,
       { new: true, runValidators: true }
     )
       .populate('campus_id', 'name address contact_number email website logo')

@@ -7,13 +7,9 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
   const [filter, setFilter] = useState('all');
 
   const filteredSubjects = subjects.filter((s) => {
-    const matchesSearch =
-      s.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.code?.toLowerCase().includes(searchTerm.toLowerCase());
-    if (!matchesSearch) return false;
-    if (filter === 'grade' && currentGradeName) {
-      return !s.classes || s.classes.length === 0 || s.classes.includes(currentGradeName);
-    }
+    const match = s.name?.toLowerCase().includes(searchTerm.toLowerCase()) || s.code?.toLowerCase().includes(searchTerm.toLowerCase());
+    if (!match) return false;
+    if (filter === 'grade' && currentGradeName) return !s.classes || s.classes.length === 0 || s.classes.includes(currentGradeName);
     if (filter === 'mandatory') return s.mandatory;
     if (filter === 'optional') return !s.mandatory;
     return true;
@@ -21,10 +17,8 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
 
   const handleAutoSelectForGrade = () => {
     if (!currentGradeName) return;
-    const gradeMatchingIds = subjects
-      .filter((s) => !s.classes || s.classes.length === 0 || s.classes.includes(currentGradeName))
-      .map((s) => s._id);
-    onChange('subjects', gradeMatchingIds);
+    const ids = subjects.filter((s) => !s.classes || s.classes.length === 0 || s.classes.includes(currentGradeName)).map((s) => s._id);
+    onChange('subjects', ids);
   };
 
   const filterOptions = [
@@ -113,12 +107,7 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
             {filteredSubjects.map((sub) => (
-              <StudentSubjectCard
-                key={sub._id}
-                sub={sub}
-                isSelected={selectedSubjectIds.includes(sub._id)}
-                onToggle={onToggleSubject}
-              />
+              <StudentSubjectCard key={sub._id} sub={sub} isSelected={selectedSubjectIds.includes(sub._id)} onToggle={onToggleSubject} />
             ))}
           </div>
         )}

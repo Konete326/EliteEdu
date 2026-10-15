@@ -1,7 +1,7 @@
 import { User } from 'lucide-react';
 import AvatarUploadField from '../../../common/AvatarUploadField';
 
-const StudentBasicIdentityCard = ({ formData, onChange }) => {
+const StudentBasicIdentityCard = ({ formData, onChange, errors = {} }) => {
   return (
     <div className="p-5 rounded-2xl bg-surface dark:bg-[#0c0c0c] border border-line dark:border-white/10 space-y-4">
       <div className="flex items-center gap-2 text-ink dark:text-ink-dark font-bold text-sm">
@@ -13,7 +13,7 @@ const StudentBasicIdentityCard = ({ formData, onChange }) => {
         <AvatarUploadField
           value={formData.photo_url || ''}
           onChange={(val) => onChange('photo_url', val)}
-          label="Student Photo"
+          label="Student Photo (Optional)"
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 flex-1 w-full text-xs">
@@ -27,8 +27,15 @@ const StudentBasicIdentityCard = ({ formData, onChange }) => {
               value={formData.name || ''}
               onChange={(e) => onChange('name', e.target.value)}
               placeholder="e.g. Muhammad Ali"
-              className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none"
+              className={`w-full px-3 py-2 rounded-xl border bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark outline-none transition-all ${
+                errors.name
+                  ? 'border-bad ring-2 ring-bad/20 bg-bad/5'
+                  : 'border-line dark:border-white/10 focus:border-primary'
+              }`}
             />
+            {errors.name && (
+              <p className="text-[10px] text-bad font-semibold mt-1">{errors.name}</p>
+            )}
           </div>
 
           <div>
@@ -41,12 +48,21 @@ const StudentBasicIdentityCard = ({ formData, onChange }) => {
               value={formData.father_name || ''}
               onChange={(e) => onChange('father_name', e.target.value)}
               placeholder="e.g. Tariq Mehmood"
-              className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none"
+              className={`w-full px-3 py-2 rounded-xl border bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark outline-none transition-all ${
+                errors.father_name
+                  ? 'border-bad ring-2 ring-bad/20 bg-bad/5'
+                  : 'border-line dark:border-white/10 focus:border-primary'
+              }`}
             />
+            {errors.father_name && (
+              <p className="text-[10px] text-bad font-semibold mt-1">{errors.father_name}</p>
+            )}
           </div>
 
           <div>
-            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Surname / Caste</label>
+            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
+              Surname / Caste (Optional)
+            </label>
             <input
               type="text"
               value={formData.surname || ''}
@@ -57,7 +73,9 @@ const StudentBasicIdentityCard = ({ formData, onChange }) => {
           </div>
 
           <div>
-            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Gender</label>
+            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
+              Gender (Optional)
+            </label>
             <select
               value={formData.gender || 'Male'}
               onChange={(e) => onChange('gender', e.target.value)}
@@ -70,7 +88,9 @@ const StudentBasicIdentityCard = ({ formData, onChange }) => {
           </div>
 
           <div>
-            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Date of Birth</label>
+            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
+              Date of Birth (Optional)
+            </label>
             <input
               type="date"
               value={formData.dob || ''}
@@ -80,7 +100,9 @@ const StudentBasicIdentityCard = ({ formData, onChange }) => {
           </div>
 
           <div>
-            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">B-Form / CNIC No.</label>
+            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
+              B-Form / CNIC No. (Optional)
+            </label>
             <input
               type="text"
               value={formData.b_form || ''}

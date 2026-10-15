@@ -75,6 +75,10 @@ const SubjectModal = ({ isOpen, mode = 'add', subject = null, campuses = [], onC
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.name.trim() || !formData.code.trim()) {
+      setTouched({ name: true, code: true });
+      return;
+    }
     if (!isFormValid || isSubmitting) return;
     onSubmit({
       ...formData,
@@ -250,12 +254,8 @@ const SubjectModal = ({ isOpen, mode = 'add', subject = null, campuses = [], onC
             </button>
             <button
               type="submit"
-              disabled={!isFormValid || isSubmitting}
-              className={`px-5 py-2 rounded-xl text-sm font-medium text-white transition-all ${
-                !isFormValid || isSubmitting
-                  ? 'bg-primary/50 cursor-not-allowed opacity-60'
-                  : 'bg-primary hover:bg-primary-hover shadow-md hover:shadow-lg'
-              }`}
+              disabled={isSubmitting}
+              className="px-5 py-2 rounded-xl text-sm font-medium text-white transition-all bg-primary hover:bg-primary-hover shadow-md hover:shadow-lg disabled:opacity-50"
             >
               {isSubmitting ? 'Saving...' : mode === 'edit' ? 'Update Subject' : 'Create Subject'}
             </button>

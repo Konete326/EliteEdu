@@ -155,12 +155,8 @@ const CampusForm = ({
         </button>
         <button
           type="submit"
-          disabled={!isFormValid || isSubmitting}
-          className={`px-5 py-2 rounded-xl text-sm font-medium text-white transition-all ${
-            !isFormValid || isSubmitting
-              ? 'bg-primary/50 cursor-not-allowed opacity-60'
-              : 'bg-primary hover:bg-primary-hover shadow-md hover:shadow-lg'
-          }`}
+          disabled={isSubmitting}
+          className="px-5 py-2 rounded-xl text-sm font-medium text-white transition-all bg-primary hover:bg-primary-hover shadow-md hover:shadow-lg disabled:opacity-50"
         >
           {isSubmitting ? 'Saving...' : mode === 'edit' ? 'Update Campus' : 'Create Campus'}
         </button>

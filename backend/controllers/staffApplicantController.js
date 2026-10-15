@@ -1,5 +1,6 @@
 const StaffApplicant = require('../models/StaffApplicant');
 const { buildApplicantFilter } = require('./staffApplicantFilterHelper');
+const { sanitizeApplicantPayload } = require('../utils/sanitizeData');
 
 const getApplicants = async (req, res) => {
   try {
@@ -59,12 +60,13 @@ const createApplicant = async (req, res) => {
       return res.status(400).json({ message: 'Applicant name is required' });
     }
 
-    const applicant = await StaffApplicant.create({
+    const payload = sanitizeApplicantPayload({
       ...rest,
       name: name.trim(),
       school_id: schoolId
     });
 
+    const applicant = await StaffApplicant.create(payload);
     res.status(201).json({ success: true, applicant });
   } catch (error) {
     res.status(500).json({ message: 'Failed to create applicant', error: error.message });
@@ -74,9 +76,10 @@ const createApplicant = async (req, res) => {
 const updateApplicant = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
+    const cleanPayload = sanitizeApplicantPayload(req.body);
     const applicant = await StaffApplicant.findOneAndUpdate(
       { _id: req.params.id, school_id: schoolId },
-      req.body,
+      cleanPayload,
       { new: true, runValidators: true }
     );
 

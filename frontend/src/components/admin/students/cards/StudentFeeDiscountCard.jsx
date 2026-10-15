@@ -13,7 +13,7 @@ const StudentFeeDiscountCard = ({ formData, onChange }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Monthly Fee (PKR)
+            Monthly Fee (PKR) (Optional)
           </label>
           <input
             type="number"
@@ -27,7 +27,7 @@ const StudentFeeDiscountCard = ({ formData, onChange }) => {
 
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Discount / Scholarship (PKR)
+            Discount / Scholarship (PKR) (Optional)
           </label>
           <input
             type="number"

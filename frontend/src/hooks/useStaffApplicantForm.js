@@ -45,6 +45,7 @@ export const useStaffApplicantForm = (id) => {
   const [loading, setLoading] = useState(Boolean(id));
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
 
   const token = localStorage.getItem('token');
   const headers = { Authorization: `Bearer ${token}` };
@@ -94,6 +95,7 @@ export const useStaffApplicantForm = (id) => {
 
   const handleField = (key, value) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
+    if (errors[key]) setErrors((prev) => ({ ...prev, [key]: undefined }));
   };
 
   const handleAddDocument = (doc) => {
@@ -118,18 +120,19 @@ export const useStaffApplicantForm = (id) => {
     }));
   };
 
+  const validate = () => {
+    const errs = {};
+    if (!formData.name?.trim()) errs.name = 'Full name is required';
+    if (formData.email && !isValidEmail(formData.email)) errs.email = 'Please enter a valid email address';
+    if (formData.contact_number && !isValidPhone(formData.contact_number)) errs.contact_number = 'Please enter a valid phone number';
+    if (formData.cnic && !isValidCnic(formData.cnic)) errs.cnic = 'Please enter a valid 13-digit CNIC';
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
   const saveApplicant = async () => {
-    if (!formData.name?.trim()) {
-      throw new Error('Applicant full name is required');
-    }
-    if (formData.email && !isValidEmail(formData.email)) {
-      throw new Error('Please enter a valid email address');
-    }
-    if (formData.contact_number && !isValidPhone(formData.contact_number)) {
-      throw new Error('Please enter a valid phone number (10-11 digits)');
-    }
-    if (formData.cnic && !isValidCnic(formData.cnic)) {
-      throw new Error('Please enter a valid 13-digit CNIC (e.g. 12345-1234567-1)');
+    if (!validate()) {
+      throw new Error('Please fill all required and valid fields highlighted in red');
     }
 
     try {
@@ -160,7 +163,7 @@ export const useStaffApplicantForm = (id) => {
 
   return {
     formData, campuses, teachers, loading, submitting, error, setError,
-    handleField, handleAddDocument, handleRemoveDocument, handleAddFollowUp,
+    errors, handleField, handleAddDocument, handleRemoveDocument, handleAddFollowUp,
     handleRemoveFollowUp, saveApplicant
   };
 };

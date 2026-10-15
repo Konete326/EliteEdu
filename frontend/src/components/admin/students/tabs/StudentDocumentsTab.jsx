@@ -15,7 +15,7 @@ const StudentDocumentsTab = ({ formData, onChange }) => {
           <AvatarUploadField
             value={formData.photo_url || ''}
             onChange={(val) => onChange('photo_url', val)}
-            label="Upload / Crop Profile Photo"
+            label="Upload / Crop Profile Photo (Optional)"
           />
           <div className="flex-1 space-y-2 text-xs">
             <h4 className="font-semibold text-ink dark:text-ink-dark text-sm">
@@ -34,7 +34,7 @@ const StudentDocumentsTab = ({ formData, onChange }) => {
       <DocumentUploadList
         documents={formData.documents || []}
         onChange={(docs) => onChange('documents', docs)}
-        title="Student Certificates & Attached Documents"
+        title="Student Certificates & Attached Documents (Optional)"
       />
 
       <div className="p-5 rounded-2xl bg-surface dark:bg-[#0c0c0c] border border-line dark:border-white/10 space-y-4">
@@ -45,7 +45,7 @@ const StudentDocumentsTab = ({ formData, onChange }) => {
 
         <div>
           <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            General Notes / Medical Conditions / Special Concessions
+            General Notes / Medical Conditions / Special Concessions (Optional)
           </label>
           <textarea
             rows="4"

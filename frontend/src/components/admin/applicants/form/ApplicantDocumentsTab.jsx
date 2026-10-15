@@ -23,7 +23,7 @@ const ApplicantDocumentsTab = ({ formData, onChange }) => {
         <div className="flex items-center justify-between pb-2 border-b border-line dark:border-white/10">
           <div className="flex items-center gap-2 text-ink dark:text-ink-dark font-bold text-sm">
             <FileText className="w-4 h-4 text-primary" />
-            <span>Resume / Curriculum Vitae</span>
+            <span>Resume / Curriculum Vitae (Optional)</span>
           </div>
           {formData.resume_url && (
             <span className="text-xs text-good font-semibold">Uploaded</span>
@@ -89,7 +89,7 @@ const ApplicantDocumentsTab = ({ formData, onChange }) => {
       <DocumentUploadList
         documents={formData.documents || []}
         onChange={(newDocs) => onChange('documents', newDocs)}
-        title="Educational Certificates & Experience Letters"
+        title="Educational Certificates & Experience Letters (Optional)"
       />
     </div>
   );

@@ -138,8 +138,11 @@ export const useStudentForm = (id) => {
     init();
   }, [id, isEditMode]);
 
+  const [errors, setErrors] = useState({});
+
   const handleField = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
   };
 
   const handleNestedField = (parent, field, value) => {
@@ -183,10 +186,21 @@ export const useStudentForm = (id) => {
     });
   };
 
+  const validate = () => {
+    const errs = {};
+    if (!formData.name?.trim()) errs.name = 'Student Name is required.';
+    if (!formData.father_name?.trim()) errs.father_name = 'Father Name is required.';
+    if (!formData.campus_id) errs.campus_id = 'Please select a campus.';
+    setErrors(errs);
+    return errs;
+  };
+
   const saveStudent = async () => {
-    if (!formData.name?.trim()) throw new Error('Student Name is required');
-    if (!formData.father_name?.trim()) throw new Error('Father Name is required');
-    if (!formData.campus_id) throw new Error('Campus selection is required');
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setError('Please fill in all required fields highlighted in red.');
+      throw new Error('Please fill in all required fields highlighted in red.');
+    }
 
     setSubmitting(true);
     setError('');
@@ -214,6 +228,7 @@ export const useStudentForm = (id) => {
     submitting,
     error,
     setError,
+    errors,
     saveStudent,
     handleField,
     handleNestedField,

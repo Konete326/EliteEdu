@@ -12,7 +12,7 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Campus</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Campus (Optional)</label>
           <select
             value={formData.campus_id || ''}
             onChange={(e) => onChange('campus_id', e.target.value)}
@@ -26,7 +26,7 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Department</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Department (Optional)</label>
           <input
             type="text"
             value={formData.department || ''}
@@ -49,7 +49,7 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Designation</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Designation (Optional)</label>
           <input
             type="text"
             value={formData.designation || ''}
@@ -74,7 +74,7 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Qualification</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Qualification (Optional)</label>
           <input
             type="text"
             value={formData.qualification || ''}
@@ -85,7 +85,7 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Experience (Years)</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Experience (Years) (Optional)</label>
           <input
             type="number"
             min="0"
@@ -96,7 +96,7 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Availability</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Availability (Optional)</label>
           <select
             value={formData.availability || 'Full Time'}
             onChange={(e) => onChange('availability', e.target.value)}
@@ -109,7 +109,7 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">BPS Grade</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">BPS Grade (Optional)</label>
           <select
             value={formData.bps_grade || ''}
             onChange={(e) => onChange('bps_grade', e.target.value)}
@@ -125,7 +125,7 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Expected Salary (PKR)</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Expected Salary (PKR) (Optional)</label>
           <input
             type="number"
             min="0"
@@ -136,7 +136,7 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Approved Salary (PKR)</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Approved Salary (PKR) (Optional)</label>
           <input
             type="number"
             min="0"
@@ -147,7 +147,7 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Previous Employer</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Previous Employer (Optional)</label>
           <input
             type="text"
             value={formData.previous_employer || ''}
@@ -159,7 +159,7 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
       </div>
 
       <div>
-        <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Skills & Specializations</label>
+        <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Skills & Specializations (Optional)</label>
         <textarea
           rows={2}
           value={formData.skills || ''}

@@ -18,7 +18,7 @@ const StudentContactTab = ({ formData, onNestedChange, onChange }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
           <div>
             <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-              Primary Contact Number <span className="text-bad">*</span>
+              Primary Contact Number (Optional)
             </label>
             <input
               type="text"
@@ -31,7 +31,7 @@ const StudentContactTab = ({ formData, onNestedChange, onChange }) => {
 
           <div>
             <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-              Emergency Contact Number
+              Emergency Contact Number (Optional)
             </label>
             <input
               type="text"
@@ -53,7 +53,7 @@ const StudentContactTab = ({ formData, onNestedChange, onChange }) => {
         <div className="space-y-4 text-xs">
           <div>
             <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-              Current Residential Address
+              Current Residential Address (Optional)
             </label>
             <textarea
               rows="2"
@@ -66,7 +66,7 @@ const StudentContactTab = ({ formData, onNestedChange, onChange }) => {
 
           <div>
             <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-              Permanent Address
+              Permanent Address (Optional)
             </label>
             <textarea
               rows="2"
@@ -80,7 +80,7 @@ const StudentContactTab = ({ formData, onNestedChange, onChange }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-                Area / Town / Union Council
+                Area / Town / Union Council (Optional)
               </label>
               <input
                 type="text"

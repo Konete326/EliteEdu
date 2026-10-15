@@ -1,6 +1,6 @@
 import { School } from 'lucide-react';
 
-const StudentPlacementCard = ({ formData, campuses, grades, onChange }) => {
+const StudentPlacementCard = ({ formData, campuses, grades, onChange, errors = {} }) => {
   const campusGrades = grades.filter((g) => {
     if (!formData.campus_id) return true;
     const gCampId = g.campus_id?._id || g.campus_id;
@@ -28,15 +28,24 @@ const StudentPlacementCard = ({ formData, campuses, grades, onChange }) => {
             required
             value={formData.campus_id || ''}
             onChange={(e) => onChange('campus_id', e.target.value)}
-            className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none"
+            className={`w-full px-3 py-2 rounded-xl border bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark outline-none transition-all ${
+              errors.campus_id
+                ? 'border-bad ring-2 ring-bad/20 bg-bad/5'
+                : 'border-line dark:border-white/10 focus:border-primary'
+            }`}
           >
             <option value="">Select Campus</option>
             {campuses.map((c) => (<option key={c._id} value={c._id}>{c.name}</option>))}
           </select>
+          {errors.campus_id && (
+            <p className="text-[10px] text-bad font-semibold mt-1">{errors.campus_id}</p>
+          )}
         </div>
 
         <div>
-          <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Class Admitted</label>
+          <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
+            Class Admitted (Optional)
+          </label>
           <select
             value={formData.grade_admitted || ''}
             onChange={(e) => {
@@ -51,7 +60,9 @@ const StudentPlacementCard = ({ formData, campuses, grades, onChange }) => {
         </div>
 
         <div>
-          <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Section Admitted</label>
+          <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
+            Section Admitted (Optional)
+          </label>
           <select
             value={formData.section_admitted || 'A'}
             onChange={(e) => onChange('section_admitted', e.target.value)}
@@ -63,7 +74,7 @@ const StudentPlacementCard = ({ formData, campuses, grades, onChange }) => {
 
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Current Class <span className="text-bad">*</span>
+            Current Class (Optional)
           </label>
           <select
             value={formData.current_grade || ''}
@@ -76,7 +87,9 @@ const StudentPlacementCard = ({ formData, campuses, grades, onChange }) => {
         </div>
 
         <div>
-          <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Current Section</label>
+          <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
+            Current Section (Optional)
+          </label>
           <select
             value={formData.current_section || 'A'}
             onChange={(e) => onChange('current_section', e.target.value)}

@@ -10,7 +10,9 @@ const StudentEnrollmentStatusCard = ({ formData, onChange }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
         <div>
-          <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">GR / Admission Number</label>
+          <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
+            GR / Admission Number (Optional)
+          </label>
           <input
             type="text"
             value={formData.gr_number || ''}
@@ -21,7 +23,9 @@ const StudentEnrollmentStatusCard = ({ formData, onChange }) => {
         </div>
 
         <div>
-          <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Admission Date</label>
+          <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
+            Admission Date (Optional)
+          </label>
           <input
             type="date"
             value={formData.admission_date || ''}
@@ -31,7 +35,9 @@ const StudentEnrollmentStatusCard = ({ formData, onChange }) => {
         </div>
 
         <div>
-          <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Religion</label>
+          <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
+            Religion (Optional)
+          </label>
           <select
             value={formData.religion || 'Islam'}
             onChange={(e) => onChange('religion', e.target.value)}
@@ -45,7 +51,9 @@ const StudentEnrollmentStatusCard = ({ formData, onChange }) => {
         </div>
 
         <div>
-          <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Enrollment Status</label>
+          <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
+            Enrollment Status (Optional)
+          </label>
           <select
             value={formData.status || 'Active'}
             onChange={(e) => onChange('status', e.target.value)}
