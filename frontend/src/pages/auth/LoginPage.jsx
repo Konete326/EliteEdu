@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { isValidEmail, isValidPassword } from '../../utils/validators';
 import api from '../../services/api';
@@ -45,9 +45,7 @@ const LoginPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-bg dark:bg-bg-dark px-4 py-8">
       <div className="w-full max-w-md bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="w-12 h-12 rounded-xl bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark flex items-center justify-center mb-3">
-            <Lock className="w-6 h-6" />
-          </div>
+          <img src="/logo.png" alt="Elite Edu" className="w-16 h-16 object-contain mb-3 drop-shadow-md" />
           <h1 className="text-2xl font-bold text-ink dark:text-ink-dark">Staff sign-in</h1>
           <p className="text-sm text-ink-muted dark:text-ink-muted-dark mt-1">Access your school management portal</p>
         </div>

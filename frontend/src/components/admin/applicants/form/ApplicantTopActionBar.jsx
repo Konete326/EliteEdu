@@ -3,7 +3,7 @@ import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 
 const ApplicantTopActionBar = ({ isEditMode, applicantName, onSave, submitting }) => {
   return (
-    <div className="flex items-center justify-between pb-2">
+    <div className="sticky top-0 z-20 flex items-center justify-between p-4 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-sm transition-all">
       <div className="flex items-center gap-3">
         <Link
           to="/admin/staff-applicants"

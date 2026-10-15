@@ -50,12 +50,12 @@ const SchoolsList = () => {
 
   return (
     <div className="space-y-6">
-      <div className="sticky top-0 z-10 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-sm pb-4 pt-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 -mt-1">
+      <div className="sticky top-0 z-20 p-4 sm:p-5 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 transition-all">
         <div>
-          <h1 className="text-2xl font-bold text-ink dark:text-ink-dark">Institutions Directory</h1>
-          <p className="text-sm text-ink-muted dark:text-ink-muted-dark">Manage schools, hold/pause accounts, edit details, or delete.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-ink dark:text-ink-dark tracking-tight">Institutions Directory</h1>
+          <p className="text-xs sm:text-sm text-ink-muted dark:text-ink-muted-dark mt-0.5">Manage schools, hold/pause accounts, edit details, or delete.</p>
         </div>
-        <Link to="/superadmin/schools/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-colors shadow-sm w-fit">
+        <Link to="/superadmin/schools/new" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-primary/20 w-fit">
           <Plus className="w-4 h-4" />
           <span>Add New School</span>
         </Link>

@@ -23,7 +23,7 @@ const ApplicantTopBar = ({
   onToggleMapView
 }) => {
   return (
-    <div className="space-y-4">
+    <div className="sticky top-0 z-20 space-y-4 p-4 sm:p-5 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-sm transition-all">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-ink dark:text-ink-dark tracking-tight">
@@ -38,7 +38,7 @@ const ApplicantTopBar = ({
           <button
             type="button"
             onClick={onCopyLink}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#141414] text-xs font-semibold text-ink dark:text-ink-dark hover:bg-surface-secondary dark:hover:bg-white/5 transition-colors shadow-sm"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-[#141414] text-xs font-semibold text-ink dark:text-ink-dark hover:bg-surface-secondary dark:hover:bg-white/5 transition-colors shadow-sm"
           >
             <Link2 className="w-3.5 h-3.5 text-primary" />
             <span>Generate Link</span>
@@ -47,7 +47,7 @@ const ApplicantTopBar = ({
           <button
             type="button"
             onClick={onOpenCustomize}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#141414] text-xs font-semibold text-ink dark:text-ink-dark hover:bg-surface-secondary dark:hover:bg-white/5 transition-colors shadow-sm"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-[#141414] text-xs font-semibold text-ink dark:text-ink-dark hover:bg-surface-secondary dark:hover:bg-white/5 transition-colors shadow-sm"
           >
             <SlidersHorizontal className="w-3.5 h-3.5 text-ink-muted" />
             <span>Customize Form</span>
@@ -63,7 +63,7 @@ const ApplicantTopBar = ({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2.5 bg-surface dark:bg-[#111111] border border-line dark:border-white/10 p-3 rounded-2xl shadow-sm">
+      <div className="flex flex-wrap items-center gap-2.5 pt-3 border-t border-line/60 dark:border-white/5">
         <div className="relative flex-1 min-w-[220px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted" />
           <input
@@ -71,14 +71,14 @@ const ApplicantTopBar = ({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search by name, department, contact..."
-            className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-black/20 text-ink dark:text-ink-dark placeholder:text-ink-muted outline-none focus:border-primary/60"
+            className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark placeholder:text-ink-muted outline-none focus:border-primary/60"
           />
         </div>
 
         <select
           value={selectedCampus}
           onChange={(e) => onCampusChange(e.target.value)}
-          className="px-3 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-[#161616] text-ink dark:text-ink-dark outline-none font-medium"
+          className="px-3 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark outline-none font-medium"
         >
           <option value="all">All Campuses</option>
           {campuses.map((c) => (
@@ -89,7 +89,7 @@ const ApplicantTopBar = ({
         <select
           value={selectedStatus}
           onChange={(e) => onStatusChange(e.target.value)}
-          className="px-3 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-[#161616] text-ink dark:text-ink-dark outline-none font-medium"
+          className="px-3 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark outline-none font-medium"
         >
           <option value="all">All Statuses</option>
           {STATUS_OPTIONS.map((st) => (
@@ -100,7 +100,7 @@ const ApplicantTopBar = ({
         <select
           value={selectedDepartment}
           onChange={(e) => onDepartmentChange(e.target.value)}
-          className="px-3 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-[#161616] text-ink dark:text-ink-dark outline-none font-medium"
+          className="px-3 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark outline-none font-medium"
         >
           <option value="all">All Departments</option>
           {DEPARTMENT_OPTIONS.map((d) => (
@@ -111,7 +111,7 @@ const ApplicantTopBar = ({
         <select
           value={selectedAvailability}
           onChange={(e) => onAvailabilityChange(e.target.value)}
-          className="px-3 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-[#161616] text-ink dark:text-ink-dark outline-none font-medium"
+          className="px-3 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark outline-none font-medium"
         >
           <option value="all">All Availability</option>
           {AVAILABILITY_OPTIONS.map((av) => (
@@ -125,7 +125,7 @@ const ApplicantTopBar = ({
           className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold transition-colors ${
             isMapView
               ? 'border-primary bg-primary-soft dark:bg-primary/20 text-primary'
-              : 'border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-[#161616] text-ink dark:text-ink-dark'
+              : 'border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark'
           }`}
         >
           <MapPin className="w-3.5 h-3.5" />

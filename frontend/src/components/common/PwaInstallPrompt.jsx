@@ -93,9 +93,7 @@ const PwaInstallPrompt = () => {
         <div className="relative overflow-hidden rounded-2xl bg-surface/95 dark:bg-[#121212]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-2xl p-4 transition-all">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center font-extrabold text-base shadow-md shadow-primary/20 shrink-0">
-                E
-              </div>
+              <img src="/logo.png" alt="EliteEdu" className="w-10 h-10 object-contain shrink-0 drop-shadow-sm" />
               <div className="space-y-0.5">
                 <div className="flex items-center gap-1.5">
                   <h4 className="text-xs font-bold text-ink dark:text-ink-dark">Install EliteEdu</h4>

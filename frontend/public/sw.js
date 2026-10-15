@@ -1,7 +1,7 @@
-const CACHE_NAME = 'eliteedu-pwa-v2';
+const CACHE_NAME = 'eliteedu-pwa-v3';
 const STATIC_ASSETS = [
   '/manifest.json',
-  '/favicon.svg',
+  '/logo.png',
   '/icons/icon-192.png',
   '/icons/icon-512.png'
 ];

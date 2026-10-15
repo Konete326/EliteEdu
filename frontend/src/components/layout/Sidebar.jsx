@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { School, X, Search } from 'lucide-react';
+import { X, Search } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getNavCategories } from '../../config/adminNavConfig';
 import SidebarAccordion from './SidebarAccordion';
@@ -36,9 +36,7 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
     <div className={`flex flex-col h-full bg-surface dark:bg-surface-dark border-r border-line dark:border-line-dark transition-all duration-300 ${isExpanded ? 'w-64' : 'w-16'}`}>
       <div className="flex items-center justify-between h-16 px-4 border-b border-line dark:border-line-dark shrink-0 overflow-hidden">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold shrink-0">
-            <School className="w-4 h-4" />
-          </div>
+          <img src="/logo.png" alt="Elite Edu" className="w-8 h-8 object-contain shrink-0 drop-shadow-sm" />
           {isExpanded && (
             <span className="font-extrabold text-base tracking-tight text-ink dark:text-ink-dark truncate">
               Elite Edu
