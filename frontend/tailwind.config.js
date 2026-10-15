@@ -1,4 +1,3 @@
-/** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
@@ -24,8 +23,8 @@ export default {
         surface: {
           DEFAULT: '#ffffff',
           secondary: '#f6f8f9',
-          dark: '#0e0e0e',
-          'secondary-dark': '#171717'
+          dark: '#0c0c0f',
+          'secondary-dark': '#16161d'
         },
         ink: {
           DEFAULT: '#15222b',
@@ -39,7 +38,7 @@ export default {
         line: {
           DEFAULT: '#e2e7eb',
           secondary: '#cfd7dd',
-          dark: '#262626'
+          dark: '#272730'
         },
         good: {
           DEFAULT: '#17703f',

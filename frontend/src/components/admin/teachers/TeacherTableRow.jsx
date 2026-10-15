@@ -1,6 +1,6 @@
-import { Pencil, Trash2, IdCard } from 'lucide-react';
+import { Pencil, Trash2, IdCard, KeyRound } from 'lucide-react';
 
-const TeacherTableRow = ({ teacher, onToggleStatus, onEdit, onDelete, onView }) => {
+const TeacherTableRow = ({ teacher, onToggleStatus, onEdit, onDelete, onView, onOpenPassword }) => {
   const isActive = teacher.status === 'Active';
   const initials = teacher.name
     ? teacher.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
@@ -85,6 +85,9 @@ const TeacherTableRow = ({ teacher, onToggleStatus, onEdit, onDelete, onView }) 
         <div className="flex items-center justify-end gap-1">
           <button type="button" onClick={() => onView(teacher)} title="View Details" className="p-1.5 rounded-lg text-ink-muted hover:text-ink hover:bg-surface-secondary">
             <IdCard className="w-4 h-4" />
+          </button>
+          <button type="button" onClick={() => onOpenPassword(teacher)} title="Change Password" className="p-1.5 rounded-lg text-ink-muted hover:text-primary hover:bg-primary-soft">
+            <KeyRound className="w-4 h-4" />
           </button>
           <button type="button" onClick={() => onEdit(teacher)} title="Edit Teacher" className="p-1.5 rounded-lg text-ink-muted hover:text-primary hover:bg-primary-soft">
             <Pencil className="w-4 h-4" />

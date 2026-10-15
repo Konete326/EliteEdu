@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const Grade = require('../models/Grade');
 
@@ -43,4 +44,33 @@ const deleteTeacher = async (req, res) => {
   }
 };
 
-module.exports = { toggleTeacherStatus, deleteTeacher };
+const changeTeacherPassword = async (req, res) => {
+  try {
+    const schoolId = req.user?.school_id;
+    const { id } = req.params;
+    const { password } = req.body;
+
+    if (!password || password.trim().length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password.trim(), salt);
+
+    const teacher = await User.findOneAndUpdate(
+      { _id: id, school_id: schoolId, role: 'Teacher' },
+      { password: hashedPassword },
+      { new: true }
+    ).select('-password');
+
+    if (!teacher) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+
+    res.status(200).json({ success: true, message: 'Teacher password updated successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update teacher password', error: error.message });
+  }
+};
+
+module.exports = { toggleTeacherStatus, deleteTeacher, changeTeacherPassword };

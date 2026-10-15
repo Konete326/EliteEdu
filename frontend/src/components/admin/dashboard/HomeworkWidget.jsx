@@ -63,16 +63,24 @@ const HomeworkWidget = ({ stats, homeworkSummary }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-line/60 dark:divide-line-dark/60 text-[11px]">
-            {filtered.map((c, i) => (
-              <tr key={i} className="hover:bg-surface-secondary/40 transition-colors">
-                <td className="py-2.5">
-                  <p className="font-semibold text-ink dark:text-ink-dark">{c.name}</p>
-                  <p className="text-[10px] text-ink-muted">{c.sub}</p>
+            {filtered.length > 0 ? (
+              filtered.map((c, i) => (
+                <tr key={i} className="hover:bg-surface-secondary/40 transition-colors">
+                  <td className="py-2.5">
+                    <p className="font-semibold text-ink dark:text-ink-dark">{c.name}</p>
+                    <p className="text-[10px] text-ink-muted">{c.sub}</p>
+                  </td>
+                  <td className="py-2.5 text-center font-medium text-primary">{c.assigned}</td>
+                  <td className="py-2.5 text-center font-medium text-cyan-600 dark:text-cyan-400">{c.published}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3" className="py-6 text-center text-ink-muted">
+                  No campus homework records found
                 </td>
-                <td className="py-2.5 text-center font-medium text-primary">{c.assigned}</td>
-                <td className="py-2.5 text-center font-medium text-cyan-600 dark:text-cyan-400">{c.published}</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

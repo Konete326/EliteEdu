@@ -71,20 +71,45 @@ const buildAttendanceSummary = (campusList, students, teachers) => {
   };
 };
 
-const buildHomeworkSummary = (campusList) => ({
-  total: 0,
-  assigned: 0,
-  published: 0,
-  unassigned: 0,
-  unpublished: 0,
-  campusesAssigned: `${campusList.length} / ${campusList.length}`,
-  campusBreakdown: campusList.map((c) => ({
-    name: c.name,
-    sub: c.sub,
-    assigned: '0/0 (0%)',
-    published: '0/0 (0%)'
-  }))
-});
+const buildHomeworkSummary = (campusList, homeworkList = []) => {
+  const total = homeworkList.length;
+  const assigned = homeworkList.filter((h) => h.status === 'Assigned').length;
+  const published = homeworkList.filter((h) => Boolean(h.is_published)).length;
+  const unassigned = homeworkList.filter((h) => h.status === 'Unassigned').length;
+  const unpublished = homeworkList.filter((h) => !h.is_published).length;
+
+  const assignedCampusIds = new Set(
+    homeworkList
+      .filter((h) => h.status === 'Assigned' && h.campus_id)
+      .map((h) => String(h.campus_id?._id || h.campus_id))
+  );
+
+  const campusesWithHomework = campusList.filter((c) => assignedCampusIds.has(String(c.id))).length;
+
+  return {
+    total,
+    assigned,
+    published,
+    unassigned,
+    unpublished,
+    campusesAssigned: `${campusesWithHomework} / ${campusList.length}`,
+    campusBreakdown: campusList.map((c) => {
+      const cItems = homeworkList.filter((h) => String(h.campus_id?._id || h.campus_id) === String(c.id));
+      const cTotal = cItems.length;
+      const cAssigned = cItems.filter((h) => h.status === 'Assigned').length;
+      const cPublished = cItems.filter((h) => Boolean(h.is_published)).length;
+      const assignedPct = cTotal > 0 ? Math.round((cAssigned / cTotal) * 100) : 0;
+      const publishedPct = cTotal > 0 ? Math.round((cPublished / cTotal) * 100) : 0;
+
+      return {
+        name: c.name,
+        sub: c.sub,
+        assigned: `${cAssigned}/${cTotal} (${assignedPct}%)`,
+        published: `${cPublished}/${cTotal} (${publishedPct}%)`
+      };
+    })
+  };
+};
 
 module.exports = {
   buildFinancialOverview,

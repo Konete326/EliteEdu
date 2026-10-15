@@ -74,22 +74,30 @@ const AttendanceWidget = ({ stats, attendanceSummary }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-line/60 dark:divide-line-dark/60 text-[11px]">
-            {campuses.map((c, i) => (
-              <tr key={i} className="hover:bg-surface-secondary/40 transition-colors">
-                <td className="py-2.5">
-                  <p className="font-semibold text-ink dark:text-ink-dark">{c.name}</p>
-                  <p className="text-[10px] text-ink-muted">{c.sub}</p>
+            {campuses.length > 0 ? (
+              campuses.map((c, i) => (
+                <tr key={i} className="hover:bg-surface-secondary/40 transition-colors">
+                  <td className="py-2.5">
+                    <p className="font-semibold text-ink dark:text-ink-dark">{c.name}</p>
+                    <p className="text-[10px] text-ink-muted">{c.sub}</p>
+                  </td>
+                  <td className="py-2.5 text-center font-bold">{c.students?.total}</td>
+                  <td className="py-2.5 text-center text-emerald-600 font-semibold">{c.students?.p}</td>
+                  <td className="py-2.5 text-center text-rose-600 font-semibold">{c.students?.a}</td>
+                  <td className="py-2.5 text-center text-blue-600 font-semibold">{c.students?.l}</td>
+                  <td className="py-2.5 text-center text-amber-600 font-semibold">{c.students?.late}</td>
+                  <td className="py-2.5 text-center text-purple-600 font-semibold">{c.students?.hd}</td>
+                  <td className="py-2.5 text-center text-pink-600 font-semibold">{c.students?.hol}</td>
+                  <td className="py-2.5 text-center text-ink-muted">{c.students?.um}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="9" className="py-6 text-center text-ink-muted">
+                  No campus attendance records found
                 </td>
-                <td className="py-2.5 text-center font-bold">{c.students?.total}</td>
-                <td className="py-2.5 text-center text-emerald-600 font-semibold">{c.students?.p}</td>
-                <td className="py-2.5 text-center text-rose-600 font-semibold">{c.students?.a}</td>
-                <td className="py-2.5 text-center text-blue-600 font-semibold">{c.students?.l}</td>
-                <td className="py-2.5 text-center text-amber-600 font-semibold">{c.students?.late}</td>
-                <td className="py-2.5 text-center text-purple-600 font-semibold">{c.students?.hd}</td>
-                <td className="py-2.5 text-center text-pink-600 font-semibold">{c.students?.hol}</td>
-                <td className="py-2.5 text-center text-ink-muted">{c.students?.um}</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

@@ -1,15 +1,19 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, AlertCircle } from 'lucide-react';
+import { Users, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useTeachersList, DESIGNATIONS } from '../../hooks/useTeachersList';
 import TeacherTopBar from '../../components/admin/teachers/TeacherTopBar';
 import TeacherTable from '../../components/admin/teachers/TeacherTable';
 import TeacherDetailsModal from '../../components/admin/teachers/TeacherDetailsModal';
+import ChangePasswordModal from '../../components/admin/teachers/ChangePasswordModal';
 import SubjectPagination from '../../components/admin/subjects/SubjectPagination';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import PageLoader from '../../components/common/PageLoader';
 
 const TeachersList = () => {
   const navigate = useNavigate();
+  const [passwordTeacher, setPasswordTeacher] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
   const {
     teachers, campuses, loading, error, setError,
     selectedCampus, setSelectedCampus,
@@ -32,6 +36,16 @@ const TeachersList = () => {
         selectedDesignation={selectedDesignation}
         onDesignationChange={setSelectedDesignation}
       />
+
+      {successMessage && (
+        <div className="p-3.5 rounded-xl bg-good/10 text-good border border-good/20 text-xs flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <span>{successMessage}</span>
+          </div>
+          <button type="button" onClick={() => setSuccessMessage('')} className="underline font-semibold">Dismiss</button>
+        </div>
+      )}
 
       {error && (
         <div className="p-3.5 rounded-xl bg-bad-soft dark:bg-bad/10 text-bad border border-bad/20 text-xs flex items-center justify-between">
@@ -66,6 +80,7 @@ const TeachersList = () => {
               onEdit={(t) => navigate(`/admin/teachers/${t._id}/edit`)}
               onDelete={setTeacherToDelete}
               onView={setViewTeacher}
+              onOpenPassword={setPasswordTeacher}
             />
             <SubjectPagination
               currentPage={1}
@@ -79,6 +94,12 @@ const TeachersList = () => {
       </div>
 
       <TeacherDetailsModal isOpen={!!viewTeacher} teacher={viewTeacher} onClose={() => setViewTeacher(null)} />
+      <ChangePasswordModal
+        isOpen={!!passwordTeacher}
+        teacher={passwordTeacher}
+        onClose={() => setPasswordTeacher(null)}
+        onSuccess={(msg) => setSuccessMessage(msg)}
+      />
       <ConfirmModal
         isOpen={!!teacherToDelete}
         onClose={() => !deleteLoading && setTeacherToDelete(null)}

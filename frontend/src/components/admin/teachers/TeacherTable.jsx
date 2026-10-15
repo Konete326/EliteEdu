@@ -1,6 +1,6 @@
 import TeacherTableRow from './TeacherTableRow';
 
-const TeacherTable = ({ teachers, onToggleStatus, onEdit, onDelete, onView }) => {
+const TeacherTable = ({ teachers, onToggleStatus, onEdit, onDelete, onView, onOpenPassword }) => {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
@@ -25,6 +25,7 @@ const TeacherTable = ({ teachers, onToggleStatus, onEdit, onDelete, onView }) =>
               onEdit={onEdit}
               onDelete={onDelete}
               onView={onView}
+              onOpenPassword={onOpenPassword}
             />
           ))}
         </tbody>

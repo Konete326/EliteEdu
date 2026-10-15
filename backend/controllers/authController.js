@@ -3,16 +3,23 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const School = require('../models/School');
 
+const getSchoolMeta = async (schoolId) => {
+  if (!schoolId) return { school_type: null, school_name: null };
+  const school = await School.findById(schoolId).select('name school_type');
+  return {
+    school_type: school?.school_type || null,
+    school_name: school?.name || null
+  };
+};
+
 const login = async (req, res) => {
   const { email, password } = req.body;
-
   if (!email || !password) {
     return res.status(400).json({ message: 'Email and password are required' });
   }
 
   try {
     const user = await User.findOne({ email: email.toLowerCase().trim() });
-
     if (!user || !user.is_active) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
@@ -22,15 +29,7 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    let school_type = null;
-    let school_name = null;
-    if (user.school_id) {
-      const school = await School.findById(user.school_id).select('name school_type');
-      if (school) {
-        school_type = school.school_type;
-        school_name = school.name;
-      }
-    }
+    const { school_type, school_name } = await getSchoolMeta(user.school_id);
 
     const token = jwt.sign(
       {
@@ -51,6 +50,8 @@ const login = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        contact_number: user.contact_number || '',
+        photo_url: user.photo_url || '',
         school_id: user.school_id,
         school_type,
         school_name
@@ -68,15 +69,7 @@ const getMe = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    let school_type = null;
-    let school_name = null;
-    if (user.school_id) {
-      const school = await School.findById(user.school_id).select('name school_type');
-      if (school) {
-        school_type = school.school_type;
-        school_name = school.name;
-      }
-    }
+    const { school_type, school_name } = await getSchoolMeta(user.school_id);
 
     res.status(200).json({
       user: {
@@ -84,6 +77,8 @@ const getMe = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        contact_number: user.contact_number || '',
+        photo_url: user.photo_url || '',
         school_id: user.school_id,
         school_type,
         school_name

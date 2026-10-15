@@ -4,6 +4,7 @@ const Campus = require('../models/Campus');
 const Subject = require('../models/Subject');
 const Student = require('../models/Student');
 const Grade = require('../models/Grade');
+const Homework = require('../models/Homework');
 const { buildAdminDashboardData } = require('../utils/dashboardDataBuilder');
 
 const getSuperAdminStats = async (req, res) => {
@@ -39,16 +40,17 @@ const getAdminStats = async (req, res) => {
   }
 
   try {
-    const [school, campuses, teachers, students, totalSubjects, grades] = await Promise.all([
+    const [school, campuses, teachers, students, totalSubjects, grades, homework] = await Promise.all([
       School.findById(schoolId).select('name school_type'),
       Campus.find({ school_id: schoolId }).select('name address status').sort({ createdAt: -1 }),
       User.find({ school_id: schoolId, role: 'Teacher' }).select('name dob campus_id status is_active'),
       Student.find({ school_id: schoolId }).select('name gender dob status campus_id monthly_fee discount admission_date address admission_test createdAt updatedAt'),
       Subject.countDocuments({ school_id: schoolId }),
-      Grade.find({ school_id: schoolId }).select('name sections campus_id')
+      Grade.find({ school_id: schoolId }).select('name sections campus_id'),
+      Homework.find({ school_id: schoolId }).select('title status is_published campus_id grade_id due_date createdAt')
     ]);
 
-    const dashboardData = buildAdminDashboardData(school, teachers, students, campuses, totalSubjects, grades);
+    const dashboardData = buildAdminDashboardData(school, teachers, students, campuses, totalSubjects, grades, homework);
     res.status(200).json(dashboardData);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch statistics', error: error.message });

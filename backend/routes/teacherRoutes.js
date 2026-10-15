@@ -9,7 +9,8 @@ const {
 } = require('../controllers/teacherController');
 const {
   toggleTeacherStatus,
-  deleteTeacher
+  deleteTeacher,
+  changeTeacherPassword
 } = require('../controllers/teacherActionController');
 
 const router = express.Router();
@@ -21,6 +22,7 @@ router.get('/:id', getTeacherById);
 router.post('/', addTeacher);
 router.put('/:id', updateTeacher);
 router.patch('/:id/status', toggleTeacherStatus);
+router.patch('/:id/password', changeTeacherPassword);
 router.delete('/:id', deleteTeacher);
 
 module.exports = router;

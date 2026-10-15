@@ -9,7 +9,7 @@ const {
   buildCrmPipeline
 } = require('./dashboardDemographicsBuilder');
 
-const buildAdminDashboardData = (school, teachers = [], students = [], campuses = [], totalSubjects = 0, grades = []) => {
+const buildAdminDashboardData = (school, teachers = [], students = [], campuses = [], totalSubjects = 0, grades = [], homework = []) => {
   const schoolName = school?.name || 'Main Campus';
   const schoolType = school?.school_type || 'Private';
 
@@ -64,7 +64,7 @@ const buildAdminDashboardData = (school, teachers = [], students = [], campuses 
     admissionsStats: buildAdmissionsStats(students),
     financialOverview: buildFinancialOverview(campusList, students),
     attendanceSummary: buildAttendanceSummary(campusList, students, teachers),
-    homeworkSummary: buildHomeworkSummary(campusList),
+    homeworkSummary: buildHomeworkSummary(campusList, homework),
     studentStats: {
       enquiries: { total: pendingLeads, boys: Math.ceil(pendingLeads / 2), girls: Math.floor(pendingLeads / 2) },
       registrations: { total: activeStudents, boys: maleStudents, girls: femaleStudents },
