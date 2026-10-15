@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema(
     surname: { type: String, trim: true, default: '' },
     spouse_name: { type: String, trim: true, default: '' },
     nick_name: { type: String, trim: true, default: '' },
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    email: { type: String, unique: true, sparse: true, lowercase: true, trim: true, default: null },
     password: { type: String, required: true },
     role: { type: String, enum: ['SuperAdmin', 'Admin', 'Teacher'], required: true },
     school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', default: null },
@@ -67,7 +67,12 @@ const userSchema = new mongoose.Schema(
     class_assignments: [classAssignmentSchema],
     subjects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subject' }],
     grades: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Grade' }],
+    blood_group: { type: String, trim: true, default: '' },
+    semis_code: { type: String, trim: true, default: '' },
+    vendor_no: { type: String, trim: true, default: '' },
+    sed_no: { type: String, trim: true, default: '' },
     app_permissions: { type: appPermissionsSchema, default: () => ({}) },
+    app_settings: { type: appPermissionsSchema, default: () => ({}) },
     payroll_config: { type: payrollConfigSchema, default: () => ({}) },
     security_deposits: [securityDepositSchema],
     increments: [incrementSchema],
@@ -77,6 +82,12 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.pre('validate', function () {
+  if (!this.email || !String(this.email).trim()) {
+    this.email = `staff_${Date.now()}_${Math.floor(Math.random() * 1000)}@school.local`;
+  }
+});
 
 userSchema.index({ school_id: 1, role: 1 });
 userSchema.index({ school_id: 1, employee_code: 1 });

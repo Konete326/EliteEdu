@@ -15,6 +15,7 @@ export const getAdminNavItems = (schoolType) => [
       { name: 'Grades', path: '/admin/grades' },
       { name: 'Subjects', path: '/admin/subjects' },
       { name: 'Teachers', path: '/admin/teachers' },
+      { name: 'Staff Service ID Cards', path: '/admin/teachers/id-cards' },
       { name: 'Staff Applicants', path: '/admin/staff-applicants' },
       { name: 'Students', path: '/admin/students' },
       { name: 'Admission Letter', path: '/admin/students/admission-letter' },
@@ -172,15 +173,25 @@ export const getNavCategories = (user) => {
     }];
   }
   if (user.role === 'Teacher') {
+    const permissions = user.app_settings || user.app_permissions || {};
+    const subItems = [{ name: 'Dashboard', path: '/teacher' }];
+    if (permissions.students !== false) subItems.push({ name: 'My Students', path: '/teacher/students' });
+    if (permissions.attendance !== false) subItems.push({ name: 'Attendance', path: '/teacher/attendance' });
+    if (permissions.homework !== false) subItems.push({ name: 'Homework', path: '/teacher/homework' });
+    if (permissions.examination !== false) subItems.push({ name: 'Examination', path: '/teacher/examination' });
+    if (permissions.timetable !== false) subItems.push({ name: 'Timetable', path: '/teacher/timetable' });
+    if (permissions.quizzes !== false) subItems.push({ name: 'Quizzes', path: '/teacher/quizzes' });
+    if (permissions.lectures !== false) subItems.push({ name: 'Lectures', path: '/teacher/lectures' });
+    if (permissions.online_classes !== false) subItems.push({ name: 'Online Classes', path: '/teacher/online-classes' });
+    if (permissions.datesheet !== false) subItems.push({ name: 'Date Sheet', path: '/teacher/datesheet' });
+    if (permissions.salary !== false) subItems.push({ name: 'My Salary', path: '/teacher/salary' });
+    if (permissions.my_profile !== false) subItems.push({ name: 'My Profile', path: '/teacher/profile' });
+
     return [{
       type: 'group',
-      title: 'Main',
+      title: 'Teacher Portal',
       icon: LayoutGrid,
-      subItems: [
-        { name: 'Dashboard', path: '/teacher' },
-        { name: 'Attendance', path: '/teacher/attendance' },
-        { name: 'Timetable', path: '/teacher/timetable' }
-      ]
+      subItems
     }];
   }
   return getAdminNavItems(user.school_type);
@@ -194,6 +205,7 @@ export const getAllAdminRoutes = () => {
       if (
         sub.path !== '/admin' &&
         sub.path !== '/admin/teachers' &&
+        sub.path !== '/admin/teachers/id-cards' &&
         sub.path !== '/admin/campus' &&
         sub.path !== '/admin/subjects' &&
         sub.path !== '/admin/grades' &&
@@ -221,6 +233,7 @@ export const getRouteTitle = (pathname) => {
   if (pathname === '/admin/teachers') return 'Teachers';
   if (pathname === '/admin/teachers/new') return 'Add Teacher';
   if (pathname.startsWith('/admin/teachers/') && pathname.endsWith('/edit')) return 'Edit Teacher';
+  if (pathname === '/admin/teachers/id-cards') return 'Staff Service ID Cards';
   if (pathname === '/admin/staff-applicants') return 'Staff Applicants';
   if (pathname === '/admin/staff-applicants/new') return 'New Applicant';
   if (pathname.startsWith('/admin/staff-applicants/') && pathname.endsWith('/edit')) return 'Edit Applicant';
@@ -235,9 +248,17 @@ export const getRouteTitle = (pathname) => {
   if (pathname === '/superadmin') return 'Dashboard';
   if (pathname === '/superadmin/schools') return 'Schools';
   if (pathname === '/superadmin/schools/new') return 'New School';
-  if (pathname === '/teacher') return 'Dashboard';
+  if (pathname === '/teacher') return 'Faculty Dashboard';
+  if (pathname === '/teacher/students') return 'My Classes & Students';
   if (pathname === '/teacher/attendance') return 'Attendance';
+  if (pathname === '/teacher/homework') return 'Homework';
+  if (pathname === '/teacher/examination') return 'Examination';
   if (pathname === '/teacher/timetable') return 'Timetable';
+  if (pathname === '/teacher/quizzes') return 'Quizzes';
+  if (pathname === '/teacher/lectures') return 'Lectures';
+  if (pathname === '/teacher/online-classes') return 'Online Classes';
+  if (pathname === '/teacher/datesheet') return 'Date Sheet';
+  if (pathname === '/teacher/salary') return 'My Salary';
   const allGroups = getAdminNavItems('Private');
   for (const group of allGroups) {
     const match = group.subItems?.find((sub) => sub.path === pathname);

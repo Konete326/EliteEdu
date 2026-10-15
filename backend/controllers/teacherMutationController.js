@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const { generateNextEmployeeCode } = require('../utils/employeeCodeGenerator');
-const { sanitizeTeacherPayload } = require('../utils/sanitizeData');
+const { sanitizeTeacherPayload } = require('../utils/sanitizePayload');
 
 const syncAssignments = (data) => {
   if (Array.isArray(data.class_assignments)) {
@@ -15,11 +15,15 @@ const addTeacher = async (req, res) => {
     const schoolId = req.user?.school_id;
     const { email, name, password, employee_code, ...rest } = req.body;
 
-    if (!name?.trim() || !email?.trim()) {
-      return res.status(400).json({ message: 'Full Name and work email are required.' });
+    if (!name?.trim()) {
+      return res.status(400).json({ message: 'Full Name is required.' });
     }
 
-    const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
+    const finalEmail = email?.trim()
+      ? email.toLowerCase().trim()
+      : `staff_${Date.now()}_${Math.floor(Math.random() * 1000)}@school.local`;
+
+    const existingUser = await User.findOne({ email: finalEmail });
     if (existingUser) {
       return res.status(409).json({ message: 'User with this email already exists' });
     }
@@ -31,7 +35,7 @@ const addTeacher = async (req, res) => {
     const rawPayload = {
       ...rest,
       name: name.trim(),
-      email: email.toLowerCase().trim(),
+      email: finalEmail,
       password: hashedPassword,
       employee_code: finalCode,
       role: 'Teacher',

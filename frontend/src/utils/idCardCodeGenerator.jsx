@@ -7,6 +7,13 @@ export const generateStudentVerifyUrl = (studentId) => {
   return `https://eliteedu.pk/verify/student/${studentId}`;
 };
 
+export const generateStaffVerifyUrl = (staffId) => {
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return `${window.location.origin}/verify/staff/${staffId}`;
+  }
+  return `https://eliteedu.pk/verify/staff/${staffId}`;
+};
+
 const CODE39_PATTERNS = {
   '0': '101001101101', '1': '110100101011', '2': '101100101011',
   '3': '110110010101', '4': '101001101011', '5': '110100110101',

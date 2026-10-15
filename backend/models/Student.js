@@ -11,7 +11,7 @@ const {
 const studentSchema = new mongoose.Schema(
   {
     school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true, index: true },
-    campus_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Campus', required: true },
+    campus_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Campus', default: null },
     grade_admitted: { type: mongoose.Schema.Types.ObjectId, ref: 'Grade', default: null },
     section_admitted: { type: String, trim: true, default: '' },
     current_grade: { type: mongoose.Schema.Types.ObjectId, ref: 'Grade', default: null },

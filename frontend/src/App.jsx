@@ -24,19 +24,15 @@ import MyProfilePage from './pages/common/MyProfilePage';
 import GradingPoliciesPage from './pages/admin/GradingPoliciesPage';
 import AdmissionLetterPage from './pages/admin/AdmissionLetterPage';
 import StudentIdCardsPage from './pages/admin/StudentIdCardsPage';
+import TeacherIdCardsPage from './pages/admin/TeacherIdCardsPage';
 import ThemeSettingsPage from './pages/admin/ThemeSettingsPage';
 import StudentEmergencyVerifyPage from './pages/public/StudentEmergencyVerifyPage';
+import StaffServiceVerifyPage from './pages/public/StaffServiceVerifyPage';
+import TeacherPortalDashboard from './pages/teacher/TeacherPortalDashboard';
 import RootRedirect from './components/common/RootRedirect';
 import PwaInstallPrompt from './components/common/PwaInstallPrompt';
 import { getAllAdminRoutes } from './config/adminNavConfig';
 import { Agentation } from 'agentation';
-
-const TeacherDashboard = () => (
-  <div>
-    <h1 className="text-2xl font-bold text-primary dark:text-primary-dark">Teacher Portal</h1>
-    <p className="mt-1 text-sm text-ink-muted dark:text-ink-muted-dark">Mark student attendance and view class timetables.</p>
-  </div>
-);
 
 const UnauthorizedPage = () => (
   <div className="min-h-screen flex items-center justify-center bg-bg dark:bg-bg-dark text-ink dark:text-ink-dark">
@@ -61,6 +57,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
             <Route path="/verify/student/:id" element={<StudentEmergencyVerifyPage />} />
+            <Route path="/verify/staff/:id" element={<StaffServiceVerifyPage />} />
 
             <Route element={<DashboardLayout />}>
               <Route element={<ProtectedRoute allowedRoles={['SuperAdmin']} />}>
@@ -78,6 +75,7 @@ function App() {
                 <Route path="/admin/teachers" element={<TeachersList />} />
                 <Route path="/admin/teachers/new" element={<AddTeacherPage />} />
                 <Route path="/admin/teachers/:id/edit" element={<AddTeacherPage />} />
+                <Route path="/admin/teachers/id-cards" element={<TeacherIdCardsPage />} />
                 <Route path="/admin/students" element={<StudentsList />} />
                 <Route path="/admin/students/new" element={<AddStudentPage />} />
                 <Route path="/admin/students/:id/edit" element={<AddStudentPage />} />
@@ -97,7 +95,8 @@ function App() {
               </Route>
 
               <Route element={<ProtectedRoute allowedRoles={['Teacher']} />}>
-                <Route path="/teacher" element={<TeacherDashboard />} />
+                <Route path="/teacher" element={<TeacherPortalDashboard />} />
+                <Route path="/teacher/students" element={<TeacherPortalDashboard />} />
                 <Route path="/teacher/profile" element={<MyProfilePage />} />
               </Route>
             </Route>

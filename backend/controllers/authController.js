@@ -56,7 +56,8 @@ const login = async (req, res) => {
         school_id: user.school_id,
         school_type,
         school_name,
-        theme_settings
+        theme_settings,
+        app_settings: user.app_settings || user.app_permissions || {}
       }
     });
   } catch (error) {
@@ -84,7 +85,8 @@ const getMe = async (req, res) => {
         school_id: user.school_id,
         school_type,
         school_name,
-        theme_settings
+        theme_settings,
+        app_settings: user.app_settings || user.app_permissions || {}
       }
     });
   } catch (error) {
