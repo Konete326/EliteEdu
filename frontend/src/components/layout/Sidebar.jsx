@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { X, Search } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { HEADER_BG_PRESETS } from '../../utils/themeConstants';
 import { getNavCategories } from '../../config/adminNavConfig';
 import SidebarAccordion from './SidebarAccordion';
 import SidebarFooter from './SidebarFooter';
@@ -13,8 +14,12 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
   const location = useLocation();
   const [openGroup, setOpenGroup] = useState('Main');
   const [searchQuery, setSearchQuery] = useState('');
-  const isDarkSidebar = themeSettings?.sidebarBg === 'dark' || isDark;
 
+  const activePreset = HEADER_BG_PRESETS.find((p) => p.id === themeSettings.headerBg);
+  const isColored = themeSettings.headerBg && themeSettings.headerBg !== 'white';
+  const sidebarBgClass = isColored && activePreset ? activePreset.sidebarClass : isDark ? 'bg-surface-dark border-r border-line-dark text-ink-dark' : 'bg-surface border-r border-line text-ink';
+  const headerBorderClass = isColored ? 'border-white/15' : 'border-line dark:border-line-dark';
+  const brandTextClass = isColored ? 'text-white' : 'text-ink dark:text-ink-dark';
   const allCategories = getNavCategories(user);
 
   useEffect(() => {
@@ -23,31 +28,24 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
     if (active) setOpenGroup(active.title);
   }, [location.pathname, user]);
 
-  const filteredCategories = !searchQuery.trim()
-    ? allCategories
-    : allCategories.map((cat) => {
-        const titleMatch = cat.title.toLowerCase().includes(searchQuery.toLowerCase().trim());
-        const matchedSubs = cat.subItems?.filter((sub) => sub.name.toLowerCase().includes(searchQuery.toLowerCase().trim())) || [];
-        if (titleMatch) return cat;
-        if (matchedSubs.length > 0) return { ...cat, subItems: matchedSubs };
-        return null;
-      }).filter(Boolean);
+  const filteredCategories = !searchQuery.trim() ? allCategories : allCategories.map((cat) => {
+    const q = searchQuery.toLowerCase().trim();
+    if (cat.title.toLowerCase().includes(q)) return cat;
+    const matched = cat.subItems?.filter((s) => s.name.toLowerCase().includes(q)) || [];
+    return matched.length ? { ...cat, subItems: matched } : null;
+  }).filter(Boolean);
 
   const toggleGroup = (title) => setOpenGroup((prev) => (prev === title ? null : title));
 
   const navBody = (isExpanded) => (
-    <div className={`flex flex-col h-full ${isDarkSidebar ? 'bg-[#0c0c0f] border-r border-[#272730] text-white' : 'bg-surface dark:bg-surface-dark border-r border-line dark:border-line-dark text-ink dark:text-ink-dark'} transition-all duration-300 ${isExpanded ? 'w-64' : 'w-16'}`}>
-      <div className={`flex items-center justify-between h-16 px-4 border-b ${isDarkSidebar ? 'border-[#272730]' : 'border-line dark:border-line-dark'} shrink-0 overflow-hidden`}>
+    <div className={`flex flex-col h-full ${sidebarBgClass} transition-all duration-300 ${isExpanded ? 'w-64' : 'w-16'}`}>
+      <div className={`flex items-center justify-between h-16 px-4 border-b ${headerBorderClass} shrink-0 overflow-hidden`}>
         <div className="flex items-center gap-2.5 min-w-0">
           <img src="/logo.png" alt="Elite Edu" className="w-8 h-8 object-contain shrink-0 drop-shadow-sm" />
-          {isExpanded && (
-            <span className="font-extrabold text-base tracking-tight text-ink dark:text-ink-dark truncate">
-              Elite Edu
-            </span>
-          )}
+          {isExpanded && <span className={`font-extrabold text-base tracking-tight truncate ${brandTextClass}`}>Elite Edu</span>}
         </div>
         {isExpanded && mobileOpen && (
-          <button type="button" onClick={() => setMobileOpen(false)} className="lg:hidden text-ink-muted hover:text-ink">
+          <button type="button" onClick={() => setMobileOpen(false)} className={`lg:hidden ${isColored ? 'text-white/80 hover:text-white' : 'text-ink-muted hover:text-ink'}`}>
             <X className="w-5 h-5" />
           </button>
         )}
@@ -56,13 +54,17 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
       {isExpanded && (
         <div className="px-3 pt-3 pb-1 shrink-0">
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none" />
+            <Search className={`w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none ${isColored ? 'text-white/70' : 'text-ink-muted'}`} />
             <input
               type="text"
               placeholder="Search menu..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark text-ink dark:text-ink-dark placeholder:text-ink-muted focus:outline-none focus:ring-1 focus:ring-primary"
+              className={`w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border transition-colors focus:outline-none focus:ring-1 ${
+                isColored
+                  ? 'bg-white/15 border-white/20 text-white placeholder:text-white/60 focus:ring-white/40'
+                  : 'bg-surface-secondary dark:bg-surface-secondary-dark border-line dark:border-line-dark text-ink dark:text-ink-dark placeholder:text-ink-muted focus:ring-primary'
+              }`}
             />
           </div>
         </div>
@@ -77,6 +79,7 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
             onToggle={toggleGroup}
             isExpanded={isExpanded}
             onNavigate={() => setMobileOpen(false)}
+            isColored={isColored}
           />
         ))}
       </nav>
@@ -84,13 +87,11 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
       <SidebarFooter
         user={user}
         isExpanded={isExpanded}
-        onToggleCollapse={() => {
-          if (window.innerWidth >= 1024) setIsDesktopOpen((prev) => !prev);
-          else setMobileOpen(false);
-        }}
+        onToggleCollapse={() => (window.innerWidth >= 1024 ? setIsDesktopOpen((p) => !p) : setMobileOpen(false))}
         isDark={isDark}
         toggleTheme={toggleTheme}
         onLogoutClick={onLogoutClick}
+        isColored={isColored}
       />
     </div>
   );
@@ -100,7 +101,6 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
       <aside className={`hidden lg:flex shrink-0 h-full transition-all duration-300 ${isDesktopOpen ? 'w-64' : 'w-16'}`}>
         {navBody(isDesktopOpen)}
       </aside>
-
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex">
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />

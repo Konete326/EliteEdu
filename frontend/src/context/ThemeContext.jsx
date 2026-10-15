@@ -24,8 +24,8 @@ export const ThemeProvider = ({ children }) => {
     document.documentElement.classList.toggle('dark', t.mode === 'dark');
     document.documentElement.setAttribute('data-bs-theme', t.mode);
     document.documentElement.setAttribute('dir', t.placement || 'ltr');
-    document.documentElement.setAttribute('data-sidebar-bg', t.sidebarBg || 'light');
     document.documentElement.setAttribute('data-header-bg', t.headerBg || 'white');
+    document.documentElement.setAttribute('data-sidebar-bg', t.headerBg || 'white');
 
     const meta = getActiveColorMeta(t.activeColor);
     const root = document.documentElement.style;
@@ -47,6 +47,19 @@ export const ThemeProvider = ({ children }) => {
       });
     }
   }, [user]);
+
+  useEffect(() => {
+    if (!user?.school_id) return;
+    api.get('/schools/theme').then((res) => {
+      if (res.data?.theme_settings) {
+        setSettings((prev) => {
+          const next = { ...prev, ...res.data.theme_settings };
+          localStorage.setItem('elite_theme_settings', JSON.stringify(next));
+          return next;
+        });
+      }
+    }).catch(() => {});
+  }, [user?.school_id]);
 
   const triggerAnimation = useCallback((onMidpoint) => {
     if (transitionState.isAnimating) return onMidpoint && onMidpoint();
@@ -73,6 +86,7 @@ export const ThemeProvider = ({ children }) => {
     triggerAnimation(() => {
       setSettings((prev) => {
         const next = { ...prev, [key]: value };
+        if (key === 'headerBg') next.sidebarBg = value;
         localStorage.setItem('elite_theme_settings', JSON.stringify(next));
         if (key === 'mode') localStorage.setItem('theme', value);
         syncToBackend(next);
@@ -91,23 +105,11 @@ export const ThemeProvider = ({ children }) => {
   }, [triggerAnimation, syncToBackend]);
 
   return (
-    <ThemeContext.Provider
-      value={{
-        themeSettings: settings,
-        updateThemeSetting,
-        resetThemeToDefault,
-        transitionState,
-        triggerAnimation
-      }}
-    >
+    <ThemeContext.Provider value={{ themeSettings: settings, updateThemeSetting, resetThemeToDefault, transitionState, triggerAnimation }}>
       {children}
       <ThemeTransition isAnimating={transitionState.isAnimating} isClosed={transitionState.isClosed} />
     </ThemeContext.Provider>
   );
 };
 
-export const useTheme = () => {
-  const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error('useTheme must be used within ThemeProvider');
-  return ctx;
-};
+export const useTheme = () => useContext(ThemeContext) || DEFAULT_THEME;

@@ -1,7 +1,7 @@
 export const DEFAULT_THEME = {
   mode: 'light',
   placement: 'ltr',
-  sidebarBg: 'light',
+  sidebarBg: 'white',
   headerBg: 'white',
   activeColor: '#0d9488',
   language: 'English'
@@ -23,12 +23,48 @@ export const ACTIVE_COLOR_SWATCHES = [
 ];
 
 export const HEADER_BG_PRESETS = [
-  { id: 'dark', label: 'Dark', previewBg: '#0f172a', headerClass: 'bg-[#0f172a] text-white border-b border-slate-800' },
-  { id: 'red', label: 'Red', previewBg: '#dc2626', headerClass: 'bg-gradient-to-r from-[#dc2626] to-[#ef4444] text-white border-b border-red-700' },
-  { id: 'dark-green', label: 'Dark Green', previewBg: '#064e3b', headerClass: 'bg-gradient-to-r from-[#064e3b] to-[#047857] text-white border-b border-emerald-900' },
-  { id: 'green', label: 'Green', previewBg: '#10b981', headerClass: 'bg-gradient-to-r from-[#10b981] to-[#059669] text-white border-b border-emerald-600' },
-  { id: 'blue', label: 'Blue', previewBg: '#2563eb', headerClass: 'bg-gradient-to-r from-[#1d4ed8] to-[#2563eb] text-white border-b border-blue-600' },
-  { id: 'white', label: 'White', previewBg: '#ffffff', headerClass: 'bg-surface dark:bg-surface-dark text-ink dark:text-ink-dark border-b border-line dark:border-line-dark' }
+  {
+    id: 'dark',
+    label: 'Dark',
+    previewBg: '#0f172a',
+    headerClass: 'bg-[#0f172a] text-white border-b border-slate-800',
+    sidebarClass: 'bg-[#0f172a] text-white border-r border-slate-800'
+  },
+  {
+    id: 'red',
+    label: 'Red',
+    previewBg: '#dc2626',
+    headerClass: 'bg-gradient-to-r from-[#b91c1c] to-[#dc2626] text-white border-b border-red-800',
+    sidebarClass: 'bg-[#991b1b] text-white border-r border-red-950'
+  },
+  {
+    id: 'dark-green',
+    label: 'Dark Green',
+    previewBg: '#064e3b',
+    headerClass: 'bg-gradient-to-r from-[#064e3b] to-[#047857] text-white border-b border-emerald-900',
+    sidebarClass: 'bg-[#064e3b] text-white border-r border-emerald-950'
+  },
+  {
+    id: 'green',
+    label: 'Green',
+    previewBg: '#10b981',
+    headerClass: 'bg-gradient-to-r from-[#059669] to-[#10b981] text-white border-b border-emerald-700',
+    sidebarClass: 'bg-[#047857] text-white border-r border-emerald-800'
+  },
+  {
+    id: 'blue',
+    label: 'Blue',
+    previewBg: '#2563eb',
+    headerClass: 'bg-gradient-to-r from-[#1d4ed8] to-[#2563eb] text-white border-b border-blue-700',
+    sidebarClass: 'bg-[#1e40af] text-white border-r border-blue-900'
+  },
+  {
+    id: 'white',
+    label: 'White',
+    previewBg: '#ffffff',
+    headerClass: 'bg-surface dark:bg-surface-dark text-ink dark:text-ink-dark border-b border-line dark:border-line-dark',
+    sidebarClass: 'bg-surface dark:bg-surface-dark text-ink dark:text-ink-dark border-r border-line dark:border-line-dark'
+  }
 ];
 
 export const getActiveColorMeta = (hex) => {

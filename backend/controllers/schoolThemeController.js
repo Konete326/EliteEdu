@@ -44,11 +44,11 @@ const updateSchoolTheme = async (req, res) => {
     if (placement && ['ltr', 'rtl'].includes(placement)) {
       update['theme_settings.placement'] = placement;
     }
-    if (sidebarBg && ['light', 'dark'].includes(sidebarBg)) {
-      update['theme_settings.sidebarBg'] = sidebarBg;
-    }
     if (headerBg && typeof headerBg === 'string') {
       update['theme_settings.headerBg'] = headerBg.trim();
+      update['theme_settings.sidebarBg'] = headerBg.trim();
+    } else if (sidebarBg && typeof sidebarBg === 'string') {
+      update['theme_settings.sidebarBg'] = sidebarBg.trim();
     }
     if (activeColor && typeof activeColor === 'string') {
       update['theme_settings.activeColor'] = activeColor.trim();

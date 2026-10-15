@@ -1,7 +1,6 @@
 import ThemeStudioHeader from '../../components/admin/theme/ThemeStudioHeader';
 import AppearanceModeCard from '../../components/admin/theme/AppearanceModeCard';
 import ThemePlacementCard from '../../components/admin/theme/ThemePlacementCard';
-import SidebarBgCard from '../../components/admin/theme/SidebarBgCard';
 import HeaderBgCard from '../../components/admin/theme/HeaderBgCard';
 import ActiveColorCard from '../../components/admin/theme/ActiveColorCard';
 import LanguageCard from '../../components/admin/theme/LanguageCard';
@@ -22,7 +21,6 @@ const ThemeSettingsPage = () => {
           <div className="space-y-6">
             <ActiveColorCard />
             <HeaderBgCard />
-            <SidebarBgCard />
           </div>
         </div>
 

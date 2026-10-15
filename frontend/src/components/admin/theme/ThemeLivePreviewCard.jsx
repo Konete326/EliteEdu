@@ -74,8 +74,8 @@ const ThemeLivePreviewCard = () => {
           <span className="font-semibold text-ink dark:text-ink-dark capitalize">{themeSettings.mode} • {themeSettings.placement?.toUpperCase()}</span>
         </div>
         <div className="flex justify-between">
-          <span>Header / Sidebar:</span>
-          <span className="font-semibold text-ink dark:text-ink-dark capitalize">{themeSettings.headerBg} • {themeSettings.sidebarBg}</span>
+          <span>Header & Sidebar:</span>
+          <span className="font-semibold text-ink dark:text-ink-dark capitalize">{themeSettings.headerBg}</span>
         </div>
         <div className="flex justify-between">
           <span>Active Swatch:</span>

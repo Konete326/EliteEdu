@@ -43,7 +43,7 @@ const schoolSchema = new mongoose.Schema(
     theme_settings: {
       mode: { type: String, enum: ['light', 'dark'], default: 'light' },
       placement: { type: String, enum: ['ltr', 'rtl'], default: 'ltr' },
-      sidebarBg: { type: String, enum: ['light', 'dark'], default: 'light' },
+      sidebarBg: { type: String, default: 'white' },
       headerBg: { type: String, default: 'white' },
       activeColor: { type: String, default: '#0d9488' },
       language: { type: String, default: 'English' }

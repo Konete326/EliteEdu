@@ -22,24 +22,16 @@ const StudentPlacementCard = ({ formData, campuses, grades, onChange, errors = {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
         <div>
           <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-            Campus <span className="text-bad">*</span>
+            Campus (Optional)
           </label>
           <select
-            required
             value={formData.campus_id || ''}
             onChange={(e) => onChange('campus_id', e.target.value)}
-            className={`w-full px-3 py-2 rounded-xl border bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark outline-none transition-all ${
-              errors.campus_id
-                ? 'border-bad ring-2 ring-bad/20 bg-bad/5'
-                : 'border-line dark:border-white/10 focus:border-primary'
-            }`}
+            className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none cursor-pointer"
           >
-            <option value="">Select Campus</option>
+            <option value="">Main / First Active Campus</option>
             {campuses.map((c) => (<option key={c._id} value={c._id}>{c.name}</option>))}
           </select>
-          {errors.campus_id && (
-            <p className="text-[10px] text-bad font-semibold mt-1">{errors.campus_id}</p>
-          )}
         </div>
 
         <div>

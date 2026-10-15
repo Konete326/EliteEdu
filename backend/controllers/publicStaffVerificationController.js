@@ -8,43 +8,40 @@ const verifyStaff = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Invalid Staff Verification Identifier' });
     }
 
-    const staff = await User.findById(id)
+    const teacher = await User.findOne({ _id: id, role: 'Teacher' })
       .populate('school_id', 'name school_type logo')
       .populate('campus_id', 'name address contact_number email website semis_code area')
-      .populate('subjects', 'name code')
-      .populate('grades', 'name')
       .lean();
 
-    if (!staff || staff.role !== 'Teacher') {
-      return res.status(404).json({ success: false, message: 'Staff record not found or identifier expired' });
+    if (!teacher) {
+      return res.status(404).json({ success: false, message: 'Teacher / Staff record not found or expired' });
     }
 
     const safeData = {
-      _id: staff._id,
-      name: staff.name,
-      father_name: staff.father_name || staff.spouse_name || '',
-      designation: staff.designation || 'Teacher',
-      bps_grade: staff.bps_grade || '',
-      employee_code: staff.employee_code || staff.personal_id || '',
-      personal_id: staff.personal_id || '',
-      photo_url: staff.photo_url || '',
-      status: staff.status || 'Active',
-      cnic: staff.cnic || '',
-      dob: staff.dob,
-      appointment_date: staff.appointment_date || staff.joining_date,
-      blood_group: staff.blood_group || '',
-      semis_code: staff.semis_code || staff.campus_id?.semis_code || '',
-      vendor_no: staff.vendor_no || '',
-      sed_no: staff.sed_no || '',
-      contact_number: staff.contact_number || '',
-      email: staff.email || '',
-      current_address: staff.current_address || '',
+      _id: teacher._id,
+      name: teacher.name,
+      father_name: teacher.father_name || teacher.spouse_name || '',
+      designation: teacher.designation || 'PST',
+      bps_grade: teacher.bps_grade || 'BPS-14',
+      employee_code: teacher.employee_code || '',
+      personal_id: teacher.personal_id || teacher.employee_code || '',
+      photo_url: teacher.photo_url || '',
+      gender: teacher.gender || 'Male',
+      status: teacher.status || 'Active',
+      appointment_date: teacher.appointment_date || teacher.joining_date,
+      cnic_last4: teacher.cnic ? teacher.cnic.slice(-4) : '',
+      blood_group: teacher.blood_group || 'Not Specified',
+      semis_code: teacher.semis_code || teacher.campus_id?.semis_code || '408110114',
+      vendor_no: teacher.vendor_no || '',
+      sed_no: teacher.sed_no || '',
+      phone: teacher.contact_number || '',
       institution: {
-        school_name: staff.school_id?.name || 'Elite Educational System',
-        campus_name: staff.campus_id?.name || staff.school_id?.name || 'Main Campus',
-        campus_address: staff.campus_id?.address || '',
-        area: staff.campus_id?.area || '',
-        school_type: staff.school_id?.school_type || 'Private'
+        school_name: teacher.school_id?.name || 'Education Department, Govt of Sindh',
+        school_type: teacher.school_id?.school_type || 'Government',
+        campus_name: teacher.campus_id?.name || 'Campus APWA GBSS J-1',
+        campus_address: teacher.campus_id?.address || 'Area Korangi, Karachi',
+        campus_phone: teacher.campus_id?.contact_number || '03422667599',
+        campus_website: teacher.campus_id?.website || 'https://eliteedu.pk'
       }
     };
 

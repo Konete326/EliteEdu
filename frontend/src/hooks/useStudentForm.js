@@ -190,7 +190,6 @@ export const useStudentForm = (id) => {
     const errs = {};
     if (!formData.name?.trim()) errs.name = 'Student Name is required.';
     if (!formData.father_name?.trim()) errs.father_name = 'Father Name is required.';
-    if (!formData.campus_id) errs.campus_id = 'Please select a campus.';
     setErrors(errs);
     return errs;
   };

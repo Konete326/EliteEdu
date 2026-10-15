@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Grade = require('../models/Grade');
 const Student = require('../models/Student');
+const School = require('../models/School');
 
 const getTeacherPortalMe = async (req, res) => {
   try {
@@ -17,10 +18,10 @@ const getTeacherPortalMe = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Teacher profile not accessible' });
     }
 
-    const classTeacherGrades = await Grade.find({
-      school_id: req.user.school_id,
-      class_teacher: req.user.id
-    }).select('name sections campus_id');
+    const [classTeacherGrades, school] = await Promise.all([
+      Grade.find({ school_id: req.user.school_id, class_teacher: req.user.id }).select('name sections campus_id'),
+      School.findById(req.user.school_id).select('theme_settings').lean()
+    ]);
 
     const permissions = teacher.app_settings || teacher.app_permissions || {};
 
@@ -28,7 +29,8 @@ const getTeacherPortalMe = async (req, res) => {
       success: true,
       teacher,
       class_teacher_grades: classTeacherGrades,
-      permissions
+      permissions,
+      theme_settings: school?.theme_settings || null
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to load teacher profile', error: error.message });
