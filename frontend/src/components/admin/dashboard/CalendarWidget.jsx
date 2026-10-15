@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const CalendarWidget = () => {
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 9, 14));
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const dayNames = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
 
+  const today = new Date();
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
@@ -22,7 +23,11 @@ const CalendarWidget = () => {
     days.push({ day: prevMonthDays - i, isCurrent: false });
   }
   for (let i = 1; i <= daysInMonth; i++) {
-    days.push({ day: i, isCurrent: true, isToday: i === 14 && month === 9 && year === 2026 });
+    const isToday =
+      i === today.getDate() &&
+      month === today.getMonth() &&
+      year === today.getFullYear();
+    days.push({ day: i, isCurrent: true, isToday });
   }
   const remaining = 35 - days.length;
   for (let i = 1; i <= (remaining > 0 ? remaining : 0); i++) {

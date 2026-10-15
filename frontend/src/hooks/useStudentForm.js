@@ -79,6 +79,7 @@ const INITIAL_FORM = {
     store: true,
     slc: true
   },
+  documents: [],
   notes: ''
 };
 
@@ -124,6 +125,7 @@ export const useStudentForm = (id) => {
             academic_history: { ...INITIAL_FORM.academic_history, ...(s.academic_history || {}) },
             admission_test: { ...INITIAL_FORM.admission_test, ...(s.admission_test || {}) },
             admission_interview: { ...INITIAL_FORM.admission_interview, ...(s.admission_interview || {}) },
+            documents: s.documents || [],
             app_settings: { ...INITIAL_FORM.app_settings, ...(s.app_settings || {}) }
           });
         }

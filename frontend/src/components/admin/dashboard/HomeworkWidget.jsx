@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { FileText, Search } from 'lucide-react';
 
-const HomeworkWidget = ({ stats }) => {
+const HomeworkWidget = ({ stats, homeworkSummary }) => {
   const [filter, setFilter] = useState('');
-  const data = stats?.homeworkSummary;
+  const data = homeworkSummary || stats?.homeworkSummary || stats;
   const campuses = data?.campusBreakdown || [];
 
   const filtered = campuses.filter((c) =>
@@ -12,11 +12,11 @@ const HomeworkWidget = ({ stats }) => {
   );
 
   const counters = [
-    { label: 'TOTAL', count: data?.total ?? 216, color: 'bg-indigo-50/80 text-indigo-700 dark:bg-indigo-950/20 dark:text-indigo-400 border-indigo-200 dark:border-indigo-900/50' },
-    { label: 'ASSIGNED', count: data?.assigned ?? 3, color: 'bg-emerald-50/80 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50' },
-    { label: 'PUBLISHED', count: data?.published ?? 3, color: 'bg-cyan-50/80 text-cyan-700 dark:bg-cyan-950/20 dark:text-cyan-400 border-cyan-200 dark:border-cyan-900/50' },
-    { label: 'UNASSIGNED', count: data?.unassigned ?? 212, color: 'bg-amber-50/80 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-200 dark:border-amber-900/50' },
-    { label: 'UNPUBLISHED', count: data?.unpublished ?? 212, color: 'bg-rose-50/80 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 border-rose-200 dark:border-rose-900/50' }
+    { label: 'TOTAL', count: data?.total ?? 0, color: 'bg-indigo-50/80 text-indigo-700 dark:bg-indigo-950/20 dark:text-indigo-400 border-indigo-200 dark:border-indigo-900/50' },
+    { label: 'ASSIGNED', count: data?.assigned ?? 0, color: 'bg-emerald-50/80 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50' },
+    { label: 'PUBLISHED', count: data?.published ?? 0, color: 'bg-cyan-50/80 text-cyan-700 dark:bg-cyan-950/20 dark:text-cyan-400 border-cyan-200 dark:border-cyan-900/50' },
+    { label: 'UNASSIGNED', count: data?.unassigned ?? 0, color: 'bg-amber-50/80 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-200 dark:border-amber-900/50' },
+    { label: 'UNPUBLISHED', count: data?.unpublished ?? 0, color: 'bg-rose-50/80 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 border-rose-200 dark:border-rose-900/50' }
   ];
 
   return (
@@ -28,7 +28,7 @@ const HomeworkWidget = ({ stats }) => {
           </div>
           <div>
             <h2 className="text-sm font-bold text-ink dark:text-ink-dark">Homework</h2>
-            <p className="text-[11px] text-ink-muted">{data?.campusesAssigned || '1 / 3'} Campuses assigned homework</p>
+            <p className="text-[11px] text-ink-muted">{data?.campusesAssigned || '0 / 0'} Campuses assigned homework</p>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { CalendarCheck } from 'lucide-react';
 
-const AttendanceWidget = ({ stats }) => {
-  const data = stats?.attendanceSummary;
+const AttendanceWidget = ({ stats, attendanceSummary }) => {
+  const data = attendanceSummary || stats?.attendanceSummary || stats;
   const campuses = data?.campusBreakdown || [];
 
   const pills = [

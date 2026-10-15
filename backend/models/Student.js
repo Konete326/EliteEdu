@@ -97,6 +97,7 @@ const studentSchema = new mongoose.Schema(
     },
     admin_notes: { type: String, trim: true, default: '' },
     additional_notes: { type: String, trim: true, default: '' },
+    documents: [{ title: String, file_url: String, file_name: String, uploaded_at: { type: Date, default: Date.now } }],
     follow_ups: [{ date: { type: Date, default: Date.now }, note: String, user: String }]
   },
   { timestamps: true }

@@ -28,20 +28,24 @@ const CrmPipelineWidget = ({ crmPipeline }) => {
       </div>
 
       <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-2">Pipeline</p>
-      <div className="space-y-1.5">
-        {crm.stages?.map((stage, idx) => (
-          <div key={idx} className="flex items-center justify-between p-1.5 rounded-lg hover:bg-surface-secondary text-xs">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: stage.color || '#3b82f6' }} />
-              <span className="font-medium text-ink dark:text-ink-dark">{stage.name}</span>
+      {crm.stages && crm.stages.length > 0 ? (
+        <div className="space-y-1.5">
+          {crm.stages.map((stage, idx) => (
+            <div key={idx} className="flex items-center justify-between p-1.5 rounded-lg hover:bg-surface-secondary text-xs">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: stage.color || '#3b82f6' }} />
+                <span className="font-medium text-ink dark:text-ink-dark">{stage.name}</span>
+              </div>
+              <div className="flex items-center gap-1.5 font-bold text-ink dark:text-ink-dark">
+                <span>{stage.count}</span>
+                <ChevronRight className="w-3.5 h-3.5 text-ink-muted" />
+              </div>
             </div>
-            <div className="flex items-center gap-1.5 font-bold text-ink dark:text-ink-dark">
-              <span>{stage.count}</span>
-              <ChevronRight className="w-3.5 h-3.5 text-ink-muted" />
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-[10px] text-ink-muted py-2">No active pipeline leads</p>
+      )}
     </div>
   );
 };

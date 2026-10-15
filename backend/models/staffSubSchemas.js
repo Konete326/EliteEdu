@@ -67,7 +67,7 @@ const followUpSchema = new mongoose.Schema({
 }, { _id: true });
 
 const documentSchema = new mongoose.Schema({
-  title: String, file_url: String, uploaded_at: { type: Date, default: Date.now }
+  title: String, file_url: String, file_name: String, uploaded_at: { type: Date, default: Date.now }
 }, { _id: true });
 
 module.exports = {

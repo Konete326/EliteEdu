@@ -1,22 +1,22 @@
 import { useState } from 'react';
 import { Landmark, Eye, EyeOff, TrendingUp, TrendingDown } from 'lucide-react';
 
-const FinancialOverviewWidget = ({ stats }) => {
+const FinancialOverviewWidget = ({ stats, financialOverview }) => {
   const [showValues, setShowValues] = useState(false);
-  const data = stats?.financialOverview;
+  const data = financialOverview || stats?.financialOverview || stats;
   const campuses = data?.campusBreakdown || [];
 
   const mask = (val) => (showValues ? val : '••••••');
 
   const cards = [
-    { label: "Today's Collection", value: data?.todayCollection || '$450.00', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40' },
-    { label: 'MTD Collection', value: data?.mtdCollection || '$14,250.00', icon: TrendingUp, color: 'text-teal-600 bg-teal-50 dark:bg-teal-950/20 border-teal-200/60 dark:border-teal-900/40' },
-    { label: 'YTD Collection', value: data?.ytdCollection || '$128,400.00', icon: TrendingUp, color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/20 border-blue-200/60 dark:border-blue-900/40' },
-    { label: 'Est. Monthly Revenue', value: data?.estMonthlyRevenue || '$22,500.00', icon: Landmark, color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/20 border-purple-200/60 dark:border-purple-900/40' },
-    { label: 'Outstanding', value: data?.outstanding || '$8,950.00', icon: TrendingDown, color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-900/40' },
-    { label: 'Profit / Loss (Month)', value: data?.profitThisMonth || '$9,800.00', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40' },
-    { label: 'Total Expense (Year)', value: data?.totalExpenseYear || '$54,300.00', icon: TrendingDown, color: 'text-rose-600 bg-rose-50 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40' },
-    { label: 'Expense Today', value: data?.expenseToday || '$120.00', icon: TrendingDown, color: 'text-rose-600 bg-rose-50 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40' }
+    { label: "Today's Collection", value: data?.todayCollection || 'Rs. 0', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40' },
+    { label: 'MTD Collection', value: data?.mtdCollection || 'Rs. 0', icon: TrendingUp, color: 'text-teal-600 bg-teal-50 dark:bg-teal-950/20 border-teal-200/60 dark:border-teal-900/40' },
+    { label: 'YTD Collection', value: data?.ytdCollection || 'Rs. 0', icon: TrendingUp, color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/20 border-blue-200/60 dark:border-blue-900/40' },
+    { label: 'Est. Monthly Revenue', value: data?.estMonthlyRevenue || 'Rs. 0', icon: Landmark, color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/20 border-purple-200/60 dark:border-purple-900/40' },
+    { label: 'Outstanding', value: data?.outstanding || 'Rs. 0', icon: TrendingDown, color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-900/40' },
+    { label: 'Profit / Loss (Month)', value: data?.profitThisMonth || 'Rs. 0', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40' },
+    { label: 'Total Expense (Year)', value: data?.totalExpenseYear || 'Rs. 0', icon: TrendingDown, color: 'text-rose-600 bg-rose-50 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40' },
+    { label: 'Expense Today', value: data?.expenseToday || 'Rs. 0', icon: TrendingDown, color: 'text-rose-600 bg-rose-50 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40' }
   ];
 
   return (

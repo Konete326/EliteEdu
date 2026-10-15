@@ -14,6 +14,8 @@ import SubjectsPage from './pages/admin/SubjectsPage';
 import GradesPage from './pages/admin/GradesPage';
 import StudentsList from './pages/admin/StudentsList';
 import AddStudentPage from './pages/admin/AddStudentPage';
+import StaffApplicantsList from './pages/admin/StaffApplicantsList';
+import AddStaffApplicantPage from './pages/admin/AddStaffApplicantPage';
 import ComingSoonPage from './pages/admin/ComingSoonPage';
 import NotFoundPage from './pages/common/NotFoundPage';
 import PwaInstallPrompt from './components/common/PwaInstallPrompt';
@@ -65,6 +67,9 @@ function App() {
               <Route path="/admin/students" element={<StudentsList />} />
               <Route path="/admin/students/new" element={<AddStudentPage />} />
               <Route path="/admin/students/:id/edit" element={<AddStudentPage />} />
+              <Route path="/admin/staff-applicants" element={<StaffApplicantsList />} />
+              <Route path="/admin/staff-applicants/new" element={<AddStaffApplicantPage />} />
+              <Route path="/admin/staff-applicants/:id/edit" element={<AddStaffApplicantPage />} />
               {adminDynamicRoutes.map((r) => (
                 <Route key={r.path} path={r.path} element={<ComingSoonPage title={r.name} />} />
               ))}

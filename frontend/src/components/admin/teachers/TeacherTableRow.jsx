@@ -13,8 +13,10 @@ const TeacherTableRow = ({ teacher, onToggleStatus, onEdit, onDelete, onView }) 
       </td>
       <td className="px-5 py-3.5">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-primary/10 text-primary dark:text-primary-dark font-bold text-xs flex items-center justify-center shrink-0 border border-primary/20">
-            {initials}
+          <div className="w-9 h-9 rounded-full bg-primary/10 text-primary dark:text-primary-dark font-bold text-xs flex items-center justify-center shrink-0 border border-primary/20 overflow-hidden">
+            {teacher.photo_url ? (
+              <img src={teacher.photo_url} alt={teacher.name} className="w-full h-full object-cover" />
+            ) : initials}
           </div>
           <div>
             <p className="font-bold text-ink dark:text-ink-dark text-sm">{teacher.name}</p>

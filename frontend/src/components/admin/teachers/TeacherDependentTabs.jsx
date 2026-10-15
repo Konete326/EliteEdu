@@ -1,19 +1,16 @@
-import { Lock, Plus, Trash2, CheckCircle2 } from 'lucide-react';
+import { Lock, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import DocumentUploadList from '../../common/DocumentUploadList';
 
 const TAB_TITLES = {
-  security_deposit: 'Security Deposits',
-  increment_history: 'Increment History',
-  loan_advance: 'Loans & Advances',
-  follow_up: 'Follow-up History',
-  documents: 'Documents Repository',
-  active_sessions: 'Active Login Sessions'
+  security_deposit: 'Security Deposits', increment_history: 'Increment History',
+  loan_advance: 'Loans & Advances', follow_up: 'Follow-up History',
+  documents: 'Documents Repository', active_sessions: 'Active Login Sessions'
 };
 
 const TeacherDependentTabs = ({ activeTab, teacherId, formData, onSaveNow, onUpdateField }) => {
   const [val1, setVal1] = useState('');
   const [val2, setVal2] = useState('');
-
   const title = TAB_TITLES[activeTab] || 'Tab Details';
 
   if (!teacherId) {
@@ -37,24 +34,27 @@ const TeacherDependentTabs = ({ activeTab, teacherId, formData, onSaveNow, onUpd
     );
   }
 
+  if (activeTab === 'documents') {
+    return (
+      <DocumentUploadList
+        documents={formData.documents || []}
+        onChange={(docs) => onUpdateField('documents', docs)}
+        title="Teacher Documents Repository"
+      />
+    );
+  }
+
   const items = formData[activeTab === 'security_deposit' ? 'security_deposits' :
     activeTab === 'increment_history' ? 'increments' :
     activeTab === 'loan_advance' ? 'loans' :
-    activeTab === 'follow_up' ? 'follow_ups' :
-    activeTab === 'documents' ? 'documents' : 'sessions'] || [];
+    activeTab === 'follow_up' ? 'follow_ups' : 'sessions'] || [];
 
   const handleAddItem = () => {
     if (!val1.trim()) return;
     const fieldName = activeTab === 'security_deposit' ? 'security_deposits' :
       activeTab === 'increment_history' ? 'increments' :
-      activeTab === 'loan_advance' ? 'loans' :
-      activeTab === 'follow_up' ? 'follow_ups' : 'documents';
-
-    const newItem = activeTab === 'documents'
-      ? { title: val1.trim(), file_url: val2.trim() || 'uploaded_doc.pdf' }
-      : { amount: Number(val1) || 0, reason: val2.trim() || 'Standard' };
-
-    onUpdateField(fieldName, [...items, newItem]);
+      activeTab === 'loan_advance' ? 'loans' : 'follow_ups';
+    onUpdateField(fieldName, [...items, { amount: Number(val1) || 0, reason: val2.trim() || 'Standard' }]);
     setVal1('');
     setVal2('');
   };
@@ -62,8 +62,7 @@ const TeacherDependentTabs = ({ activeTab, teacherId, formData, onSaveNow, onUpd
   const handleRemove = (idx) => {
     const fieldName = activeTab === 'security_deposit' ? 'security_deposits' :
       activeTab === 'increment_history' ? 'increments' :
-      activeTab === 'loan_advance' ? 'loans' :
-      activeTab === 'follow_up' ? 'follow_ups' : 'documents';
+      activeTab === 'loan_advance' ? 'loans' : 'follow_ups';
     onUpdateField(fieldName, items.filter((_, i) => i !== idx));
   };
 
@@ -80,14 +79,14 @@ const TeacherDependentTabs = ({ activeTab, teacherId, formData, onSaveNow, onUpd
             type="text"
             value={val1}
             onChange={(e) => setVal1(e.target.value)}
-            placeholder={activeTab === 'documents' ? 'Document Title' : 'Amount / Detail'}
+            placeholder="Amount / Detail"
             className="flex-1 px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs outline-none"
           />
           <input
             type="text"
             value={val2}
             onChange={(e) => setVal2(e.target.value)}
-            placeholder={activeTab === 'documents' ? 'URL / Link' : 'Reason / Note'}
+            placeholder="Reason / Note"
             className="flex-1 px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs outline-none"
           />
           <button type="button" onClick={handleAddItem} className="px-3.5 py-1.5 rounded-xl bg-primary text-white text-xs font-bold flex items-center gap-1">
@@ -102,7 +101,7 @@ const TeacherDependentTabs = ({ activeTab, teacherId, formData, onSaveNow, onUpd
         <div className="space-y-2">
           {items.map((item, idx) => (
             <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-surface-secondary/40 text-xs">
-              <span className="font-semibold text-ink dark:text-ink-dark">{item.title || item.reason || `PKR ${item.amount}`}</span>
+              <span className="font-semibold text-ink dark:text-ink-dark">{item.reason || `PKR ${item.amount}`}</span>
               <button type="button" onClick={() => handleRemove(idx)} className="text-bad hover:scale-110">
                 <Trash2 className="w-3.5 h-3.5" />
               </button>

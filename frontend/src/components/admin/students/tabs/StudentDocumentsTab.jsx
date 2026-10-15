@@ -1,5 +1,6 @@
 import { Image, FileText } from 'lucide-react';
 import AvatarUploadField from '../../../common/AvatarUploadField';
+import DocumentUploadList from '../../../common/DocumentUploadList';
 
 const StudentDocumentsTab = ({ formData, onChange }) => {
   return (
@@ -29,6 +30,12 @@ const StudentDocumentsTab = ({ formData, onChange }) => {
           </div>
         </div>
       </div>
+
+      <DocumentUploadList
+        documents={formData.documents || []}
+        onChange={(docs) => onChange('documents', docs)}
+        title="Student Certificates & Attached Documents"
+      />
 
       <div className="p-5 rounded-2xl bg-surface dark:bg-[#0c0c0c] border border-line dark:border-white/10 space-y-4">
         <div className="flex items-center gap-2 text-ink dark:text-ink-dark font-bold text-sm">

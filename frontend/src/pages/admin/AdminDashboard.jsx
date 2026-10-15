@@ -51,12 +51,13 @@ const AdminDashboard = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
         <div className="xl:col-span-8 space-y-6">
-          <AppStatsWidget appStats={stats?.appDownloadStats} />
-          <AdmissionsChartWidget admissionsStats={stats?.admissionsStats} />
-          {isPrivate && <FinancialOverviewWidget financialOverview={stats?.financialOverview} />}
+          <AppStatsWidget appStats={stats?.appDownloadStats} stats={stats} />
+          <AdmissionsChartWidget admissionsStats={stats?.admissionsStats} stats={stats} />
+          {isPrivate && <FinancialOverviewWidget financialOverview={stats?.financialOverview} stats={stats} />}
           <AttendanceHomeworkWidget
             attendanceSummary={stats?.attendanceSummary}
             homeworkSummary={stats?.homeworkSummary}
+            stats={stats}
           />
         </div>
 

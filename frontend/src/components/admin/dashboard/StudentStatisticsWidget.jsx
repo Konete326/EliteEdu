@@ -62,17 +62,23 @@ const StudentStatisticsWidget = ({ studentStats }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-line/40 dark:divide-line-dark/40 font-medium text-ink dark:text-ink-dark">
-            {stats.campusBreakdown?.map((c, i) => (
-              <tr key={i} className="hover:bg-surface-secondary/40">
-                <td className="py-2 pr-2">
-                  <p className="font-semibold text-xs truncate max-w-[100px]">{c.name}</p>
-                  <p className="text-[10px] text-ink-muted">{c.sub}</p>
-                </td>
-                <td className="py-2 text-center text-blue-600 font-bold">{c.inquiries || 0}</td>
-                <td className="py-2 text-center text-emerald-600 font-bold">{c.registered || 0}</td>
-                <td className="py-2 text-right text-violet-600 font-bold">{c.admissions || 0}</td>
+            {stats.campusBreakdown && stats.campusBreakdown.length > 0 ? (
+              stats.campusBreakdown.map((c, i) => (
+                <tr key={i} className="hover:bg-surface-secondary/40">
+                  <td className="py-2 pr-2">
+                    <p className="font-semibold text-xs truncate max-w-[100px]">{c.name}</p>
+                    <p className="text-[10px] text-ink-muted">{c.sub}</p>
+                  </td>
+                  <td className="py-2 text-center text-blue-600 font-bold">{c.inquiries || 0}</td>
+                  <td className="py-2 text-center text-emerald-600 font-bold">{c.registered || 0}</td>
+                  <td className="py-2 text-right text-violet-600 font-bold">{c.admissions || 0}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="text-center py-4 text-[10px] text-ink-muted">No campus breakdown records</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
