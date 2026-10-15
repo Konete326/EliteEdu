@@ -70,7 +70,7 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
         </div>
       )}
 
-      <nav className="flex-1 px-2.5 py-3 space-y-1 overflow-y-auto overflow-x-hidden">
+      <nav className="flex-1 px-2.5 py-3 space-y-1 overflow-y-auto overflow-x-hidden sidebar-scrollbar">
         {filteredCategories.map((cat, idx) => (
           <SidebarAccordion
             key={cat.title || idx}
