@@ -23,6 +23,10 @@ const AddStudentPage = () => {
     handleToggleAllAppSettings, handleToggleSubject
   } = useStudentForm(id);
 
+  const currentGradeName = grades.find(
+    (g) => g._id === (formData.current_grade?._id || formData.current_grade)
+  )?.name || '';
+
   if (loading) return <PageLoader text="Loading student record..." />;
 
   const handleSave = async () => {
@@ -71,6 +75,7 @@ const AddStudentPage = () => {
           selectedSubjectIds={formData.subjects || []}
           onToggleSubject={handleToggleSubject}
           onChange={handleField}
+          currentGradeName={currentGradeName}
         />
       )}
       {activeTab === 'app_settings' && (

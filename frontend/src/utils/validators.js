@@ -87,9 +87,13 @@ export const generateSubjectCode = (name) => {
     CHEMISTRY: 'CHEM',
     BIOLOGY: 'BIO',
     ISLAMIYAT: 'ISL',
+    ISLAMIAT: 'ISL',
     ENGLISH: 'ENG',
     SCIENCE: 'SCI',
     ARABIC: 'ARB',
+    SINDHI: 'SND',
+    DRAWING: 'DRW',
+    MATH: 'MATH',
     HISTORY: 'HIST',
     GEOGRAPHY: 'GEOG',
     PAKISTAN: 'PST'

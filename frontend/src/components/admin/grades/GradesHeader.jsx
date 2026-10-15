@@ -1,4 +1,4 @@
-import { Search, Plus, Play } from 'lucide-react';
+import { Search, Plus, Sparkles } from 'lucide-react';
 
 const GradesHeader = ({
   searchQuery,
@@ -6,7 +6,9 @@ const GradesHeader = ({
   selectedCampus,
   setSelectedCampus,
   campuses = [],
-  onAddClick
+  onAddClick,
+  onAutoLoad,
+  isSeeding
 }) => {
   return (
     <div className="sticky top-0 z-20 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-sm transition-all">
@@ -25,14 +27,6 @@ const GradesHeader = ({
       </div>
 
       <div className="flex items-center gap-2.5 self-end lg:self-auto flex-wrap">
-        <button
-          type="button"
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-line dark:border-white/10 text-xs sm:text-sm font-semibold text-ink-muted hover:text-ink hover:bg-surface-secondary bg-surface-secondary/40 dark:bg-[#141414] shadow-sm"
-        >
-          <Play className="w-3.5 h-3.5 fill-current text-primary" />
-          <span className="hidden sm:inline">Watch Video</span>
-        </button>
-
         <select
           value={selectedCampus}
           onChange={(e) => setSelectedCampus(e.target.value)}
@@ -43,6 +37,17 @@ const GradesHeader = ({
             <option key={c._id} value={c._id}>{c.name}</option>
           ))}
         </select>
+
+        <button
+          type="button"
+          onClick={onAutoLoad}
+          disabled={isSeeding}
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-primary/30 text-primary dark:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/10 text-xs sm:text-sm font-medium transition-all shadow-sm disabled:opacity-50"
+          title="Auto-load standard classes (Class 1 to Class 10)"
+        >
+          <Sparkles className="w-4 h-4 text-primary" />
+          <span>{isSeeding ? 'Loading...' : 'Auto-Load Standard'}</span>
+        </button>
 
         <button
           type="button"

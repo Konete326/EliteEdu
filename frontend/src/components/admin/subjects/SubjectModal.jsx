@@ -3,6 +3,7 @@ import { X, BookOpen, AlertCircle } from 'lucide-react';
 import { isValidSubjectName, isValidSubjectCode, generateSubjectCode } from '../../../utils/validators';
 import SubjectPresetChips from './SubjectPresetChips';
 import SubjectToggle from './SubjectToggle';
+import SubjectClassesInput from './SubjectClassesInput';
 
 const SubjectModal = ({ isOpen, mode = 'add', subject = null, campuses = [], onClose, onSubmit, isSubmitting = false }) => {
   const [formData, setFormData] = useState({
@@ -10,7 +11,8 @@ const SubjectModal = ({ isOpen, mode = 'add', subject = null, campuses = [], onC
     code: '',
     campus_id: '',
     status: 'Active',
-    mandatory: true
+    mandatory: true,
+    classes: []
   });
   const [isManualCode, setIsManualCode] = useState(false);
   const [touched, setTouched] = useState({});
@@ -22,7 +24,8 @@ const SubjectModal = ({ isOpen, mode = 'add', subject = null, campuses = [], onC
         code: subject.code || '',
         campus_id: subject.campus_id?._id || subject.campus_id || '',
         status: subject.status || 'Active',
-        mandatory: subject.mandatory !== undefined ? subject.mandatory : true
+        mandatory: subject.mandatory !== undefined ? subject.mandatory : true,
+        classes: Array.isArray(subject.classes) ? subject.classes : []
       });
       setIsManualCode(true);
     } else {
@@ -31,7 +34,8 @@ const SubjectModal = ({ isOpen, mode = 'add', subject = null, campuses = [], onC
         code: '',
         campus_id: '',
         status: 'Active',
-        mandatory: true
+        mandatory: true,
+        classes: []
       });
       setIsManualCode(false);
     }
@@ -63,7 +67,8 @@ const SubjectModal = ({ isOpen, mode = 'add', subject = null, campuses = [], onC
       ...prev,
       name: preset.name,
       code: preset.code,
-      mandatory: preset.mandatory
+      mandatory: preset.mandatory,
+      classes: preset.classes || []
     }));
     setIsManualCode(false);
   };
@@ -73,7 +78,8 @@ const SubjectModal = ({ isOpen, mode = 'add', subject = null, campuses = [], onC
     if (!isFormValid || isSubmitting) return;
     onSubmit({
       ...formData,
-      campus_id: formData.campus_id || null
+      campus_id: formData.campus_id || null,
+      classes: formData.classes || []
     });
   };
 
@@ -213,6 +219,11 @@ const SubjectModal = ({ isOpen, mode = 'add', subject = null, campuses = [], onC
               </select>
             </div>
           </div>
+
+          <SubjectClassesInput
+            selectedClasses={formData.classes || []}
+            onChange={(cls) => setFormData((prev) => ({ ...prev, classes: cls }))}
+          />
 
           <div className="flex items-center justify-between p-3.5 rounded-xl bg-surface-secondary/70 dark:bg-[#141414] border border-line dark:border-white/10">
             <div>

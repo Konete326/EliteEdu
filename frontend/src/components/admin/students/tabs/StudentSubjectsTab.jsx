@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { BookOpen, Search, CheckCheck, X } from 'lucide-react';
+import { BookOpen, Search, CheckCheck, X, Sparkles } from 'lucide-react';
 import StudentSubjectCard from '../cards/StudentSubjectCard';
 
-const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onChange }) => {
+const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onChange, currentGradeName = '' }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
 
@@ -11,10 +11,28 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
       s.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       s.code?.toLowerCase().includes(searchTerm.toLowerCase());
     if (!matchesSearch) return false;
+    if (filter === 'grade' && currentGradeName) {
+      return !s.classes || s.classes.length === 0 || s.classes.includes(currentGradeName);
+    }
     if (filter === 'mandatory') return s.mandatory;
     if (filter === 'optional') return !s.mandatory;
     return true;
   });
+
+  const handleAutoSelectForGrade = () => {
+    if (!currentGradeName) return;
+    const gradeMatchingIds = subjects
+      .filter((s) => !s.classes || s.classes.length === 0 || s.classes.includes(currentGradeName))
+      .map((s) => s._id);
+    onChange('subjects', gradeMatchingIds);
+  };
+
+  const filterOptions = [
+    { id: 'all', label: 'All' },
+    ...(currentGradeName ? [{ id: 'grade', label: currentGradeName }] : []),
+    { id: 'mandatory', label: 'Mandatory' },
+    { id: 'optional', label: 'Optional' }
+  ];
 
   return (
     <div className="space-y-6">
@@ -28,7 +46,18 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center flex-wrap gap-2 text-xs">
+            {currentGradeName && (
+              <button
+                type="button"
+                onClick={handleAutoSelectForGrade}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-primary/30 text-primary dark:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/10 font-medium transition-colors"
+                title={`Auto-select standard subjects for ${currentGradeName}`}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Auto-Select for {currentGradeName}</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={() => onChange('subjects', subjects.map((s) => s._id))}
@@ -59,19 +88,19 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
               className="w-full pl-9 pr-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-xs text-ink dark:text-ink-dark outline-none focus:border-primary"
             />
           </div>
-          <div className="flex items-center gap-1.5">
-            {['all', 'mandatory', 'optional'].map((type) => (
+          <div className="flex items-center flex-wrap gap-1.5">
+            {filterOptions.map((opt) => (
               <button
-                key={type}
+                key={opt.id}
                 type="button"
-                onClick={() => setFilter(type)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-colors ${
-                  filter === type
+                onClick={() => setFilter(opt.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
+                  filter === opt.id
                     ? 'bg-primary text-white shadow-sm'
                     : 'bg-surface-secondary/50 dark:bg-[#141414] border border-line dark:border-white/10 text-ink-sub hover:text-ink'
                 }`}
               >
-                {type}
+                {opt.label}
               </button>
             ))}
           </div>

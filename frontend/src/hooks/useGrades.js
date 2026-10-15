@@ -6,6 +6,7 @@ export const useGrades = () => {
   const [campuses, setCampuses] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isSeeding, setIsSeeding] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -53,5 +54,17 @@ export const useGrades = () => {
     setGrades((prev) => prev.filter((g) => g._id !== gradeId));
   };
 
-  return { grades, campuses, teachers, loading, saveGrade, toggleStatus, deleteGrade };
+  const autoLoadGrades = async (campusId) => {
+    try {
+      setIsSeeding(true);
+      await api.post('/grades/seed-defaults', { campus_id: campusId || null });
+      await fetchData();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
+  return { grades, campuses, teachers, loading, isSeeding, saveGrade, toggleStatus, deleteGrade, autoLoadGrades };
 };

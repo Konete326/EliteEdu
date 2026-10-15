@@ -31,6 +31,10 @@ const subjectSchema = new mongoose.Schema(
     mandatory: {
       type: Boolean,
       default: true
+    },
+    classes: {
+      type: [{ type: String, trim: true }],
+      default: []
     }
   },
   {

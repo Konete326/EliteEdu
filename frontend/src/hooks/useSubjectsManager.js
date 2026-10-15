@@ -5,6 +5,7 @@ export const useSubjectsManager = () => {
   const [subjects, setSubjects] = useState([]);
   const [campuses, setCampuses] = useState([]);
   const [selectedCampus, setSelectedCampus] = useState('all');
+  const [selectedClass, setSelectedClass] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -31,7 +32,13 @@ export const useSubjectsManager = () => {
     try {
       setLoading(true);
       setError('');
-      const params = { page, limit: 50, campus_id: selectedCampus, search: searchQuery };
+      const params = {
+        page,
+        limit: 50,
+        campus_id: selectedCampus,
+        search: searchQuery,
+        class_name: selectedClass !== 'all' ? selectedClass : undefined
+      };
       const res = await api.get('/subjects', { params });
       setSubjects(res.data.subjects || []);
       setTotalItems(res.data.total || 0);
@@ -42,7 +49,7 @@ export const useSubjectsManager = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedCampus, searchQuery]);
+  }, [selectedCampus, selectedClass, searchQuery]);
 
   useEffect(() => { fetchCampuses(); }, []);
 
@@ -119,6 +126,7 @@ export const useSubjectsManager = () => {
 
   return {
     subjects, campuses, selectedCampus, setSelectedCampus,
+    selectedClass, setSelectedClass,
     searchQuery, setSearchQuery, loading, error, setError,
     currentPage, totalPages, totalItems, modalState, setModalState,
     isSubmitting, subjectToDelete, setSubjectToDelete,

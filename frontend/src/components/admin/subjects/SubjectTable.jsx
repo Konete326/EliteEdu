@@ -1,5 +1,6 @@
 import { Pencil, Trash2 } from 'lucide-react';
 import SubjectToggle from './SubjectToggle';
+import { formatClassesLabel } from '../../../utils/curriculumPresets';
 
 const SubjectTable = ({ subjects, onEdit, onDelete, onToggle, toggleLoadingId }) => {
   return (
@@ -9,6 +10,7 @@ const SubjectTable = ({ subjects, onEdit, onDelete, onToggle, toggleLoadingId })
           <tr>
             <th className="px-6 py-4">Name</th>
             <th className="px-6 py-4">Code</th>
+            <th className="px-6 py-4">Classes</th>
             <th className="px-6 py-4 text-center w-36">Status</th>
             <th className="px-6 py-4 text-center w-36">Mandatory</th>
             <th className="px-6 py-4 text-right w-28">Actions</th>
@@ -17,6 +19,7 @@ const SubjectTable = ({ subjects, onEdit, onDelete, onToggle, toggleLoadingId })
         <tbody className="divide-y divide-line/60 dark:divide-white/5 bg-surface dark:bg-[#0c0c0c]">
           {subjects.map((subject) => {
             const isToggling = toggleLoadingId === subject._id;
+            const classesLabel = formatClassesLabel(subject.classes);
             return (
               <tr
                 key={subject._id}
@@ -28,6 +31,11 @@ const SubjectTable = ({ subjects, onEdit, onDelete, onToggle, toggleLoadingId })
                 <td className="px-6 py-4">
                   <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark border border-primary/20">
                     {subject.code}
+                  </span>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="inline-block px-2.5 py-0.5 rounded-md text-xs font-medium bg-surface-secondary dark:bg-[#1a1a1a] text-ink-sub dark:text-ink-muted-dark border border-line dark:border-white/10">
+                    {classesLabel}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-center">

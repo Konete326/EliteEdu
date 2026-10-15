@@ -10,6 +10,7 @@ import PageLoader from '../../components/common/PageLoader';
 const SubjectsPage = () => {
   const {
     subjects, campuses, selectedCampus, setSelectedCampus,
+    selectedClass, setSelectedClass,
     searchQuery, setSearchQuery, loading, error, setError,
     currentPage, totalPages, totalItems, modalState, setModalState,
     isSubmitting, subjectToDelete, setSubjectToDelete,
@@ -27,6 +28,11 @@ const SubjectsPage = () => {
         selectedCampus={selectedCampus}
         onCampusChange={(val) => {
           setSelectedCampus(val);
+          setCurrentPage(1);
+        }}
+        selectedClass={selectedClass}
+        onClassChange={(val) => {
+          setSelectedClass(val);
           setCurrentPage(1);
         }}
         onAutoLoad={handleAutoLoad}

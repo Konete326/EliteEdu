@@ -1,4 +1,5 @@
 import { Plus, Search, X, Sparkles } from 'lucide-react';
+import { DEFAULT_CLASSES } from '../../../utils/curriculumPresets';
 
 const SubjectTopBar = ({
   searchQuery,
@@ -6,6 +7,8 @@ const SubjectTopBar = ({
   campuses,
   selectedCampus,
   onCampusChange,
+  selectedClass,
+  onClassChange,
   onAutoLoad,
   onAddClick,
   isSeeding
@@ -55,12 +58,25 @@ const SubjectTopBar = ({
           ))}
         </select>
 
+        <select
+          value={selectedClass}
+          onChange={(e) => onClassChange(e.target.value)}
+          className="px-3.5 py-2 rounded-xl text-xs sm:text-sm bg-surface-secondary/50 dark:bg-[#141414] border border-line dark:border-white/10 text-ink dark:text-ink-dark outline-none focus:border-primary transition-all shadow-sm font-medium cursor-pointer"
+        >
+          <option value="all">All Classes</option>
+          {DEFAULT_CLASSES.map((cls) => (
+            <option key={cls} value={cls}>
+              {cls}
+            </option>
+          ))}
+        </select>
+
         <button
           type="button"
           onClick={onAutoLoad}
           disabled={isSeeding}
           className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-primary/30 text-primary dark:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/10 text-xs sm:text-sm font-medium transition-all shadow-sm disabled:opacity-50"
-          title="Auto-load standard Pakistani curriculum subjects"
+          title="Auto-load standard Pakistani curriculum subjects (Class 1 to Class 10)"
         >
           <Sparkles className="w-4 h-4 text-primary" />
           <span>{isSeeding ? 'Loading...' : 'Auto-Load Standard'}</span>

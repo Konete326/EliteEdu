@@ -8,7 +8,7 @@ import GradesPagination from '../../components/admin/grades/GradesPagination';
 import GradeModal from '../../components/admin/grades/GradeModal';
 
 const GradesPage = () => {
-  const { grades, campuses, teachers, loading, saveGrade, toggleStatus, deleteGrade } = useGrades();
+  const { grades, campuses, teachers, loading, isSeeding, saveGrade, toggleStatus, deleteGrade, autoLoadGrades } = useGrades();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCampus, setSelectedCampus] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -53,6 +53,8 @@ const GradesPage = () => {
         setSelectedCampus={setSelectedCampus}
         campuses={campuses}
         onAddClick={() => { setSelectedGrade(null); setModalOpen(true); }}
+        onAutoLoad={() => autoLoadGrades(selectedCampus)}
+        isSeeding={isSeeding}
       />
 
       <div className="w-full rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm p-4 sm:p-5">

@@ -2,10 +2,7 @@ const mongoose = require('mongoose');
 const Grade = require('../models/Grade');
 const Campus = require('../models/Campus');
 
-const DEFAULT_GRADES = [
-  'Nursery', 'Prep', 'Class 1', 'Class 2', 'Class 3', 'Class 4',
-  'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'
-];
+const { DEFAULT_CLASSES } = require('../utils/curriculumDefaults');
 
 const bulkSeedGrades = async (req, res) => {
   try {
@@ -20,7 +17,7 @@ const bulkSeedGrades = async (req, res) => {
     const existing = await Grade.find({ school_id: schoolId, campus_id: campusRef });
     const existingNames = new Set(existing.map((g) => g.name.toLowerCase()));
 
-    const toInsert = DEFAULT_GRADES
+    const toInsert = DEFAULT_CLASSES
       .filter((name) => !existingNames.has(name.toLowerCase()))
       .map((name) => ({
         school_id: schoolId,

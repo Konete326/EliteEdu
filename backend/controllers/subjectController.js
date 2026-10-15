@@ -5,13 +5,15 @@ const Campus = require('../models/Campus');
 const getSubjects = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
-    const { campus_id, search, page = 1, limit = 50 } = req.query;
+    const { campus_id, search, class_name, page = 1, limit = 50 } = req.query;
     const filter = { school_id: schoolId };
 
     if (campus_id && campus_id !== 'all' && mongoose.Types.ObjectId.isValid(campus_id)) {
       filter.campus_id = campus_id;
     }
-
+    if (class_name && class_name !== 'all') {
+      filter.classes = class_name;
+    }
     if (search && search.trim()) {
       const q = search.trim();
       filter.$or = [{ name: { $regex: q, $options: 'i' } }, { code: { $regex: q, $options: 'i' } }];
@@ -38,7 +40,7 @@ const getSubjects = async (req, res) => {
 const createSubject = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
-    const { name, code, campus_id, status = 'Active', mandatory = true } = req.body;
+    const { name, code, campus_id, status = 'Active', mandatory = true, classes = [] } = req.body;
 
     if (!name?.trim() || !code?.trim()) {
       return res.status(400).json({ message: 'Subject name and code are required' });
@@ -56,7 +58,8 @@ const createSubject = async (req, res) => {
       name: name.trim(),
       code: code.trim().toUpperCase(),
       status: ['Active', 'Inactive'].includes(status) ? status : 'Active',
-      mandatory: Boolean(mandatory)
+      mandatory: Boolean(mandatory),
+      classes: Array.isArray(classes) ? classes : []
     });
 
     res.status(201).json({ success: true, subject });
@@ -69,13 +72,14 @@ const updateSubject = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
     const { id } = req.params;
-    const { name, code, campus_id, status, mandatory } = req.body;
+    const { name, code, campus_id, status, mandatory, classes } = req.body;
 
     const update = {};
     if (name !== undefined) update.name = name.trim();
     if (code !== undefined) update.code = code.trim().toUpperCase();
     if (status !== undefined) update.status = status;
     if (mandatory !== undefined) update.mandatory = Boolean(mandatory);
+    if (classes !== undefined && Array.isArray(classes)) update.classes = classes;
     if (campus_id !== undefined) {
       update.campus_id = mongoose.Types.ObjectId.isValid(campus_id) ? campus_id : null;
     }
@@ -104,9 +108,4 @@ const deleteSubject = async (req, res) => {
   }
 };
 
-module.exports = {
-  getSubjects,
-  createSubject,
-  updateSubject,
-  deleteSubject
-};
+module.exports = { getSubjects, createSubject, updateSubject, deleteSubject };

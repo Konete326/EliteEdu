@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Subject = require('../models/Subject');
 const Campus = require('../models/Campus');
-const { DEFAULT_SUBJECTS } = require('../utils/subjectPresets');
+const { DEFAULT_SUBJECTS } = require('../utils/curriculumDefaults');
 
 const bulkSeedSubjects = async (req, res) => {
   try {
@@ -14,24 +14,44 @@ const bulkSeedSubjects = async (req, res) => {
     }
 
     const existing = await Subject.find({ school_id: schoolId, campus_id: campusRef });
-    const existingNames = new Set(existing.map((s) => s.name.toLowerCase()));
+    const existingMap = new Map(existing.map((s) => [s.name.toLowerCase().trim(), s]));
 
-    const toInsert = DEFAULT_SUBJECTS
-      .filter((s) => !existingNames.has(s.name.toLowerCase()))
-      .map((s) => ({
-        school_id: schoolId,
-        campus_id: campusRef,
-        name: s.name,
-        code: s.code,
-        status: 'Active',
-        mandatory: s.mandatory
-      }));
+    const toInsert = [];
+    const updatePromises = [];
+
+    for (const s of DEFAULT_SUBJECTS) {
+      const key = s.name.toLowerCase().trim();
+      const match = existingMap.get(key);
+      if (!match) {
+        toInsert.push({
+          school_id: schoolId,
+          campus_id: campusRef,
+          name: s.name,
+          code: s.code,
+          status: 'Active',
+          mandatory: s.mandatory,
+          classes: s.classes || []
+        });
+      } else if (!match.classes || match.classes.length === 0) {
+        updatePromises.push(
+          Subject.updateOne({ _id: match._id }, { $set: { classes: s.classes || [] } })
+        );
+      }
+    }
 
     if (toInsert.length > 0) {
       await Subject.insertMany(toInsert);
     }
+    if (updatePromises.length > 0) {
+      await Promise.all(updatePromises);
+    }
 
-    res.status(200).json({ success: true, count: toInsert.length, message: `Added ${toInsert.length} standard subjects` });
+    res.status(200).json({
+      success: true,
+      count: toInsert.length,
+      updated: updatePromises.length,
+      message: `Standard curriculum subjects loaded successfully (${toInsert.length} added, ${updatePromises.length} synced)`
+    });
   } catch (error) {
     res.status(500).json({ message: 'Failed to seed standard subjects', error: error.message });
   }
