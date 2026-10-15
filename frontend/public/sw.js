@@ -1,4 +1,4 @@
-const CACHE_NAME = 'eliteedu-pwa-v5';
+const CACHE_NAME = 'eliteedu-pwa-v6';
 const STATIC_ASSETS = [
   '/manifest.json',
   '/logo.png',
@@ -11,13 +11,25 @@ const STATIC_ASSETS = [
   '/icons/icon-maskable-512.png'
 ];
 
+const isLocalhost = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
+
 self.addEventListener('install', (event) => {
+  if (isLocalhost) {
+    self.skipWaiting();
+    return;
+  }
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS)).then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', (event) => {
+  if (isLocalhost) {
+    event.waitUntil(
+      caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k)))).then(() => self.registration.unregister())
+    );
+    return;
+  }
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
@@ -32,7 +44,7 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') {
+  if (isLocalhost || event.request.method !== 'GET') {
     return;
   }
 

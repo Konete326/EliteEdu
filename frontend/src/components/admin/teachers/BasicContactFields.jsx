@@ -79,22 +79,14 @@ const BasicContactFields = ({ formData, errors = {}, onChange }) => {
           />
         </div>
         <div>
-          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">
-            Work Email <span className="text-bad">*</span>
-          </label>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Work Email (Optional)</label>
           <input
             type="email"
             value={formData.email || ''}
             onChange={(e) => onChange('email', e.target.value)}
-            placeholder="teacher@school.edu.pk"
-            required
-            className={`w-full px-3 py-1.5 rounded-xl border text-xs text-ink dark:text-ink-dark outline-none transition-all ${
-              errors.email
-                ? 'border-bad ring-2 ring-bad/20 bg-bad/5'
-                : 'border-line dark:border-line-dark bg-surface-secondary/40 focus:ring-1 focus:ring-primary'
-            }`}
+            placeholder="staff@school.edu.pk"
+            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none focus:ring-1 focus:ring-primary"
           />
-          {errors.email && <p className="text-[10px] text-bad font-semibold mt-1">{errors.email}</p>}
         </div>
       </div>
 
@@ -106,7 +98,7 @@ const BasicContactFields = ({ formData, errors = {}, onChange }) => {
             onChange={(e) => onChange('is_coordinator', e.target.checked)}
             className="rounded text-primary focus:ring-primary"
           />
-          <span>Mark this staff as Coordinator</span>
+          <span>Mark as Coordinator</span>
         </label>
         <button
           type="button"
