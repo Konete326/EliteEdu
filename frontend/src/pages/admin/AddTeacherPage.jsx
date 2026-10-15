@@ -37,15 +37,16 @@ const AddTeacherPage = () => {
 
   return (
     <div className="w-full space-y-6 pb-16">
-      <TeacherTopActionBar
-        isEditMode={isEditMode}
-        staffName={formData.name}
-        schoolType={schoolType}
-        onSave={() => handleSaveAction(true)}
-        submitting={submitting}
-      />
-
-      <TeacherTabsNav activeTab={activeTab} onTabChange={setActiveTab} schoolType={schoolType} />
+      <div className="sticky -top-4 sm:-top-6 lg:-top-8 z-20 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-2 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-md border-b border-line dark:border-line-dark space-y-3 shadow-xs">
+        <TeacherTopActionBar
+          isEditMode={isEditMode}
+          staffName={formData.name}
+          schoolType={schoolType}
+          onSave={() => handleSaveAction(true)}
+          submitting={submitting}
+        />
+        <TeacherTabsNav activeTab={activeTab} onTabChange={setActiveTab} schoolType={schoolType} />
+      </div>
 
       {error && (
         <div className="p-3.5 rounded-xl bg-bad-soft dark:bg-bad/10 text-bad border border-bad/20 text-xs flex items-center justify-between">

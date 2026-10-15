@@ -5,7 +5,7 @@ const StudentTopActionBar = ({ isEditMode, studentName, onSave, submitting }) =>
   const navigate = useNavigate();
 
   return (
-    <div className="sticky top-0 z-20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-sm transition-all">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs transition-all">
       <div className="flex items-center gap-3">
         <button
           type="button"

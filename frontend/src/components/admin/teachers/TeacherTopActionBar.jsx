@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const TeacherTopActionBar = ({ isEditMode, staffName, schoolType, onSave, submitting }) => {
   return (
-    <div className="sticky top-0 z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-sm transition-all">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs transition-all">
       <div className="flex items-center gap-3">
         <Link
           to="/admin/teachers"

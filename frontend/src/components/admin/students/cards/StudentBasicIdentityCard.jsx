@@ -28,14 +28,10 @@ const StudentBasicIdentityCard = ({ formData, onChange, errors = {} }) => {
               onChange={(e) => onChange('name', e.target.value)}
               placeholder="e.g. Muhammad Ali"
               className={`w-full px-3 py-2 rounded-xl border bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark outline-none transition-all ${
-                errors.name
-                  ? 'border-bad ring-2 ring-bad/20 bg-bad/5'
-                  : 'border-line dark:border-white/10 focus:border-primary'
+                errors.name ? 'border-bad ring-2 ring-bad/20 bg-bad/5' : 'border-line dark:border-white/10 focus:border-primary'
               }`}
             />
-            {errors.name && (
-              <p className="text-[10px] text-bad font-semibold mt-1">{errors.name}</p>
-            )}
+            {errors.name && <p className="text-[10px] text-bad font-semibold mt-1">{errors.name}</p>}
           </div>
 
           <div>
@@ -49,20 +45,14 @@ const StudentBasicIdentityCard = ({ formData, onChange, errors = {} }) => {
               onChange={(e) => onChange('father_name', e.target.value)}
               placeholder="e.g. Tariq Mehmood"
               className={`w-full px-3 py-2 rounded-xl border bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark outline-none transition-all ${
-                errors.father_name
-                  ? 'border-bad ring-2 ring-bad/20 bg-bad/5'
-                  : 'border-line dark:border-white/10 focus:border-primary'
+                errors.father_name ? 'border-bad ring-2 ring-bad/20 bg-bad/5' : 'border-line dark:border-white/10 focus:border-primary'
               }`}
             />
-            {errors.father_name && (
-              <p className="text-[10px] text-bad font-semibold mt-1">{errors.father_name}</p>
-            )}
+            {errors.father_name && <p className="text-[10px] text-bad font-semibold mt-1">{errors.father_name}</p>}
           </div>
 
           <div>
-            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-              Surname / Caste (Optional)
-            </label>
+            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Surname / Caste (Optional)</label>
             <input
               type="text"
               value={formData.surname || ''}
@@ -73,13 +63,11 @@ const StudentBasicIdentityCard = ({ formData, onChange, errors = {} }) => {
           </div>
 
           <div>
-            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-              Gender (Optional)
-            </label>
+            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Gender (Optional)</label>
             <select
               value={formData.gender || 'Male'}
               onChange={(e) => onChange('gender', e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark outline-none"
+              className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark outline-none cursor-pointer"
             >
               <option value="Male">Male</option>
               <option value="Female">Female</option>
@@ -88,9 +76,7 @@ const StudentBasicIdentityCard = ({ formData, onChange, errors = {} }) => {
           </div>
 
           <div>
-            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-              Date of Birth (Optional)
-            </label>
+            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">Date of Birth (Optional)</label>
             <input
               type="date"
               value={formData.dob || ''}
@@ -100,9 +86,7 @@ const StudentBasicIdentityCard = ({ formData, onChange, errors = {} }) => {
           </div>
 
           <div>
-            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
-              B-Form / CNIC No. (Optional)
-            </label>
+            <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">B-Form / CNIC No. (Optional)</label>
             <input
               type="text"
               value={formData.b_form || ''}
