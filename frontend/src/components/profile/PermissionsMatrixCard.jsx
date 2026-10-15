@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Lock } from 'lucide-react';
 import { getNavCategories } from '../../config/adminNavConfig';
 import CategoryAccordionCard from './CategoryAccordionCard';
@@ -14,6 +14,16 @@ const PermissionsMatrixCard = ({ user }) => {
       [title]: !prev[title]
     }));
   };
+
+  const { leftCol, rightCol } = useMemo(() => {
+    const left = [];
+    const right = [];
+    categories.forEach((cat, idx) => {
+      if (idx % 2 === 0) left.push(cat);
+      else right.push(cat);
+    });
+    return { leftCol: left, rightCol: right };
+  }, [categories]);
 
   return (
     <div className="bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
@@ -33,14 +43,26 @@ const PermissionsMatrixCard = ({ user }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-        {categories.map((category) => (
-          <CategoryAccordionCard
-            key={category.title}
-            category={category}
-            isOpen={!!openCategories[category.title]}
-            onToggle={() => toggleCategory(category.title)}
-          />
-        ))}
+        <div className="space-y-3">
+          {leftCol.map((category) => (
+            <CategoryAccordionCard
+              key={category.title}
+              category={category}
+              isOpen={!!openCategories[category.title]}
+              onToggle={() => toggleCategory(category.title)}
+            />
+          ))}
+        </div>
+        <div className="space-y-3">
+          {rightCol.map((category) => (
+            <CategoryAccordionCard
+              key={category.title}
+              category={category}
+              isOpen={!!openCategories[category.title]}
+              onToggle={() => toggleCategory(category.title)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
