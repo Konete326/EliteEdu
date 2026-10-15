@@ -1,4 +1,4 @@
-import { Languages, Check, Globe } from 'lucide-react';
+import { Languages, Check } from 'lucide-react';
 import { useTheme } from '../../../context/ThemeContext';
 
 const LANGUAGES = [
@@ -6,19 +6,19 @@ const LANGUAGES = [
     id: 'English',
     title: 'English (US)',
     native: 'English (US)',
-    desc: 'Standard administrative Latin typography and LTR numerals',
+    desc: 'Default administrative Latin typography',
     badge: 'EN'
   },
   {
     id: 'Urdu',
-    title: 'Urdu (اردو)',
+    title: 'Urdu',
     native: 'اردو',
     desc: 'National language Nastaliq calligraphy and localized terms',
     badge: 'UR'
   },
   {
     id: 'Arabic',
-    title: 'Arabic (العربية)',
+    title: 'Arabic',
     native: 'العربية',
     desc: 'Right-to-Left liturgical and administrative script layout',
     badge: 'AR'
@@ -46,7 +46,7 @@ const LanguageCard = () => {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+      <div className="space-y-2.5">
         {LANGUAGES.map((lang) => {
           const isSelected = currentLang === lang.id;
           return (
@@ -54,33 +54,39 @@ const LanguageCard = () => {
               key={lang.id}
               type="button"
               onClick={(e) => updateThemeSetting('language', lang.id, e)}
-              className={`relative p-3.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 ${
+              className={`w-full p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-3 ${
                 isSelected
                   ? 'border-primary ring-2 ring-primary/20 bg-primary/5 shadow-xs'
                   : 'border-line dark:border-line-dark hover:border-primary/40 bg-surface-secondary/40 dark:bg-surface-secondary-dark/40'
               }`}
             >
-              {isSelected && (
-                <span className="absolute top-2.5 right-2.5 w-4 h-4 rounded-full bg-primary text-white flex items-center justify-center shadow-xs">
-                  <Check className="w-2.5 h-2.5 stroke-[3]" />
-                </span>
-              )}
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-surface dark:bg-surface-dark border border-line dark:border-line-dark flex items-center justify-center font-bold text-[11px] text-primary shrink-0 shadow-2xs">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-surface dark:bg-surface-dark border border-line dark:border-line-dark flex items-center justify-center font-bold text-xs text-primary shrink-0 shadow-2xs">
                   {lang.badge}
                 </div>
-                <div className="min-w-0 pr-4">
-                  <span className="text-xs font-bold text-ink dark:text-ink-dark block truncate">
-                    {lang.title}
-                  </span>
-                  <span className="text-[11px] font-medium text-ink-muted dark:text-ink-muted-dark block">
-                    {lang.native}
-                  </span>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-ink dark:text-ink-dark truncate">
+                      {lang.title}
+                    </span>
+                    <span className="text-[11px] font-medium text-ink-muted dark:text-ink-muted-dark">
+                      ({lang.native})
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-ink-sub dark:text-ink-sub-dark truncate">
+                    {lang.desc}
+                  </p>
                 </div>
               </div>
-              <p className="text-[11px] text-ink-sub dark:text-ink-sub-dark leading-snug">
-                {lang.desc}
-              </p>
+              <div className="shrink-0">
+                {isSelected ? (
+                  <span className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center shadow-xs">
+                    <Check className="w-3 h-3 stroke-[3]" />
+                  </span>
+                ) : (
+                  <div className="w-5 h-5 rounded-full border border-line dark:border-line-dark" />
+                )}
+              </div>
             </button>
           );
         })}
