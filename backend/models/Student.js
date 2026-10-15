@@ -60,6 +60,17 @@ const studentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+studentSchema.pre('validate', async function () {
+  if (!this.campus_id && this.school_id) {
+    const campus = await mongoose.model('Campus').findOne({ school_id: this.school_id }).lean();
+    if (campus) this.campus_id = campus._id;
+  }
+  if (!this.current_grade && this.school_id) {
+    const grade = await mongoose.model('Grade').findOne({ school_id: this.school_id }).lean();
+    if (grade) this.current_grade = grade._id;
+  }
+});
+
 studentSchema.index({ school_id: 1, gr_number: 1 });
 studentSchema.index({ school_id: 1, current_grade: 1, campus_id: 1 });
 
