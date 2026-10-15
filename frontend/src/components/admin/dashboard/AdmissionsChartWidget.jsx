@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { BarChart3 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { BarChart3, ArrowUpRight } from 'lucide-react';
+import AdmissionsAreaBreakdown from './AdmissionsAreaBreakdown';
 
 const AdmissionsChartWidget = ({ stats, admissionsStats }) => {
   const [period, setPeriod] = useState('Monthly');
-  const [areaMode, setAreaMode] = useState('Area');
   const data = admissionsStats || stats?.admissionsStats || stats;
   const months = data?.monthly || [];
   const areas = data?.areaBreakdown || [];
 
   const maxVal = Math.max(...months.map((m) => Math.max(m.admissions || 0, m.dropouts || 0)), 1);
   const maxAdmissions = Math.max(maxVal, 5);
-
   const totalAdmissions = data?.totalAdmissions ?? 0;
   const totalDropouts = data?.totalDropouts ?? 0;
 
@@ -27,33 +27,37 @@ const AdmissionsChartWidget = ({ stats, admissionsStats }) => {
           <p className="text-xs text-ink-muted mt-0.5">Admissions and dropouts over time</p>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap text-xs">
-          <div className="flex items-center bg-surface-secondary dark:bg-surface-secondary-dark rounded-lg p-0.5 border border-line dark:border-line-dark">
-            {['Monthly', 'Weekly', 'Daily'].map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => setPeriod(p)}
-                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
-                  period === p ? 'bg-primary text-white shadow-sm' : 'text-ink-muted hover:text-ink'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
+        <div className="flex items-center bg-surface-secondary dark:bg-surface-secondary-dark rounded-lg p-0.5 border border-line dark:border-line-dark text-xs">
+          {['Monthly', 'Weekly', 'Daily'].map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setPeriod(p)}
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${period === p ? 'bg-primary text-white shadow-sm' : 'text-ink-muted hover:text-ink'}`}
+            >
+              {p}
+            </button>
+          ))}
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-900/40">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Total Admissions</span>
-          <p className="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5">{totalAdmissions}</p>
-        </div>
-        <div className="p-3 rounded-xl bg-rose-50/70 dark:bg-rose-950/20 border border-rose-200/60 dark:border-rose-900/40">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:text-rose-400">Total Dropouts</span>
-          <p className="text-xl font-black text-rose-600 dark:text-rose-400 mt-0.5">{totalDropouts}</p>
-        </div>
+        {[
+          { label: 'Total Admissions', val: totalAdmissions, color: 'text-emerald-700 dark:text-emerald-400 bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40 text-emerald-600' },
+          { label: 'Total Dropouts', val: totalDropouts, color: 'text-rose-700 dark:text-rose-400 bg-rose-50/70 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40 text-rose-600' }
+        ].map((c) => (
+          <Link
+            key={c.label}
+            to="/admin/students"
+            className={`p-3 rounded-xl border ${c.color} hover:-translate-y-0.5 hover:shadow-xs transition-all duration-200 block group`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold uppercase tracking-wider">{c.label}</span>
+              <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+            <p className="text-xl font-black mt-0.5">{c.val}</p>
+          </Link>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-2">
@@ -99,43 +103,7 @@ const AdmissionsChartWidget = ({ stats, admissionsStats }) => {
           </div>
         </div>
 
-        <div className="lg:col-span-4 flex flex-col items-center justify-between border-t lg:border-t-0 lg:border-l border-line dark:border-line-dark pt-3 lg:pt-0 lg:pl-4">
-          <div className="w-full flex items-center justify-between text-xs">
-            <span className="font-semibold text-ink dark:text-ink-dark">Admissions by Area</span>
-            <div className="flex bg-surface-secondary dark:bg-surface-secondary-dark rounded-md p-0.5">
-              <button
-                type="button"
-                onClick={() => setAreaMode('Area')}
-                className={`px-2 py-0.5 text-[10px] rounded ${areaMode === 'Area' ? 'bg-primary text-white' : 'text-ink-muted'}`}
-              >
-                Area Wise
-              </button>
-            </div>
-          </div>
-
-          <div className="my-3 relative flex items-center justify-center">
-            <div className="w-24 h-24 rounded-full border-4 border-dashed border-primary/30 flex items-center justify-center flex-col text-center">
-              <span className="text-lg font-black text-ink dark:text-ink-dark">{totalAdmissions}</span>
-              <span className="text-[9px] text-ink-muted uppercase">Students</span>
-            </div>
-          </div>
-
-          <div className="w-full space-y-1 text-[11px] text-ink-muted">
-            {areas.length > 0 ? (
-              areas.map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 truncate max-w-[140px]">
-                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: item.color || '#3b82f6' }} />
-                    <span className="truncate">{item.name}</span>
-                  </span>
-                  <span className="font-semibold text-ink dark:text-ink-dark">{item.count}</span>
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-[10px] text-ink-muted py-2">No regional records</p>
-            )}
-          </div>
-        </div>
+        <AdmissionsAreaBreakdown areas={areas} totalAdmissions={totalAdmissions} />
       </div>
     </div>
   );

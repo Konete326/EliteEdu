@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Target, ChevronRight } from 'lucide-react';
 
 const CrmPipelineWidget = ({ crmPipeline }) => {
@@ -13,25 +14,29 @@ const CrmPipelineWidget = ({ crmPipeline }) => {
       </div>
 
       <div className="grid grid-cols-3 gap-2 text-center mb-4 p-2.5 rounded-xl bg-surface-secondary dark:bg-surface-dark border border-line dark:border-line-dark">
-        <div>
+        <Link to="/admin/crm/inquiries" className="hover:opacity-80 transition-opacity block cursor-pointer">
           <p className="text-base font-black text-ink dark:text-ink-dark">{crm.totalLeads}</p>
           <p className="text-[10px] text-ink-muted font-medium">Total Leads</p>
-        </div>
-        <div>
+        </Link>
+        <Link to="/admin/crm/admissions" className="hover:opacity-80 transition-opacity block cursor-pointer">
           <p className="text-base font-black text-emerald-600">{crm.converted}</p>
           <p className="text-[10px] text-ink-muted font-medium">Converted</p>
-        </div>
-        <div>
+        </Link>
+        <Link to="/admin/crm/analytics" className="hover:opacity-80 transition-opacity block cursor-pointer">
           <p className="text-base font-black text-primary">{crm.conversionRate}</p>
           <p className="text-[10px] text-ink-muted font-medium">Won</p>
-        </div>
+        </Link>
       </div>
 
       <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-2">Pipeline</p>
       {crm.stages && crm.stages.length > 0 ? (
         <div className="space-y-1.5">
           {crm.stages.map((stage, idx) => (
-            <div key={idx} className="flex items-center justify-between p-1.5 rounded-lg hover:bg-surface-secondary text-xs">
+            <Link
+              key={idx}
+              to="/admin/crm/admissions"
+              className="flex items-center justify-between p-1.5 rounded-lg hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark/60 text-xs transition-colors cursor-pointer block"
+            >
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: stage.color || '#3b82f6' }} />
                 <span className="font-medium text-ink dark:text-ink-dark">{stage.name}</span>
@@ -40,7 +45,7 @@ const CrmPipelineWidget = ({ crmPipeline }) => {
                 <span>{stage.count}</span>
                 <ChevronRight className="w-3.5 h-3.5 text-ink-muted" />
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       ) : (

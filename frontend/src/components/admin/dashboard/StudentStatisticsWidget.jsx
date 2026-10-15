@@ -1,4 +1,5 @@
-import { Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Users, ArrowUpRight } from 'lucide-react';
 
 const StudentStatisticsWidget = ({ studentStats }) => {
   const stats = studentStats || {
@@ -20,35 +21,28 @@ const StudentStatisticsWidget = ({ studentStats }) => {
       </div>
 
       <div className="grid grid-cols-3 gap-2 mb-4">
-        <div className="p-2.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/30">
-          <p className="text-[10px] uppercase font-bold text-blue-700 dark:text-blue-400">Inquiries</p>
-          <p className="text-base font-black text-ink dark:text-ink-dark">{stats.enquiries?.total || 0}</p>
-          <div className="flex gap-1 mt-1 text-[9px] font-semibold text-blue-600 dark:text-blue-400">
-            <span>B: {stats.enquiries?.boys || 0}</span>
-            <span>•</span>
-            <span>G: {stats.enquiries?.girls || 0}</span>
-          </div>
-        </div>
-
-        <div className="p-2.5 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/30">
-          <p className="text-[10px] uppercase font-bold text-emerald-700 dark:text-emerald-400">Registered</p>
-          <p className="text-base font-black text-ink dark:text-ink-dark">{stats.registrations?.total || 0}</p>
-          <div className="flex gap-1 mt-1 text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
-            <span>B: {stats.registrations?.boys || 0}</span>
-            <span>•</span>
-            <span>G: {stats.registrations?.girls || 0}</span>
-          </div>
-        </div>
-
-        <div className="p-2.5 rounded-xl bg-violet-50/60 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-900/30">
-          <p className="text-[10px] uppercase font-bold text-violet-700 dark:text-violet-400">Admissions</p>
-          <p className="text-base font-black text-ink dark:text-ink-dark">{stats.admissions?.total || 0}</p>
-          <div className="flex gap-1 mt-1 text-[9px] font-semibold text-violet-600 dark:text-violet-400">
-            <span>B: {stats.admissions?.boys || 0}</span>
-            <span>•</span>
-            <span>G: {stats.admissions?.girls || 0}</span>
-          </div>
-        </div>
+        {[
+          { label: 'Inquiries', data: stats.enquiries, path: '/admin/crm/inquiries', theme: 'text-blue-700 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-950/30 border-blue-100 dark:border-blue-900/30' },
+          { label: 'Registered', data: stats.registrations, path: '/admin/crm/admissions', theme: 'text-emerald-700 dark:text-emerald-400 bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/30' },
+          { label: 'Admissions', data: stats.admissions, path: '/admin/students', theme: 'text-violet-700 dark:text-violet-400 bg-violet-50/60 dark:bg-violet-950/30 border-violet-100 dark:border-violet-900/30' }
+        ].map((item) => (
+          <Link
+            key={item.label}
+            to={item.path}
+            className={`p-2.5 rounded-xl border ${item.theme} hover:-translate-y-0.5 hover:shadow-xs transition-all duration-200 cursor-pointer block group`}
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] uppercase font-bold">{item.label}</p>
+              <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+            <p className="text-base font-black text-ink dark:text-ink-dark">{item.data?.total || 0}</p>
+            <div className="flex gap-1 mt-1 text-[9px] font-semibold opacity-90">
+              <span>B: {item.data?.boys || 0}</span>
+              <span>•</span>
+              <span>G: {item.data?.girls || 0}</span>
+            </div>
+          </Link>
+        ))}
       </div>
 
       <div className="overflow-x-auto">

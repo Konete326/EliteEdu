@@ -1,4 +1,5 @@
-import { CalendarCheck } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { CalendarCheck, ArrowUpRight } from 'lucide-react';
 
 const AttendanceWidget = ({ stats, attendanceSummary }) => {
   const data = attendanceSummary || stats?.attendanceSummary || stats;
@@ -27,35 +28,32 @@ const AttendanceWidget = ({ stats, attendanceSummary }) => {
       </div>
 
       <div className="space-y-3">
-        <div className="p-3 rounded-xl bg-surface-secondary/50 dark:bg-surface-secondary-dark/30 border border-line dark:border-line-dark space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-semibold text-ink dark:text-ink-dark">Students</span>
-            <span className="text-ink-muted text-[11px]">{data?.students?.marked}</span>
-          </div>
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {pills.map((p) => (
-              <span key={p.key} className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold border ${p.color}`}>
-                <span>{p.label}:</span>
-                <span>{data?.students?.[p.key] ?? 0}</span>
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="p-3 rounded-xl bg-surface-secondary/50 dark:bg-surface-secondary-dark/30 border border-line dark:border-line-dark space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-semibold text-ink dark:text-ink-dark">Staff</span>
-            <span className="text-ink-muted text-[11px]">{data?.staff?.marked}</span>
-          </div>
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {pills.map((p) => (
-              <span key={p.key} className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold border ${p.color}`}>
-                <span>{p.label}:</span>
-                <span>{data?.staff?.[p.key] ?? 0}</span>
-              </span>
-            ))}
-          </div>
-        </div>
+        {[
+          { key: 'students', label: 'Students', path: '/admin/attendance/students', item: data?.students },
+          { key: 'staff', label: 'Staff', path: '/admin/attendance/staff', item: data?.staff }
+        ].map((g) => (
+          <Link
+            key={g.key}
+            to={g.path}
+            className="p-3 rounded-xl bg-surface-secondary/50 dark:bg-surface-secondary-dark/30 border border-line dark:border-line-dark space-y-2 block hover:-translate-y-0.5 hover:shadow-xs transition-all duration-200 group"
+          >
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-1.5 font-semibold text-ink dark:text-ink-dark group-hover:text-primary transition-colors">
+                <span>{g.label}</span>
+                <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <span className="text-ink-muted text-[11px]">{g.item?.marked}</span>
+            </div>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {pills.map((p) => (
+                <span key={p.key} className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold border ${p.color}`}>
+                  <span>{p.label}:</span>
+                  <span>{g.item?.[p.key] ?? 0}</span>
+                </span>
+              ))}
+            </div>
+          </Link>
+        ))}
       </div>
 
       <div className="overflow-x-auto">

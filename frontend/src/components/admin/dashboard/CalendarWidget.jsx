@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const CalendarWidget = () => {
@@ -40,9 +41,9 @@ const CalendarWidget = () => {
         <button type="button" onClick={prevMonth} className="p-1 rounded-lg hover:bg-surface-secondary text-ink-muted hover:text-ink">
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <span className="text-xs font-bold text-ink dark:text-ink-dark">
+        <Link to="/admin/events" className="text-xs font-bold text-ink dark:text-ink-dark hover:text-primary transition-colors cursor-pointer">
           {monthNames[month]} {year}
-        </span>
+        </Link>
         <button type="button" onClick={nextMonth} className="p-1 rounded-lg hover:bg-surface-secondary text-ink-muted hover:text-ink">
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -60,13 +61,19 @@ const CalendarWidget = () => {
             key={idx}
             className={`py-1.5 rounded-lg font-medium transition-colors ${
               d.isToday
-                ? 'bg-primary text-white font-bold shadow-sm'
+                ? 'bg-primary text-white font-bold shadow-sm cursor-pointer'
                 : d.isCurrent
                 ? 'text-ink dark:text-ink-dark hover:bg-surface-secondary'
                 : 'text-ink-muted/50'
             }`}
           >
-            {d.day}
+            {d.isToday ? (
+              <Link to="/admin/events" className="block w-full h-full text-white">
+                {d.day}
+              </Link>
+            ) : (
+              d.day
+            )}
           </div>
         ))}
       </div>

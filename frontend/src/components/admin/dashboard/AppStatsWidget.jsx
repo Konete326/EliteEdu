@@ -1,4 +1,5 @@
-import { Smartphone, CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Smartphone, CheckCircle2, ArrowUpRight } from 'lucide-react';
 
 const AppStatsWidget = ({ stats, appStats }) => {
   const data = appStats || stats?.appDownloadStats || stats;
@@ -20,38 +21,31 @@ const AppStatsWidget = ({ stats, appStats }) => {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="p-3.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/20 border border-indigo-200/60 dark:border-indigo-900/40">
-          <span className="text-[10px] font-bold tracking-wider uppercase text-indigo-700 dark:text-indigo-400">Total Downloads</span>
-          <p className="text-xl font-black text-ink dark:text-ink-dark mt-1">{data?.totalDownloads ?? 0}</p>
-          <div className="flex items-center justify-between text-[11px] text-ink-muted mt-2">
-            <span>Students: {data?.studentDownloads ?? 0}</span>
-            <span>Staff: {data?.staffDownloads ?? 0}</span>
-          </div>
-        </div>
-
-        <div className="p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-900/40">
-          <span className="text-[10px] font-bold tracking-wider uppercase text-emerald-700 dark:text-emerald-400">Active Users</span>
-          <p className="text-xl font-black text-ink dark:text-ink-dark mt-1">{data?.activeUsers ?? 0}</p>
-          <div className="w-full bg-emerald-200/50 dark:bg-emerald-900/40 h-1.5 rounded-full overflow-hidden mt-3">
-            <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${data?.activePct ?? 0}%` }} />
-          </div>
-        </div>
-
-        <div className="p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/20 border border-blue-200/60 dark:border-blue-900/40">
-          <span className="text-[10px] font-bold tracking-wider uppercase text-blue-700 dark:text-blue-400">Student Strength</span>
-          <p className="text-xl font-black text-ink dark:text-ink-dark mt-1">{data?.studentStrength ?? 0}</p>
-          <div className="w-full bg-blue-200/50 dark:bg-blue-900/40 h-1.5 rounded-full overflow-hidden mt-3">
-            <div className="bg-blue-500 h-full rounded-full" style={{ width: `${data?.studentDownloadPct ?? 0}%` }} />
-          </div>
-        </div>
-
-        <div className="p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40">
-          <span className="text-[10px] font-bold tracking-wider uppercase text-amber-700 dark:text-amber-400">Staff Strength</span>
-          <p className="text-xl font-black text-ink dark:text-ink-dark mt-1">{data?.staffStrength ?? 0}</p>
-          <div className="w-full bg-amber-200/50 dark:bg-amber-900/40 h-1.5 rounded-full overflow-hidden mt-3">
-            <div className="bg-amber-500 h-full rounded-full" style={{ width: `${data?.staffDownloadPct ?? 0}%` }} />
-          </div>
-        </div>
+        {[
+          { title: 'Total Downloads', val: data?.totalDownloads ?? 0, sub: `Students: ${data?.studentDownloads ?? 0} | Staff: ${data?.staffDownloads ?? 0}`, theme: 'text-indigo-700 dark:text-indigo-400 bg-indigo-50/70 dark:bg-indigo-950/20 border-indigo-200/60 dark:border-indigo-900/40', path: '/admin/students' },
+          { title: 'Active Users', val: data?.activeUsers ?? 0, bar: data?.activePct ?? 0, barColor: 'bg-emerald-500', theme: 'text-emerald-700 dark:text-emerald-400 bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40', path: '/admin/students' },
+          { title: 'Student Strength', val: data?.studentStrength ?? 0, bar: data?.studentDownloadPct ?? 0, barColor: 'bg-blue-500', theme: 'text-blue-700 dark:text-blue-400 bg-blue-50/70 dark:bg-blue-950/20 border-blue-200/60 dark:border-blue-900/40', path: '/admin/students' },
+          { title: 'Staff Strength', val: data?.staffStrength ?? 0, bar: data?.staffDownloadPct ?? 0, barColor: 'bg-amber-500', theme: 'text-amber-700 dark:text-amber-400 bg-amber-50/70 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-900/40', path: '/admin/teachers' }
+        ].map((c) => (
+          <Link
+            key={c.title}
+            to={c.path}
+            className={`p-3.5 rounded-xl border ${c.theme} hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 cursor-pointer block group`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold tracking-wider uppercase">{c.title}</span>
+              <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+            <p className="text-xl font-black text-ink dark:text-ink-dark mt-1">{c.val}</p>
+            {c.sub ? (
+              <p className="text-[11px] text-ink-muted mt-2 truncate">{c.sub}</p>
+            ) : (
+              <div className="w-full bg-surface-secondary dark:bg-surface-secondary-dark h-1.5 rounded-full overflow-hidden mt-3">
+                <div className={`${c.barColor} h-full rounded-full`} style={{ width: `${c.bar}%` }} />
+              </div>
+            )}
+          </Link>
+        ))}
       </div>
 
       <div className="overflow-x-auto">

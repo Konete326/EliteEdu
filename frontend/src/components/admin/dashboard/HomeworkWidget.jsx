@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { FileText, Search } from 'lucide-react';
 
 const HomeworkWidget = ({ stats, homeworkSummary }) => {
@@ -35,10 +36,14 @@ const HomeworkWidget = ({ stats, homeworkSummary }) => {
 
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
         {counters.map((c) => (
-          <div key={c.label} className={`p-2.5 rounded-xl border text-center ${c.color}`}>
+          <Link
+            key={c.label}
+            to="/admin/lms/assignments"
+            className={`p-2.5 rounded-xl border text-center ${c.color} hover:-translate-y-0.5 hover:shadow-xs transition-all duration-200 cursor-pointer block`}
+          >
             <span className="text-[9px] font-bold uppercase tracking-wider block opacity-80">{c.label}</span>
             <span className="text-lg font-black block mt-0.5">{c.count}</span>
-          </div>
+          </Link>
         ))}
       </div>
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Landmark, Eye, EyeOff, TrendingUp, TrendingDown } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Landmark, Eye, EyeOff, TrendingUp, TrendingDown, ArrowUpRight } from 'lucide-react';
 
 const FinancialOverviewWidget = ({ stats, financialOverview }) => {
   const [showValues, setShowValues] = useState(false);
@@ -9,14 +10,14 @@ const FinancialOverviewWidget = ({ stats, financialOverview }) => {
   const mask = (val) => (showValues ? val : '••••••');
 
   const cards = [
-    { label: "Today's Collection", value: data?.todayCollection || 'Rs. 0', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40' },
-    { label: 'MTD Collection', value: data?.mtdCollection || 'Rs. 0', icon: TrendingUp, color: 'text-teal-600 bg-teal-50 dark:bg-teal-950/20 border-teal-200/60 dark:border-teal-900/40' },
-    { label: 'YTD Collection', value: data?.ytdCollection || 'Rs. 0', icon: TrendingUp, color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/20 border-blue-200/60 dark:border-blue-900/40' },
-    { label: 'Est. Monthly Revenue', value: data?.estMonthlyRevenue || 'Rs. 0', icon: Landmark, color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/20 border-purple-200/60 dark:border-purple-900/40' },
-    { label: 'Outstanding', value: data?.outstanding || 'Rs. 0', icon: TrendingDown, color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-900/40' },
-    { label: 'Profit / Loss (Month)', value: data?.profitThisMonth || 'Rs. 0', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40' },
-    { label: 'Total Expense (Year)', value: data?.totalExpenseYear || 'Rs. 0', icon: TrendingDown, color: 'text-rose-600 bg-rose-50 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40' },
-    { label: 'Expense Today', value: data?.expenseToday || 'Rs. 0', icon: TrendingDown, color: 'text-rose-600 bg-rose-50 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40' }
+    { label: "Today's Collection", value: data?.todayCollection || 'Rs. 0', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40', path: '/admin/fees/collection' },
+    { label: 'MTD Collection', value: data?.mtdCollection || 'Rs. 0', icon: TrendingUp, color: 'text-teal-600 bg-teal-50 dark:bg-teal-950/20 border-teal-200/60 dark:border-teal-900/40', path: '/admin/fees/collection' },
+    { label: 'YTD Collection', value: data?.ytdCollection || 'Rs. 0', icon: TrendingUp, color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/20 border-blue-200/60 dark:border-blue-900/40', path: '/admin/fees/reports' },
+    { label: 'Est. Monthly Revenue', value: data?.estMonthlyRevenue || 'Rs. 0', icon: Landmark, color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/20 border-purple-200/60 dark:border-purple-900/40', path: '/admin/fees/structure' },
+    { label: 'Outstanding', value: data?.outstanding || 'Rs. 0', icon: TrendingDown, color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-900/40', path: '/admin/fees/defaulters' },
+    { label: 'Profit / Loss (Month)', value: data?.profitThisMonth || 'Rs. 0', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40', path: '/admin/accounts/transactions' },
+    { label: 'Total Expense (Year)', value: data?.totalExpenseYear || 'Rs. 0', icon: TrendingDown, color: 'text-rose-600 bg-rose-50 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40', path: '/admin/accounts/expenses' },
+    { label: 'Expense Today', value: data?.expenseToday || 'Rs. 0', icon: TrendingDown, color: 'text-rose-600 bg-rose-50 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40', path: '/admin/accounts/expenses' }
   ];
 
   return (
@@ -40,13 +41,20 @@ const FinancialOverviewWidget = ({ stats, financialOverview }) => {
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {cards.map((c) => (
-          <div key={c.label} className={`p-3 rounded-xl border ${c.color} transition-all`}>
+          <Link
+            key={c.label}
+            to={c.path}
+            className={`p-3 rounded-xl border ${c.color} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer block group`}
+          >
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold uppercase tracking-wider text-ink-sub dark:text-ink-sub-dark truncate">{c.label}</span>
-              <c.icon className="w-3.5 h-3.5 opacity-80" />
+              <div className="flex items-center gap-1">
+                <c.icon className="w-3.5 h-3.5 opacity-80" />
+                <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
             </div>
             <p className="text-base font-black text-ink dark:text-ink-dark mt-1 font-mono tracking-tight">{mask(c.value)}</p>
-          </div>
+          </Link>
         ))}
       </div>
 
