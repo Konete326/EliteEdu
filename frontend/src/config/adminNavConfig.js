@@ -102,6 +102,7 @@ export const getAdminNavItems = (schoolType) => [
     title: 'Exam Management',
     icon: Award,
     subItems: [
+      { name: 'Exam Grading', path: '/admin/exam-management/grading-policies' },
       { name: 'Exam Schedules', path: '/admin/exams/schedules' },
       { name: 'Date Sheets', path: '/admin/exams/date-sheets' },
       { name: 'Marks Entry', path: '/admin/exams/marks' },
@@ -195,7 +196,9 @@ export const getAllAdminRoutes = () => {
         sub.path !== '/admin/subjects' &&
         sub.path !== '/admin/grades' &&
         sub.path !== '/admin/students' &&
-        sub.path !== '/admin/staff-applicants'
+        sub.path !== '/admin/staff-applicants' &&
+        sub.path !== '/admin/exam-management/grading-policies' &&
+        sub.path !== '/admin/exams/grading-policies'
       ) {
         routes.push(sub);
       }
@@ -217,6 +220,8 @@ export const getRouteTitle = (pathname) => {
   if (pathname.startsWith('/admin/staff-applicants/') && pathname.endsWith('/edit')) return 'Edit Applicant';
   if (pathname === '/admin/students') return 'Students';
   if (pathname === '/admin/students/new') return 'Enroll Student';
+  if (pathname.startsWith('/admin/students/') && pathname.endsWith('/edit')) return 'Edit Student';
+  if (pathname === '/admin/exam-management/grading-policies' || pathname === '/admin/exams/grading-policies') return 'Exam Grading';
   if (pathname === '/admin/profile' || pathname === '/superadmin/profile' || pathname === '/teacher/profile') return 'My Profile';
   if (pathname === '/superadmin') return 'Dashboard';
   if (pathname === '/superadmin/schools') return 'Schools';

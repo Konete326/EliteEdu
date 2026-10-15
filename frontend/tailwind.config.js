@@ -24,7 +24,7 @@ export default {
           DEFAULT: '#ffffff',
           secondary: '#f6f8f9',
           dark: '#0c0c0f',
-          'secondary-dark': '#16161d'
+          'secondary-dark': '#0f0f14'
         },
         ink: {
           DEFAULT: '#15222b',

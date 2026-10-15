@@ -20,6 +20,7 @@ import AddStaffApplicantPage from './pages/admin/AddStaffApplicantPage';
 import ComingSoonPage from './pages/admin/ComingSoonPage';
 import NotFoundPage from './pages/common/NotFoundPage';
 import MyProfilePage from './pages/common/MyProfilePage';
+import GradingPoliciesPage from './pages/admin/GradingPoliciesPage';
 import PwaInstallPrompt from './components/common/PwaInstallPrompt';
 import { getAllAdminRoutes } from './config/adminNavConfig';
 import { Agentation } from 'agentation';
@@ -74,6 +75,8 @@ function App() {
                 <Route path="/admin/staff-applicants" element={<StaffApplicantsList />} />
                 <Route path="/admin/staff-applicants/new" element={<AddStaffApplicantPage />} />
                 <Route path="/admin/staff-applicants/:id/edit" element={<AddStaffApplicantPage />} />
+                <Route path="/admin/exam-management/grading-policies" element={<GradingPoliciesPage />} />
+                <Route path="/admin/exams/grading-policies" element={<GradingPoliciesPage />} />
                 <Route path="/admin/profile" element={<MyProfilePage />} />
                 {adminDynamicRoutes.map((r) => (
                   <Route key={r.path} path={r.path} element={<ComingSoonPage title={r.name} />} />
