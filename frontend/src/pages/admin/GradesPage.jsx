@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useGrades } from '../../hooks/useGrades';
 import PageLoader from '../../components/common/PageLoader';
 import ConfirmModal from '../../components/common/ConfirmModal';
+import AutoLoadConfirmModal from '../../components/common/AutoLoadConfirmModal';
 import GradesHeader from '../../components/admin/grades/GradesHeader';
 import GradesTable from '../../components/admin/grades/GradesTable';
 import GradesPagination from '../../components/admin/grades/GradesPagination';
@@ -15,16 +16,15 @@ const GradesPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedGrade, setSelectedGrade] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [showAutoLoadModal, setShowAutoLoadModal] = useState(false);
+
+  const targetCampusName = campuses.find((c) => c._id === selectedCampus)?.name || 'All Campuses';
 
   const filteredGrades = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
     return grades.filter((g) => {
-      const q = searchQuery.toLowerCase().trim();
-      const matchSearch = !q ||
-        g.name.toLowerCase().includes(q) ||
-        g.sections?.some((s) => s.toLowerCase().includes(q)) ||
-        (g.class_teacher?.name && g.class_teacher.name.toLowerCase().includes(q));
-      const matchCampus = !selectedCampus || (g.campus_id?._id || g.campus_id) === selectedCampus;
-      return matchSearch && matchCampus;
+      const matchSearch = !q || g.name.toLowerCase().includes(q) || g.sections?.some((s) => s.toLowerCase().includes(q)) || (g.class_teacher?.name && g.class_teacher.name.toLowerCase().includes(q));
+      return matchSearch && (!selectedCampus || (g.campus_id?._id || g.campus_id) === selectedCampus);
     });
   }, [grades, searchQuery, selectedCampus]);
 
@@ -53,7 +53,7 @@ const GradesPage = () => {
         setSelectedCampus={setSelectedCampus}
         campuses={campuses}
         onAddClick={() => { setSelectedGrade(null); setModalOpen(true); }}
-        onAutoLoad={() => autoLoadGrades(selectedCampus)}
+        onAutoLoad={() => setShowAutoLoadModal(true)}
         isSeeding={isSeeding}
       />
 
@@ -92,6 +92,24 @@ const GradesPage = () => {
         message={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
         confirmText="Delete Grade"
         confirmStyle="danger"
+      />
+
+      <AutoLoadConfirmModal
+        isOpen={showAutoLoadModal}
+        onClose={() => !isSeeding && setShowAutoLoadModal(false)}
+        onConfirm={async () => {
+          await autoLoadGrades(selectedCampus);
+          setShowAutoLoadModal(false);
+        }}
+        isLoading={isSeeding}
+        title="Auto-Load Standard Classes"
+        description="Seed standard academic levels from Class 1 to Class 10 with default sections for your institution."
+        targetName={targetCampusName}
+        features={[
+          'Creates standard Class 1 through Class 10 academic divisions',
+          'Configures default Section A with active status for each class',
+          'Safe operation: existing classes and assigned teachers remain unchanged'
+        ]}
       />
     </div>
   );

@@ -70,7 +70,6 @@ app.use(['/api/students', '/students'], studentRoutes);
 app.use(['/api/staff-applicants', '/staff-applicants'], staffApplicantRoutes);
 app.use(['/api/grading-policies', '/grading-policies'], gradingPolicyRoutes);
 app.use(['/api/public', '/public'], publicRoutes);
-app.use(['/api/public', '/public'], publicRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Server error:', err);

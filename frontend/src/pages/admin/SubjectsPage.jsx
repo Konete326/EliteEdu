@@ -1,23 +1,28 @@
-import { BookOpen, Sparkles, Plus, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
+import { AlertCircle } from 'lucide-react';
 import { useSubjectsManager } from '../../hooks/useSubjectsManager';
 import SubjectTopBar from '../../components/admin/subjects/SubjectTopBar';
 import SubjectTable from '../../components/admin/subjects/SubjectTable';
 import SubjectPagination from '../../components/admin/subjects/SubjectPagination';
 import SubjectModal from '../../components/admin/subjects/SubjectModal';
+import SubjectEmptyState from '../../components/admin/subjects/SubjectEmptyState';
 import ConfirmModal from '../../components/common/ConfirmModal';
+import AutoLoadConfirmModal from '../../components/common/AutoLoadConfirmModal';
 import PageLoader from '../../components/common/PageLoader';
 
 const SubjectsPage = () => {
   const {
     subjects, campuses, selectedCampus, setSelectedCampus,
-    selectedClass, setSelectedClass,
-    searchQuery, setSearchQuery, loading, error, setError,
-    currentPage, totalPages, totalItems, modalState, setModalState,
-    isSubmitting, subjectToDelete, setSubjectToDelete,
-    deleteLoading, toggleLoadingId, isSeeding,
-    handleToggle, handleAutoLoad, handleFormSubmit,
-    handleDeleteConfirm, fetchSubjects, setCurrentPage
+    selectedClass, setSelectedClass, searchQuery, setSearchQuery,
+    loading, error, setError, currentPage, totalPages, totalItems,
+    modalState, setModalState, isSubmitting, subjectToDelete,
+    setSubjectToDelete, deleteLoading, toggleLoadingId, isSeeding,
+    handleToggle, handleAutoLoad, handleFormSubmit, handleDeleteConfirm,
+    fetchSubjects, setCurrentPage
   } = useSubjectsManager();
+
+  const [showAutoLoadModal, setShowAutoLoadModal] = useState(false);
+  const targetCampusName = campuses.find((c) => c._id === selectedCampus)?.name || 'All Campuses';
 
   return (
     <div className="space-y-4">
@@ -26,27 +31,18 @@ const SubjectsPage = () => {
         onSearchChange={setSearchQuery}
         campuses={campuses}
         selectedCampus={selectedCampus}
-        onCampusChange={(val) => {
-          setSelectedCampus(val);
-          setCurrentPage(1);
-        }}
+        onCampusChange={(val) => { setSelectedCampus(val); setCurrentPage(1); }}
         selectedClass={selectedClass}
-        onClassChange={(val) => {
-          setSelectedClass(val);
-          setCurrentPage(1);
-        }}
-        onAutoLoad={handleAutoLoad}
+        onClassChange={(val) => { setSelectedClass(val); setCurrentPage(1); }}
+        onAutoLoad={() => setShowAutoLoadModal(true)}
         onAddClick={() => setModalState({ isOpen: true, mode: 'add', subject: null })}
         isSeeding={isSeeding}
       />
 
       {error && (
         <div className="p-3.5 rounded-xl bg-bad-soft dark:bg-bad/10 text-bad border border-bad/20 text-xs flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{error}</span>
-          </div>
-          <button type="button" onClick={() => setError('')} className="underline font-semibold">Dismiss</button>
+          <div className="flex items-center gap-2"><AlertCircle className="w-4 h-4 shrink-0" /><span>{error}</span></div>
+          <button type="button" onClick={() => setError('')} className="underline font-semibold cursor-pointer">Dismiss</button>
         </div>
       )}
 
@@ -54,38 +50,12 @@ const SubjectsPage = () => {
         {loading ? (
           <PageLoader text="Loading subjects..." />
         ) : subjects.length === 0 ? (
-          <div className="p-12 text-center space-y-4">
-            <div className="w-14 h-14 rounded-2xl bg-primary-soft dark:bg-primary/20 flex items-center justify-center text-primary dark:text-primary-dark mx-auto">
-              <BookOpen className="w-7 h-7" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-base font-bold text-ink dark:text-ink-dark">No subjects found</h3>
-              <p className="text-xs text-ink-muted dark:text-ink-muted-dark max-w-sm mx-auto">
-                {searchQuery ? `No subjects matched "${searchQuery}".` : 'Start by auto-loading standard curriculum courses or create one manually.'}
-              </p>
-            </div>
-            <div className="flex items-center justify-center gap-3 pt-1">
-              {!searchQuery && (
-                <button
-                  type="button"
-                  onClick={handleAutoLoad}
-                  disabled={isSeeding}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-primary text-primary text-xs font-semibold hover:bg-primary-soft"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Auto-Load Standard</span>
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => setModalState({ isOpen: true, mode: 'add', subject: null })}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-semibold"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Add Subject</span>
-              </button>
-            </div>
-          </div>
+          <SubjectEmptyState
+            searchQuery={searchQuery}
+            onAutoLoad={() => setShowAutoLoadModal(true)}
+            onAddClick={() => setModalState({ isOpen: true, mode: 'add', subject: null })}
+            isSeeding={isSeeding}
+          />
         ) : (
           <>
             <SubjectTable
@@ -121,9 +91,27 @@ const SubjectsPage = () => {
         onClose={() => !deleteLoading && setSubjectToDelete(null)}
         onConfirm={handleDeleteConfirm}
         title="Delete Subject"
-        message={`Are you sure you want to delete ${subjectToDelete?.name || 'this subject'}? This will remove it from all course listings.`}
+        message={`Are you sure you want to delete ${subjectToDelete?.name || 'this subject'}? This action cannot be undone.`}
         confirmText={deleteLoading ? 'Deleting...' : 'Delete'}
         confirmStyle="danger"
+      />
+
+      <AutoLoadConfirmModal
+        isOpen={showAutoLoadModal}
+        onClose={() => !isSeeding && setShowAutoLoadModal(false)}
+        onConfirm={async () => {
+          await handleAutoLoad();
+          setShowAutoLoadModal(false);
+        }}
+        isLoading={isSeeding}
+        title="Auto-Load Standard Curriculum"
+        description="Seed standard Pakistani curriculum courses for Class 1 to Class 10 with official subject codes and categories."
+        targetName={targetCampusName}
+        features={[
+          'Loads standard curriculum courses for Class 1 to Class 10 (English, Urdu, Science, Math, etc.)',
+          'Preserves all existing subjects without duplicate collisions',
+          'Sets default mandatory/optional statuses and academic credit configs'
+        ]}
       />
     </div>
   );
