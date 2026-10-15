@@ -35,7 +35,10 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
     return matched.length ? { ...cat, subItems: matched } : null;
   }).filter(Boolean);
 
-  const toggleGroup = (title) => setOpenGroup((prev) => (prev === title ? null : title));
+  const toggleGroup = (title) => {
+    if (!isDesktopOpen) setIsDesktopOpen(true);
+    setOpenGroup((prev) => (!isDesktopOpen || prev !== title ? title : null));
+  };
 
   const navBody = (isExpanded) => (
     <div className={`flex flex-col h-full ${sidebarBgClass} transition-all duration-300 ${isExpanded ? 'w-64' : 'w-16'}`}>

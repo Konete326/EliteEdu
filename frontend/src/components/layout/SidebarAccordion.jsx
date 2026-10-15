@@ -18,9 +18,9 @@ const SidebarAccordion = ({ category, isOpen, onToggle, isExpanded, onNavigate, 
     <div className="space-y-1">
       <button
         type="button"
-        onClick={() => isExpanded && onToggle(category.title)}
+        onClick={() => onToggle(category.title)}
         title={!isExpanded ? category.title : undefined}
-        className={`w-full flex items-center ${!isExpanded ? 'justify-center px-2' : 'justify-between px-3.5'} py-2.5 rounded-lg text-sm font-medium transition-colors ${buttonStyle}`}
+        className={`w-full flex items-center ${!isExpanded ? 'justify-center px-2' : 'justify-between px-3.5'} py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer active:scale-95 ${buttonStyle}`}
       >
         <div className={`flex items-center ${!isExpanded ? 'justify-center' : 'gap-3'} min-w-0`}>
           <Icon className="w-4 h-4 shrink-0" />
