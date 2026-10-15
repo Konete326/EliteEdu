@@ -4,8 +4,7 @@ const BasicContactFields = ({ formData, errors = {}, onChange }) => {
   const formatCnic = (val) => {
     const raw = val.replace(/\D/g, '').slice(0, 13);
     if (raw.length > 12) return `${raw.slice(0, 5)}-${raw.slice(5, 12)}-${raw.slice(12)}`;
-    if (raw.length > 5) return `${raw.slice(0, 5)}-${raw.slice(5)}`;
-    return raw;
+    return raw.length > 5 ? `${raw.slice(0, 5)}-${raw.slice(5)}` : raw;
   };
 
   const copyContact = () => {
@@ -37,9 +36,10 @@ const BasicContactFields = ({ formData, errors = {}, onChange }) => {
               value={formData.contact_number || ''}
               onChange={(e) => onChange('contact_number', e.target.value)}
               placeholder="3001234567"
-              className="flex-1 px-3 py-1.5 rounded-r-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none"
+              className={`flex-1 px-3 py-1.5 rounded-r-xl border text-xs text-ink dark:text-ink-dark outline-none ${errors.contact_number ? 'border-bad ring-2 ring-bad/20 bg-bad/5' : 'border-line dark:border-line-dark bg-surface-secondary/40'}`}
             />
           </div>
+          {errors.contact_number && <p className="text-[10px] text-bad font-semibold mt-1">{errors.contact_number}</p>}
         </div>
         <div>
           <div className="flex items-center justify-between mb-1">
@@ -66,8 +66,9 @@ const BasicContactFields = ({ formData, errors = {}, onChange }) => {
             value={formData.cnic || ''}
             onChange={(e) => onChange('cnic', formatCnic(e.target.value))}
             placeholder="42101-1234567-1"
-            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none font-mono"
+            className={`w-full px-3 py-1.5 rounded-xl border text-xs text-ink dark:text-ink-dark outline-none font-mono ${errors.cnic ? 'border-bad ring-2 ring-bad/20 bg-bad/5' : 'border-line dark:border-line-dark bg-surface-secondary/40'}`}
           />
+          {errors.cnic && <p className="text-[10px] text-bad font-semibold mt-1">{errors.cnic}</p>}
         </div>
         <div>
           <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">CNIC Expiry (Optional)</label>
@@ -85,8 +86,9 @@ const BasicContactFields = ({ formData, errors = {}, onChange }) => {
             value={formData.email || ''}
             onChange={(e) => onChange('email', e.target.value)}
             placeholder="staff@school.edu.pk"
-            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none focus:ring-1 focus:ring-primary"
+            className={`w-full px-3 py-1.5 rounded-xl border text-xs text-ink dark:text-ink-dark outline-none transition-all ${errors.email ? 'border-bad ring-2 ring-bad/20 bg-bad/5' : 'border-line dark:border-line-dark bg-surface-secondary/40 focus:ring-1 focus:ring-primary'}`}
           />
+          {errors.email && <p className="text-[10px] text-bad font-semibold mt-1">{errors.email}</p>}
         </div>
       </div>
 

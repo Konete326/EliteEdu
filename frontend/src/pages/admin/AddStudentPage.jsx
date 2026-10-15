@@ -35,6 +35,7 @@ const AddStudentPage = () => {
     } catch (e) {
       setActiveTab('profile');
       setError(e.message);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 

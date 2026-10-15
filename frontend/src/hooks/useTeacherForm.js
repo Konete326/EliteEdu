@@ -38,18 +38,13 @@ export const useTeacherForm = (id) => {
     const init = async () => {
       try {
         setLoading(true);
-        const [cRes, sRes, gRes] = await Promise.all([
-          api.get('/campuses'),
-          api.get('/subjects?limit=200'),
-          api.get('/grades')
-        ]);
+        const [cRes, sRes, gRes] = await Promise.all([api.get('/campuses'), api.get('/subjects?limit=200'), api.get('/grades')]);
         setCampuses(cRes.data.campuses || []);
         setSubjects(sRes.data.subjects || []);
         setGrades(gRes.data.grades || []);
 
         if (isEditMode) {
-          const tRes = await api.get(`/teachers/${id}`);
-          const t = tRes.data.teacher;
+          const t = (await api.get(`/teachers/${id}`)).data.teacher;
           setFormData({
             ...INITIAL_FORM,
             ...t,
@@ -72,6 +67,7 @@ export const useTeacherForm = (id) => {
   const handleField = (f, v) => {
     setFormData((p) => ({ ...p, [f]: v }));
     if (errors[f]) setErrors((p) => ({ ...p, [f]: '' }));
+    if (error) setError('');
   };
   const handleEmergency = (f, v) => setFormData((p) => ({ ...p, emergency_contact: { ...p.emergency_contact, [f]: v } }));
   const handleBank = (f, v) => setFormData((p) => ({ ...p, bank_details: { ...p.bank_details, [f]: v } }));
@@ -79,11 +75,7 @@ export const useTeacherForm = (id) => {
   const validate = () => {
     const errs = {};
     if (!formData.name?.trim()) errs.name = 'Full Name is required.';
-    if (!formData.email?.trim()) {
-      errs.email = 'Work email is required.';
-    } else if (!isValidEmail(formData.email)) {
-      errs.email = 'Please enter a valid email address.';
-    }
+    if (formData.email?.trim() && !isValidEmail(formData.email.trim())) errs.email = 'Please enter a valid email address.';
     setErrors(errs);
     return errs;
   };
@@ -98,9 +90,7 @@ export const useTeacherForm = (id) => {
     setSubmitting(true);
     setError('');
     try {
-      const res = isEditMode
-        ? await api.put(`/teachers/${id}`, formData)
-        : await api.post('/teachers', formData);
+      const res = isEditMode ? await api.put(`/teachers/${id}`, formData) : await api.post('/teachers', formData);
       const savedTeacher = res.data.teacher;
       if (customRedirect) navigate('/admin/teachers');
       return savedTeacher;
@@ -114,9 +104,7 @@ export const useTeacherForm = (id) => {
   };
 
   return {
-    formData, campuses, subjects, grades,
-    loading, submitting, error, setError, errors, saveTeacher,
-    handleField, handleEmergency, handleBank,
-    isEditMode, schoolType: user?.school_type || 'Private'
+    formData, campuses, subjects, grades, loading, submitting, error, setError, errors, saveTeacher,
+    handleField, handleEmergency, handleBank, isEditMode, schoolType: user?.school_type || 'Private'
   };
 };
