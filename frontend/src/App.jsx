@@ -24,6 +24,7 @@ import MyProfilePage from './pages/common/MyProfilePage';
 import GradingPoliciesPage from './pages/admin/GradingPoliciesPage';
 import AdmissionLetterPage from './pages/admin/AdmissionLetterPage';
 import ThemeSettingsPage from './pages/admin/ThemeSettingsPage';
+import RootRedirect from './components/common/RootRedirect';
 import PwaInstallPrompt from './components/common/PwaInstallPrompt';
 import { getAllAdminRoutes } from './config/adminNavConfig';
 import { Agentation } from 'agentation';
@@ -54,6 +55,7 @@ function App() {
           <BrowserRouter>
           <PwaInstallPrompt />
           <Routes>
+            <Route path="/" element={<RootRedirect />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
 

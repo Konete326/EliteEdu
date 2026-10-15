@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { isValidEmail, isValidPassword } from '../../utils/validators';
@@ -12,8 +12,13 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+
+  if (isAuthenticated) {
+    const target = user?.role === 'SuperAdmin' ? '/superadmin' : user?.role === 'Teacher' ? '/teacher' : '/admin';
+    return <Navigate to={target} replace />;
+  }
 
   const emailError = email && !isValidEmail(email) ? 'Please enter a valid email address.' : '';
   const passwordError = password && !isValidPassword(password) ? 'Password must be at least 6 characters.' : '';
@@ -27,13 +32,10 @@ const LoginPage = () => {
 
     try {
       const response = await api.post('/auth/login', { email, password });
-      const { user, token } = response.data;
-      login(user, token);
-
-      if (user.role === 'SuperAdmin') navigate('/superadmin');
-      else if (user.role === 'Admin') navigate('/admin');
-      else if (user.role === 'Teacher') navigate('/teacher');
-      else navigate('/');
+      const { user: userData, token } = response.data;
+      login(userData, token);
+      const target = userData.role === 'SuperAdmin' ? '/superadmin' : userData.role === 'Teacher' ? '/teacher' : '/admin';
+      navigate(target);
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please check credentials.');
     } finally {

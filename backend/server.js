@@ -12,6 +12,7 @@ const gradeRoutes = require('./routes/gradeRoutes');
 const studentRoutes = require('./routes/studentRoutes');
 const staffApplicantRoutes = require('./routes/staffApplicantRoutes');
 const gradingPolicyRoutes = require('./routes/gradingPolicyRoutes');
+const publicRoutes = require('./routes/publicRoutes');
 const seedSuperAdmin = require('./utils/seedSuperAdmin');
 
 const app = express();
@@ -68,6 +69,8 @@ app.use(['/api/grades', '/grades'], gradeRoutes);
 app.use(['/api/students', '/students'], studentRoutes);
 app.use(['/api/staff-applicants', '/staff-applicants'], staffApplicantRoutes);
 app.use(['/api/grading-policies', '/grading-policies'], gradingPolicyRoutes);
+app.use(['/api/public', '/public'], publicRoutes);
+app.use(['/api/public', '/public'], publicRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
