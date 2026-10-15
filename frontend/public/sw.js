@@ -1,4 +1,4 @@
-const CACHE_NAME = 'eliteedu-pwa-v4';
+const CACHE_NAME = 'eliteedu-pwa-v5';
 const STATIC_ASSETS = [
   '/manifest.json',
   '/logo.png',
@@ -32,9 +32,23 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   const url = new URL(event.request.url);
 
-  if (event.request.method !== 'GET' || url.pathname.startsWith('/api/') || url.pathname.startsWith('/auth/')) {
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
+  if (
+    url.pathname.startsWith('/api') ||
+    url.pathname.startsWith('/auth') ||
+    url.pathname.startsWith('/@') ||
+    url.pathname.includes('node_modules') ||
+    url.searchParams.has('t')
+  ) {
     return;
   }
 
@@ -48,7 +62,7 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => caches.match('/index.html') || caches.match('/'))
+        .catch(() => caches.match('/index.html'))
     );
     return;
   }
@@ -56,18 +70,20 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type !== 'basic') {
+      return fetch(event.request)
+        .then((response) => {
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+          const contentType = response.headers.get('content-type') || '';
+          if (url.pathname.includes('/assets/') && contentType.includes('text/html')) {
+            return response;
+          }
+          const toCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, toCache));
           return response;
-        }
-        const contentType = response.headers.get('content-type') || '';
-        if (url.pathname.includes('/assets/') && contentType.includes('text/html')) {
-          return response;
-        }
-        const toCache = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, toCache));
-        return response;
-      });
+        })
+        .catch(() => caches.match(event.request))
     })
   );
 });

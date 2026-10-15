@@ -1,85 +1,92 @@
 import { useState, useEffect, useCallback } from 'react';
 
-export const usePwaInstall = () => {
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [isInstalled, setIsInstalled] = useState(false);
-  const [showPrompt, setShowPrompt] = useState(false);
-  const [isIos, setIsIos] = useState(false);
-  const [showIosGuide, setShowIosGuide] = useState(false);
+let globalDeferredPrompt = null;
+let globalIsInstalled = false;
+const subscribers = new Set();
 
+const notifySubscribers = () => {
+  subscribers.forEach((cb) => cb());
+};
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    globalDeferredPrompt = e;
+    notifySubscribers();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    globalIsInstalled = true;
+    globalDeferredPrompt = null;
+    try {
+      localStorage.setItem('pwa_installed', 'true');
+    } catch {}
+    notifySubscribers();
+  });
+}
+
+export const usePwaInstall = () => {
   const checkIsInstalled = useCallback(() => {
+    if (typeof window === 'undefined') return false;
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       window.navigator.standalone === true ||
       document.referrer.includes('android-app://');
     const storedInstalled = localStorage.getItem('pwa_installed') === 'true';
-    return isStandalone || storedInstalled;
+    return isStandalone || storedInstalled || globalIsInstalled;
   }, []);
+
+  const [installed, setInstalled] = useState(checkIsInstalled);
+  const [hasPrompt, setHasPrompt] = useState(Boolean(globalDeferredPrompt));
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [isIos, setIsIos] = useState(false);
+  const [showIosGuide, setShowIosGuide] = useState(false);
 
   useEffect(() => {
     const ua = window.navigator.userAgent.toLowerCase();
     const isIosDevice = /iphone|ipad|ipod/.test(ua) && !window.MSStream;
     setIsIos(isIosDevice);
 
-    const alreadyInstalled = checkIsInstalled();
-    if (alreadyInstalled) {
-      setIsInstalled(true);
-      setShowPrompt(false);
-      return;
-    }
-
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      if (!checkIsInstalled()) {
+    const updateState = () => {
+      const isInst = checkIsInstalled();
+      setInstalled(isInst);
+      setHasPrompt(Boolean(globalDeferredPrompt));
+      if (!isInst && globalDeferredPrompt) {
         setShowPrompt(true);
       }
     };
 
-    const handleAppInstalled = () => {
-      setIsInstalled(true);
-      setShowPrompt(false);
-      setDeferredPrompt(null);
-      localStorage.setItem('pwa_installed', 'true');
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', handleAppInstalled);
-
-    const fallbackTimer = setTimeout(() => {
-      if (!checkIsInstalled()) {
-        setShowPrompt(true);
-      }
-    }, 1000);
-
+    updateState();
+    subscribers.add(updateState);
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', handleAppInstalled);
-      clearTimeout(fallbackTimer);
+      subscribers.delete(updateState);
     };
   }, [checkIsInstalled]);
 
   useEffect(() => {
     if (!showPrompt) return;
-
     const autoCloseTimer = setTimeout(() => {
       setShowPrompt(false);
     }, 10000);
-
     return () => clearTimeout(autoCloseTimer);
   }, [showPrompt]);
 
   const promptInstall = async () => {
-    if (deferredPrompt) {
+    if (globalDeferredPrompt) {
       try {
-        await deferredPrompt.prompt();
-        const choice = await deferredPrompt.userChoice;
+        await globalDeferredPrompt.prompt();
+        const choice = await globalDeferredPrompt.userChoice;
         if (choice.outcome === 'accepted') {
-          setIsInstalled(true);
-          localStorage.setItem('pwa_installed', 'true');
+          globalIsInstalled = true;
+          setInstalled(true);
+          try {
+            localStorage.setItem('pwa_installed', 'true');
+          } catch {}
           setShowPrompt(false);
         }
-        setDeferredPrompt(null);
+        globalDeferredPrompt = null;
+        setHasPrompt(false);
+        notifySubscribers();
       } catch (err) {
         console.error(err);
       }
@@ -93,7 +100,7 @@ export const usePwaInstall = () => {
   };
 
   return {
-    isInstalled,
+    isInstalled: installed,
     showPrompt,
     setShowPrompt,
     promptInstall,
@@ -101,6 +108,6 @@ export const usePwaInstall = () => {
     isIos,
     showIosGuide,
     setShowIosGuide,
-    hasNativePrompt: Boolean(deferredPrompt)
+    hasNativePrompt: hasPrompt
   };
 };
