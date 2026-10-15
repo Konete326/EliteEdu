@@ -217,7 +217,7 @@ export const getRouteTitle = (pathname) => {
   if (pathname.startsWith('/admin/staff-applicants/') && pathname.endsWith('/edit')) return 'Edit Applicant';
   if (pathname === '/admin/students') return 'Students';
   if (pathname === '/admin/students/new') return 'Enroll Student';
-  if (pathname.startsWith('/admin/students/') && pathname.endsWith('/edit')) return 'Edit Student';
+  if (pathname === '/admin/profile' || pathname === '/superadmin/profile' || pathname === '/teacher/profile') return 'My Profile';
   if (pathname === '/superadmin') return 'Dashboard';
   if (pathname === '/superadmin/schools') return 'Schools';
   if (pathname === '/superadmin/schools/new') return 'New School';

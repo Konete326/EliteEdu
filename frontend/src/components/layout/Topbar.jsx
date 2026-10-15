@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   PanelLeft, Home, Search, Building2, ChevronsUpDown,
   LayoutGrid, MessageCircle, PhoneCall, Bell, Moon, Sun, Download, Play
@@ -13,6 +13,7 @@ const Topbar = ({ setMobileOpen, setIsDesktopOpen, isDark, toggleTheme }) => {
   const { openComingSoon } = useComingSoon();
   const { isInstalled, promptInstall } = usePwaInstall();
   const location = useLocation();
+  const navigate = useNavigate();
   const pageTitle = getRouteTitle(location.pathname);
 
   const getInitials = (name) => {
@@ -167,15 +168,18 @@ const Topbar = ({ setMobileOpen, setIsDesktopOpen, isDark, toggleTheme }) => {
 
         <button
           type="button"
-          onClick={() => openComingSoon({
-            title: 'Staff Profile & Settings',
-            description: 'Profile customization, security credentials, active sessions, and personal preferences will be accessible here soon.',
-            badge: 'My Profile'
-          })}
+          onClick={() => {
+            const path = user?.role === 'SuperAdmin' ? '/superadmin/profile' : user?.role === 'Teacher' ? '/teacher/profile' : '/admin/profile';
+            navigate(path);
+          }}
           title="My Profile"
-          className="w-8 h-8 rounded-full bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-dark font-bold text-xs flex items-center justify-center border border-primary/20 shrink-0 hover:ring-2 hover:ring-primary/40 transition-all cursor-pointer"
+          className="w-8 h-8 rounded-full bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-dark font-bold text-xs flex items-center justify-center border border-primary/20 shrink-0 hover:ring-2 hover:ring-primary/40 transition-all cursor-pointer overflow-hidden"
         >
-          {getInitials(user?.name)}
+          {user?.photo_url ? (
+            <img src={user.photo_url} alt={user.name || 'User'} className="w-full h-full object-cover" />
+          ) : (
+            getInitials(user?.name)
+          )}
         </button>
       </div>
     </header>

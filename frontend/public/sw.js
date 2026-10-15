@@ -1,9 +1,14 @@
-const CACHE_NAME = 'eliteedu-pwa-v3';
+const CACHE_NAME = 'eliteedu-pwa-v4';
 const STATIC_ASSETS = [
   '/manifest.json',
   '/logo.png',
+  '/favicon.ico',
+  '/favicon.png',
+  '/favicon.svg',
   '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  '/icons/icon-512.png',
+  '/icons/icon-maskable-192.png',
+  '/icons/icon-maskable-512.png'
 ];
 
 self.addEventListener('install', (event) => {

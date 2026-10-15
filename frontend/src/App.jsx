@@ -19,6 +19,7 @@ import StaffApplicantsList from './pages/admin/StaffApplicantsList';
 import AddStaffApplicantPage from './pages/admin/AddStaffApplicantPage';
 import ComingSoonPage from './pages/admin/ComingSoonPage';
 import NotFoundPage from './pages/common/NotFoundPage';
+import MyProfilePage from './pages/common/MyProfilePage';
 import PwaInstallPrompt from './components/common/PwaInstallPrompt';
 import { getAllAdminRoutes } from './config/adminNavConfig';
 import { Agentation } from 'agentation';
@@ -56,6 +57,7 @@ function App() {
                 <Route path="/superadmin" element={<SuperAdminDashboard />} />
                 <Route path="/superadmin/schools" element={<SchoolsList />} />
                 <Route path="/superadmin/schools/new" element={<SchoolsPage />} />
+                <Route path="/superadmin/profile" element={<MyProfilePage />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
@@ -72,6 +74,7 @@ function App() {
                 <Route path="/admin/staff-applicants" element={<StaffApplicantsList />} />
                 <Route path="/admin/staff-applicants/new" element={<AddStaffApplicantPage />} />
                 <Route path="/admin/staff-applicants/:id/edit" element={<AddStaffApplicantPage />} />
+                <Route path="/admin/profile" element={<MyProfilePage />} />
                 {adminDynamicRoutes.map((r) => (
                   <Route key={r.path} path={r.path} element={<ComingSoonPage title={r.name} />} />
                 ))}
@@ -79,6 +82,7 @@ function App() {
 
               <Route element={<ProtectedRoute allowedRoles={['Teacher']} />}>
                 <Route path="/teacher" element={<TeacherDashboard />} />
+                <Route path="/teacher/profile" element={<MyProfilePage />} />
               </Route>
             </Route>
 

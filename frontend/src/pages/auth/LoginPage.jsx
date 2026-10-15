@@ -105,7 +105,7 @@ const LoginPage = () => {
         </form>
 
         <div className="mt-6 text-center text-xs text-ink-muted dark:text-ink-muted-dark">
-          EliteEdu School Management System
+          EliteEdu
         </div>
       </div>
     </div>

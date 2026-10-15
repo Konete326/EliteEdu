@@ -1,7 +1,8 @@
 {
+  "id": "/",
   "short_name": "EliteEdu",
-  "name": "EliteEdu - School Management System",
-  "description": "Smart, comprehensive multi-tenant school management and education portal.",
+  "name": "EliteEdu",
+  "description": "EliteEdu Portal",
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -16,6 +17,18 @@
       "purpose": "any"
     },
     {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "64x64",
+      "purpose": "any"
+    },
+    {
       "src": "/icons/icon-maskable-192.png",
       "type": "image/png",
       "sizes": "192x192",
@@ -26,16 +39,25 @@
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "maskable"
-    },
+    }
+  ],
+  "shortcuts": [
     {
-      "src": "/logo.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any"
+      "name": "EliteEdu",
+      "short_name": "EliteEdu",
+      "description": "Open EliteEdu",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ],
   "start_url": "/",
-  "background_color": "#0c0c0c",
+  "background_color": "#0c0c0f",
   "theme_color": "#863bff",
   "display": "standalone",
   "orientation": "portrait-primary",
