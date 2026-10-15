@@ -8,23 +8,25 @@ import ThemeLivePreviewCard from '../../components/admin/theme/ThemeLivePreviewC
 
 const ThemeSettingsPage = () => {
   return (
-    <div className="w-full space-y-6 pb-12">
+    <div className="w-full space-y-3.5">
       <ThemeStudioHeader />
 
-      <div className="flex flex-col xl:flex-row items-start gap-6">
-        <div className="flex-1 w-full min-w-0 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="space-y-6">
+      <div className="flex flex-col xl:flex-row items-start gap-3.5">
+        <div className="flex-1 w-full min-w-0 grid grid-cols-1 md:grid-cols-2 gap-3.5">
+          <div className="space-y-3.5">
             <AppearanceModeCard />
             <ThemePlacementCard />
-            <LanguageCard />
           </div>
-          <div className="space-y-6">
-            <ActiveColorCard />
+          <div className="space-y-3.5">
             <HeaderBgCard />
+            <ActiveColorCard />
+          </div>
+          <div className="md:col-span-2">
+            <LanguageCard />
           </div>
         </div>
 
-        <div className="w-full xl:w-[360px] shrink-0 xl:sticky xl:top-4">
+        <div className="w-full xl:w-[300px] 2xl:w-[320px] shrink-0">
           <ThemeLivePreviewCard />
         </div>
       </div>
