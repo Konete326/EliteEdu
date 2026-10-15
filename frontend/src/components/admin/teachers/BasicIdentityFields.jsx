@@ -1,19 +1,14 @@
-import { Upload } from 'lucide-react';
+import AvatarUploadField from '../../common/AvatarUploadField';
 
 const BasicIdentityFields = ({ formData, onChange }) => {
   return (
     <div className="space-y-3">
-      <div className="flex flex-col sm:flex-row items-center gap-4">
-        <div className="w-24 h-24 rounded-2xl border-2 border-dashed border-line dark:border-line-dark flex flex-col items-center justify-center text-ink-muted hover:border-primary/50 cursor-pointer overflow-hidden bg-surface-secondary/40 shrink-0">
-          {formData.photo_url ? (
-            <img src={formData.photo_url} alt="Staff" className="w-full h-full object-cover" />
-          ) : (
-            <>
-              <Upload className="w-5 h-5 mb-1" />
-              <span className="text-[10px] font-semibold text-center leading-tight">Click/drag<br />Max 5MB</span>
-            </>
-          )}
-        </div>
+      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+        <AvatarUploadField
+          value={formData.photo_url || ''}
+          onChange={(val) => onChange('photo_url', val)}
+          label="Staff Photo"
+        />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1 w-full">
           <div>
             <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Name *</label>

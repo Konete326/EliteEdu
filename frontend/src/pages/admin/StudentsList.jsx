@@ -12,32 +12,10 @@ import PageLoader from '../../components/common/PageLoader';
 const StudentsList = () => {
   const navigate = useNavigate();
   const {
-    students,
-    campuses,
-    grades,
-    selectedCampus,
-    setSelectedCampus,
-    selectedGrade,
-    setSelectedGrade,
-    searchQuery,
-    setSearchQuery,
-    loading,
-    error,
-    setError,
-    page,
-    setPage,
-    limit,
-    totalPages,
-    totalStudents,
-    viewStudent,
-    setViewStudent,
-    ledgerStudent,
-    setLedgerStudent,
-    studentToDelete,
-    setStudentToDelete,
-    deleteLoading,
-    handleToggleStatus,
-    handleDeleteConfirm
+    students, campuses, grades, selectedCampus, setSelectedCampus, selectedGrade, setSelectedGrade,
+    searchQuery, setSearchQuery, loading, error, setError, page, setPage, limit, totalPages,
+    totalStudents, viewStudent, setViewStudent, ledgerStudent, setLedgerStudent, studentToDelete,
+    setStudentToDelete, deleteLoading, handleToggleStatus, handleDeleteConfirm
   } = useStudentsList();
 
   return (
@@ -60,9 +38,7 @@ const StudentsList = () => {
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
-          <button type="button" onClick={() => setError('')} className="underline font-semibold">
-            Dismiss
-          </button>
+          <button type="button" onClick={() => setError('')} className="underline font-semibold">Dismiss</button>
         </div>
       )}
 
@@ -77,9 +53,7 @@ const StudentsList = () => {
             <div className="space-y-1">
               <h3 className="text-base font-bold text-ink dark:text-ink-dark">No students found</h3>
               <p className="text-xs text-ink-muted dark:text-ink-muted-dark max-w-sm mx-auto">
-                {searchQuery
-                  ? `No student matching "${searchQuery}" was found.`
-                  : 'Enroll your first student using the Add Student button above.'}
+                {searchQuery ? `No student matching "${searchQuery}" was found.` : 'Enroll your first student using the Add Student button above.'}
               </p>
             </div>
           </div>
@@ -104,18 +78,8 @@ const StudentsList = () => {
         )}
       </div>
 
-      <StudentDetailsModal
-        isOpen={!!viewStudent}
-        student={viewStudent}
-        onClose={() => setViewStudent(null)}
-      />
-
-      <StudentLedgerModal
-        isOpen={!!ledgerStudent}
-        student={ledgerStudent}
-        onClose={() => setLedgerStudent(null)}
-      />
-
+      <StudentDetailsModal isOpen={!!viewStudent} student={viewStudent} onClose={() => setViewStudent(null)} />
+      <StudentLedgerModal isOpen={!!ledgerStudent} student={ledgerStudent} onClose={() => setLedgerStudent(null)} />
       <ConfirmModal
         isOpen={!!studentToDelete}
         onClose={() => !deleteLoading && setStudentToDelete(null)}

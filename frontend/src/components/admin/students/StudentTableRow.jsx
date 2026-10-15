@@ -1,29 +1,20 @@
 import { FileText, Calendar, Pencil, Trash2, Eye } from 'lucide-react';
 
 const StudentTableRow = ({ student, onEdit, onDelete, onView, onOpenLedger, onOpenAttendance }) => {
-  const initials = student.name
-    ? student.name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2)
-    : 'ST';
-
-  const admissionDateStr = student.admission_date
-    ? new Date(student.admission_date).toLocaleDateString()
-    : '—';
+  const initials = student.name ? student.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) : 'ST';
+  const admissionDateStr = student.admission_date ? new Date(student.admission_date).toLocaleDateString() : '—';
 
   return (
     <tr className="hover:bg-surface-secondary/40 dark:hover:bg-[#141414] transition-colors">
       <td className="px-5 py-3.5 text-xs font-medium text-ink-sub dark:text-ink-sub-dark max-w-[130px] truncate">
         {student.campus_id?.name || 'Main School'}
       </td>
-
       <td className="px-5 py-3.5">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-primary/10 text-primary dark:text-primary-dark font-bold text-xs flex items-center justify-center shrink-0 border border-primary/20">
-            {initials}
+          <div className="w-9 h-9 rounded-full bg-primary/10 text-primary dark:text-primary-dark font-bold text-xs flex items-center justify-center shrink-0 border border-primary/20 overflow-hidden">
+            {student.photo_url ? (
+              <img src={student.photo_url} alt={student.name} className="w-full h-full object-cover" />
+            ) : initials}
           </div>
           <div>
             <p className="font-bold text-ink dark:text-ink-dark text-sm">{student.name}</p>
@@ -33,44 +24,31 @@ const StudentTableRow = ({ student, onEdit, onDelete, onView, onOpenLedger, onOp
           </div>
         </div>
       </td>
-
       <td className="px-5 py-3.5">
         <p className="font-bold text-xs text-ink dark:text-ink-dark font-mono">{student.gr_number}</p>
         <p className="text-[11px] text-ink-muted dark:text-ink-muted-dark">{admissionDateStr}</p>
       </td>
-
       <td className="px-5 py-3.5">
         <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark border border-primary/20">
           {student.current_grade?.name || 'Unassigned'}
         </span>
       </td>
-
       <td className="px-5 py-3.5">
         <span className="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold bg-surface-secondary dark:bg-[#202020] border border-line dark:border-white/10 text-ink dark:text-ink-dark">
           {student.current_section || 'A'}
         </span>
       </td>
-
       <td className="px-5 py-3.5 text-xs text-ink-muted dark:text-ink-muted-dark font-mono">
         {student.contact_number || '—'}
       </td>
-
       <td className="px-5 py-3.5 text-xs font-semibold text-ink dark:text-ink-dark">
         Rs. {(student.monthly_fee || 0).toLocaleString()}
       </td>
-
       <td className="px-5 py-3.5">
-        <span
-          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-            student.status === 'Active'
-              ? 'bg-good-soft dark:bg-good/20 text-good dark:text-good-dark border border-good/30'
-              : 'bg-bad-soft dark:bg-bad/20 text-bad dark:text-bad-dark border border-bad/30'
-          }`}
-        >
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${student.status === 'Active' ? 'bg-good-soft dark:bg-good/20 text-good dark:text-good-dark border border-good/30' : 'bg-bad-soft dark:bg-bad/20 text-bad dark:text-bad-dark border border-bad/30'}`}>
           {student.status || 'Active'}
         </span>
       </td>
-
       <td className="px-5 py-3.5">
         <button
           type="button"
@@ -81,7 +59,6 @@ const StudentTableRow = ({ student, onEdit, onDelete, onView, onOpenLedger, onOp
           <span>Ledger</span>
         </button>
       </td>
-
       <td className="px-5 py-3.5">
         <button
           type="button"
@@ -92,31 +69,15 @@ const StudentTableRow = ({ student, onEdit, onDelete, onView, onOpenLedger, onOp
           <span>Attendance</span>
         </button>
       </td>
-
       <td className="px-5 py-3.5 text-right">
         <div className="flex items-center justify-end gap-1">
-          <button
-            type="button"
-            onClick={() => onView(student)}
-            title="View Details"
-            className="p-1.5 rounded-lg text-ink-muted hover:text-ink dark:hover:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#1f1f1f] transition-colors"
-          >
+          <button type="button" onClick={() => onView(student)} title="View Details" className="p-1.5 rounded-lg text-ink-muted hover:text-ink dark:hover:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#1f1f1f]">
             <Eye className="w-4 h-4" />
           </button>
-          <button
-            type="button"
-            onClick={() => onEdit(student)}
-            title="Edit Student"
-            className="p-1.5 rounded-lg text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20 transition-colors"
-          >
+          <button type="button" onClick={() => onEdit(student)} title="Edit Student" className="p-1.5 rounded-lg text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20">
             <Pencil className="w-4 h-4" />
           </button>
-          <button
-            type="button"
-            onClick={() => onDelete(student)}
-            title="Delete Student"
-            className="p-1.5 rounded-lg text-bad/80 hover:text-bad hover:bg-bad-soft dark:hover:bg-bad/20 transition-colors"
-          >
+          <button type="button" onClick={() => onDelete(student)} title="Delete Student" className="p-1.5 rounded-lg text-bad/80 hover:text-bad hover:bg-bad-soft dark:hover:bg-bad/20">
             <Trash2 className="w-4 h-4" />
           </button>
         </div>

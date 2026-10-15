@@ -4,8 +4,8 @@ const DashboardKpiRow = ({ topKpis }) => {
   const cards = [
     {
       title: 'Active Students',
-      value: topKpis?.activeStudents ?? 336,
-      sub: `${topKpis?.totalStudents ?? 351} Total`,
+      value: topKpis?.activeStudents ?? 0,
+      sub: `${topKpis?.totalStudents ?? 0} Total`,
       icon: GraduationCap,
       color: 'text-blue-600 dark:text-blue-400',
       bg: 'bg-blue-50/80 border-blue-200/70 dark:bg-blue-950/20 dark:border-blue-900/60',
@@ -13,7 +13,7 @@ const DashboardKpiRow = ({ topKpis }) => {
     },
     {
       title: 'Teachers',
-      value: topKpis?.teachers ?? 16,
+      value: topKpis?.teachers ?? 0,
       sub: null,
       icon: Users,
       color: 'text-emerald-600 dark:text-emerald-400',
@@ -22,7 +22,7 @@ const DashboardKpiRow = ({ topKpis }) => {
     },
     {
       title: 'Subjects',
-      value: topKpis?.subjects ?? 72,
+      value: topKpis?.subjects ?? 0,
       sub: null,
       icon: BookOpen,
       color: 'text-purple-600 dark:text-purple-400',

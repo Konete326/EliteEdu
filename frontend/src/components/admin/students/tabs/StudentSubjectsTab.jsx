@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { BookOpen, Check, Search, CheckCheck, X } from 'lucide-react';
+import { BookOpen, Search, CheckCheck, X } from 'lucide-react';
+import StudentSubjectCard from '../cards/StudentSubjectCard';
 
 const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onChange }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,15 +15,6 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
     if (filter === 'optional') return !s.mandatory;
     return true;
   });
-
-  const handleSelectAll = () => {
-    const allIds = subjects.map((s) => s._id);
-    onChange('subjects', allIds);
-  };
-
-  const handleClearAll = () => {
-    onChange('subjects', []);
-  };
 
   return (
     <div className="space-y-6">
@@ -39,7 +31,7 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
           <div className="flex items-center gap-2 text-xs">
             <button
               type="button"
-              onClick={handleSelectAll}
+              onClick={() => onChange('subjects', subjects.map((s) => s._id))}
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary text-ink dark:text-ink-dark font-medium transition-colors"
             >
               <CheckCheck className="w-3.5 h-3.5 text-good" />
@@ -47,7 +39,7 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
             </button>
             <button
               type="button"
-              onClick={handleClearAll}
+              onClick={() => onChange('subjects', [])}
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary text-ink dark:text-ink-dark font-medium transition-colors"
             >
               <X className="w-3.5 h-3.5 text-bad" />
@@ -91,42 +83,14 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
-            {filteredSubjects.map((sub) => {
-              const isSelected = selectedSubjectIds.includes(sub._id);
-              return (
-                <div
-                  key={sub._id}
-                  onClick={() => onToggleSubject(sub._id)}
-                  className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between text-xs select-none ${
-                    isSelected
-                      ? 'border-primary bg-primary-soft/40 dark:bg-primary/10 shadow-sm'
-                      : 'border-line dark:border-white/10 bg-surface-secondary/30 dark:bg-[#141414]/50 hover:bg-surface-secondary'
-                  }`}
-                >
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-bold text-ink dark:text-ink-dark">{sub.name}</span>
-                      <span className="font-mono text-[10px] text-ink-muted">({sub.code})</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[10px]">
-                      <span className={`font-semibold ${sub.mandatory ? 'text-primary' : 'text-ink-muted'}`}>
-                        {sub.mandatory ? 'Mandatory' : 'Elective'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div
-                    className={`w-5 h-5 rounded-lg border flex items-center justify-center transition-colors ${
-                      isSelected
-                        ? 'bg-primary border-primary text-white'
-                        : 'border-line dark:border-white/20 bg-surface dark:bg-[#0c0c0c]'
-                    }`}
-                  >
-                    {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                  </div>
-                </div>
-              );
-            })}
+            {filteredSubjects.map((sub) => (
+              <StudentSubjectCard
+                key={sub._id}
+                sub={sub}
+                isSelected={selectedSubjectIds.includes(sub._id)}
+                onToggle={onToggleSubject}
+              />
+            ))}
           </div>
         )}
       </div>

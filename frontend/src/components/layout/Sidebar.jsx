@@ -40,8 +40,8 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
             <School className="w-4 h-4" />
           </div>
           {isExpanded && (
-            <span className="font-bold text-base text-ink dark:text-ink-dark truncate">
-              {user?.school_name || 'EliteEdu'}
+            <span className="font-extrabold text-base tracking-tight text-ink dark:text-ink-dark truncate">
+              Elite Edu
             </span>
           )}
         </div>

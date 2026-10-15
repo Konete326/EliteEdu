@@ -16,10 +16,7 @@ const Topbar = ({ setMobileOpen, setIsDesktopOpen, isDark, toggleTheme }) => {
   const getInitials = (name) => {
     if (!name) return 'ED';
     const parts = name.trim().split(/\s+/);
-    if (parts.length > 1) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
-    }
-    return name.slice(0, 2).toUpperCase();
+    return parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
   };
 
   const handleMenuClick = () => {
@@ -27,7 +24,7 @@ const Topbar = ({ setMobileOpen, setIsDesktopOpen, isDark, toggleTheme }) => {
     else setMobileOpen(true);
   };
 
-  const schoolPill = user?.school_name || (user?.role === 'SuperAdmin' ? 'System HQ' : 'Campus');
+  const schoolPill = user?.school_name || (user?.role === 'SuperAdmin' ? 'System HQ' : 'School');
 
   return (
     <header className="h-16 px-4 sm:px-6 bg-surface dark:bg-surface-dark border-b border-line dark:border-line-dark flex items-center justify-between shrink-0 sticky top-0 z-20">
@@ -64,9 +61,12 @@ const Topbar = ({ setMobileOpen, setIsDesktopOpen, isDark, toggleTheme }) => {
       </div>
 
       <div className="flex items-center gap-1 sm:gap-2">
-        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark text-xs font-medium text-ink dark:text-ink-dark">
-          <Building2 className="w-3.5 h-3.5 text-primary" />
-          <span className="truncate max-w-[130px]">{schoolPill}</span>
+        <div
+          title={schoolPill}
+          className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark text-xs font-medium text-ink dark:text-ink-dark"
+        >
+          <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />
+          <span className="truncate max-w-[180px] capitalize">{schoolPill}</span>
           <ChevronsUpDown className="w-3 h-3 text-ink-muted shrink-0" />
         </div>
 

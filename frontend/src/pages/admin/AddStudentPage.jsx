@@ -18,20 +18,9 @@ const AddStudentPage = () => {
   const [activeTab, setActiveTab] = useState('profile');
 
   const {
-    formData,
-    campuses,
-    grades,
-    subjects,
-    loading,
-    submitting,
-    error,
-    setError,
-    saveStudent,
-    handleField,
-    handleNestedField,
-    handleToggleAppSetting,
-    handleToggleAllAppSettings,
-    handleToggleSubject
+    formData, campuses, grades, subjects, loading, submitting, error, setError,
+    saveStudent, handleField, handleNestedField, handleToggleAppSetting,
+    handleToggleAllAppSettings, handleToggleSubject
   } = useStudentForm(id);
 
   if (loading) return <PageLoader text="Loading student record..." />;
@@ -52,7 +41,6 @@ const AddStudentPage = () => {
         onSave={handleSave}
         submitting={submitting}
       />
-
       <StudentTabsNav activeTab={activeTab} onTabChange={setActiveTab} />
 
       {error && (
@@ -61,44 +49,22 @@ const AddStudentPage = () => {
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
-          <button type="button" onClick={() => setError('')} className="underline font-semibold">
-            Dismiss
-          </button>
+          <button type="button" onClick={() => setError('')} className="underline font-semibold">Dismiss</button>
         </div>
       )}
 
       {activeTab === 'profile' && (
-        <StudentProfileTab
-          formData={formData}
-          campuses={campuses}
-          grades={grades}
-          onChange={handleField}
-        />
+        <StudentProfileTab formData={formData} campuses={campuses} grades={grades} onChange={handleField} />
       )}
-
       {activeTab === 'family' && (
-        <StudentFamilyTab
-          formData={formData}
-          onNestedChange={handleNestedField}
-          onChange={handleField}
-        />
+        <StudentFamilyTab formData={formData} onNestedChange={handleNestedField} onChange={handleField} />
       )}
-
       {activeTab === 'contact' && (
-        <StudentContactTab
-          formData={formData}
-          onNestedChange={handleNestedField}
-          onChange={handleField}
-        />
+        <StudentContactTab formData={formData} onNestedChange={handleNestedField} onChange={handleField} />
       )}
-
       {activeTab === 'academic' && (
-        <StudentAcademicTab
-          formData={formData}
-          onNestedChange={handleNestedField}
-        />
+        <StudentAcademicTab formData={formData} onNestedChange={handleNestedField} />
       )}
-
       {activeTab === 'subjects' && (
         <StudentSubjectsTab
           subjects={subjects}
@@ -107,7 +73,6 @@ const AddStudentPage = () => {
           onChange={handleField}
         />
       )}
-
       {activeTab === 'app_settings' && (
         <StudentAppSettingsTab
           appSettings={formData.app_settings}
@@ -115,12 +80,8 @@ const AddStudentPage = () => {
           onToggleAll={handleToggleAllAppSettings}
         />
       )}
-
       {activeTab === 'documents' && (
-        <StudentDocumentsTab
-          formData={formData}
-          onChange={handleField}
-        />
+        <StudentDocumentsTab formData={formData} onChange={handleField} />
       )}
     </div>
   );
