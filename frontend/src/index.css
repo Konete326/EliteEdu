@@ -4,6 +4,18 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-primary: #0d9488;
+  --color-primary-hover: #0f766e;
+  --color-primary-soft: #ccfbf1;
+}
+
+.dark {
+  --color-primary: #14b8a6;
+  --color-primary-hover: #2dd4bf;
+  --color-primary-soft: rgba(20, 184, 166, 0.15);
+}
+
 html {
   color-scheme: light;
   scrollbar-width: thin;
@@ -13,6 +25,10 @@ html {
 html.dark, html.dark *, .dark, .dark * {
   color-scheme: dark;
   scrollbar-color: #272730 #000000;
+}
+
+[dir="rtl"] {
+  direction: rtl;
 }
 
 body {
@@ -45,10 +61,10 @@ body {
 .dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="image"]):focus,
 .dark select:focus,
 .dark textarea:focus {
-  border-color: #5cc2ba !important;
+  border-color: var(--color-primary, #14b8a6) !important;
   background-color: #0c0c10 !important;
   outline: none !important;
-  box-shadow: 0 0 0 1px #5cc2ba !important;
+  box-shadow: 0 0 0 1px var(--color-primary, #14b8a6) !important;
 }
 
 .dark select option {

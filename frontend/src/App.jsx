@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { ComingSoonProvider } from './context/ComingSoonContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -21,6 +22,8 @@ import ComingSoonPage from './pages/admin/ComingSoonPage';
 import NotFoundPage from './pages/common/NotFoundPage';
 import MyProfilePage from './pages/common/MyProfilePage';
 import GradingPoliciesPage from './pages/admin/GradingPoliciesPage';
+import AdmissionLetterPage from './pages/admin/AdmissionLetterPage';
+import ThemeSettingsPage from './pages/admin/ThemeSettingsPage';
 import PwaInstallPrompt from './components/common/PwaInstallPrompt';
 import { getAllAdminRoutes } from './config/adminNavConfig';
 import { Agentation } from 'agentation';
@@ -46,8 +49,9 @@ const adminDynamicRoutes = getAllAdminRoutes();
 function App() {
   return (
     <AuthProvider>
-      <ComingSoonProvider>
-        <BrowserRouter>
+      <ThemeProvider>
+        <ComingSoonProvider>
+          <BrowserRouter>
           <PwaInstallPrompt />
           <Routes>
             <Route path="/login" element={<LoginPage />} />
@@ -77,6 +81,9 @@ function App() {
                 <Route path="/admin/staff-applicants/:id/edit" element={<AddStaffApplicantPage />} />
                 <Route path="/admin/exam-management/grading-policies" element={<GradingPoliciesPage />} />
                 <Route path="/admin/exams/grading-policies" element={<GradingPoliciesPage />} />
+                <Route path="/admin/students/admission-letter" element={<AdmissionLetterPage />} />
+                <Route path="/admin/settings/appearance" element={<ThemeSettingsPage />} />
+                <Route path="/admin/control-panel/branding" element={<ThemeSettingsPage />} />
                 <Route path="/admin/profile" element={<MyProfilePage />} />
                 {adminDynamicRoutes.map((r) => (
                   <Route key={r.path} path={r.path} element={<ComingSoonPage title={r.name} />} />
@@ -94,7 +101,8 @@ function App() {
         </BrowserRouter>
         {import.meta.env.DEV && <Agentation endpoint="http://localhost:4747" />}
       </ComingSoonProvider>
-    </AuthProvider>
+    </ThemeProvider>
+  </AuthProvider>
   );
 }
 

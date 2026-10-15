@@ -17,6 +17,7 @@ export const getAdminNavItems = (schoolType) => [
       { name: 'Teachers', path: '/admin/teachers' },
       { name: 'Staff Applicants', path: '/admin/staff-applicants' },
       { name: 'Students', path: '/admin/students' },
+      { name: 'Admission Letter', path: '/admin/students/admission-letter' },
       { name: 'Online Classes', path: '/admin/online-classes' },
       { name: 'News Feed', path: '/admin/news-feed' },
       { name: 'Consent', path: '/admin/consent' },
@@ -150,7 +151,7 @@ export const getAdminNavItems = (schoolType) => [
     subItems: [
       { name: 'General Settings', path: '/admin/settings/general' },
       { name: 'Roles & Permissions', path: '/admin/settings/roles' },
-      { name: 'Theme & Appearance', path: '/admin/settings/appearance' },
+      { name: 'Theme & Branding', path: '/admin/control-panel/branding' },
       { name: 'Backup & Logs', path: '/admin/settings/backup' }
     ]
   }
@@ -196,9 +197,12 @@ export const getAllAdminRoutes = () => {
         sub.path !== '/admin/subjects' &&
         sub.path !== '/admin/grades' &&
         sub.path !== '/admin/students' &&
+        sub.path !== '/admin/students/admission-letter' &&
         sub.path !== '/admin/staff-applicants' &&
         sub.path !== '/admin/exam-management/grading-policies' &&
-        sub.path !== '/admin/exams/grading-policies'
+        sub.path !== '/admin/exams/grading-policies' &&
+        sub.path !== '/admin/settings/appearance' &&
+        sub.path !== '/admin/control-panel/branding'
       ) {
         routes.push(sub);
       }
@@ -221,6 +225,8 @@ export const getRouteTitle = (pathname) => {
   if (pathname === '/admin/students') return 'Students';
   if (pathname === '/admin/students/new') return 'Enroll Student';
   if (pathname.startsWith('/admin/students/') && pathname.endsWith('/edit')) return 'Edit Student';
+  if (pathname === '/admin/students/admission-letter') return 'Admission Letter';
+  if (pathname === '/admin/settings/appearance' || pathname === '/admin/control-panel/branding') return 'Theme & Appearance';
   if (pathname === '/admin/exam-management/grading-policies' || pathname === '/admin/exams/grading-policies') return 'Exam Grading';
   if (pathname === '/admin/profile' || pathname === '/superadmin/profile' || pathname === '/teacher/profile') return 'My Profile';
   if (pathname === '/superadmin') return 'Dashboard';

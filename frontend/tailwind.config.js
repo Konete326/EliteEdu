@@ -5,10 +5,10 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#0e5e61',
-          hover: '#0a4b4e',
-          soft: '#e2f0ef',
-          dark: '#5cc2ba'
+          DEFAULT: 'var(--color-primary, #0d9488)',
+          hover: 'var(--color-primary-hover, #0f766e)',
+          soft: 'var(--color-primary-soft, #ccfbf1)',
+          dark: 'var(--color-primary, #14b8a6)'
         },
         accent: {
           DEFAULT: '#e3a52b',
@@ -24,7 +24,7 @@ export default {
           DEFAULT: '#ffffff',
           secondary: '#f6f8f9',
           dark: '#0c0c0f',
-          'secondary-dark': '#0f0f14'
+          'secondary-dark': '#16161d'
         },
         ink: {
           DEFAULT: '#15222b',

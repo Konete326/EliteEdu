@@ -2,15 +2,18 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { X, Search } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { getNavCategories } from '../../config/adminNavConfig';
 import SidebarAccordion from './SidebarAccordion';
 import SidebarFooter from './SidebarFooter';
 
 const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, isDark, toggleTheme, onLogoutClick }) => {
   const { user } = useAuth();
+  const { themeSettings } = useTheme();
   const location = useLocation();
   const [openGroup, setOpenGroup] = useState('Main');
   const [searchQuery, setSearchQuery] = useState('');
+  const isDarkSidebar = themeSettings?.sidebarBg === 'dark' || isDark;
 
   const allCategories = getNavCategories(user);
 
@@ -33,8 +36,8 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
   const toggleGroup = (title) => setOpenGroup((prev) => (prev === title ? null : title));
 
   const navBody = (isExpanded) => (
-    <div className={`flex flex-col h-full bg-surface dark:bg-surface-dark border-r border-line dark:border-line-dark transition-all duration-300 ${isExpanded ? 'w-64' : 'w-16'}`}>
-      <div className="flex items-center justify-between h-16 px-4 border-b border-line dark:border-line-dark shrink-0 overflow-hidden">
+    <div className={`flex flex-col h-full ${isDarkSidebar ? 'bg-[#0c0c0f] border-r border-[#272730] text-white' : 'bg-surface dark:bg-surface-dark border-r border-line dark:border-line-dark text-ink dark:text-ink-dark'} transition-all duration-300 ${isExpanded ? 'w-64' : 'w-16'}`}>
+      <div className={`flex items-center justify-between h-16 px-4 border-b ${isDarkSidebar ? 'border-[#272730]' : 'border-line dark:border-line-dark'} shrink-0 overflow-hidden`}>
         <div className="flex items-center gap-2.5 min-w-0">
           <img src="/logo.png" alt="Elite Edu" className="w-8 h-8 object-contain shrink-0 drop-shadow-sm" />
           {isExpanded && (

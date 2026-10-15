@@ -66,6 +66,7 @@ const StudentsList = () => {
               onDelete={setStudentToDelete}
               onView={setViewStudent}
               onOpenLedger={setLedgerStudent}
+              onOpenAdmissionLetter={(s) => navigate(`/admin/students/admission-letter?studentId=${s._id}`)}
             />
             <StudentPagination
               currentPage={page}

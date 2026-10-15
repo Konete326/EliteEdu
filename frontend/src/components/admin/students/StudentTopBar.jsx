@@ -1,4 +1,4 @@
-import { Plus, Search, X } from 'lucide-react';
+import { Plus, Search, X, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const StudentTopBar = ({
@@ -74,6 +74,14 @@ const StudentTopBar = ({
             </option>
           ))}
         </select>
+
+        <Link
+          to="/admin/students/admission-letter"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-line dark:border-white/10 hover:border-primary text-ink-sub dark:text-ink-sub-dark hover:text-primary dark:hover:text-primary-dark text-xs sm:text-sm font-semibold transition-all shadow-xs shrink-0"
+        >
+          <FileText className="w-4 h-4 text-primary" />
+          <span>Admission Letters</span>
+        </Link>
 
         <Link
           to="/admin/students/new"

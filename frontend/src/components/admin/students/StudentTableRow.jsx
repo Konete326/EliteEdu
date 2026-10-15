@@ -1,6 +1,6 @@
 import { FileText, Calendar, Pencil, Trash2, Eye } from 'lucide-react';
 
-const StudentTableRow = ({ student, onEdit, onDelete, onView, onOpenLedger, onOpenAttendance }) => {
+const StudentTableRow = ({ student, onEdit, onDelete, onView, onOpenLedger, onOpenAttendance, onOpenAdmissionLetter }) => {
   const initials = student.name ? student.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) : 'ST';
   const admissionDateStr = student.admission_date ? new Date(student.admission_date).toLocaleDateString() : '—';
 
@@ -71,6 +71,9 @@ const StudentTableRow = ({ student, onEdit, onDelete, onView, onOpenLedger, onOp
       </td>
       <td className="px-5 py-3.5 text-right">
         <div className="flex items-center justify-end gap-1">
+          <button type="button" onClick={() => onOpenAdmissionLetter(student)} title="Admission Letter" className="p-1.5 rounded-lg text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20">
+            <FileText className="w-4 h-4 text-primary" />
+          </button>
           <button type="button" onClick={() => onView(student)} title="View Details" className="p-1.5 rounded-lg text-ink-muted hover:text-ink dark:hover:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#1f1f1f]">
             <Eye className="w-4 h-4" />
           </button>
