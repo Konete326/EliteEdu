@@ -6,21 +6,17 @@ const Style2Card = ({ student, config = {} }) => {
   const campusName = school.name || campus.name || 'ELITE EDUCATIONAL SYSTEM';
   const logo = school.logo_url || campus.logo;
   const grNumber = student?.gr_number || '0000';
-  const className = `${student?.current_grade?.name || 'Class'}${student?.current_section ? ` (${student.current_section})` : ''}`;
+  const rawGrade = student?.current_grade?.name || '1';
+  const cleanGrade = rawGrade.replace(/^class\s*/i, '');
+  const className = `${cleanGrade}${student?.current_section ? ` (${student.current_section})` : ''}`;
   const doa = student?.admission_date
     ? new Date(student.admission_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
     : '—';
   const initials = student?.name ? student.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() : 'ST';
-  const verifyUrl = generateStudentVerifyUrl(student?._id);
+  const verifyUrl = generateStudentVerifyUrl(student);
 
   return (
     <div className="w-full bg-white dark:bg-[#0c0c0f] text-black dark:text-white border-2 border-black dark:border-white/30 rounded-lg p-3 flex flex-col justify-between shadow-xs select-none print:border-black print:text-black print:bg-white h-[340px] sm:h-[350px] relative">
-      {logo && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.06] select-none z-0">
-          <img src={logo} alt="" className="w-28 h-28 object-contain filter grayscale" />
-        </div>
-      )}
-
       <div className="border-b-2 border-black dark:border-white/20 pb-2 flex items-start justify-between gap-1 print:border-black relative z-10">
         <div className="flex items-center gap-1.5 min-w-0">
           {logo && (
@@ -68,10 +64,6 @@ const Style2Card = ({ student, config = {} }) => {
               {renderSvgQrCode(verifyUrl, 38)}
             </a>
           )}
-          <div className="flex items-center gap-0.5 text-[6.5px] font-semibold text-ink-muted/50 dark:text-ink-muted-dark/50 select-none">
-            <img src="/logo.png" alt="" className="w-2 h-2 object-contain opacity-50" />
-            <span>EliteEdu</span>
-          </div>
         </div>
       </div>
     </div>

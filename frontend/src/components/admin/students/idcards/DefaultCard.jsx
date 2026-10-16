@@ -10,21 +10,17 @@ const DefaultCard = ({ student, config = {} }) => {
   const semis = campus.semis_code || school.affiliation_number || '408110114';
   const motto = config.motto || school.slogan || '';
   const grNumber = student?.gr_number || '0000';
-  const className = `${student?.current_grade?.name || 'Grade-1'}${student?.current_section ? ` (${student.current_section})` : ''}`;
+  const rawGrade = student?.current_grade?.name || 'Grade-1';
+  const cleanGrade = rawGrade.replace(/^class\s*/i, '');
+  const className = `${cleanGrade}${student?.current_section ? ` (${student.current_section})` : ''}`;
   const doa = student?.admission_date
     ? new Date(student.admission_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
     : '—';
   const initials = student?.name ? student.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() : 'ST';
-  const verifyUrl = generateStudentVerifyUrl(student?._id);
+  const verifyUrl = generateStudentVerifyUrl(student);
 
   return (
     <div className="w-full bg-white dark:bg-[#0e0e12] text-black dark:text-white border-2 border-line dark:border-white/20 rounded-xl p-2.5 flex flex-col justify-between shadow-xs select-none print:border-black print:text-black print:bg-white print:shadow-none overflow-hidden h-[340px] sm:h-[350px] relative">
-      {logo && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.06] select-none z-0">
-          <img src={logo} alt="" className="w-28 h-28 object-contain filter grayscale" />
-        </div>
-      )}
-
       <div className="text-center space-y-0.5 border-b border-black/10 dark:border-white/10 pb-1.5 relative z-10">
         <div className="w-6 h-6 mx-auto rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-[10px] print:border print:border-black overflow-hidden">
           {logo ? <img src={logo} alt="Logo" className="w-full h-full object-contain" /> : '🎓'}
@@ -79,10 +75,6 @@ const DefaultCard = ({ student, config = {} }) => {
               {renderSvgQrCode(verifyUrl, 42)}
             </a>
           )}
-        </div>
-        <div className="flex items-center justify-end gap-0.5 text-[6.5px] font-semibold text-ink-muted/50 dark:text-ink-muted-dark/50 select-none">
-          <img src="/logo.png" alt="" className="w-2 h-2 object-contain opacity-50" />
-          <span>EliteEdu</span>
         </div>
       </div>
     </div>

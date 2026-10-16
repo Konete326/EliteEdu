@@ -68,7 +68,8 @@ export const drawTeacherCardFront = (page, coords, teacher, fonts, style = 'Govt
   });
 
   textY -= 10;
-  const desig = `${teacher?.designation || 'Staff'} ${teacher?.bps_grade ? `(BPS-${teacher.bps_grade})` : ''}`;
+  const bpsNum = teacher?.bps_grade ? String(teacher.bps_grade).replace(/^BPS[-_\s]*/i, '').trim() : '';
+  const desig = `${teacher?.designation || 'Staff'} ${bpsNum ? `(BPS-${bpsNum})` : ''}`;
   page.drawText(`Designation: ${desig}`, {
     x: textX, y: textY, size: 6.5, font: bold, color: rgb(0.15, 0.15, 0.15)
   });
@@ -109,8 +110,5 @@ export const drawTeacherCardFront = (page, coords, teacher, fonts, style = 'Govt
   });
   page.drawText('Issuing Authority', {
     x: x + 197, y: y + 11, size: 5, font: bold, color: headerColor
-  });
-  page.drawText('EliteEdu', {
-    x: x + width - 26, y: y + 3, size: 4.5, font: regular, color: rgb(0.5, 0.5, 0.5)
   });
 };

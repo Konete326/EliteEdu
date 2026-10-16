@@ -48,7 +48,7 @@ const verifyStudent = async (req, res, next) => {
         campus_name: student.campus_id?.name || student.school_id?.name || 'Campus APWA GBSS J-1',
         campus_address: student.campus_id?.address || 'Area Korangi, Karachi',
         campus_phone: student.campus_id?.contact_number || '03422667599',
-        campus_website: student.campus_id?.website || 'https://eliteedu.pk',
+        campus_website: student.campus_id?.website || 'https://elitedev-edu.vercel.app',
         semis_code: student.campus_id?.semis_code || '408110114',
         area: student.campus_id?.area || 'KORANGI'
       }

@@ -7,22 +7,18 @@ const Style1Card = ({ student, config = {} }) => {
   const campusName = school.name || campus.name || 'APWA GBSS J-1';
   const logo = school.logo_url || campus.logo;
   const grNumber = student?.gr_number || '0000';
-  const className = `${student?.current_grade?.name || 'Class'}${student?.current_section ? `-${student.current_section}` : ''}`;
+  const rawGrade = student?.current_grade?.name || '1';
+  const cleanGrade = rawGrade.replace(/^class\s*/i, '');
+  const className = `${cleanGrade}${student?.current_section ? `-${student.current_section}` : ''}`;
   const doa = student?.admission_date
     ? new Date(student.admission_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
     : '—';
   const initials = student?.name ? student.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() : 'ST';
-  const verifyUrl = generateStudentVerifyUrl(student?._id);
+  const verifyUrl = generateStudentVerifyUrl(student);
   const accentColor = config.accentColor || '#3b82f6';
 
   return (
     <div className="w-full bg-white dark:bg-[#0e0e12] text-black dark:text-white border border-line dark:border-white/20 rounded-2xl overflow-hidden flex flex-col justify-between shadow-xs select-none print:border-black print:text-black print:bg-white print:shadow-none h-[340px] sm:h-[350px] relative">
-      {logo && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.06] select-none z-0">
-          <img src={logo} alt="" className="w-28 h-28 object-contain filter grayscale" />
-        </div>
-      )}
-
       <div style={{ backgroundColor: accentColor }} className="p-2 text-white text-center relative print:bg-black print:text-white flex items-center justify-center gap-1.5 z-10">
         {logo && (
           <div className="w-5 h-5 rounded-full bg-white/20 p-0.5 shrink-0 flex items-center justify-center overflow-hidden">
@@ -69,10 +65,6 @@ const Style1Card = ({ student, config = {} }) => {
               {renderSvgQrCode(verifyUrl, 34)}
             </a>
           )}
-          <div className="flex items-center gap-0.5 text-[6.5px] font-semibold text-ink-muted/50 dark:text-ink-muted-dark/50 select-none">
-            <img src="/logo.png" alt="" className="w-2 h-2 object-contain opacity-50" />
-            <span>EliteEdu</span>
-          </div>
         </div>
       </div>
     </div>

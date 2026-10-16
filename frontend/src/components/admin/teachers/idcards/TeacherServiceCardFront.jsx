@@ -1,4 +1,4 @@
-import { renderSvgBarcode } from '../../../../utils/idCardCodeGenerator';
+import { renderSvgBarcode, formatBpsGrade } from '../../../../utils/idCardCodeGenerator';
 
 const TeacherServiceCardFront = ({ teacher, config = {}, style = 'GovtSindh' }) => {
   const campus = teacher?.campus_id || {};
@@ -32,10 +32,6 @@ const TeacherServiceCardFront = ({ teacher, config = {}, style = 'GovtSindh' }) 
       </div>
 
       <div className="p-2 flex-1 flex gap-2 relative">
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none">
-          <img src={schoolLogo} alt="Watermark" className="w-24 h-24 object-contain" />
-        </div>
-
         <div className="w-[24mm] flex flex-col items-center justify-between shrink-0 z-10">
           <div className="w-[22mm] h-[25mm] rounded border border-gray-400 bg-gray-50 flex items-center justify-center overflow-hidden shadow-xs">
             {teacher.photo_url ? (
@@ -72,7 +68,7 @@ const TeacherServiceCardFront = ({ teacher, config = {}, style = 'GovtSindh' }) 
             <div className="flex items-baseline gap-1">
               <span className="text-[6.5px] font-bold text-gray-500 uppercase tracking-wider shrink-0">Designation:</span>
               <span className="text-[8px] font-black uppercase truncate border-b border-gray-300 dark:border-gray-700 pb-0.5 flex-1 leading-none text-emerald-800 dark:text-emerald-400 print:text-black">
-                {teacher.designation || 'PST'} {teacher.bps_grade ? `(BPS-${teacher.bps_grade})` : ''}
+                {teacher.designation || 'PST'} {formatBpsGrade(teacher.bps_grade)}
               </span>
             </div>
 
@@ -93,10 +89,6 @@ const TeacherServiceCardFront = ({ teacher, config = {}, style = 'GovtSindh' }) 
             <div className="text-right">
               <div className="border-b border-gray-400 w-16 mb-0.5" />
               <p className="text-[6px] font-bold text-gray-600 dark:text-gray-400 uppercase">Holder's Signature</p>
-            </div>
-            <div className="flex items-center gap-0.5 text-[6.5px] font-semibold text-gray-400/80 dark:text-gray-500 select-none">
-              <img src="/logo.png" alt="" className="w-2 h-2 object-contain opacity-50" />
-              <span>EliteEdu</span>
             </div>
           </div>
         </div>

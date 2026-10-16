@@ -28,7 +28,7 @@ const StaffAttendanceRow = ({ item, onStatusChange, onTimeChange, onRemarksChang
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-xs font-bold text-ink dark:text-ink-dark truncate">{name}</span>
             <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
-              {staff.designation || 'Staff'} {staff.bps_grade ? `• BPS-${staff.bps_grade}` : ''}
+              {staff.designation || 'Staff'} {staff.bps_grade ? `• BPS-${String(staff.bps_grade).replace(/^BPS[-_\s]*/i, '').trim()}` : ''}
             </span>
             {marked_via === 'Card_Scan' && (
               <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600">

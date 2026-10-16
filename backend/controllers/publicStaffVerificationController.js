@@ -17,12 +17,13 @@ const verifyStaff = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Teacher / Staff record not found or expired' });
     }
 
+    const rawBps = teacher.bps_grade ? String(teacher.bps_grade).replace(/^BPS[-_\s]*/i, '').trim() : '14';
     const safeData = {
       _id: teacher._id,
       name: teacher.name,
       father_name: teacher.father_name || teacher.spouse_name || '',
       designation: teacher.designation || 'PST',
-      bps_grade: teacher.bps_grade || 'BPS-14',
+      bps_grade: `BPS-${rawBps}`,
       employee_code: teacher.employee_code || '',
       personal_id: teacher.personal_id || teacher.employee_code || '',
       photo_url: teacher.photo_url || '',
@@ -41,7 +42,7 @@ const verifyStaff = async (req, res, next) => {
         campus_name: teacher.campus_id?.name || 'Campus APWA GBSS J-1',
         campus_address: teacher.campus_id?.address || 'Area Korangi, Karachi',
         campus_phone: teacher.campus_id?.contact_number || '03422667599',
-        campus_website: teacher.campus_id?.website || 'https://eliteedu.pk'
+        campus_website: teacher.campus_id?.website || 'https://elitedev-edu.vercel.app'
       }
     };
 

@@ -74,7 +74,4 @@ export const drawTeacherCardBack = (page, coords, teacher, fonts, qrImage, style
   page.drawText('IF FOUND PLEASE DROP IN THE LETTER BOX', {
     x: x + (width / 2) - 58, y: y + 4, size: 5.5, font: bold, color: rgb(1, 1, 1)
   });
-  page.drawText('EliteEdu', {
-    x: x + width - 26, y: y + 4, size: 4.5, font: regular, color: rgb(0.8, 0.8, 0.8)
-  });
 };

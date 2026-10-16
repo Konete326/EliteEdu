@@ -43,6 +43,7 @@ const StaffEmergencyVerifyPage = () => {
   const isActive = status === 'Active';
   const appDate = appointment_date ? new Date(appointment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
   const initials = name ? name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() : 'ST';
+  const bpsNum = bps_grade ? String(bps_grade).replace(/^BPS[-_\s]*/i, '').trim() : '';
 
   return (
     <div className="min-h-screen bg-bg dark:bg-[#08080a] py-6 px-4 flex flex-col items-center">
@@ -72,7 +73,7 @@ const StaffEmergencyVerifyPage = () => {
               <h1 className="text-base sm:text-lg font-black text-ink dark:text-ink-dark truncate">{name}</h1>
               <p className="text-xs text-ink-muted truncate">S/O, D/O, W/O {father_name || '—'}</p>
               <div className="pt-2 flex flex-wrap gap-2 text-xs">
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-primary/10 text-primary font-bold"><Award className="w-3.5 h-3.5" /> {designation} ({bps_grade})</span>
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-primary/10 text-primary font-bold"><Award className="w-3.5 h-3.5" /> {designation} {bpsNum ? `(BPS-${bpsNum})` : ''}</span>
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-surface-secondary text-ink-muted font-medium">Appointed: {appDate}</span>
               </div>
             </div>

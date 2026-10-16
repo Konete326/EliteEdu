@@ -89,7 +89,7 @@ const StaffServiceVerifyPage = () => {
             <div className="space-y-0.5 min-w-0">
               <h2 className="text-base font-extrabold text-ink dark:text-ink-dark truncate">{data.name}</h2>
               <p className="text-xs font-bold text-primary dark:text-primary-dark">
-                {data.designation} {data.bps_grade ? `(BPS-${data.bps_grade})` : ''}
+                {data.designation} {data.bps_grade ? `(BPS-${String(data.bps_grade).replace(/^BPS[-_\s]*/i, '').trim()})` : ''}
               </p>
               <p className="text-[11px] text-ink-muted font-mono">
                 Pers #: {data.personal_id || data.employee_code || '—'}

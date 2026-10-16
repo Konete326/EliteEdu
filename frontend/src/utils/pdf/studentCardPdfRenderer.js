@@ -56,7 +56,7 @@ export const drawStudentCard = (page, coords, student, fonts, qrImage) => {
   });
   textY -= 10;
   const gradeName = student?.current_grade?.name || student?.grade_name || 'Grade 10';
-  page.drawText(`Class: ${gradeName} (${student?.current_section || 'A'})`, {
+  page.drawText(`Class: ${gradeName.replace(/^class\s*/i, '')} (${student?.current_section || 'A'})`, {
     x: textX, y: textY, size: 6.5, font: bold, color: rgb(0.08, 0.25, 0.5)
   });
   textY -= 10;
@@ -79,8 +79,5 @@ export const drawStudentCard = (page, coords, student, fonts, qrImage) => {
   });
   page.drawText('OFFICIAL STUDENT IDENTITY CARD', {
     x: x + (width / 2) - 48, y: y + 4, size: 5.5, font: bold, color: rgb(0.1, 0.1, 0.1)
-  });
-  page.drawText('EliteEdu', {
-    x: x + width - 26, y: y + 4, size: 4.5, font: regular, color: rgb(0.25, 0.25, 0.25)
   });
 };

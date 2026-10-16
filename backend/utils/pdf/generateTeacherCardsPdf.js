@@ -4,7 +4,7 @@ const { A4_WIDTH, A4_HEIGHT, getCardCoordinates, getMirroredBackCoordinates, chu
 const { drawTeacherCardFront, drawTeacherCardBack } = require('./teacherCardPdfRenderer');
 const { createSignedOfflinePayload } = require('../cryptoPayload');
 
-const generateTeacherQrPng = async (teacher, baseUrl = 'https://eliteedu.pk') => {
+const generateTeacherQrPng = async (teacher, baseUrl = 'https://elitedev-edu.vercel.app') => {
   try {
     const payload = {
       id: String(teacher._id),

@@ -36,7 +36,8 @@ const drawTeacherCardFront = (page, coords, teacher, fonts, style = 'GovtSindh')
   textY -= 10;
   page.drawText(`S/o: ${teacher?.father_name || teacher?.spouse_name || '—'}`, { x: textX, y: textY, size: 6.5, font: regular, color: rgb(0.25, 0.25, 0.25) });
   textY -= 10;
-  const desig = `${teacher?.designation || 'Staff'} ${teacher?.bps_grade ? `(BPS-${teacher.bps_grade})` : ''}`;
+  const bpsNum = teacher?.bps_grade ? String(teacher.bps_grade).replace(/^BPS[-_\s]*/i, '').trim() : '';
+  const desig = `${teacher?.designation || 'Staff'} ${bpsNum ? `(BPS-${bpsNum})` : ''}`;
   page.drawText(`Designation: ${desig}`, { x: textX, y: textY, size: 6.5, font: bold, color: rgb(0.15, 0.15, 0.15) });
   textY -= 10;
   page.drawText(`Personal ID: ${teacher?.personal_id || teacher?.employee_code || '—'}`, { x: textX, y: textY, size: 6.5, font: bold, color: headerColor });
@@ -52,7 +53,6 @@ const drawTeacherCardFront = (page, coords, teacher, fonts, style = 'GovtSindh')
   page.drawText("Holder's Signature", { x: x + 115, y: y + 11, size: 5, font: regular, color: rgb(0.4, 0.4, 0.4) });
   page.drawLine({ start: { x: x + 190, y: y + 20 }, end: { x: x + 250, y: y + 20 }, thickness: 0.5, color: rgb(0.6, 0.6, 0.6) });
   page.drawText('Issuing Authority', { x: x + 197, y: y + 11, size: 5, font: bold, color: headerColor });
-  page.drawText('EliteEdu', { x: x + width - 26, y: y + 3, size: 4.5, font: regular, color: rgb(0.5, 0.5, 0.5) });
 };
 
 const drawTeacherCardBack = (page, coords, teacher, fonts, qrImage, style = 'GovtSindh') => {
@@ -106,7 +106,6 @@ const drawTeacherCardBack = (page, coords, teacher, fonts, qrImage, style = 'Gov
   const bColor = style === 'Institutional' ? rgb(0.08, 0.12, 0.2) : rgb(0.06, 0.35, 0.18);
   page.drawRectangle({ x: x + 1, y: y + 1, width: width - 2, height: 11, color: bColor });
   page.drawText('IF FOUND PLEASE DROP IN THE LETTER BOX', { x: x + (width / 2) - 58, y: y + 4, size: 5.5, font: bold, color: rgb(1, 1, 1) });
-  page.drawText('EliteEdu', { x: x + width - 26, y: y + 4, size: 4.5, font: regular, color: rgb(0.8, 0.8, 0.8) });
 };
 
 module.exports = { drawTeacherCardFront, drawTeacherCardBack };

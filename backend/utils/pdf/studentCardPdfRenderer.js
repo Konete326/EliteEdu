@@ -3,7 +3,7 @@ const QRCode = require('qrcode');
 const { A4_WIDTH, A4_HEIGHT, getCardCoordinates, chunkArray } = require('./cardPdfLayout');
 const { createSignedOfflinePayload } = require('../cryptoPayload');
 
-const generateStudentQrPng = async (student, baseUrl = 'https://eliteedu.pk') => {
+const generateStudentQrPng = async (student, baseUrl = 'https://elitedev-edu.vercel.app') => {
   try {
     const payload = {
       id: String(student._id),
@@ -50,7 +50,7 @@ const drawStudentCardNode = (page, coords, student, fonts, qrImage, options = {}
   page.drawText(`Father: ${student?.father_name || '—'}`, { x: tX, y: tY, size: 6.5, font: regular, color: rgb(0.25, 0.25, 0.25) });
   tY -= 10;
   const grName = student?.current_grade?.name || 'Grade 10';
-  page.drawText(`Class: ${grName} (${student?.current_section || 'A'})`, { x: tX, y: tY, size: 6.5, font: bold, color: rgb(0.08, 0.25, 0.5) });
+  page.drawText(`Class: ${grName.replace(/^class\s*/i, '')} (${student?.current_section || 'A'})`, { x: tX, y: tY, size: 6.5, font: bold, color: rgb(0.08, 0.25, 0.5) });
   tY -= 10;
   page.drawText(`GR #: ${student?.gr_number || '1001'}`, { x: tX, y: tY, size: 6.5, font: bold, color: rgb(0.1, 0.1, 0.1) });
   tY -= 10;
@@ -63,7 +63,6 @@ const drawStudentCardNode = (page, coords, student, fonts, qrImage, options = {}
 
   page.drawRectangle({ x: x + 1, y: y + 1, width: width - 2, height: 11, color: rgb(0.85, 0.68, 0.15) });
   page.drawText('OFFICIAL STUDENT IDENTITY CARD', { x: x + (width / 2) - 48, y: y + 4, size: 5.5, font: bold, color: rgb(0.1, 0.1, 0.1) });
-  page.drawText('EliteEdu', { x: x + width - 26, y: y + 4, size: 4.5, font: regular, color: rgb(0.25, 0.25, 0.25) });
 };
 
 const generateStudentCardsPdf = async (students, options = {}) => {

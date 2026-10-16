@@ -1,11 +1,11 @@
 import QRCode from 'qrcode';
 import { packStaffOfflinePayload, packStudentOfflinePayload } from './idCardOfflinePayload';
 
+const DEPLOYED_BASE_URL = 'https://elitedev-edu.vercel.app';
+
 export const generateStudentVerifyUrl = (student) => {
   const studentId = typeof student === 'object' ? student?._id : student;
-  const baseUrl = typeof window !== 'undefined' && window.location?.origin
-    ? `${window.location.origin}/verify/student/${studentId}`
-    : `https://eliteedu.pk/verify/student/${studentId}`;
+  const baseUrl = `${DEPLOYED_BASE_URL}/verify/student/${studentId}`;
 
   if (typeof student === 'object') {
     const offline = packStudentOfflinePayload(student);
@@ -16,9 +16,7 @@ export const generateStudentVerifyUrl = (student) => {
 
 export const generateStaffVerifyUrl = (staff) => {
   const staffId = typeof staff === 'object' ? staff?._id : staff;
-  const baseUrl = typeof window !== 'undefined' && window.location?.origin
-    ? `${window.location.origin}/verify/staff/${staffId}`
-    : `https://eliteedu.pk/verify/staff/${staffId}`;
+  const baseUrl = `${DEPLOYED_BASE_URL}/verify/staff/${staffId}`;
 
   if (typeof staff === 'object') {
     const offline = packStaffOfflinePayload(staff);
@@ -63,9 +61,15 @@ export const renderSvgBarcode = (value = '10001', width = 90, height = 22) => {
   );
 };
 
+export const formatBpsGrade = (grade) => {
+  if (!grade) return '';
+  const num = String(grade).replace(/^BPS[-_\s]*/i, '').trim();
+  return num ? `(BPS-${num})` : '';
+};
+
 export const renderSvgQrCode = (url, size = 52) => {
   try {
-    const qr = QRCode.create(url || 'https://eliteedu.pk', { errorCorrectionLevel: 'M' });
+    const qr = QRCode.create(url || DEPLOYED_BASE_URL, { errorCorrectionLevel: 'M' });
     const moduleCount = qr.modules.size;
     let path = '';
     for (let r = 0; r < moduleCount; r++) {

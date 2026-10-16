@@ -26,7 +26,7 @@ const TeacherProfileHero = ({ teacher }) => {
               {teacher.name}
             </h1>
             <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary text-white shadow-xs">
-              {teacher.designation || 'Faculty Member'} {teacher.bps_grade ? `(BPS-${teacher.bps_grade})` : ''}
+              {teacher.designation || 'Faculty Member'} {teacher.bps_grade ? `(BPS-${String(teacher.bps_grade).replace(/^BPS[-_\s]*/i, '').trim()})` : ''}
             </span>
           </div>
 

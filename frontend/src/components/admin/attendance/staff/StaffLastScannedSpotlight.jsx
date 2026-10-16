@@ -47,7 +47,7 @@ const StaffLastScannedSpotlight = ({ staff, scanTime, attendance }) => {
           </div>
           <div className="flex items-center gap-2 pt-0.5 flex-wrap">
             <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-primary/10 text-primary border border-primary/20">
-              {staff.designation || 'Staff'} {staff.bps_grade ? `(BPS-${staff.bps_grade})` : ''}
+              {staff.designation || 'Staff'} {staff.bps_grade ? `(BPS-${String(staff.bps_grade).replace(/^BPS[-_\s]*/i, '').trim()})` : ''}
             </span>
             {staff.employee_code && (
               <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark text-ink dark:text-ink-dark">
