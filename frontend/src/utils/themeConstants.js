@@ -37,32 +37,32 @@ export const HEADER_BG_PRESETS = [
     label: 'Red',
     previewBg: '#dc2626',
     activeColor: '#dc2626',
-    headerClass: 'bg-gradient-to-r from-[#b91c1c] to-[#dc2626] text-white border-b border-red-800',
-    sidebarClass: 'bg-[#991b1b] text-white border-r border-red-950'
+    headerClass: 'bg-[#dc2626] text-white border-b border-red-700/50',
+    sidebarClass: 'bg-[#dc2626] text-white border-r border-red-700/50'
   },
   {
     id: 'dark-green',
     label: 'Dark Green',
     previewBg: '#064e3b',
     activeColor: '#15803d',
-    headerClass: 'bg-gradient-to-r from-[#064e3b] to-[#047857] text-white border-b border-emerald-900',
-    sidebarClass: 'bg-[#064e3b] text-white border-r border-emerald-950'
+    headerClass: 'bg-[#064e3b] text-white border-b border-emerald-900/60',
+    sidebarClass: 'bg-[#064e3b] text-white border-r border-emerald-900/60'
   },
   {
     id: 'green',
     label: 'Green',
     previewBg: '#10b981',
     activeColor: '#10b981',
-    headerClass: 'bg-gradient-to-r from-[#059669] to-[#10b981] text-white border-b border-emerald-700',
-    sidebarClass: 'bg-[#047857] text-white border-r border-emerald-800'
+    headerClass: 'bg-[#10b981] text-white border-b border-emerald-600/50',
+    sidebarClass: 'bg-[#10b981] text-white border-r border-emerald-600/50'
   },
   {
     id: 'blue',
     label: 'Blue',
     previewBg: '#2563eb',
     activeColor: '#2563eb',
-    headerClass: 'bg-gradient-to-r from-[#1d4ed8] to-[#2563eb] text-white border-b border-blue-700',
-    sidebarClass: 'bg-[#1e40af] text-white border-r border-blue-900'
+    headerClass: 'bg-[#2563eb] text-white border-b border-blue-600/50',
+    sidebarClass: 'bg-[#2563eb] text-white border-r border-blue-600/50'
   },
   {
     id: 'white',

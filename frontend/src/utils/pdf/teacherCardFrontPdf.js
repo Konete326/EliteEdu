@@ -11,16 +11,27 @@ export const drawTeacherCardFront = (page, coords, teacher, fonts, style = 'Govt
     borderWidth: 0.8
   });
 
+  const campus = teacher?.campus_id || {};
+  const school = teacher?.school_id || {};
+  let userSchool = {};
+  try {
+    const raw = localStorage.getItem('user');
+    if (raw) userSchool = JSON.parse(raw) || {};
+  } catch (e) {}
+
+  const schoolName = (school?.name || userSchool?.school_name || campus?.name || 'ELITE EDUCATIONAL SYSTEM').toUpperCase();
+  const slogan = (school?.slogan || userSchool?.school_slogan || campus?.motto || 'Strive for Excellence').toUpperCase();
+
   const headerColor = style === 'Institutional' ? rgb(0.08, 0.12, 0.2) : rgb(0.06, 0.35, 0.18);
   page.drawRectangle({
     x: x + 1, y: y + height - 25, width: width - 2, height: 24,
     color: headerColor
   });
 
-  page.drawText('GOVERNMENT OF SINDH', {
+  page.drawText(schoolName.slice(0, 36), {
     x: x + 25, y: y + height - 11, size: 7.5, font: bold, color: rgb(1, 1, 1)
   });
-  page.drawText('SCHOOL EDUCATION & LITERACY DEPARTMENT', {
+  page.drawText(slogan.slice(0, 48), {
     x: x + 25, y: y + height - 19, size: 5.5, font: regular, color: rgb(0.9, 0.9, 0.9)
   });
 

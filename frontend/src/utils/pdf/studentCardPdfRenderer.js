@@ -5,7 +5,14 @@ export const drawStudentCard = (page, coords, student, fonts, qrImage) => {
   const { bold, regular } = fonts;
   const campus = student?.campus_id || {};
   const school = student?.school_id || {};
-  const schoolName = (school.name || campus.name || 'INSTITUTION').toUpperCase();
+  let userSchool = {};
+  try {
+    const raw = localStorage.getItem('user');
+    if (raw) userSchool = JSON.parse(raw) || {};
+  } catch (e) {}
+
+  const schoolName = (school.name || userSchool?.school_name || campus.name || 'INSTITUTION').toUpperCase();
+  const slogan = (school.slogan || userSchool?.school_slogan || campus.motto || 'Strive for Excellence').toUpperCase();
 
   page.drawRectangle({
     x, y, width, height,
@@ -21,7 +28,7 @@ export const drawStudentCard = (page, coords, student, fonts, qrImage) => {
   page.drawText(schoolName.slice(0, 36), {
     x: x + 12, y: y + height - 12, size: 7.5, font: bold, color: rgb(1, 1, 1)
   });
-  page.drawText(campus.name || 'CAMPUS APWA GBSS J-1 AREA', {
+  page.drawText(slogan.slice(0, 48), {
     x: x + 12, y: y + height - 20, size: 5.5, font: regular, color: rgb(0.85, 0.9, 1)
   });
 

@@ -11,10 +11,15 @@ const drawTeacherCardFront = (page, coords, teacher, fonts, style = 'GovtSindh')
     borderWidth: 0.8
   });
 
+  const campus = teacher?.campus_id || {};
+  const school = teacher?.school_id || {};
+  const schoolName = (school?.name || campus?.name || 'ELITE EDUCATIONAL SYSTEM').toUpperCase();
+  const slogan = (school?.slogan || campus?.motto || 'Strive for Excellence').toUpperCase();
+
   const headerColor = style === 'Institutional' ? rgb(0.08, 0.12, 0.2) : rgb(0.06, 0.35, 0.18);
   page.drawRectangle({ x: x + 1, y: y + height - 25, width: width - 2, height: 24, color: headerColor });
-  page.drawText('GOVERNMENT OF SINDH', { x: x + 25, y: y + height - 11, size: 7.5, font: bold, color: rgb(1, 1, 1) });
-  page.drawText('SCHOOL EDUCATION & LITERACY DEPARTMENT', { x: x + 25, y: y + height - 19, size: 5.5, font: regular, color: rgb(0.9, 0.9, 0.9) });
+  page.drawText(schoolName.slice(0, 36), { x: x + 25, y: y + height - 11, size: 7.5, font: bold, color: rgb(1, 1, 1) });
+  page.drawText(slogan.slice(0, 48), { x: x + 25, y: y + height - 19, size: 5.5, font: regular, color: rgb(0.9, 0.9, 0.9) });
 
   page.drawRectangle({ x: x + 1, y: y + height - 34, width: width - 2, height: 9, color: rgb(0.85, 0.68, 0.15) });
   page.drawText('SERVICE IDENTITY CARD', { x: x + (width / 2) - 42, y: y + height - 32, size: 6, font: bold, color: rgb(0.1, 0.1, 0.1) });

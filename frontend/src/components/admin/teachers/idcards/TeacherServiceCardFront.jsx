@@ -3,11 +3,15 @@ import { renderSvgBarcode } from '../../../../utils/idCardCodeGenerator';
 const TeacherServiceCardFront = ({ teacher, config = {}, style = 'GovtSindh' }) => {
   const campus = teacher?.campus_id || {};
   const school = teacher?.school_id || {};
-  const isGovt = style === 'GovtSindh' || school?.school_type === 'Government';
+  let userSchool = {};
+  try {
+    const raw = localStorage.getItem('user');
+    if (raw) userSchool = JSON.parse(raw) || {};
+  } catch (e) {}
 
-  const schoolLogo = school?.logo_url || campus?.logo || '/logo.png';
-  const headerTitle = isGovt ? 'EDUCATION DEPARTMENT' : (school.name || 'ELITE EDUCATIONAL SYSTEM');
-  const headerSubtitle = isGovt ? 'GOVERNMENT OF SINDH' : (campus.name || 'INSTITUTIONAL SERVICE CARD');
+  const schoolLogo = school?.logo_url || userSchool?.school_logo || campus?.logo || '/logo.png';
+  const schoolName = (school?.name || userSchool?.school_name || campus?.name || 'ELITE EDUCATIONAL SYSTEM').toUpperCase();
+  const slogan = (school?.slogan || userSchool?.school_slogan || campus?.motto || 'Strive for Excellence').toUpperCase();
 
   const persId = teacher.personal_id || teacher.employee_code || '11034103';
   const cnicVal = teacher.cnic || '42201-9863289-3';
@@ -18,9 +22,9 @@ const TeacherServiceCardFront = ({ teacher, config = {}, style = 'GovtSindh' }) 
         <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center shrink-0 overflow-hidden">
           <img src={schoolLogo} alt="Emblem" className="w-4 h-4 object-contain" />
         </div>
-        <div className="text-center leading-tight flex-1 px-1">
-          <p className="font-black text-[9px] tracking-wide uppercase">{headerTitle}</p>
-          <p className="font-bold text-[7.5px] opacity-90 tracking-wider">{headerSubtitle}</p>
+        <div className="text-center leading-tight flex-1 px-1 min-w-0">
+          <p className="font-black text-[9px] tracking-wide uppercase truncate">{schoolName}</p>
+          <p className="font-bold text-[7.5px] opacity-90 tracking-wider truncate">{slogan}</p>
         </div>
         <span className="px-1.5 py-0.5 rounded text-[7px] font-black uppercase tracking-wider bg-emerald-700 text-emerald-100">
           SERVICE CARD

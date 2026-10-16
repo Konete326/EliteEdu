@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useSystemLogs } from '../../hooks/useSystemLogs';
-import LogsHeaderBar from '../../components/common/logs/LogsHeaderBar';
-import LogsKpiGrid from '../../components/common/logs/LogsKpiGrid';
-import LogsFilterBar from '../../components/common/logs/LogsFilterBar';
-import LogsTable from '../../components/common/logs/LogsTable';
-import LogInspectorPanel from '../../components/common/logs/LogInspectorPanel';
-import LogsModals from '../../components/common/logs/LogsModals';
+import LogsHeaderBar from '../../components/common/telemetry/LogsHeaderBar';
+import LogsKpiGrid from '../../components/common/telemetry/LogsKpiGrid';
+import LogsFilterBar from '../../components/common/telemetry/LogsFilterBar';
+import LogsTable from '../../components/common/telemetry/LogsTable';
+import LogInspectorPanel from '../../components/common/telemetry/LogInspectorPanel';
+import LogsModals from '../../components/common/telemetry/LogsModals';
 
 const SystemLogsPage = () => {
   const { user } = useAuth();

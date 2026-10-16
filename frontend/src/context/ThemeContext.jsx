@@ -10,8 +10,8 @@ export const ThemeProvider = ({ children }) => {
   const { user } = useAuth();
   const [settings, setSettings] = useState(() => {
     try {
-      const cached = localStorage.getItem('elite_theme_settings');
-      return cached ? { ...DEFAULT_THEME, ...JSON.parse(cached) } : DEFAULT_THEME;
+      const c = localStorage.getItem('elite_theme_settings');
+      return c ? { ...DEFAULT_THEME, ...JSON.parse(c) } : DEFAULT_THEME;
     } catch {
       return DEFAULT_THEME;
     }
@@ -21,22 +21,19 @@ export const ThemeProvider = ({ children }) => {
   const debounceRef = useRef(null);
 
   const applyThemeToDom = useCallback((t) => {
-    document.documentElement.classList.toggle('dark', t.mode === 'dark');
-    document.documentElement.setAttribute('data-bs-theme', t.mode);
-    document.documentElement.setAttribute('dir', t.placement || 'ltr');
-    document.documentElement.setAttribute('data-header-bg', t.headerBg || 'white');
-    document.documentElement.setAttribute('data-sidebar-bg', t.headerBg || 'white');
-
+    const d = document.documentElement;
+    d.classList.toggle('dark', t.mode === 'dark');
+    d.setAttribute('data-bs-theme', t.mode);
+    d.setAttribute('dir', t.placement || 'ltr');
+    d.setAttribute('data-header-bg', t.headerBg || 'white');
+    d.setAttribute('data-sidebar-bg', t.headerBg || 'white');
     const meta = getActiveColorMeta(t.activeColor);
-    const root = document.documentElement.style;
-    root.setProperty('--color-primary', meta.hex);
-    root.setProperty('--color-primary-hover', meta.hover);
-    root.setProperty('--color-primary-soft', meta.soft);
+    d.style.setProperty('--color-primary', meta.hex);
+    d.style.setProperty('--color-primary-hover', meta.hover);
+    d.style.setProperty('--color-primary-soft', meta.soft);
   }, []);
 
-  useEffect(() => {
-    applyThemeToDom(settings);
-  }, [settings, applyThemeToDom]);
+  useEffect(() => { applyThemeToDom(settings); }, [settings, applyThemeToDom]);
 
   useEffect(() => {
     if (user?.theme_settings) {

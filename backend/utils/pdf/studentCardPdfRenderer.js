@@ -29,12 +29,13 @@ const drawStudentCardNode = (page, coords, student, fonts, qrImage, options = {}
   const { x, y, width, height } = coords;
   const { bold, regular } = fonts;
   const campus = student?.campus_id || {};
-  const schoolName = (options?.school?.name || 'ELITE EDU HIGHER SECONDARY SCHOOL').toUpperCase();
+  const schoolName = (options?.school?.name || campus?.name || 'ELITE EDU HIGHER SECONDARY SCHOOL').toUpperCase();
+  const slogan = (options?.school?.slogan || campus?.motto || 'Strive for Excellence').toUpperCase();
 
   page.drawRectangle({ x, y, width, height, color: rgb(1, 1, 1), borderColor: rgb(0.8, 0.8, 0.8), borderWidth: 0.8 });
   page.drawRectangle({ x: x + 1, y: y + height - 24, width: width - 2, height: 23, color: rgb(0.08, 0.25, 0.5) });
   page.drawText(schoolName.slice(0, 38), { x: x + 12, y: y + height - 12, size: 7.5, font: bold, color: rgb(1, 1, 1) });
-  page.drawText(campus.name || 'CAMPUS APWA GBSS J-1 AREA', { x: x + 12, y: y + height - 20, size: 5.5, font: regular, color: rgb(0.85, 0.9, 1) });
+  page.drawText(slogan.slice(0, 48), { x: x + 12, y: y + height - 20, size: 5.5, font: regular, color: rgb(0.85, 0.9, 1) });
 
   const pX = x + 8;
   const pY = y + 40;
