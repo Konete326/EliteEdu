@@ -14,7 +14,7 @@ const HeaderBgCard = () => {
             <Columns className="w-3.5 h-3.5 text-primary" />
             Header & Sidebar Theme
           </h2>
-          <p className="text-[11px] text-ink-sub dark:text-ink-sub-dark">Synchronize portal navigation color identity</p>
+          <p className="text-[11px] text-ink-sub dark:text-ink-sub-dark">Auto-synchronizes matching brand accent live</p>
         </div>
       </div>
 
@@ -47,7 +47,10 @@ const HeaderBgCard = () => {
                   </div>
                 </div>
               </div>
-              <span className="text-[11px] font-semibold text-ink dark:text-ink-dark truncate">{preset.label}</span>
+              <span className="text-[11px] font-semibold text-ink dark:text-ink-dark truncate flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full inline-block shrink-0" style={{ backgroundColor: preset.activeColor }} />
+                {preset.label}
+              </span>
             </button>
           );
         })}

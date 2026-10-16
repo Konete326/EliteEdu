@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
+const { verifySession } = require('../controllers/authSessionHelper');
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -11,10 +12,20 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (decoded.session_id) {
+      const { valid } = await verifySession(decoded.session_id);
+      if (!valid) {
+        return res.status(401).json({ message: 'Session revoked or expired. Please sign in again.' });
+      }
+    }
+
     req.user = {
       id: decoded.id,
+      name: decoded.name || 'User',
       role: decoded.role,
-      school_id: decoded.school_id
+      school_id: decoded.school_id,
+      school_name: decoded.school_name || 'Global / System',
+      session_id: decoded.session_id || null
     };
     next();
   } catch (error) {

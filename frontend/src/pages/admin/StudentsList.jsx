@@ -66,6 +66,7 @@ const StudentsList = () => {
               onDelete={setStudentToDelete}
               onView={setViewStudent}
               onOpenLedger={setLedgerStudent}
+              onOpenAttendance={(s) => navigate(`/admin/attendance/students?gradeId=${s.current_grade?._id || ''}&studentId=${s._id}`)}
               onOpenAdmissionLetter={(s) => navigate(`/admin/students/admission-letter?studentId=${s._id}`)}
               onOpenIdCard={(s) => navigate(`/admin/students/id-cards?studentId=${s._id}`)}
             />

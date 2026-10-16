@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import api from '../services/api';
 import { useAuth } from './AuthContext';
-import { DEFAULT_THEME, getActiveColorMeta } from '../utils/themeConstants';
+import { DEFAULT_THEME, getActiveColorMeta, HEADER_BG_PRESETS } from '../utils/themeConstants';
 import ThemeTransition from '../components/common/ThemeTransition';
 
 const ThemeContext = createContext(null);
@@ -86,7 +86,11 @@ export const ThemeProvider = ({ children }) => {
     triggerAnimation(() => {
       setSettings((prev) => {
         const next = { ...prev, [key]: value };
-        if (key === 'headerBg') next.sidebarBg = value;
+        if (key === 'headerBg') {
+          next.sidebarBg = value;
+          const match = HEADER_BG_PRESETS.find((p) => p.id === value);
+          if (match?.activeColor) next.activeColor = match.activeColor;
+        }
         localStorage.setItem('elite_theme_settings', JSON.stringify(next));
         if (key === 'mode') localStorage.setItem('theme', value);
         syncToBackend(next);

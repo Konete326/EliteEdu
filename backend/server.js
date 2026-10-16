@@ -14,6 +14,13 @@ const staffApplicantRoutes = require('./routes/staffApplicantRoutes');
 const gradingPolicyRoutes = require('./routes/gradingPolicyRoutes');
 const publicRoutes = require('./routes/publicRoutes');
 const teacherPortalRoutes = require('./routes/teacherPortalRoutes');
+const systemLogRoutes = require('./routes/systemLogRoutes');
+const userMgmtRoutes = require('./routes/userMgmtRoutes');
+const promotionRoutes = require('./routes/promotionRoutes');
+const signatureRoutes = require('./routes/signatureRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
+const staffAttendanceRoutes = require('./routes/staffAttendanceRoutes');
+const auditLogger = require('./middlewares/auditLogger');
 const sanitizePayload = require('./utils/sanitizePayload');
 const seedSuperAdmin = require('./utils/seedSuperAdmin');
 
@@ -44,6 +51,7 @@ app.use((req, res, next) => {
   }
   next();
 });
+app.use(auditLogger);
 
 let isDbConnected = false;
 const connectDB = async () => {
@@ -80,6 +88,12 @@ app.use(['/api/staff-applicants', '/staff-applicants'], staffApplicantRoutes);
 app.use(['/api/grading-policies', '/grading-policies'], gradingPolicyRoutes);
 app.use(['/api/public', '/public'], publicRoutes);
 app.use(['/api/teacher-portal', '/teacher-portal'], teacherPortalRoutes);
+app.use(['/api/logs', '/logs'], systemLogRoutes);
+app.use(['/api/user-management', '/user-management'], userMgmtRoutes);
+app.use(['/api/promotions', '/promotions'], promotionRoutes);
+app.use(['/api/signatures', '/signatures'], signatureRoutes);
+app.use(['/api/attendance', '/attendance'], attendanceRoutes);
+app.use(['/api/staff-attendance', '/staff-attendance'], staffAttendanceRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Server error:', err);

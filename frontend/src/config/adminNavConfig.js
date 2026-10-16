@@ -20,6 +20,7 @@ export const getAdminNavItems = (schoolType) => [
       { name: 'Students', path: '/admin/students' },
       { name: 'Admission Letter', path: '/admin/students/admission-letter' },
       { name: 'Student ID Cards', path: '/admin/students/id-cards' },
+      { name: 'Promote Students', path: '/admin/students/promote' },
       { name: 'Online Classes', path: '/admin/online-classes' },
       { name: 'News Feed', path: '/admin/news-feed' },
       { name: 'Consent', path: '/admin/consent' },
@@ -35,6 +36,7 @@ export const getAdminNavItems = (schoolType) => [
     icon: CalendarCheck,
     subItems: [
       { name: 'Student Attendance', path: '/admin/attendance/students' },
+      { name: 'Employees Attendance', path: '/admin/attendance/employees' },
       { name: 'Staff Attendance', path: '/admin/attendance/staff' },
       { name: 'Leave Request', path: '/admin/attendance/leave-request' },
       { name: 'Attendance Report', path: '/admin/attendance/report' }
@@ -143,7 +145,7 @@ export const getAdminNavItems = (schoolType) => [
       { name: 'Academic Reports', path: '/admin/reports/academic' },
       { name: 'Financial Reports', path: '/admin/reports/financial' },
       { name: 'Attendance Summary', path: '/admin/reports/attendance' },
-      { name: 'Audit Log', path: '/admin/reports/audit-log' }
+      { name: 'Audit Logs', path: '/admin/reports/audit-logs' }
     ]
   },
   {
@@ -152,7 +154,10 @@ export const getAdminNavItems = (schoolType) => [
     icon: Sliders,
     subItems: [
       { name: 'General Settings', path: '/admin/settings/general' },
+      { name: 'Digital Signatures & Stamps', path: '/admin/general-settings/signatures' },
       { name: 'Roles & Permissions', path: '/admin/settings/roles' },
+      { name: 'User Management', path: '/admin/control-panel/user-management' },
+      { name: 'Class Transfer', path: '/admin/control-panel/class-transfer' },
       { name: 'Theme & Branding', path: '/admin/control-panel/branding' },
       { name: 'Backup & Logs', path: '/admin/settings/backup' }
     ]
@@ -168,7 +173,8 @@ export const getNavCategories = (user) => {
       icon: LayoutGrid,
       subItems: [
         { name: 'Dashboard', path: '/superadmin' },
-        { name: 'Schools', path: '/superadmin/schools' }
+        { name: 'Schools', path: '/superadmin/schools' },
+        { name: 'System & Error Logs', path: '/superadmin/logs' }
       ]
     }];
   }
@@ -186,6 +192,11 @@ export const getNavCategories = (user) => {
     if (permissions.datesheet !== false) subItems.push({ name: 'Date Sheet', path: '/teacher/datesheet' });
     if (permissions.salary !== false) subItems.push({ name: 'My Salary', path: '/teacher/salary' });
     if (permissions.my_profile !== false) subItems.push({ name: 'My Profile', path: '/teacher/profile' });
+    if (permissions.student_promotion || permissions.class_transfer) subItems.push({ name: 'Promote Students', path: '/admin/students/promote' });
+    if (permissions.admission_letter) subItems.push({ name: 'Admission Letters', path: '/admin/students/admission-letter' });
+    if (permissions.student_id_cards) subItems.push({ name: 'Student ID Cards', path: '/admin/students/id-cards' });
+    if (permissions.teacher_id_cards) subItems.push({ name: 'Staff ID Cards', path: '/admin/teachers/id-cards' });
+    if (permissions.grading_policies) subItems.push({ name: 'Grading Policies', path: '/admin/exam-management/grading-policies' });
 
     return [{
       type: 'group',
@@ -199,25 +210,20 @@ export const getNavCategories = (user) => {
 
 export const getAllAdminRoutes = () => {
   const allGroups = getAdminNavItems('Private');
+  const excluded = new Set([
+    '/admin', '/admin/teachers', '/admin/teachers/id-cards', '/admin/campus', '/admin/subjects',
+    '/admin/grades', '/admin/students', '/admin/students/admission-letter', '/admin/students/id-cards',
+    '/admin/staff-applicants', '/admin/exam-management/grading-policies', '/admin/exams/grading-policies',
+    '/admin/settings/appearance', '/admin/control-panel/branding', '/admin/reports/audit-logs',
+    '/admin/reports/audit-log', '/admin/students/promote', '/admin/control-panel/class-transfer',
+    '/admin/control-panel/user-management', '/admin/settings/general', '/admin/general-settings/signatures',
+    '/admin/settings/signatures', '/admin/attendance/students', '/admin/attendance/staff',
+    '/admin/attendance/employees'
+  ]);
   const routes = [];
   allGroups.forEach((group) => {
     group.subItems.forEach((sub) => {
-      if (
-        sub.path !== '/admin' &&
-        sub.path !== '/admin/teachers' &&
-        sub.path !== '/admin/teachers/id-cards' &&
-        sub.path !== '/admin/campus' &&
-        sub.path !== '/admin/subjects' &&
-        sub.path !== '/admin/grades' &&
-        sub.path !== '/admin/students' &&
-        sub.path !== '/admin/students/admission-letter' &&
-        sub.path !== '/admin/students/id-cards' &&
-        sub.path !== '/admin/staff-applicants' &&
-        sub.path !== '/admin/exam-management/grading-policies' &&
-        sub.path !== '/admin/exams/grading-policies' &&
-        sub.path !== '/admin/settings/appearance' &&
-        sub.path !== '/admin/control-panel/branding'
-      ) {
+      if (!excluded.has(sub.path)) {
         routes.push(sub);
       }
     });
@@ -248,6 +254,12 @@ export const getRouteTitle = (pathname) => {
   if (pathname === '/superadmin') return 'Dashboard';
   if (pathname === '/superadmin/schools') return 'Schools';
   if (pathname === '/superadmin/schools/new') return 'New School';
+  if (pathname === '/superadmin/logs' || pathname === '/admin/reports/audit-logs' || pathname === '/admin/reports/audit-log') return 'System Telemetry & Audit Logs';
+  if (pathname === '/admin/students/promote' || pathname === '/admin/control-panel/class-transfer') return 'Promote Students & Class Transfer';
+  if (pathname === '/admin/control-panel/user-management') return 'User Management';
+  if (pathname === '/admin/general-settings/signatures' || pathname === '/admin/settings/signatures') return 'Digital Signatures & Stamps Studio';
+  if (pathname === '/admin/attendance/students') return 'Student Attendance';
+  if (pathname === '/admin/attendance/staff' || pathname === '/admin/attendance/employees') return 'Staff Attendance';
   if (pathname === '/teacher') return 'Faculty Dashboard';
   if (pathname === '/teacher/students') return 'My Classes & Students';
   if (pathname === '/teacher/attendance') return 'Attendance';

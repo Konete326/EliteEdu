@@ -1,4 +1,4 @@
-import { Plus, Search, X, CreditCard } from 'lucide-react';
+import { Plus, Search, X, CreditCard, CalendarCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const TeacherTopBar = ({
@@ -75,6 +75,14 @@ const TeacherTopBar = ({
         >
           <CreditCard className="w-4 h-4 text-primary" />
           <span>Service Cards</span>
+        </Link>
+
+        <Link
+          to="/admin/attendance/employees"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#141414] hover:bg-surface-secondary text-ink dark:text-ink-dark text-xs sm:text-sm font-semibold transition-all shadow-xs shrink-0"
+        >
+          <CalendarCheck className="w-4 h-4 text-primary" />
+          <span>Staff Attendance</span>
         </Link>
 
         <Link

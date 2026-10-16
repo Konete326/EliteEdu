@@ -56,7 +56,12 @@ const studentSchema = new mongoose.Schema(
     app_settings: { type: appSettingsSchema, default: () => ({}) },
     admin_notes: { type: String, trim: true, default: '' },
     additional_notes: { type: String, trim: true, default: '' },
-    documents: [documentSchema]
+    documents: [documentSchema],
+    previous_grade_name: { type: String, trim: true, default: '' },
+    last_promoted_at: { type: Date, default: null },
+    last_promotion_label: { type: String, trim: true, default: '' },
+    latest_exam_percentage: { type: Number, default: null },
+    promotion_status: { type: String, enum: ['Eligible', 'Promoted', 'Retained', 'Pending'], default: 'Pending' }
   },
   { timestamps: true }
 );

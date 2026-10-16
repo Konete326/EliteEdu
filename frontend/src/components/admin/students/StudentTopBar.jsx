@@ -76,6 +76,14 @@ const StudentTopBar = ({
         </select>
 
         <Link
+          to="/admin/students/promote"
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-line dark:border-white/10 hover:border-primary text-ink-sub dark:text-ink-sub-dark hover:text-primary dark:hover:text-primary-dark text-xs sm:text-sm font-semibold transition-all shadow-xs shrink-0"
+        >
+          <CreditCard className="w-4 h-4 text-primary" />
+          <span>Promote</span>
+        </Link>
+
+        <Link
           to="/admin/students/id-cards"
           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-line dark:border-white/10 hover:border-primary text-ink-sub dark:text-ink-sub-dark hover:text-primary dark:hover:text-primary-dark text-xs sm:text-sm font-semibold transition-all shadow-xs shrink-0"
         >
