@@ -128,6 +128,15 @@ export const useStudentForm = (id) => {
             documents: s.documents || [],
             app_settings: { ...INITIAL_FORM.app_settings, ...(s.app_settings || {}) }
           });
+        } else {
+          try {
+            const famRes = await api.get('/students/next-family-number');
+            if (famRes.data?.family_number) {
+              setFormData((prev) => ({ ...prev, family_number: famRes.data.family_number }));
+            }
+          } catch (e) {
+            setFormData((prev) => ({ ...prev, family_number: 'FAM-0001' }));
+          }
         }
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to initialize form data');
@@ -218,6 +227,17 @@ export const useStudentForm = (id) => {
     }
   };
 
+  const refreshFamilyNumber = async () => {
+    try {
+      const famRes = await api.get('/students/next-family-number');
+      if (famRes.data?.family_number) {
+        setFormData((prev) => ({ ...prev, family_number: famRes.data.family_number }));
+      }
+    } catch (e) {
+      setFormData((prev) => ({ ...prev, family_number: 'FAM-0001' }));
+    }
+  };
+
   return {
     formData,
     campuses,
@@ -233,6 +253,7 @@ export const useStudentForm = (id) => {
     handleNestedField,
     handleToggleAppSetting,
     handleToggleAllAppSettings,
-    handleToggleSubject
+    handleToggleSubject,
+    refreshFamilyNumber
   };
 };

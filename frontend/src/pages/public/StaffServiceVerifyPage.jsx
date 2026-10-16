@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../services/api';
-import { ShieldCheck, ShieldAlert, Award, Building2, Calendar, Phone, ArrowLeft, Mail } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, WifiOff, ArrowLeft } from 'lucide-react';
+import { resolveOfflineStaffRecord } from '../../utils/offlineVerificationResolver';
+import StaffVerifyDetailsCard from '../../components/public/StaffVerifyDetailsCard';
 
 const StaffServiceVerifyPage = () => {
   const { id } = useParams();
@@ -13,10 +15,20 @@ const StaffServiceVerifyPage = () => {
     let isMounted = true;
     api.get(`/public/verify-staff/${id}`)
       .then((res) => {
-        if (isMounted && res.data.success) setData(res.data.data);
+        if (isMounted && res.data.success) {
+          setData(res.data.data);
+          localStorage.setItem(`eliteedu_staff_${id}`, JSON.stringify(res.data.data));
+        }
       })
       .catch((err) => {
-        if (isMounted) setError(err.response?.data?.message || 'Verification link expired or invalid');
+        const offlineRecord = resolveOfflineStaffRecord(id);
+        if (isMounted) {
+          if (offlineRecord) {
+            setData(offlineRecord);
+          } else {
+            setError(err.response?.data?.message || 'Verification record not found offline');
+          }
+        }
       })
       .finally(() => {
         if (isMounted) setLoading(false);
@@ -57,16 +69,22 @@ const StaffServiceVerifyPage = () => {
                 <p className="text-[10px] text-ink-muted">Education Department Verification</p>
               </div>
             </div>
-            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-good/10 text-good border border-good/20">
-              <ShieldCheck className="w-3.5 h-3.5" /> Verified Staff
-            </span>
+            {data.isOffline ? (
+              <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                <WifiOff className="w-3.5 h-3.5" /> Offline Verified
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-good/10 text-good border border-good/20">
+                <ShieldCheck className="w-3.5 h-3.5" /> Verified Staff
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 overflow-hidden flex items-center justify-center font-bold text-lg text-primary shrink-0">
               {data.photo_url ? (
                 <img src={data.photo_url} alt={data.name} className="w-full h-full object-cover" />
-              ) : data.name[0]}
+              ) : (data.name ? data.name[0] : 'S')}
             </div>
             <div className="space-y-0.5 min-w-0">
               <h2 className="text-base font-extrabold text-ink dark:text-ink-dark truncate">{data.name}</h2>
@@ -79,24 +97,7 @@ const StaffServiceVerifyPage = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 text-xs pt-1">
-            <div className="p-2.5 rounded-xl bg-surface-secondary/40 dark:bg-white/[0.02] border border-line dark:border-line-dark">
-              <p className="text-[10px] font-bold text-ink-muted">Place of Posting</p>
-              <p className="font-bold text-ink dark:text-ink-dark mt-0.5 truncate">{data.institution?.campus_name}</p>
-            </div>
-            <div className="p-2.5 rounded-xl bg-surface-secondary/40 dark:bg-white/[0.02] border border-line dark:border-line-dark">
-              <p className="text-[10px] font-bold text-ink-muted">SEMIS Code</p>
-              <p className="font-mono font-bold text-ink dark:text-ink-dark mt-0.5">{data.semis_code || '408110114'}</p>
-            </div>
-            <div className="p-2.5 rounded-xl bg-surface-secondary/40 dark:bg-white/[0.02] border border-line dark:border-line-dark">
-              <p className="text-[10px] font-bold text-ink-muted">Blood Group</p>
-              <p className="font-bold text-red-600 mt-0.5">{data.blood_group || 'O+'}</p>
-            </div>
-            <div className="p-2.5 rounded-xl bg-surface-secondary/40 dark:bg-white/[0.02] border border-line dark:border-line-dark">
-              <p className="text-[10px] font-bold text-ink-muted">Service Status</p>
-              <p className="font-bold text-good mt-0.5">{data.status || 'Active'}</p>
-            </div>
-          </div>
+          <StaffVerifyDetailsCard data={data} />
         </div>
 
         <div className="text-center">

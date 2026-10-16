@@ -13,7 +13,7 @@ const StudentTopBar = ({
   totalCount
 }) => {
   return (
-    <div className="sticky top-0 z-20 flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-sm transition-all">
+    <div className="sticky top-[1px] z-20 mt-[1px] flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-sm transition-all">
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-1">
         <div>
           <div className="flex items-center gap-2">

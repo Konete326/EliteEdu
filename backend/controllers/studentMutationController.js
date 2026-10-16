@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 const Student = require('../models/Student');
 const { generateNextGrNumber } = require('../utils/grNumberGenerator');
+const { generateNextFamilyNumber } = require('../utils/familyNumberGenerator');
 const { sanitizeStudentPayload } = require('../utils/sanitizeData');
 
 const createStudent = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
-    const { name, father_name, gr_number, campus_id, serial_no, portal_username, portal_temp_password, ...rest } = req.body;
+    const { name, father_name, gr_number, campus_id, serial_no, portal_username, portal_temp_password, family_number, ...rest } = req.body;
     if (!name?.trim() || !father_name?.trim()) {
       return res.status(400).json({ message: 'Student Name and Father Name are required.' });
     }
@@ -18,6 +19,7 @@ const createStudent = async (req, res) => {
     }
 
     const finalGr = gr_number?.trim() || (await generateNextGrNumber(schoolId));
+    const finalFamily = family_number?.trim() || (await generateNextFamilyNumber(schoolId));
     const year = new Date().getFullYear();
     const finalSerial = serial_no?.trim() || `${year}-${finalGr}`;
     const cleanName = name.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8);
@@ -31,6 +33,7 @@ const createStudent = async (req, res) => {
       name: name.trim(),
       father_name: father_name.trim(),
       gr_number: finalGr,
+      family_number: finalFamily,
       serial_no: finalSerial,
       portal_username: finalUsername,
       portal_temp_password: finalPassword

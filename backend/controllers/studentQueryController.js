@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Student = require('../models/Student');
+const { generateNextFamilyNumber } = require('../utils/familyNumberGenerator');
 
 const getStudents = async (req, res) => {
   try {
@@ -29,6 +30,7 @@ const getStudents = async (req, res) => {
       Student.countDocuments(filter),
       Student.find(filter)
         .populate('campus_id', 'name address contact_number email website logo')
+        .populate('school_id', 'name school_type logo_url slogan contact_number address website affiliation_number')
         .populate('current_grade', 'name sections')
         .populate('subjects', 'name code')
         .sort({ createdAt: -1 })
@@ -48,7 +50,7 @@ const getStudentById = async (req, res) => {
     const schoolId = req.user?.school_id;
     const student = await Student.findOne({ _id: req.params.id, school_id: schoolId })
       .populate('campus_id', 'name address contact_number email website logo')
-      .populate('school_id', 'name school_type logo')
+      .populate('school_id', 'name school_type logo_url slogan contact_number address website affiliation_number')
       .populate('current_grade', 'name sections')
       .populate('grade_admitted', 'name sections')
       .populate('subjects', 'name code');
@@ -60,4 +62,14 @@ const getStudentById = async (req, res) => {
   }
 };
 
-module.exports = { getStudents, getStudentById };
+const getNextFamilyNumber = async (req, res) => {
+  try {
+    const schoolId = req.user?.school_id;
+    const nextFamilyNumber = await generateNextFamilyNumber(schoolId);
+    res.status(200).json({ success: true, family_number: nextFamilyNumber });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to generate family number', error: error.message });
+  }
+};
+
+module.exports = { getStudents, getStudentById, getNextFamilyNumber };

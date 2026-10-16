@@ -12,11 +12,14 @@ const {
   deleteTeacher,
   changeTeacherPassword
 } = require('../controllers/teacherActionController');
+const { exportTeacherCardsPdfHandler } = require('../controllers/teacherPdfController');
 
 const router = express.Router();
 
 router.use(authMiddleware, authorizeRoles('Admin'));
 
+router.get('/export-cards-pdf', exportTeacherCardsPdfHandler);
+router.post('/export-cards-pdf', exportTeacherCardsPdfHandler);
 router.get('/', getTeachers);
 router.get('/:id', getTeacherById);
 router.post('/', addTeacher);

@@ -4,7 +4,8 @@ import { renderSvgBarcode, renderSvgQrCode, generateStudentVerifyUrl } from '../
 const Style3Card = ({ student, config = {} }) => {
   const campus = student?.campus_id || {};
   const school = student?.school_id || {};
-  const campusName = campus.name || school.name || 'APWA GBSS J-1';
+  const campusName = school.name || campus.name || 'APWA GBSS J-1';
+  const logo = school.logo_url || campus.logo;
   const grNumber = student?.gr_number || '0000';
   const className = `${student?.current_grade?.name || 'Class'}${student?.current_section ? `-${student.current_section}` : ''}`;
   const doa = student?.admission_date
@@ -14,18 +15,24 @@ const Style3Card = ({ student, config = {} }) => {
   const verifyUrl = generateStudentVerifyUrl(student?._id);
 
   return (
-    <div className="w-full bg-white dark:bg-[#0c0c0f] text-black dark:text-white border-2 border-line dark:border-white/20 rounded-xl p-2.5 flex flex-col justify-between shadow-xs select-none print:border-black print:text-black print:bg-white h-[340px] sm:h-[350px]">
-      <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-1.5">
+    <div className="w-full bg-white dark:bg-[#0c0c0f] text-black dark:text-white border-2 border-line dark:border-white/20 rounded-xl p-2.5 flex flex-col justify-between shadow-xs select-none print:border-black print:text-black print:bg-white h-[340px] sm:h-[350px] relative">
+      {logo && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.06] select-none z-0">
+          <img src={logo} alt="" className="w-28 h-28 object-contain filter grayscale" />
+        </div>
+      )}
+
+      <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-1.5 relative z-10">
         <div className="flex items-center gap-1.5 min-w-0">
-          <div className="w-5 h-5 rounded-md bg-primary text-white flex items-center justify-center font-bold text-[9px]">
-            <GraduationCap className="w-3 h-3" />
+          <div className="w-5 h-5 rounded-md bg-primary text-white flex items-center justify-center font-bold text-[9px] overflow-hidden shrink-0">
+            {logo ? <img src={logo} alt="" className="w-full h-full object-contain" /> : <GraduationCap className="w-3 h-3" />}
           </div>
           <h4 className="text-[10px] font-black uppercase truncate">{campusName}</h4>
         </div>
-        <span className="text-[8px] font-mono font-bold px-1 rounded bg-black/5 dark:bg-white/10">ID CARD</span>
+        <span className="text-[8px] font-mono font-bold px-1 rounded bg-black/5 dark:bg-white/10 shrink-0">ID CARD</span>
       </div>
 
-      <div className="flex items-start gap-2 py-2">
+      <div className="flex items-start gap-2 py-2 relative z-10">
         <div className="space-y-1.5 shrink-0 flex flex-col items-center">
           <div className="w-16 h-20 rounded-lg border border-black/20 dark:border-white/20 overflow-hidden bg-surface-secondary flex items-center justify-center font-bold text-sm shadow-2xs">
             {student?.photo_url ? (
@@ -53,13 +60,19 @@ const Style3Card = ({ student, config = {} }) => {
         </div>
       </div>
 
-      <div className="pt-1.5 border-t border-black/10 dark:border-white/10 flex items-center justify-between">
+      <div className="pt-1.5 border-t border-black/10 dark:border-white/10 flex items-center justify-between relative z-10">
         <span className="text-[8px] font-bold text-ink-muted uppercase">Authorized Pass</span>
-        {config.showQr !== false && (
-          <a href={verifyUrl} target="_blank" rel="noreferrer" title="Click to verify">
-            {renderSvgQrCode(verifyUrl, 38)}
-          </a>
-        )}
+        <div className="flex items-center gap-1.5">
+          {config.showQr !== false && (
+            <a href={verifyUrl} target="_blank" rel="noreferrer" title="Click to verify">
+              {renderSvgQrCode(verifyUrl, 34)}
+            </a>
+          )}
+          <div className="flex items-center gap-0.5 text-[6.5px] font-semibold text-ink-muted/50 dark:text-ink-muted-dark/50 select-none">
+            <img src="/logo.png" alt="" className="w-2 h-2 object-contain opacity-50" />
+            <span>EliteEdu</span>
+          </div>
+        </div>
       </div>
     </div>
   );

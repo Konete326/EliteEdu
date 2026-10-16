@@ -18,6 +18,7 @@ const studentSchema = new mongoose.Schema(
     current_section: { type: String, trim: true, default: 'A' },
     gr_number: { type: String, required: true, trim: true },
     serial_no: { type: String, trim: true, default: '' },
+    family_number: { type: String, trim: true, default: '' },
     portal_username: { type: String, trim: true, default: '' },
     portal_temp_password: { type: String, trim: true, default: '' },
     name: { type: String, required: true, trim: true },

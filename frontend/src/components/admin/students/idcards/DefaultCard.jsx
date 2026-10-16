@@ -4,10 +4,11 @@ import { renderSvgBarcode, renderSvgQrCode, generateStudentVerifyUrl } from '../
 const DefaultCard = ({ student, config = {} }) => {
   const campus = student?.campus_id || {};
   const school = student?.school_id || {};
-  const campusName = campus.name || school.name || 'CAMPUS APWA GBSS J-1';
+  const campusName = school.name || campus.name || 'CAMPUS APWA GBSS J-1';
+  const logo = school.logo_url || campus.logo;
   const area = campus.area ? `AREA ${campus.area.toUpperCase()} SEMIS` : 'AREA KORANGI SEMIS';
-  const semis = campus.semis_code || '408110114';
-  const motto = config.motto || 'پڑھے گا سندھ بڑھے گا سندھ';
+  const semis = campus.semis_code || school.affiliation_number || '408110114';
+  const motto = config.motto || school.slogan || '';
   const grNumber = student?.gr_number || '0000';
   const className = `${student?.current_grade?.name || 'Grade-1'}${student?.current_section ? ` (${student.current_section})` : ''}`;
   const doa = student?.admission_date
@@ -17,22 +18,28 @@ const DefaultCard = ({ student, config = {} }) => {
   const verifyUrl = generateStudentVerifyUrl(student?._id);
 
   return (
-    <div className="w-full bg-white dark:bg-[#0e0e12] text-black dark:text-white border-2 border-line dark:border-white/20 rounded-xl p-2.5 flex flex-col justify-between shadow-xs select-none print:border-black print:text-black print:bg-white print:shadow-none overflow-hidden h-[340px] sm:h-[350px]">
-      <div className="text-center space-y-0.5 border-b border-black/10 dark:border-white/10 pb-1.5">
-        <div className="w-6 h-6 mx-auto rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-[10px] print:border print:border-black">
-          🎓
+    <div className="w-full bg-white dark:bg-[#0e0e12] text-black dark:text-white border-2 border-line dark:border-white/20 rounded-xl p-2.5 flex flex-col justify-between shadow-xs select-none print:border-black print:text-black print:bg-white print:shadow-none overflow-hidden h-[340px] sm:h-[350px] relative">
+      {logo && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.06] select-none z-0">
+          <img src={logo} alt="" className="w-28 h-28 object-contain filter grayscale" />
+        </div>
+      )}
+
+      <div className="text-center space-y-0.5 border-b border-black/10 dark:border-white/10 pb-1.5 relative z-10">
+        <div className="w-6 h-6 mx-auto rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-[10px] print:border print:border-black overflow-hidden">
+          {logo ? <img src={logo} alt="Logo" className="w-full h-full object-contain" /> : '🎓'}
         </div>
         <h4 className="text-[10px] font-black uppercase tracking-tight leading-tight line-clamp-1">{campusName}</h4>
         <p className="text-[8px] font-bold text-ink-muted uppercase leading-tight">{area}</p>
         <p className="text-[8px] font-mono font-bold leading-tight">{semis}</p>
-        {config.showMotto !== false && (
+        {config.showMotto !== false && Boolean(motto) && (
           <p className="text-[9px] font-bold text-primary dark:text-primary-dark font-urdu leading-tight pt-0.5 print:text-black">
             {motto}
           </p>
         )}
       </div>
 
-      <div className="flex flex-col items-center py-1">
+      <div className="flex flex-col items-center py-1 relative z-10">
         <div className="w-16 h-18 rounded-lg border-2 border-black/15 dark:border-white/20 overflow-hidden bg-surface-secondary flex items-center justify-center font-bold text-sm shadow-xs print:border-black">
           {student?.photo_url ? (
             <img src={student.photo_url} alt={student.name} className="w-full h-full object-cover" />
@@ -51,26 +58,32 @@ const DefaultCard = ({ student, config = {} }) => {
         </div>
       </div>
 
-      <div className="flex items-end justify-between gap-1 pt-1 border-t border-black/10 dark:border-white/10 text-[9px] font-bold">
-        <div className="space-y-0.5 min-w-0">
-          <p className="truncate"><span className="text-ink-muted font-normal">ID →</span> {grNumber}</p>
-          <p className="truncate"><span className="text-ink-muted font-normal">Class →</span> {className}</p>
-          <p className="truncate"><span className="text-ink-muted font-normal">DOA →</span> {doa}</p>
-          {config.showBloodGroup && student?.blood_group && (
-            <p className="text-red-600 dark:text-red-400 truncate"><span className="text-ink-muted font-normal">Blood:</span> {student.blood_group}</p>
+      <div className="flex flex-col gap-0.5 pt-1 border-t border-black/10 dark:border-white/10 text-[9px] font-bold relative z-10">
+        <div className="flex items-end justify-between gap-1">
+          <div className="space-y-0.5 min-w-0">
+            <p className="truncate"><span className="text-ink-muted font-normal">ID →</span> {grNumber}</p>
+            <p className="truncate"><span className="text-ink-muted font-normal">Class →</span> {className}</p>
+            <p className="truncate"><span className="text-ink-muted font-normal">DOA →</span> {doa}</p>
+            {config.showBloodGroup && student?.blood_group && (
+              <p className="text-red-600 dark:text-red-400 truncate"><span className="text-ink-muted font-normal">Blood:</span> {student.blood_group}</p>
+            )}
+          </div>
+          {config.showQr !== false && (
+            <a
+              href={verifyUrl}
+              target="_blank"
+              rel="noreferrer"
+              title="Scan or click to verify"
+              className="shrink-0 p-0.5 bg-white border border-black/10 rounded hover:scale-105 transition-transform cursor-pointer"
+            >
+              {renderSvgQrCode(verifyUrl, 42)}
+            </a>
           )}
         </div>
-        {config.showQr !== false && (
-          <a
-            href={verifyUrl}
-            target="_blank"
-            rel="noreferrer"
-            title="Scan or click to verify"
-            className="shrink-0 p-0.5 bg-white border border-black/10 rounded hover:scale-105 transition-transform cursor-pointer"
-          >
-            {renderSvgQrCode(verifyUrl, 44)}
-          </a>
-        )}
+        <div className="flex items-center justify-end gap-0.5 text-[6.5px] font-semibold text-ink-muted/50 dark:text-ink-muted-dark/50 select-none">
+          <img src="/logo.png" alt="" className="w-2 h-2 object-contain opacity-50" />
+          <span>EliteEdu</span>
+        </div>
       </div>
     </div>
   );

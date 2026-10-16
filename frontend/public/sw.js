@@ -25,9 +25,7 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   if (isLocalhost) {
-    event.waitUntil(
-      caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k)))).then(() => self.registration.unregister())
-    );
+    event.waitUntil(self.clients.claim());
     return;
   }
   event.waitUntil(
@@ -51,6 +49,21 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
   if (url.origin !== self.location.origin) {
+    return;
+  }
+
+  if (url.pathname.startsWith('/api/public/verify-')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open('eliteedu-verify-cache').then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.open('eliteedu-verify-cache').then((cache) => cache.match(event.request)))
+    );
     return;
   }
 

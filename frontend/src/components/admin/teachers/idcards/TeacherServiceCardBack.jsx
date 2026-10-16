@@ -3,7 +3,9 @@ import TeacherIdBackBoxes from './TeacherIdBackBoxes';
 
 const TeacherServiceCardBack = ({ teacher, config = {}, style = 'GovtSindh' }) => {
   const campus = teacher?.campus_id || {};
-  const verifyUrl = generateStaffVerifyUrl(teacher?._id);
+  const school = teacher?.school_id || {};
+  const schoolLogo = school?.logo_url || campus?.logo || '/logo.png';
+  const verifyUrl = generateStaffVerifyUrl(teacher);
 
   const bannerColor = style === 'Institutional' ? 'bg-slate-900 text-white' : 'bg-emerald-800 text-white';
   const dobStr = teacher?.dob ? new Date(teacher.dob).toLocaleDateString('en-GB').replace(/\//g, '-') : 'DD-MM-YYYY';
@@ -12,8 +14,14 @@ const TeacherServiceCardBack = ({ teacher, config = {}, style = 'GovtSindh' }) =
     : '—';
 
   return (
-    <div className="w-full max-w-[94mm] h-[58mm] bg-white dark:bg-[#0c0c0f] text-black dark:text-white rounded-xl border border-gray-300 dark:border-gray-700 shadow-sm overflow-hidden flex flex-col justify-between print:shadow-none print:border-black/30 print:bg-white print:text-black shrink-0 select-none text-[7.5px] leading-tight">
-      <div className="p-2 space-y-1 flex-1">
+    <div className="w-full max-w-[94mm] h-[58mm] bg-white dark:bg-[#0c0c0f] text-black dark:text-white rounded-xl border border-gray-300 dark:border-gray-700 shadow-sm overflow-hidden flex flex-col justify-between print:shadow-none print:border-black/30 print:bg-white print:text-black shrink-0 select-none text-[7.5px] leading-tight relative">
+      {schoolLogo && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.04] select-none z-0">
+          <img src={schoolLogo} alt="" className="w-24 h-24 object-contain filter grayscale" />
+        </div>
+      )}
+
+      <div className="p-2 space-y-1 flex-1 relative z-10">
         <TeacherIdBackBoxes cnic={teacher?.cnic} personalId={teacher?.personal_id || teacher?.employee_code} dob={dobStr} />
 
         <div className="flex gap-2 pt-0.5">
@@ -80,8 +88,13 @@ const TeacherServiceCardBack = ({ teacher, config = {}, style = 'GovtSindh' }) =
         </div>
       </div>
 
-      <div className={`${bannerColor} text-center py-0.5 px-2 font-black text-[6.5px] tracking-widest uppercase shrink-0`}>
-        IF FOUND PLEASE DROP IN THE LETTER BOX
+      <div className={`${bannerColor} flex items-center justify-between py-0.5 px-2 font-black text-[6.5px] tracking-widest uppercase shrink-0 relative z-10`}>
+        <div className="w-10" />
+        <span className="truncate">IF FOUND PLEASE DROP IN THE LETTER BOX</span>
+        <div className="flex items-center gap-0.5 opacity-60 text-[6px] font-normal normal-case">
+          <img src="/logo.png" alt="" className="w-2 h-2 object-contain" />
+          <span>EliteEdu</span>
+        </div>
       </div>
     </div>
   );

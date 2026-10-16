@@ -1,4 +1,4 @@
-import { Printer, Search } from 'lucide-react';
+import { Printer, Search, Download } from 'lucide-react';
 
 const TeacherCardsFilterBar = ({
   searchQuery,
@@ -8,7 +8,9 @@ const TeacherCardsFilterBar = ({
   onCampusChange,
   selectedCount,
   totalCount,
-  onToggleSelectAll
+  onToggleSelectAll,
+  onExportPdf,
+  isExporting
 }) => {
   return (
     <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -44,11 +46,21 @@ const TeacherCardsFilterBar = ({
 
       <button
         type="button"
+        disabled={isExporting}
+        onClick={onExportPdf}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-[#16161d] hover:bg-surface-secondary text-ink dark:text-ink-dark text-xs font-bold shadow-xs transition-colors disabled:opacity-50"
+      >
+        <Download className="w-3.5 h-3.5 text-primary" />
+        <span>{isExporting ? 'Generating PDF...' : 'Vector PDF'}</span>
+      </button>
+
+      <button
+        type="button"
         onClick={() => window.print()}
         className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-md transition-colors"
       >
         <Printer className="w-3.5 h-3.5" />
-        <span>Print Cards (8/Page)</span>
+        <span>Print (8/Page)</span>
       </button>
     </div>
   );

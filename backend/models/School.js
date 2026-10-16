@@ -36,6 +36,46 @@ const schoolSchema = new mongoose.Schema(
       trim: true,
       lowercase: true
     },
+    logo_url: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    slogan: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    website: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    affiliation_number: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    established_year: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    principal_name: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    principal_signature_url: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    currency: {
+      type: String,
+      trim: true,
+      default: 'PKR'
+    },
     is_active: {
       type: Boolean,
       default: true

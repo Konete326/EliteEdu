@@ -4,6 +4,7 @@ import IdCardsToolbar from '../../components/admin/students/idcards/IdCardsToolb
 import IdCardsSheetPage from '../../components/admin/students/idcards/IdCardsSheetPage';
 import IdCardCustomizeModal from '../../components/admin/students/idcards/IdCardCustomizeModal';
 import { useIdCardsData } from '../../components/admin/students/idcards/useIdCardsData';
+import { exportStudentCardsPdf } from '../../utils/pdf/studentCardPdfExporter';
 
 const StudentIdCardsPage = () => {
   const [searchParams] = useSearchParams();
@@ -29,14 +30,26 @@ const StudentIdCardsPage = () => {
 
   const [selectedStyle, setSelectedStyle] = useState('Default');
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [config, setConfig] = useState({
-    motto: 'پڑھے گا سندھ بڑھے گا سندھ',
+    motto: '',
     accentColor: '#3b82f6',
     showBarcode: true,
     showQr: true,
     showBloodGroup: true,
     showMotto: true
   });
+
+  const handleExportPdf = async () => {
+    try {
+      setIsExporting(true);
+      await exportStudentCardsPdf(selectedStudents);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -55,6 +68,8 @@ const StudentIdCardsPage = () => {
         totalCount={filteredStudents.length}
         onToggleSelectAll={handleToggleSelectAll}
         onOpenCustomize={() => setIsCustomizeOpen(true)}
+        onExportPdf={handleExportPdf}
+        isExporting={isExporting}
       />
 
       <IdCardCustomizeModal

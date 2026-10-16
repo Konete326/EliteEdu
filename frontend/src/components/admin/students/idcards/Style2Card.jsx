@@ -3,7 +3,8 @@ import { renderSvgBarcode, renderSvgQrCode, generateStudentVerifyUrl } from '../
 const Style2Card = ({ student, config = {} }) => {
   const campus = student?.campus_id || {};
   const school = student?.school_id || {};
-  const campusName = campus.name || school.name || 'ELITE EDUCATIONAL SYSTEM';
+  const campusName = school.name || campus.name || 'ELITE EDUCATIONAL SYSTEM';
+  const logo = school.logo_url || campus.logo;
   const grNumber = student?.gr_number || '0000';
   const className = `${student?.current_grade?.name || 'Class'}${student?.current_section ? ` (${student.current_section})` : ''}`;
   const doa = student?.admission_date
@@ -13,20 +14,33 @@ const Style2Card = ({ student, config = {} }) => {
   const verifyUrl = generateStudentVerifyUrl(student?._id);
 
   return (
-    <div className="w-full bg-white dark:bg-[#0c0c0f] text-black dark:text-white border-2 border-black dark:border-white/30 rounded-lg p-3 flex flex-col justify-between shadow-xs select-none print:border-black print:text-black print:bg-white h-[340px] sm:h-[350px]">
-      <div className="border-b-2 border-black dark:border-white/20 pb-2 flex items-start justify-between gap-1 print:border-black">
-        <div>
-          <h4 className="text-[10px] font-black uppercase tracking-tight">{campusName}</h4>
-          <span className="text-[8px] font-mono uppercase text-ink-muted">ACADEMIC CARD</span>
+    <div className="w-full bg-white dark:bg-[#0c0c0f] text-black dark:text-white border-2 border-black dark:border-white/30 rounded-lg p-3 flex flex-col justify-between shadow-xs select-none print:border-black print:text-black print:bg-white h-[340px] sm:h-[350px] relative">
+      {logo && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.06] select-none z-0">
+          <img src={logo} alt="" className="w-28 h-28 object-contain filter grayscale" />
+        </div>
+      )}
+
+      <div className="border-b-2 border-black dark:border-white/20 pb-2 flex items-start justify-between gap-1 print:border-black relative z-10">
+        <div className="flex items-center gap-1.5 min-w-0">
+          {logo && (
+            <div className="w-6 h-6 rounded border border-black/20 dark:border-white/20 p-0.5 shrink-0 flex items-center justify-center overflow-hidden">
+              <img src={logo} alt="" className="w-full h-full object-contain" />
+            </div>
+          )}
+          <div className="min-w-0">
+            <h4 className="text-[10px] font-black uppercase tracking-tight truncate">{campusName}</h4>
+            <span className="text-[8px] font-mono uppercase text-ink-muted">ACADEMIC CARD</span>
+          </div>
         </div>
         {student?.blood_group && (
-          <span className="px-1.5 py-0.5 rounded bg-red-600 text-white text-[8px] font-black">
+          <span className="px-1.5 py-0.5 rounded bg-red-600 text-white text-[8px] font-black shrink-0">
             {student.blood_group}
           </span>
         )}
       </div>
 
-      <div className="flex items-center gap-2.5 py-2">
+      <div className="flex items-center gap-2.5 py-2 relative z-10">
         <div className="w-16 h-20 rounded border border-black/30 dark:border-white/30 bg-surface-secondary overflow-hidden shrink-0 flex items-center justify-center font-bold text-sm">
           {student?.photo_url ? (
             <img src={student.photo_url} alt={student.name} className="w-full h-full object-cover" />
@@ -43,16 +57,22 @@ const Style2Card = ({ student, config = {} }) => {
         </div>
       </div>
 
-      <div className="pt-2 border-t-2 border-black dark:border-white/20 flex items-center justify-between gap-2 print:border-black">
+      <div className="pt-2 border-t-2 border-black dark:border-white/20 flex items-center justify-between gap-2 print:border-black relative z-10">
         <div className="space-y-1 text-black dark:text-white print:text-black">
           {config.showBarcode !== false && renderSvgBarcode(grNumber, 75, 18)}
           <span className="text-[7px] font-mono block tracking-widest">*{grNumber}*</span>
         </div>
-        {config.showQr !== false && (
-          <a href={verifyUrl} target="_blank" rel="noreferrer" title="Verify student">
-            {renderSvgQrCode(verifyUrl, 42)}
-          </a>
-        )}
+        <div className="flex items-center gap-1.5">
+          {config.showQr !== false && (
+            <a href={verifyUrl} target="_blank" rel="noreferrer" title="Verify student">
+              {renderSvgQrCode(verifyUrl, 38)}
+            </a>
+          )}
+          <div className="flex items-center gap-0.5 text-[6.5px] font-semibold text-ink-muted/50 dark:text-ink-muted-dark/50 select-none">
+            <img src="/logo.png" alt="" className="w-2 h-2 object-contain opacity-50" />
+            <span>EliteEdu</span>
+          </div>
+        </div>
       </div>
     </div>
   );

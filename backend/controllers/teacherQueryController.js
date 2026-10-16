@@ -25,7 +25,8 @@ const getTeachers = async (req, res) => {
     }
 
     const teachers = await User.find(filter)
-      .populate('campus_id', 'name')
+      .populate('campus_id', 'name logo area semis_code address')
+      .populate('school_id', 'name school_type logo_url slogan')
       .populate('subjects', 'name code')
       .populate('grades', 'name sections')
       .select('-password')

@@ -2,7 +2,7 @@ import { Plus, Search, X } from 'lucide-react';
 
 const CampusHeader = ({ searchQuery, onSearchChange, onAddClick, totalCount, filteredCount }) => {
   return (
-    <div className="sticky top-0 z-20 space-y-4 p-4 sm:p-5 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-sm transition-all">
+    <div className="sticky top-[1px] z-20 mt-[1px] space-y-4 p-4 sm:p-5 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-sm transition-all">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-ink dark:text-ink-dark tracking-tight">Campus Management</h1>

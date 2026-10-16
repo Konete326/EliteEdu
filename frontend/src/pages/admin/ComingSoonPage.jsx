@@ -3,7 +3,7 @@ import { Clock, Sparkles } from 'lucide-react';
 const ComingSoonPage = ({ title = 'Module' }) => {
   return (
     <div className="space-y-6">
-      <div className="sticky top-0 z-10 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-sm pb-4 pt-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 -mt-1">
+      <div className="sticky top-[1px] z-10 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-sm pb-4 pt-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-[1px]">
         <div>
           <h1 className="text-2xl font-bold text-ink dark:text-ink-dark">{title}</h1>
           <p className="text-sm text-ink-muted dark:text-ink-muted-dark">Institutional module for {title.toLowerCase()}.</p>

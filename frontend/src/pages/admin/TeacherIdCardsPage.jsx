@@ -4,6 +4,7 @@ import TeacherIdCardsToolbar from '../../components/admin/teachers/idcards/Teach
 import TeacherServiceCardsSheet from '../../components/admin/teachers/idcards/TeacherServiceCardsSheet';
 import TeacherCardEditModal from '../../components/admin/teachers/idcards/TeacherCardEditModal';
 import { useTeacherIdCardsData } from '../../components/admin/teachers/idcards/useTeacherIdCardsData';
+import { exportTeacherCardsPdf } from '../../utils/pdf/teacherCardPdfExporter';
 
 const TeacherIdCardsPage = () => {
   const [searchParams] = useSearchParams();
@@ -28,6 +29,18 @@ const TeacherIdCardsPage = () => {
   const [selectedStyle, setSelectedStyle] = useState('GovtSindh');
   const [sideMode, setSideMode] = useState('both');
   const [editingTeacher, setEditingTeacher] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportPdf = async () => {
+    try {
+      setIsExporting(true);
+      await exportTeacherCardsPdf(selectedTeachers, { sideMode, style: selectedStyle });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -44,6 +57,8 @@ const TeacherIdCardsPage = () => {
         selectedCount={selectedTeachers.length}
         totalCount={filteredTeachers.length}
         onToggleSelectAll={handleToggleSelectAll}
+        onExportPdf={handleExportPdf}
+        isExporting={isExporting}
       />
 
       <TeacherCardEditModal

@@ -24,10 +24,10 @@ const IdCardCustomizeModal = ({ isOpen, onClose, config, onConfigChange }) => {
             <label className="block text-[11px] font-bold text-ink dark:text-ink-dark mb-1">Motto Slogan Text</label>
             <input
               type="text"
-              value={config.motto}
+              value={config.motto || ''}
               onChange={(e) => onConfigChange({ ...config, motto: e.target.value })}
-              className="w-full px-3 py-2 rounded-xl bg-surface-secondary/50 dark:bg-[#16161d] border border-line dark:border-line-dark text-ink dark:text-ink-dark outline-none font-urdu text-right"
-              dir="rtl"
+              placeholder="e.g. Strive for Excellence (optional)"
+              className="w-full px-3 py-2 rounded-xl bg-surface-secondary/50 dark:bg-[#16161d] border border-line dark:border-line-dark text-ink dark:text-ink-dark outline-none text-xs"
             />
           </div>
 

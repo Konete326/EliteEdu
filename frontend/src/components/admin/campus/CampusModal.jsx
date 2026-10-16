@@ -4,15 +4,12 @@ import { isValidEmail, isValidWebsite, isValidPhone } from '../../../utils/valid
 import CampusDetailsView from './CampusDetailsView';
 import CampusForm from './CampusForm';
 
+const INITIAL_FORM = {
+  name: '', email: '', website: '', contact_number: '', address: '', image_url: '', status: 'Active'
+};
+
 const CampusModal = ({ isOpen, mode = 'add', campus = null, onClose, onSubmit, isSubmitting = false }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    website: '',
-    contact_number: '',
-    address: '',
-    status: 'Active'
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM);
   const [touched, setTouched] = useState({});
 
   useEffect(() => {
@@ -23,17 +20,11 @@ const CampusModal = ({ isOpen, mode = 'add', campus = null, onClose, onSubmit, i
         website: campus.website || '',
         contact_number: campus.contact_number || '',
         address: campus.address || '',
+        image_url: campus.image_url || campus.image || '',
         status: campus.status || 'Active'
       });
     } else {
-      setFormData({
-        name: '',
-        email: '',
-        website: '',
-        contact_number: '',
-        address: '',
-        status: 'Active'
-      });
+      setFormData(INITIAL_FORM);
     }
     setTouched({});
   }, [campus, mode, isOpen]);
@@ -106,6 +97,7 @@ const CampusModal = ({ isOpen, mode = 'add', campus = null, onClose, onSubmit, i
             isWebsiteValid={isWebsiteValid}
             isPhoneValid={isPhoneValid}
             onChange={handleChange}
+            onImageChange={(val) => setFormData((prev) => ({ ...prev, image_url: val }))}
             onBlur={handleBlur}
             onSubmit={handleSubmit}
             onCancel={onClose}

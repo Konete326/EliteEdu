@@ -26,6 +26,7 @@ import AdmissionLetterPage from './pages/admin/AdmissionLetterPage';
 import StudentIdCardsPage from './pages/admin/StudentIdCardsPage';
 import TeacherIdCardsPage from './pages/admin/TeacherIdCardsPage';
 import ThemeSettingsPage from './pages/admin/ThemeSettingsPage';
+import GeneralSettingsPage from './pages/admin/GeneralSettingsPage';
 import StudentEmergencyVerifyPage from './pages/public/StudentEmergencyVerifyPage';
 import StaffServiceVerifyPage from './pages/public/StaffServiceVerifyPage';
 import TeacherPortalDashboard from './pages/teacher/TeacherPortalDashboard';
@@ -86,6 +87,7 @@ function App() {
                 <Route path="/admin/exams/grading-policies" element={<GradingPoliciesPage />} />
                 <Route path="/admin/students/admission-letter" element={<AdmissionLetterPage />} />
                 <Route path="/admin/students/id-cards" element={<StudentIdCardsPage />} />
+                <Route path="/admin/settings/general" element={<GeneralSettingsPage />} />
                 <Route path="/admin/settings/appearance" element={<ThemeSettingsPage />} />
                 <Route path="/admin/control-panel/branding" element={<ThemeSettingsPage />} />
                 <Route path="/admin/profile" element={<MyProfilePage />} />

@@ -1,22 +1,12 @@
-import { ArrowLeft, Printer, SlidersHorizontal, Search, GraduationCap } from 'lucide-react';
+import { ArrowLeft, Printer, SlidersHorizontal, Search, GraduationCap, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import IdCardsStyleSwitcher from './IdCardsStyleSwitcher';
 
 const IdCardsToolbar = ({
-  selectedStyle,
-  onSelectStyle,
-  searchQuery,
-  onSearchChange,
-  campuses = [],
-  selectedCampus,
-  onCampusChange,
-  grades = [],
-  selectedGrade,
-  onGradeChange,
-  selectedCount,
-  totalCount,
-  onToggleSelectAll,
-  onOpenCustomize
+  selectedStyle, onSelectStyle, searchQuery, onSearchChange,
+  campuses = [], selectedCampus, onCampusChange, grades = [],
+  selectedGrade, onGradeChange, selectedCount, totalCount,
+  onToggleSelectAll, onOpenCustomize, onExportPdf, isExporting
 }) => {
   const navigate = useNavigate();
 
@@ -27,7 +17,7 @@ const IdCardsToolbar = ({
           <GraduationCap className="w-4 h-4 text-primary" />
           <span className="font-bold text-ink dark:text-ink-dark">Students</span>
           <span>&gt;</span>
-          <span className="text-primary font-bold">ID Cards</span>
+          <span className="text-primary font-bold">ID Cards Studio</span>
         </div>
         <button
           type="button"
@@ -39,11 +29,11 @@ const IdCardsToolbar = ({
         </button>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark rounded-2xl p-3 shadow-sm">
+      <div className="sticky top-[1px] z-20 mt-[1px] flex flex-wrap items-center justify-between gap-3 bg-surface/95 dark:bg-[#0c0c0f]/95 backdrop-blur-md border border-line dark:border-line-dark rounded-2xl p-3 shadow-sm">
         <IdCardsStyleSwitcher selectedStyle={selectedStyle} onSelectStyle={onSelectStyle} />
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-          <div className="relative flex-1 sm:w-48">
+          <div className="relative flex-1 sm:w-44">
             <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none" />
             <input
               type="text"
@@ -91,6 +81,16 @@ const IdCardsToolbar = ({
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
             <span>Customize</span>
+          </button>
+
+          <button
+            type="button"
+            disabled={isExporting}
+            onClick={onExportPdf}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-[#16161d] hover:bg-surface-secondary text-ink dark:text-ink-dark text-xs font-bold shadow-xs transition-colors disabled:opacity-50"
+          >
+            <Download className="w-3.5 h-3.5 text-primary" />
+            <span>{isExporting ? 'Generating PDF...' : 'Vector PDF'}</span>
           </button>
 
           <button

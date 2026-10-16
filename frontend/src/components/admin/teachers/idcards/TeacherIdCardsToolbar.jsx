@@ -26,7 +26,9 @@ const TeacherIdCardsToolbar = ({
   onCampusChange,
   selectedCount,
   totalCount,
-  onToggleSelectAll
+  onToggleSelectAll,
+  onExportPdf,
+  isExporting
 }) => {
   const navigate = useNavigate();
 
@@ -49,7 +51,7 @@ const TeacherIdCardsToolbar = ({
         </button>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark rounded-2xl p-3 shadow-sm">
+      <div className="sticky top-[1px] z-20 mt-[1px] flex flex-wrap items-center justify-between gap-3 bg-surface/95 dark:bg-[#0c0c0f]/95 backdrop-blur-md border border-line dark:border-line-dark rounded-2xl p-3 shadow-sm">
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-1 bg-surface-secondary/50 dark:bg-[#16161d] p-1 rounded-xl border border-line dark:border-line-dark">
             {STYLES.map((st) => (
@@ -95,6 +97,8 @@ const TeacherIdCardsToolbar = ({
           selectedCount={selectedCount}
           totalCount={totalCount}
           onToggleSelectAll={onToggleSelectAll}
+          onExportPdf={onExportPdf}
+          isExporting={isExporting}
         />
       </div>
     </div>

@@ -12,46 +12,61 @@ if (typeof window !== 'undefined') {
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     globalDeferredPrompt = e;
+    globalIsInstalled = false;
+    try {
+      localStorage.removeItem('pwa_installed');
+    } catch {}
     notifySubscribers();
   });
 
   window.addEventListener('appinstalled', () => {
     globalIsInstalled = true;
     globalDeferredPrompt = null;
-    try {
-      localStorage.setItem('pwa_installed', 'true');
-    } catch {}
     notifySubscribers();
   });
 }
 
 export const usePwaInstall = () => {
-  const checkIsInstalled = useCallback(() => {
+  const checkIsStandalone = useCallback(() => {
     if (typeof window === 'undefined') return false;
-    const isStandalone =
+    return (
       window.matchMedia('(display-mode: standalone)').matches ||
       window.navigator.standalone === true ||
-      document.referrer.includes('android-app://');
-    const storedInstalled = localStorage.getItem('pwa_installed') === 'true';
-    return isStandalone || storedInstalled || globalIsInstalled;
+      document.referrer.includes('android-app://')
+    );
   }, []);
 
-  const [installed, setInstalled] = useState(checkIsInstalled);
+  const [isStandalone, setIsStandalone] = useState(checkIsStandalone);
   const [hasPrompt, setHasPrompt] = useState(Boolean(globalDeferredPrompt));
-  const [showPrompt, setShowPrompt] = useState(false);
-  const [isIos, setIsIos] = useState(false);
-  const [showIosGuide, setShowIosGuide] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(Boolean(globalDeferredPrompt));
+  const [showGuide, setShowGuide] = useState(false);
+  const [guidePlatform, setGuidePlatform] = useState('desktop');
 
   useEffect(() => {
     const ua = window.navigator.userAgent.toLowerCase();
-    const isIosDevice = /iphone|ipad|ipod/.test(ua) && !window.MSStream;
-    setIsIos(isIosDevice);
+    if (/iphone|ipad|ipod/.test(ua) && !window.MSStream) {
+      setGuidePlatform('ios');
+    } else if (/android/.test(ua)) {
+      setGuidePlatform('android');
+    } else {
+      setGuidePlatform('desktop');
+    }
+
+    if (typeof navigator !== 'undefined' && 'getInstalledRelatedApps' in navigator) {
+      navigator.getInstalledRelatedApps().then((apps) => {
+        if (Array.isArray(apps) && apps.length === 0) {
+          globalIsInstalled = false;
+          try { localStorage.removeItem('pwa_installed'); } catch {}
+          notifySubscribers();
+        }
+      }).catch(() => {});
+    }
 
     const updateState = () => {
-      const isInst = checkIsInstalled();
-      setInstalled(isInst);
+      const standalone = checkIsStandalone();
+      setIsStandalone(standalone);
       setHasPrompt(Boolean(globalDeferredPrompt));
-      if (!isInst && globalDeferredPrompt) {
+      if (!standalone && globalDeferredPrompt) {
         setShowPrompt(true);
       }
     };
@@ -61,15 +76,7 @@ export const usePwaInstall = () => {
     return () => {
       subscribers.delete(updateState);
     };
-  }, [checkIsInstalled]);
-
-  useEffect(() => {
-    if (!showPrompt) return;
-    const autoCloseTimer = setTimeout(() => {
-      setShowPrompt(false);
-    }, 10000);
-    return () => clearTimeout(autoCloseTimer);
-  }, [showPrompt]);
+  }, [checkIsStandalone]);
 
   const promptInstall = async () => {
     if (globalDeferredPrompt) {
@@ -78,36 +85,31 @@ export const usePwaInstall = () => {
         const choice = await globalDeferredPrompt.userChoice;
         if (choice.outcome === 'accepted') {
           globalIsInstalled = true;
-          setInstalled(true);
-          try {
-            localStorage.setItem('pwa_installed', 'true');
-          } catch {}
           setShowPrompt(false);
         }
         globalDeferredPrompt = null;
         setHasPrompt(false);
         notifySubscribers();
-      } catch (err) {
-        console.error(err);
+      } catch {
+        setShowGuide(true);
       }
-    } else if (isIos) {
-      setShowIosGuide(true);
+    } else {
+      setShowGuide(true);
     }
   };
 
-  const closePrompt = () => {
-    setShowPrompt(false);
-  };
-
   return {
-    isInstalled: installed,
+    isInstalled: isStandalone,
+    hasNativePrompt: hasPrompt,
     showPrompt,
     setShowPrompt,
+    showGuide,
+    setShowGuide,
+    guidePlatform,
     promptInstall,
-    closePrompt,
-    isIos,
-    showIosGuide,
-    setShowIosGuide,
-    hasNativePrompt: hasPrompt
+    closePrompt: () => setShowPrompt(false),
+    closeGuide: () => setShowGuide(false)
   };
 };
+
+export default usePwaInstall;

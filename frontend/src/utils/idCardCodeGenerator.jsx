@@ -1,17 +1,30 @@
 import QRCode from 'qrcode';
+import { packStaffOfflinePayload, packStudentOfflinePayload } from './idCardOfflinePayload';
 
-export const generateStudentVerifyUrl = (studentId) => {
-  if (typeof window !== 'undefined' && window.location?.origin) {
-    return `${window.location.origin}/verify/student/${studentId}`;
+export const generateStudentVerifyUrl = (student) => {
+  const studentId = typeof student === 'object' ? student?._id : student;
+  const baseUrl = typeof window !== 'undefined' && window.location?.origin
+    ? `${window.location.origin}/verify/student/${studentId}`
+    : `https://eliteedu.pk/verify/student/${studentId}`;
+
+  if (typeof student === 'object') {
+    const offline = packStudentOfflinePayload(student);
+    if (offline) return `${baseUrl}?offline=${offline}`;
   }
-  return `https://eliteedu.pk/verify/student/${studentId}`;
+  return baseUrl;
 };
 
-export const generateStaffVerifyUrl = (staffId) => {
-  if (typeof window !== 'undefined' && window.location?.origin) {
-    return `${window.location.origin}/verify/staff/${staffId}`;
+export const generateStaffVerifyUrl = (staff) => {
+  const staffId = typeof staff === 'object' ? staff?._id : staff;
+  const baseUrl = typeof window !== 'undefined' && window.location?.origin
+    ? `${window.location.origin}/verify/staff/${staffId}`
+    : `https://eliteedu.pk/verify/staff/${staffId}`;
+
+  if (typeof staff === 'object') {
+    const offline = packStaffOfflinePayload(staff);
+    if (offline) return `${baseUrl}?offline=${offline}`;
   }
-  return `https://eliteedu.pk/verify/staff/${staffId}`;
+  return baseUrl;
 };
 
 const CODE39_PATTERNS = {

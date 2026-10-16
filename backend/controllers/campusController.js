@@ -7,7 +7,9 @@ const getCampuses = async (req, res) => {
       return res.status(403).json({ message: 'School association required' });
     }
 
-    const campuses = await Campus.find({ school_id: schoolId }).sort({ createdAt: -1 });
+    const campuses = await Campus.find({ school_id: schoolId })
+      .populate('school_id', 'name logo_url')
+      .sort({ createdAt: -1 });
     res.status(200).json({ success: true, campuses });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch campuses', error: error.message });
@@ -21,7 +23,7 @@ const createCampus = async (req, res) => {
       return res.status(403).json({ message: 'School association required' });
     }
 
-    const { name, email, website, address, contact_number, status } = req.body;
+    const { name, email, website, address, contact_number, status, image_url, image } = req.body;
 
     if (!name || !name.trim()) {
       return res.status(400).json({ message: 'Campus name is required' });
@@ -38,6 +40,7 @@ const createCampus = async (req, res) => {
       website: website ? website.trim() : '',
       address: address ? address.trim() : '',
       contact_number: contact_number ? contact_number.trim() : '',
+      image_url: (image_url || image || '').trim(),
       status: status || 'Active'
     });
 
@@ -51,7 +54,7 @@ const updateCampus = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
     const { id } = req.params;
-    const { name, email, website, address, contact_number, status } = req.body;
+    const { name, email, website, address, contact_number, status, image_url, image } = req.body;
 
     if (name !== undefined && !name.trim()) {
       return res.status(400).json({ message: 'Campus name cannot be empty' });
@@ -67,6 +70,8 @@ const updateCampus = async (req, res) => {
     if (website !== undefined) updateData.website = website.trim();
     if (address !== undefined) updateData.address = address.trim();
     if (contact_number !== undefined) updateData.contact_number = contact_number.trim();
+    if (image_url !== undefined) updateData.image_url = image_url.trim();
+    else if (image !== undefined) updateData.image_url = image.trim();
     if (status !== undefined) updateData.status = status;
 
     const campus = await Campus.findOneAndUpdate(

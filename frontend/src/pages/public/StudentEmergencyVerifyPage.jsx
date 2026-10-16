@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../services/api';
-import { ShieldCheck, ShieldAlert, GraduationCap, Building2, Calendar, Hash, ArrowLeft } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, GraduationCap, Calendar, WifiOff } from 'lucide-react';
 import EmergencyMedicalCard from '../../components/public/EmergencyMedicalCard';
+import { resolveOfflineStudentRecord } from '../../utils/offlineVerificationResolver';
 
 const StudentEmergencyVerifyPage = () => {
   const { id } = useParams();
@@ -14,10 +15,20 @@ const StudentEmergencyVerifyPage = () => {
     let isMounted = true;
     api.get(`/public/verify-student/${id}`)
       .then((res) => {
-        if (isMounted && res.data.success) setData(res.data.data);
+        if (isMounted && res.data.success) {
+          setData(res.data.data);
+          localStorage.setItem(`eliteedu_student_${id}`, JSON.stringify(res.data.data));
+        }
       })
       .catch((err) => {
-        if (isMounted) setError(err.response?.data?.message || 'Verification link expired or invalid');
+        const offlineRecord = resolveOfflineStudentRecord(id);
+        if (isMounted) {
+          if (offlineRecord) {
+            setData(offlineRecord);
+          } else {
+            setError(err.response?.data?.message || 'Verification record not found offline');
+          }
+        }
       })
       .finally(() => {
         if (isMounted) setLoading(false);
@@ -46,9 +57,9 @@ const StudentEmergencyVerifyPage = () => {
     );
   }
 
-  const { name, father_name, gr_number, photo_url, status, admission_date, current_grade, current_section, emergency, institution } = data;
+  const { name, father_name, gr_number, photo_url, status, admission_date, current_grade, current_section, emergency, institution, isOffline } = data;
   const isActive = status === 'Active';
-  const doaFormatted = admission_date ? new Date(admission_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+  const doaFormatted = admission_date ? new Date(admission_date).toLocaleDateString('en-GB') : '—';
   const initials = name ? name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() : 'ST';
 
   return (
@@ -63,13 +74,17 @@ const StudentEmergencyVerifyPage = () => {
           isActive ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400' : 'bg-amber-500/10 border-amber-500/30 text-amber-600'
         }`}>
           <div className="flex items-center gap-2.5">
-            <ShieldCheck className="w-6 h-6 shrink-0" />
+            {isOffline ? <WifiOff className="w-6 h-6 shrink-0 text-amber-500" /> : <ShieldCheck className="w-6 h-6 shrink-0" />}
             <div>
-              <p className="text-xs font-black uppercase tracking-wide">{isActive ? 'Verified Active Student' : `Status: ${status}`}</p>
-              <p className="text-[11px] opacity-80">{institution.school_name} • {institution.campus_name}</p>
+              <p className="text-xs font-black uppercase tracking-wide">
+                {isOffline ? 'Offline Verified (QR Payload)' : (isActive ? 'Verified Active Student' : `Status: ${status}`)}
+              </p>
+              <p className="text-[11px] opacity-80">{institution?.school_name} • {institution?.campus_name}</p>
             </div>
           </div>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white">LIVE</span>
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white">
+            {isOffline ? 'OFFLINE' : 'LIVE'}
+          </span>
         </div>
 
         <div className="bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark rounded-2xl p-5 shadow-sm space-y-4">
@@ -82,7 +97,7 @@ const StudentEmergencyVerifyPage = () => {
               <p className="text-xs text-ink-muted truncate">S/O {father_name || '—'}</p>
               <div className="pt-2 flex flex-wrap gap-2 text-xs">
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-primary/10 text-primary font-bold">
-                  <GraduationCap className="w-3.5 h-3.5" /> Class: {current_grade} ({current_section})
+                  <GraduationCap className="w-3.5 h-3.5" /> Class: {current_grade} ({current_section || 'A'})
                 </span>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-surface-secondary text-ink-muted font-medium">
                   <Calendar className="w-3.5 h-3.5" /> DOA: {doaFormatted}
@@ -92,14 +107,6 @@ const StudentEmergencyVerifyPage = () => {
           </div>
 
           <EmergencyMedicalCard emergency={emergency} institution={institution} />
-
-          <div className="pt-3 border-t border-line/60 dark:border-line-dark text-center space-y-1">
-            <p className="text-xs font-bold text-ink dark:text-ink-dark">{institution.campus_name}</p>
-            <p className="text-[11px] text-ink-muted">{institution.campus_address}</p>
-            <a href={institution.campus_website} target="_blank" rel="noreferrer" className="text-[11px] text-primary hover:underline block font-medium">
-              {institution.campus_website}
-            </a>
-          </div>
         </div>
       </div>
     </div>
