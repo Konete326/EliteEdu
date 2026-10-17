@@ -86,7 +86,7 @@ export default function ExamWizardPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-5 max-w-7xl mx-auto">
+    <div className="w-full space-y-5">
       <WizardHeaderBar isEdit={isEdit} />
       <WizardProgressBar currentStep={currentStep} setCurrentStep={(s) => s < currentStep ? setCurrentStep(s) : validateStep() && setCurrentStep(s)} />
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">

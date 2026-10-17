@@ -1,116 +1,106 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Printer, Award, Search, User } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Printer, RefreshCw } from 'lucide-react';
 import api from '../../services/api';
-import PageLoader from '../../components/common/PageLoader';
-import OfficialSignatureStampBlock from '../../components/common/OfficialSignatureStampBlock';
+import { useCampus } from '../../context/CampusContext';
+import ReportCardStudentSelector from '../../components/admin/reports/ReportCardStudentSelector';
+import ReportCardHeaderStrip from '../../components/admin/reports/ReportCardHeaderStrip';
+import ReportCardMarksTable from '../../components/admin/reports/ReportCardMarksTable';
+import ReportCardSummaryStrip from '../../components/admin/reports/ReportCardSummaryStrip';
 
 const StudentReportCardPage = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const studentIdParam = searchParams.get('studentId');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { activeCampusId } = useCampus();
   const [students, setStudents] = useState([]);
-  const [selectedStudentId, setSelectedStudentId] = useState(studentIdParam || '');
-  const [cardData, setCardData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [grades, setGrades] = useState([]);
+  const [grade, setGrade] = useState('all');
+  const [search, setSearch] = useState('');
+  const [loadingList, setLoadingList] = useState(false);
+  const [loadingCard, setLoadingCard] = useState(false);
+  const [reportData, setReportData] = useState(null);
 
-  useEffect(() => {
-    api.get('/api/students?limit=200').then((r) => {
-      const list = r.data.students || [];
+  const selectedStudentId = searchParams.get('studentId') || (students[0]?._id ? String(students[0]._id) : '');
+
+  const fetchStudents = useCallback(async () => {
+    try {
+      setLoadingList(true);
+      const res = await api.get('/students', { params: { campus_id: activeCampusId, grade_id: grade, search, limit: 100 } });
+      const list = res.data?.students || res.data || [];
       setStudents(list);
-      if (!selectedStudentId && list.length > 0) setSelectedStudentId(list[0]._id);
-    }).catch(() => {});
+      if (!searchParams.get('studentId') && list.length > 0) setSearchParams({ studentId: list[0]._id });
+    } catch {
+      setStudents([]);
+    } finally {
+      setLoadingList(false);
+    }
+  }, [activeCampusId, grade, search, searchParams, setSearchParams]);
+
+  const fetchReportCard = useCallback(async (stId) => {
+    if (!stId) return;
+    try {
+      setLoadingCard(true);
+      const res = await api.get(`/reports/student-report-card/${stId}`);
+      if (res.data?.success) setReportData(res.data);
+    } catch {
+      setReportData(null);
+    } finally {
+      setLoadingCard(false);
+    }
   }, []);
 
   useEffect(() => {
-    if (selectedStudentId) {
-      setLoading(true);
-      api.get(`/api/reports/student-report-card/${selectedStudentId}`).then((r) => {
-        setCardData(r.data);
-      }).catch(() => {}).finally(() => setLoading(false));
-    }
-  }, [selectedStudentId]);
+    api.get('/grades').then((r) => setGrades(r.data?.grades || r.data || [])).catch(() => {});
+  }, []);
 
-  const student = cardData?.student || {};
-  const examResults = cardData?.exam_results || [];
+  useEffect(() => { fetchStudents(); }, [fetchStudents]);
+
+  useEffect(() => {
+    if (selectedStudentId) fetchReportCard(selectedStudentId);
+  }, [selectedStudentId, fetchReportCard]);
 
   return (
-    <div className="p-4 sm:p-6 space-y-6 max-w-5xl mx-auto">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 print:hidden">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/admin/reports')} className="p-2 rounded-xl border border-line bg-surface dark:bg-surface-dark hover:bg-surface-secondary cursor-pointer">
-            <ArrowLeft size={16} />
-          </button>
-          <div>
-            <h1 className="text-xl font-bold text-slate-800 dark:text-white">Student Terminal Report Card</h1>
-            <p className="text-xs text-slate-500">Comprehensive terminal examination progress and performance dossier.</p>
-          </div>
+    <div className="w-full space-y-4">
+      <div className="print:hidden flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <div className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Reports &gt; Student Progress Report Card</div>
+          <h1 className="text-xl sm:text-2xl font-black text-ink">Student Terminal Report Card Studio</h1>
         </div>
         <div className="flex items-center gap-2">
-          <select value={selectedStudentId} onChange={(e) => setSelectedStudentId(e.target.value)} className="px-3 py-2 rounded-xl border border-line bg-surface text-xs font-semibold max-w-[220px]">
-            {students.map((s) => <option key={s._id} value={s._id}>{s.name} ({s.gr_number || 'No GR'})</option>)}
-          </select>
-          <button onClick={() => window.print()} className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-primary text-white hover:bg-primary-hover shadow-xs cursor-pointer">
-            <Printer size={14} /> Print Card
+          <button type="button" onClick={() => fetchReportCard(selectedStudentId)} className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-line bg-surface text-ink hover:bg-surface-secondary text-xs font-bold transition-all shadow-2xs cursor-pointer">
+            <RefreshCw size={13} className={loadingCard ? 'animate-spin' : ''} />
+            <span>Reload</span>
+          </button>
+          <button type="button" onClick={() => window.print()} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-sm cursor-pointer">
+            <Printer size={14} />
+            <span>Print Report Card</span>
           </button>
         </div>
       </div>
 
-      {loading ? <PageLoader text="Compiling terminal progress report card..." /> : !cardData ? (
-        <div className="p-8 text-center text-xs text-ink-muted">Select a student to load report card.</div>
-      ) : (
-        <div className="bg-surface dark:bg-surface-dark border-2 border-line dark:border-line-dark rounded-2xl p-6 shadow-sm space-y-5 print:border-black print:p-4">
-          <div className="text-center border-b-2 border-line pb-3">
-            <h2 className="text-lg font-black uppercase text-slate-900 dark:text-white">{cardData.header?.school_name}</h2>
-            <p className="text-xs font-bold text-slate-600">{cardData.header?.campus_name} {cardData.header?.address ? `— ${cardData.header.address}` : ''}</p>
-            <span className="inline-block mt-1 px-3 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-black uppercase tracking-wider">
-              Student Terminal Progress Dossier
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-surface-secondary/40 p-3 rounded-xl text-xs">
-            <div><span className="text-ink-muted block text-[10px] uppercase font-bold">Student Name:</span><strong className="text-slate-800 dark:text-white">{student.name}</strong></div>
-            <div><span className="text-ink-muted block text-[10px] uppercase font-bold">Father Name:</span><strong>{student.father_name}</strong></div>
-            <div><span className="text-ink-muted block text-[10px] uppercase font-bold">Class / Section:</span><strong>{student.current_grade?.name || 'Class'} ({student.current_section || 'A'})</strong></div>
-            <div><span className="text-ink-muted block text-[10px] uppercase font-bold">GR Number:</span><strong className="text-primary font-mono">{student.gr_number || '—'}</strong></div>
-          </div>
-
-          <div className="overflow-x-auto rounded-xl border border-line">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-surface-secondary/80 text-[10px] font-bold text-ink-muted uppercase border-b border-line">
-                <tr>
-                  <th className="py-2 px-3">Assessment Title</th>
-                  <th className="py-2 px-3">Subject</th>
-                  <th className="py-2 px-3 text-right">Max</th>
-                  <th className="py-2 px-3 text-right">Obtained</th>
-                  <th className="py-2 px-3 text-right">%</th>
-                  <th className="py-2 px-3 text-center">Grade</th>
-                  <th className="py-2 px-3">Teacher Remarks</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line">
-                {examResults.length === 0 ? (
-                  <tr><td colSpan={7} className="py-6 text-center text-xs text-ink-muted">No examination marks recorded for this student.</td></tr>
-                ) : (
-                  examResults.map((er) => (
-                    <tr key={er.id} className="hover:bg-surface-secondary/30">
-                      <td className="py-2 px-3 font-semibold">{er.exam_title}</td>
-                      <td className="py-2 px-3 font-bold">{er.subject_name}</td>
-                      <td className="py-2 px-3 text-right font-mono">{er.max_marks}</td>
-                      <td className="py-2 px-3 text-right font-mono font-bold">{er.obtained_marks}</td>
-                      <td className="py-2 px-3 text-right font-mono">{er.percentage}%</td>
-                      <td className="py-2 px-3 text-center"><span className="px-2 py-0.5 rounded font-black text-white text-[10px]" style={{ backgroundColor: er.status_color || '#0d9488' }}>{er.grade}</span></td>
-                      <td className="py-2 px-3 text-[11px] text-ink-muted truncate max-w-[150px]">{er.teacher_remarks || 'Satisfactory'}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          <OfficialSignatureStampBlock />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start w-full">
+        <div className="lg:col-span-4 w-full">
+          <ReportCardStudentSelector
+            students={students} selectedStudentId={selectedStudentId} onSelectStudent={(id) => setSearchParams({ studentId: id })}
+            grades={grades} selectedGrade={grade} onGradeChange={setGrade} searchTerm={search} onSearchChange={setSearch} loading={loadingList}
+          />
         </div>
-      )}
+
+        <div className="lg:col-span-8 w-full">
+          <div className="p-5 sm:p-6 rounded-2xl bg-surface border border-line shadow-sm space-y-4 print:p-0 print:border-none print:shadow-none w-full">
+            {loadingCard ? (
+              <div className="py-24 text-center text-xs text-ink-muted">Loading student academic profile...</div>
+            ) : !reportData ? (
+              <div className="py-24 text-center text-xs text-ink-muted">Select a student to view their report card.</div>
+            ) : (
+              <>
+                <ReportCardHeaderStrip student={reportData.student} header={reportData.header} />
+                <ReportCardMarksTable examResults={reportData.examResults} testResults={reportData.testResults} />
+                <ReportCardSummaryStrip academicSummary={reportData.academicSummary} attendance={reportData.attendance} remarks={reportData.remarks} />
+              </>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

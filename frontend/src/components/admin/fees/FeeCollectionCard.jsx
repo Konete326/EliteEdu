@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Search, UserCheck, DollarSign, CreditCard, Check, AlertCircle } from 'lucide-react';
+import { Search, UserCheck, DollarSign, CreditCard, Check, AlertCircle, Camera } from 'lucide-react';
 import api from '../../../services/api';
+import CameraScannerModal from '../../common/scanner/CameraScannerModal';
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -27,6 +28,27 @@ const FeeCollectionCard = ({ onPaymentSuccess, preselectedStudent }) => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+
+  const handleCameraScan = async (code) => {
+    let clean = String(code || '').trim();
+    if (clean.includes('/verify/student/')) {
+      const parts = clean.split('/verify/student/');
+      clean = parts[parts.length - 1].split('?')[0].trim();
+    }
+    try {
+      const res = await api.get(`/fees/students?search=${encodeURIComponent(clean)}`);
+      const students = res.data?.students || [];
+      if (students.length > 0) {
+        handleSelectStudent(students[0]);
+        setIsCameraOpen(false);
+        return { success: true, student: students[0] };
+      }
+      return { success: false, message: `Student with code "${clean}" not found` };
+    } catch (err) {
+      return { success: false, message: 'Student lookup failed' };
+    }
+  };
 
   useEffect(() => {
     if (preselectedStudent) {
@@ -139,19 +161,32 @@ const FeeCollectionCard = ({ onPaymentSuccess, preselectedStudent }) => {
 
       <div className="p-5 space-y-4">
         <div className="relative">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted" />
-          <input
-            type="text"
-            placeholder="Search student by Name, GR Number, or Father's Name..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 rounded-2xl bg-surface-secondary/40 border border-line dark:border-line-dark text-ink dark:text-ink-dark text-xs outline-none focus:border-primary transition-colors"
-          />
-          {searching && (
-            <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
-              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted" />
+              <input
+                type="text"
+                placeholder="Search student by Name, GR Number, or Father's Name..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-9 pr-4 py-2.5 rounded-2xl bg-surface-secondary/40 border border-line dark:border-line-dark text-ink dark:text-ink-dark text-xs outline-none focus:border-primary transition-colors"
+              />
+              {searching && (
+                <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
+                  <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
             </div>
-          )}
+            <button
+              type="button"
+              onClick={() => setIsCameraOpen(true)}
+              className="px-3.5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 shadow-xs"
+              title="Scan Student ID Barcode or QR"
+            >
+              <Camera className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Scan ID</span>
+            </button>
+          </div>
 
           {searchResults.length > 0 && (
             <div className="absolute left-0 right-0 top-full mt-2 z-20 bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl shadow-xl max-h-60 overflow-y-auto divide-y divide-line dark:divide-line-dark">
@@ -322,6 +357,13 @@ const FeeCollectionCard = ({ onPaymentSuccess, preselectedStudent }) => {
           </button>
         </form>
       </div>
+      <CameraScannerModal
+        isOpen={isCameraOpen}
+        onClose={() => setIsCameraOpen(false)}
+        onScan={handleCameraScan}
+        title="Fee Counter Student Scanner"
+        subtitle="Align student ID card barcode or QR code to load fee account"
+      />
     </div>
   );
 };

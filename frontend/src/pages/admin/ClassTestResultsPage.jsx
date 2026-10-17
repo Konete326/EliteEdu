@@ -70,7 +70,7 @@ export default function ClassTestResultsPage() {
   }, [activeTab, selectedGrade, selectedSection, selectedSubject, selectedStudent, fromDate, toDate]);
 
   return (
-    <div className="p-4 sm:p-6 space-y-5 max-w-7xl mx-auto">
+    <div className="w-full space-y-5">
       <ResultsHeaderAndTabs activeTab={activeTab} setActiveTab={setActiveTab} onPrint={() => window.print()} />
 
       {activeTab === 'class_wise' && <ClassWiseReportTab grades={prereqs.grades} selectedGrade={selectedGrade} setSelectedGrade={setSelectedGrade} selectedSection={selectedSection} setSelectedSection={setSelectedSection} data={analyticsData} isLoading={isLoading} onPrintSlip={(row) => setReportToPrint({ student: row, tests: analyticsData?.tests?.filter((t) => (t.marks || []).some((m) => String(m.student_id) === String(row.student_id))) || [], avgPct: row.percentage, overallGrade: row.grade_letter })} />}

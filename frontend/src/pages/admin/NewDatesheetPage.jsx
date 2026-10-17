@@ -21,9 +21,7 @@ const NewDatesheetPage = () => {
   const [searchParams] = useSearchParams();
   const editId = searchParams.get('edit');
   const [form, setForm, clearDraft, draftSavedAt] = usePersistentFormDraft(`datesheet_draft_${user?.school_id || 'default'}`, INITIAL);
-  const [papers, setPapers] = useState([
-    { exam_date: '', day_name: '', subject_id: '', examiner_id: '', invigilator_id: '', start_time: '09:00 AM', end_time: '12:00 PM', total_marks: 100, syllabus: '' }
-  ]);
+  const [papers, setPapers] = useState([{ exam_date: '', day_name: '', subject_id: '', examiner_id: '', invigilator_id: '', start_time: '09:00 AM', end_time: '12:00 PM', total_marks: 100, syllabus: '' }]);
   const [grades, setGrades] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subjects, setSubjects] = useState([]);
@@ -33,17 +31,13 @@ const NewDatesheetPage = () => {
   const [pasteModalOpen, setPasteModalOpen] = useState(false);
 
   const fetchPrereqs = () => {
-    Promise.all([
-      api.get('/api/grades'),
-      api.get('/api/exam-suite/categories'),
-      api.get('/api/subjects'),
-      api.get('/api/teachers')
-    ]).then(([gRes, cRes, sRes, tRes]) => {
-      setGrades(gRes.data.grades || gRes.data || []);
-      setCategories(cRes.data.categories || []);
-      setSubjects(sRes.data.subjects || sRes.data || []);
-      setTeachers(tRes.data.teachers || tRes.data || []);
-    }).catch(() => {});
+    Promise.all([api.get('/api/grades'), api.get('/api/exam-suite/categories'), api.get('/api/subjects'), api.get('/api/teachers')])
+      .then(([gRes, cRes, sRes, tRes]) => {
+        setGrades(gRes.data.grades || gRes.data || []);
+        setCategories(cRes.data.categories || []);
+        setSubjects(sRes.data.subjects || sRes.data || []);
+        setTeachers(tRes.data.teachers || tRes.data || []);
+      }).catch(() => {});
   };
 
   useEffect(() => {
@@ -87,7 +81,7 @@ const NewDatesheetPage = () => {
   ];
 
   return (
-    <div className="p-4 sm:p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="w-full space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/admin/exam-management/schedule')} className="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer">
@@ -115,8 +109,7 @@ const NewDatesheetPage = () => {
         onAddRow={() => setPapers(prev => [...prev, { exam_date: '', day_name: '', subject_id: '', examiner_id: '', invigilator_id: '', start_time: '09:00 AM', end_time: '12:00 PM', total_marks: 100, syllabus: '' }])}
         onUpdateRow={(idx, fields) => setPapers(prev => prev.map((p, i) => i === idx ? { ...p, ...fields } : p))}
         onRemoveRow={(idx) => setPapers(prev => prev.filter((_, i) => i !== idx))}
-        onOpenPDFModal={() => setPdfModalOpen(true)}
-        onOpenPasteModal={() => setPasteModalOpen(true)}
+        onOpenPDFModal={() => setPdfModalOpen(true)} onOpenPasteModal={() => setPasteModalOpen(true)}
       />
       <UploadPDFModal isOpen={pdfModalOpen} onClose={() => setPdfModalOpen(false)} onUploadComplete={(name) => setForm(prev => ({ ...prev, instructions: `${prev.instructions ? prev.instructions + '\n' : ''}Attached PDF: ${name}` }))} />
       <PasteGridModal isOpen={pasteModalOpen} onClose={() => setPasteModalOpen(false)} onApplyRows={(rows) => setPapers(prev => [...prev, ...rows])} />

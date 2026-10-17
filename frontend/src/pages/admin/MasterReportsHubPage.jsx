@@ -57,7 +57,7 @@ const MasterReportsHubPage = () => {
   }, [data, searchTerm]);
 
   return (
-    <div className="p-4 sm:p-6 space-y-4 max-w-7xl mx-auto">
+    <div className="w-full space-y-4">
       <div className="print:hidden space-y-1">
         <div className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Reports &gt; Master Studio</div>
         <h1 className="text-xl sm:text-2xl font-black text-ink">Institutional Reports Studio</h1>

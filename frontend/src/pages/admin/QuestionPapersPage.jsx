@@ -50,7 +50,7 @@ const QuestionPapersPage = () => {
   ];
 
   return (
-    <div className="p-4 sm:p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="w-full space-y-6">
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">Question Papers Studio</h1>
         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Manage chapters, question banks, and automated examination sheets.</p>

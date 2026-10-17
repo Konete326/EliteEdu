@@ -97,7 +97,7 @@ export default function ManageClassTestsPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-5 max-w-7xl mx-auto">
+    <div className="w-full space-y-5">
       <ClassTestHeaderBar />
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         <div className="lg:col-span-4">

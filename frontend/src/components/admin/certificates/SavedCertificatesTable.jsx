@@ -1,20 +1,24 @@
-import React from 'react';
-import { Eye, Printer, Trash2, Search, Award } from 'lucide-react';
+import React, { useState } from 'react';
+import { Eye, Printer, Trash2, Search, Award, Camera } from 'lucide-react';
+import CameraScannerModal from '../../common/scanner/CameraScannerModal';
 
 const SavedCertificatesTable = ({
-  certificates = [],
-  total = 0,
-  page = 1,
-  pages = 1,
-  search = '',
-  recipientType = 'all',
-  onSearchChange,
-  onRecipientTypeChange,
-  onPageChange,
-  onPreview,
-  onPrintRow,
-  onDelete
+  certificates = [], total = 0, page = 1, pages = 1, search = '',
+  recipientType = 'all', onSearchChange, onRecipientTypeChange, onPageChange,
+  onPreview, onPrintRow, onDelete
 }) => {
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+
+  const handleCameraScan = (code) => {
+    let clean = String(code || '').trim();
+    if (clean.includes('/verify/certificate/')) {
+      const parts = clean.split('/verify/certificate/');
+      clean = parts[parts.length - 1].split('?')[0].trim();
+    }
+    onSearchChange(clean);
+    return { success: true, recipient_name: clean };
+  };
+
   return (
     <div className="bg-surface dark:bg-surface-dark rounded-2xl border border-line dark:border-line-dark shadow-xs p-4 sm:p-5 space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2 border-b border-line dark:border-line-dark">
@@ -33,6 +37,15 @@ const SavedCertificatesTable = ({
               className="pl-8 pr-3 py-1.5 rounded-xl border border-line bg-transparent text-xs w-48 sm:w-60"
             />
           </div>
+          <button
+            type="button"
+            onClick={() => setIsCameraOpen(true)}
+            className="px-3 py-1.5 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary hover:text-white text-primary text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
+            title="Scan Certificate QR with Camera"
+          >
+            <Camera size={13} />
+            <span className="hidden sm:inline">Scan QR</span>
+          </button>
           <select value={recipientType} onChange={(e) => onRecipientTypeChange(e.target.value)} className="px-3 py-1.5 rounded-xl border border-line bg-transparent text-xs font-semibold">
             <option value="all">All Types</option>
             <option value="Student">Students</option>
@@ -107,6 +120,14 @@ const SavedCertificatesTable = ({
           </div>
         </div>
       )}
+
+      <CameraScannerModal
+        isOpen={isCameraOpen}
+        onClose={() => setIsCameraOpen(false)}
+        onScan={handleCameraScan}
+        title="Certificate QR Scanner"
+        subtitle="Align printed certificate QR code to find record"
+      />
     </div>
   );
 };

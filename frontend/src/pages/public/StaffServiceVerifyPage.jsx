@@ -1,18 +1,23 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../../services/api';
-import { ShieldCheck, ShieldAlert, WifiOff, ArrowLeft } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, WifiOff, ArrowLeft, Camera } from 'lucide-react';
 import { resolveOfflineStaffRecord } from '../../utils/offlineVerificationResolver';
 import StaffVerifyDetailsCard from '../../components/public/StaffVerifyDetailsCard';
+import CameraScannerModal from '../../components/common/scanner/CameraScannerModal';
 
 const StaffServiceVerifyPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
+    setLoading(true);
+    setError('');
     api.get(`/public/verify-staff/${id}`)
       .then((res) => {
         if (isMounted && res.data.success) {
@@ -36,6 +41,17 @@ const StaffServiceVerifyPage = () => {
     return () => { isMounted = false; };
   }, [id]);
 
+  const handleCameraScan = (code) => {
+    let clean = String(code || '').trim();
+    if (clean.includes('/verify/staff/')) {
+      const parts = clean.split('/verify/staff/');
+      clean = parts[parts.length - 1].split('?')[0].trim();
+    }
+    setIsCameraOpen(false);
+    navigate(`/verify/staff/${clean}`);
+    return { success: true, staff: { name: clean } };
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-bg dark:bg-[#08080a] flex items-center justify-center p-4">
@@ -51,8 +67,25 @@ const StaffServiceVerifyPage = () => {
           <ShieldAlert className="w-12 h-12 text-bad mx-auto" />
           <h2 className="text-lg font-bold text-ink dark:text-ink-dark">Faculty Verification Failed</h2>
           <p className="text-xs text-ink-muted">{error || 'Staff service record could not be verified on the database.'}</p>
-          <Link to="/login" className="inline-block px-4 py-2 text-xs font-bold rounded-xl bg-primary text-white">Return to Portal</Link>
+          <div className="flex items-center justify-center gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => setIsCameraOpen(true)}
+              className="px-4 py-2 text-xs font-bold rounded-xl bg-primary text-white flex items-center gap-1.5 cursor-pointer"
+            >
+              <Camera size={14} />
+              <span>Scan QR with Camera</span>
+            </button>
+            <Link to="/login" className="px-4 py-2 text-xs font-bold rounded-xl border border-line text-ink">Login</Link>
+          </div>
         </div>
+        <CameraScannerModal
+          isOpen={isCameraOpen}
+          onClose={() => setIsCameraOpen(false)}
+          onScan={handleCameraScan}
+          title="Scan Staff Service QR"
+          subtitle="Align teacher service card QR to verify records"
+        />
       </div>
     );
   }
@@ -69,15 +102,26 @@ const StaffServiceVerifyPage = () => {
                 <p className="text-[10px] text-ink-muted">Education Department Verification</p>
               </div>
             </div>
-            {data.isOffline ? (
-              <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 border border-amber-500/20">
-                <WifiOff className="w-3.5 h-3.5" /> Offline Verified
-              </span>
-            ) : (
-              <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-good/10 text-good border border-good/20">
-                <ShieldCheck className="w-3.5 h-3.5" /> Verified Staff
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsCameraOpen(true)}
+                className="px-2.5 py-1 rounded-xl bg-surface-secondary border border-line text-[11px] font-bold text-ink hover:text-primary flex items-center gap-1 cursor-pointer transition-colors"
+                title="Scan Another Staff Card"
+              >
+                <Camera size={13} />
+                <span>Scan Next</span>
+              </button>
+              {data.isOffline ? (
+                <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                  <WifiOff className="w-3.5 h-3.5" /> Offline
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-good/10 text-good border border-good/20">
+                  <ShieldCheck className="w-3.5 h-3.5" /> Verified
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-4">
@@ -106,6 +150,14 @@ const StaffServiceVerifyPage = () => {
           </Link>
         </div>
       </div>
+
+      <CameraScannerModal
+        isOpen={isCameraOpen}
+        onClose={() => setIsCameraOpen(false)}
+        onScan={handleCameraScan}
+        title="Scan Staff Service QR"
+        subtitle="Align teacher service card QR to verify records"
+      />
     </div>
   );
 };
