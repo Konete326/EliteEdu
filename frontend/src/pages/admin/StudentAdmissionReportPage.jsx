@@ -15,7 +15,7 @@ const StudentAdmissionReportPage = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const res = await api.get(`/api/reports/student-admission-info?grade_id=${selectedGrade}&search=${search}`);
+      const res = await api.get(`/reports/student-admission-info?grade_id=${selectedGrade}&search=${search}`);
       setData(res.data);
     } catch {} finally {
       setLoading(false);
@@ -23,7 +23,7 @@ const StudentAdmissionReportPage = () => {
   };
 
   useEffect(() => {
-    api.get('/api/grades').then((r) => setGrades(r.data.grades || r.data || [])).catch(() => {});
+    api.get('/grades').then((r) => setGrades(r.data.grades || r.data || [])).catch(() => {});
   }, []);
 
   useEffect(() => { loadData(); }, [selectedGrade]);

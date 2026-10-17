@@ -4,7 +4,7 @@ const ALL_APP_KEYS = [
   'salary', 'events', 'complaints', 'feedback', 'counseling',
   'lost_and_found', 'resources', 'my_profile', 'update_picture',
   'student_promotion', 'class_tests', 'question_papers', 'certificates',
-  'reports', 'student_reports', 'parent_reports', 'report_cards', 'attendance_reports', 'exam_reports'
+  'reports', 'student_reports', 'parent_reports', 'report_cards', 'attendance_reports', 'exam_reports', 'leave_requests'
 ];
 
 const MODULE_KEY_MAP = {
@@ -35,7 +35,8 @@ const MODULE_KEY_MAP = {
   student_reports: ['reports', 'students'],
   parent_reports: ['reports', 'students'],
   report_cards: ['reports', 'exams', 'students'],
-  attendance_reports: ['reports', 'attendance'],
+  attendance_reports: ['reports', 'attendance', 'attendance_reports'],
+  leave_requests: ['attendance', 'leave_requests'],
   exam_reports: ['reports', 'exams']
 };
 

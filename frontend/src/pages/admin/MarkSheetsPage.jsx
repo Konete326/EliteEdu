@@ -27,11 +27,11 @@ const MarkSheetsPage = () => {
     try {
       setLoading(true);
       const [msRes, gRes, sRes, cRes, qpRes] = await Promise.all([
-        axios.get('/api/exam-suite/mark-sheets'),
-        axios.get('/api/grades'),
-        axios.get('/api/subjects'),
-        axios.get('/api/exam-suite/categories'),
-        axios.get('/api/question-papers/papers')
+        axios.get('/exam-suite/mark-sheets'),
+        axios.get('/grades'),
+        axios.get('/subjects'),
+        axios.get('/exam-suite/categories'),
+        axios.get('/question-papers/papers')
       ]);
       setMarkSheets(msRes.data.markSheets || []);
       setGrades(gRes.data.grades || gRes.data || []);
@@ -47,7 +47,7 @@ const MarkSheetsPage = () => {
 
   const handleCreateSheet = async (payload) => {
     try {
-      await axios.post('/api/exam-suite/mark-sheets', payload);
+      await axios.post('/exam-suite/mark-sheets', payload);
       setIsNewModalOpen(false);
       fetchData();
     } catch {}
@@ -55,7 +55,7 @@ const MarkSheetsPage = () => {
 
   const handleToggleLock = async (id) => {
     try {
-      await axios.put(`/api/exam-suite/mark-sheets/${id}/lock`);
+      await axios.put(`/exam-suite/mark-sheets/${id}/lock`);
       fetchData();
     } catch {}
   };
@@ -63,7 +63,7 @@ const MarkSheetsPage = () => {
   const handleDelete = async () => {
     if (!deleteTarget) return;
     try {
-      await axios.delete(`/api/exam-suite/mark-sheets/${deleteTarget._id}`);
+      await axios.delete(`/exam-suite/mark-sheets/${deleteTarget._id}`);
       setDeleteTarget(null);
       fetchData();
     } catch {}

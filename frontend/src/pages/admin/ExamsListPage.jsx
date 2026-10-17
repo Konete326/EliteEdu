@@ -31,7 +31,7 @@ export default function ExamsListPage() {
   const fetchExams = async () => {
     try {
       const params = new URLSearchParams(filters);
-      const res = await axios.get(`/api/exams?${params.toString()}`);
+      const res = await axios.get(`/exams?${params.toString()}`);
       if (res.data?.success) {
         setExams(res.data.exams || []);
         setTotal(res.data.total || 0);
@@ -47,7 +47,7 @@ export default function ExamsListPage() {
   }, [filters]);
 
   useEffect(() => {
-    axios.get('/api/exams/prerequisites').then((res) => {
+    axios.get('/exams/prerequisites').then((res) => {
       if (res.data?.lists?.campuses) setCampuses(res.data.lists.campuses);
     }).catch(() => {});
   }, []);
@@ -56,7 +56,7 @@ export default function ExamsListPage() {
     if (!examToDelete) return;
     try {
       setIsDeleting(true);
-      await axios.delete(`/api/exams/${examToDelete._id}`);
+      await axios.delete(`/exams/${examToDelete._id}`);
       showNotification('Exam deleted successfully', 'success');
       setExamToDelete(null);
       fetchExams();

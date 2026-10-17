@@ -28,6 +28,8 @@ const examSuiteRoutes = require('./routes/examSuiteRoutes');
 const questionPaperRoutes = require('./routes/questionPaperRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const certificateRoutes = require('./routes/certificateRoutes');
+const leaveRequestRoutes = require('./routes/leaveRequestRoutes');
+const attendanceReportRoutes = require('./routes/attendanceReportRoutes');
 const auditLogger = require('./middlewares/auditLogger');
 const sanitizePayload = require('./utils/sanitizePayload');
 const seedSuperAdmin = require('./utils/seedSuperAdmin');
@@ -39,15 +41,12 @@ const allowedOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(',').map((origin) => origin.trim())
   : ['http://localhost:5173', 'http://localhost:3000', 'https://elitedev-edu.vercel.app'];
 
-app.use(cors({
-  origin: (origin, callback) => callback(null, true),
-  credentials: true
-}));
-
+app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: true }));
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ limit: '25mb', extended: true }));
 app.use((req, res, next) => {
   if (req.body && typeof req.body === 'object') req.body = sanitizePayload(req.body);
+  if (req.url?.startsWith('/api/api/')) req.url = req.url.replace('/api/api/', '/api/');
   next();
 });
 app.use(auditLogger);
@@ -97,6 +96,8 @@ app.use(['/api/exam-suite', '/exam-suite'], examSuiteRoutes);
 app.use(['/api/question-papers', '/question-papers'], questionPaperRoutes);
 app.use(['/api/reports', '/reports'], reportRoutes);
 app.use(['/api/certificates', '/certificates'], certificateRoutes);
+app.use(['/api/leaves', '/leaves'], leaveRequestRoutes);
+app.use(['/api/attendance-reports', '/attendance-reports'], attendanceReportRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Server error:', err);

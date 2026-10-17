@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import axios from '../../api/axios';
+import api from '../../../../services/api';
 
 const MarkSheetAttendanceTab = () => {
   const [summary, setSummary] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('/api/exam-suite/mark-sheets/attendance').then(res => {
+    api.get('/exam-suite/mark-sheets/attendance').then(res => {
       setSummary(res.data.summary || []);
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);

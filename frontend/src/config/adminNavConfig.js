@@ -38,7 +38,6 @@ export const getAdminNavItems = (schoolType) => [
     icon: CalendarCheck,
     subItems: [
       { name: 'Student Attendance', path: '/admin/attendance/students' },
-      { name: 'Employees Attendance', path: '/admin/attendance/employees' },
       { name: 'Staff Attendance', path: '/admin/attendance/staff' },
       { name: 'Leave Request', path: '/admin/attendance/leave-request' },
       { name: 'Attendance Report', path: '/admin/attendance/report' }
@@ -381,7 +380,7 @@ export const getAllAdminRoutes = () => {
     '/admin/notifications', '/admin/messaging/notifications', '/admin/circular', '/teacher/notifications', '/superadmin/notifications',
     '/admin/settings/general', '/admin/general-settings/signatures',
     '/admin/settings/signatures', '/admin/attendance/students', '/admin/attendance/staff',
-    '/admin/attendance/employees',
+    '/admin/attendance/employees', '/admin/attendance/leave-request', '/admin/attendance/report',
     '/admin/certificates', '/admin/certificates/templates'
   ]);
   const routes = [];
@@ -448,6 +447,8 @@ export const getRouteTitle = (pathname) => {
   if (pathname === '/admin/general-settings/signatures' || pathname === '/admin/settings/signatures') return 'Digital Signatures & Stamps Studio';
   if (pathname === '/admin/attendance/students') return 'Student Attendance';
   if (pathname === '/admin/attendance/staff' || pathname === '/admin/attendance/employees') return 'Staff Attendance';
+  if (pathname === '/admin/attendance/leave-request' || pathname === '/teacher/leaves') return 'Leave Request Engine';
+  if (pathname === '/admin/attendance/report' || pathname === '/teacher/attendance-report') return 'Attendance Report & Monthly Register';
   if (pathname === '/teacher') return 'Faculty Dashboard';
   if (pathname === '/teacher/students') return 'My Classes & Students';
   if (pathname === '/teacher/attendance') return 'Attendance';

@@ -15,7 +15,7 @@ const ParentContactReportPage = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const res = await api.get(`/api/reports/parent-contact-info?grade_id=${selectedGrade}&search=${search}`);
+      const res = await api.get(`/reports/parent-contact-info?grade_id=${selectedGrade}&search=${search}`);
       setData(res.data);
     } catch {} finally {
       setLoading(false);
@@ -23,7 +23,7 @@ const ParentContactReportPage = () => {
   };
 
   useEffect(() => {
-    api.get('/api/grades').then((r) => setGrades(r.data.grades || r.data || [])).catch(() => {});
+    api.get('/grades').then((r) => setGrades(r.data.grades || r.data || [])).catch(() => {});
   }, []);
 
   useEffect(() => { loadData(); }, [selectedGrade]);

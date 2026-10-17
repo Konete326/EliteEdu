@@ -33,7 +33,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
 
   const loadData = async () => {
     try {
-      const [tRes, sRes, fRes] = await Promise.all([api.get('/api/certificates/templates'), api.get('/api/students?limit=250'), api.get('/api/teachers?limit=250')]);
+      const [tRes, sRes, fRes] = await Promise.all([api.get('/certificates/templates'), api.get('/students?limit=250'), api.get('/teachers?limit=250')]);
       const tmps = tRes.data.templates || [];
       setTemplates(tmps);
       setStudents(sRes.data.students || []);
@@ -44,7 +44,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
 
   const loadIssued = async () => {
     try {
-      const res = await api.get(`/api/certificates/issued?page=${page}&search=${search}&recipient_type=${recipientFilter}`);
+      const res = await api.get(`/certificates/issued?page=${page}&search=${search}&recipient_type=${recipientFilter}`);
       setIssuedData(res.data);
     } catch {}
   };
@@ -58,7 +58,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
   const handleGenerate = async () => {
     try {
       setGenerating(true);
-      await api.post('/api/certificates/generate', form);
+      await api.post('/certificates/generate', form);
       loadIssued();
     } catch {} finally {
       setGenerating(false);
@@ -98,7 +98,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
             </div>
           </div>
           <div className="print:hidden">
-            <SavedCertificatesTable certificates={issuedData.certificates} total={issuedData.total} page={page} pages={issuedData.pages} search={search} recipientType={recipientFilter} onSearchChange={setSearch} onRecipientTypeChange={setRecipientFilter} onPageChange={setPage} onPreview={(c) => setForm({ template_id: c.template_id, recipient_type: c.recipient_type, recipient_id: c.student_id?._id || c.staff_id?._id || '', design_style: c.design_style, custom_text: c.custom_text, issue_date: c.issue_date?.split('T')[0] })} onPrintRow={() => window.print()} onDelete={async (id) => { await api.delete(`/api/certificates/issued/${id}`); loadIssued(); }} />
+            <SavedCertificatesTable certificates={issuedData.certificates} total={issuedData.total} page={page} pages={issuedData.pages} search={search} recipientType={recipientFilter} onSearchChange={setSearch} onRecipientTypeChange={setRecipientFilter} onPageChange={setPage} onPreview={(c) => setForm({ template_id: c.template_id, recipient_type: c.recipient_type, recipient_id: c.student_id?._id || c.staff_id?._id || '', design_style: c.design_style, custom_text: c.custom_text, issue_date: c.issue_date?.split('T')[0] })} onPrintRow={() => window.print()} onDelete={async (id) => { await api.delete(`/certificates/issued/${id}`); loadIssued(); }} />
           </div>
         </div>
       )}

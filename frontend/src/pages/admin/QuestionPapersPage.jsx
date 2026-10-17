@@ -18,7 +18,7 @@ const QuestionPapersPage = () => {
 
   const loadPrereqs = async () => {
     try {
-      const [gRes, sRes] = await Promise.all([api.get('/api/grades'), api.get('/api/subjects')]);
+      const [gRes, sRes] = await Promise.all([api.get('/grades'), api.get('/subjects')]);
       const gList = gRes.data.grades || gRes.data || [];
       const sList = sRes.data.subjects || sRes.data || [];
       setGrades(gList);
@@ -31,9 +31,9 @@ const QuestionPapersPage = () => {
   const loadData = async () => {
     try {
       const [cRes, qRes, pRes] = await Promise.all([
-        api.get(`/api/question-papers/chapters?grade_id=${selectedGrade}&subject_id=${selectedSubject}`),
-        api.get(`/api/question-papers/questions?grade_id=${selectedGrade}&subject_id=${selectedSubject}`),
-        api.get('/api/question-papers/papers')
+        api.get(`/question-papers/chapters?grade_id=${selectedGrade}&subject_id=${selectedSubject}`),
+        api.get(`/question-papers/questions?grade_id=${selectedGrade}&subject_id=${selectedSubject}`),
+        api.get('/question-papers/papers')
       ]);
       setChapters(cRes.data.chapters || []);
       setQuestions(qRes.data.questions || []);
@@ -75,24 +75,24 @@ const QuestionPapersPage = () => {
           chapters={chapters} grades={grades} subjects={subjects}
           selectedGrade={selectedGrade} selectedSubject={selectedSubject}
           onGradeChange={setSelectedGrade} onSubjectChange={setSelectedSubject}
-          onSaveChapter={async (payload) => { await api.post('/api/question-papers/chapters', payload); loadData(); }}
-          onDeleteChapter={async (id) => { await api.delete(`/api/question-papers/chapters/${id}`); loadData(); }}
-          onSeedChapters={async () => { await api.post('/api/question-papers/chapters/seed', { grade_id: selectedGrade, subject_id: selectedSubject }); loadData(); }}
+          onSaveChapter={async (payload) => { await api.post('/question-papers/chapters', payload); loadData(); }}
+          onDeleteChapter={async (id) => { await api.delete(`/question-papers/chapters/${id}`); loadData(); }}
+          onSeedChapters={async () => { await api.post('/question-papers/chapters/seed', { grade_id: selectedGrade, subject_id: selectedSubject }); loadData(); }}
         />
       ) : activeTab === 'questions' ? (
         <QuestionBankTab
           questions={questions} grades={grades} subjects={subjects} chapters={chapters}
           selectedGrade={selectedGrade} selectedSubject={selectedSubject}
           onGradeChange={setSelectedGrade} onSubjectChange={setSelectedSubject}
-          onSaveQuestion={async (payload) => { await api.post('/api/question-papers/questions', payload); loadData(); }}
-          onDeleteQuestion={async (id) => { await api.delete(`/api/question-papers/questions/${id}`); loadData(); }}
-          onSeedQuestions={async () => { await api.post('/api/question-papers/questions/seed', { grade_id: selectedGrade, subject_id: selectedSubject }); loadData(); }}
+          onSaveQuestion={async (payload) => { await api.post('/question-papers/questions', payload); loadData(); }}
+          onDeleteQuestion={async (id) => { await api.delete(`/question-papers/questions/${id}`); loadData(); }}
+          onSeedQuestions={async () => { await api.post('/question-papers/questions/seed', { grade_id: selectedGrade, subject_id: selectedSubject }); loadData(); }}
         />
       ) : (
         <PaperBuilderTab
           papers={papers} grades={grades} subjects={subjects} chapters={chapters}
-          onGeneratePaper={async (payload) => { await api.post('/api/question-papers/papers/auto-generate', payload); loadData(); }}
-          onDeletePaper={async (id) => { await api.delete(`/api/question-papers/papers/${id}`); loadData(); }}
+          onGeneratePaper={async (payload) => { await api.post('/question-papers/papers/auto-generate', payload); loadData(); }}
+          onDeletePaper={async (id) => { await api.delete(`/question-papers/papers/${id}`); loadData(); }}
         />
       )}
     </div>

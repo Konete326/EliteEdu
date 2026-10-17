@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Printer, Users } from 'lucide-react';
-import axios from '../../api/axios';
+import api from '../../../../services/api';
 
 const SeatingPlanModal = ({ isOpen, onClose, examId }) => {
   const [loading, setLoading] = useState(false);
@@ -9,7 +9,7 @@ const SeatingPlanModal = ({ isOpen, onClose, examId }) => {
   const generatePlan = async () => {
     try {
       setLoading(true);
-      const res = await axios.post('/api/exam-suite/datesheets/seating-arrangement', { exam_id: examId });
+      const res = await api.post('/exam-suite/datesheets/seating-arrangement', { exam_id: examId });
       setPlanData(res.data);
     } catch {} finally {
       setLoading(false);

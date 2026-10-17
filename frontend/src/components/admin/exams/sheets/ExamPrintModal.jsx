@@ -14,7 +14,7 @@ export default function ExamPrintModal({ isOpen, onClose, exam }) {
 
   useEffect(() => {
     setIsLoading(true);
-    axios.get(`/api/exams/${exam._id}/print-data`)
+    axios.get(`/exams/${exam._id}/print-data`)
       .then((res) => { if (res.data?.success) setData(res.data); })
       .finally(() => setIsLoading(false));
   }, [exam._id]);

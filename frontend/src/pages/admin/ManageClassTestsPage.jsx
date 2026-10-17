@@ -27,12 +27,12 @@ export default function ManageClassTestsPage() {
 
   const fetchPrereqs = () => {
     setLoadingState((p) => ({ ...p, isPrereq: true }));
-    axios.get('/api/class-tests/prerequisites').then((res) => setPrereqs(res.data)).finally(() => setLoadingState((p) => ({ ...p, isPrereq: false })));
+    axios.get('/class-tests/prerequisites').then((res) => setPrereqs(res.data)).finally(() => setLoadingState((p) => ({ ...p, isPrereq: false })));
   };
 
   const fetchTests = () => {
     const params = new URLSearchParams(filters);
-    axios.get(`/api/class-tests?${params.toString()}`).then((res) => {
+    axios.get(`/class-tests?${params.toString()}`).then((res) => {
       setTestState({ tests: res.data.tests || [], total: res.data.total || 0, totalPages: res.data.totalPages || 1 });
     });
   };
@@ -44,8 +44,8 @@ export default function ManageClassTestsPage() {
     e.preventDefault();
     try {
       setLoadingState((p) => ({ ...p, isSavingForm: true }));
-      if (editingTest) await axios.put(`/api/class-tests/${editingTest._id}`, formData);
-      else await axios.post('/api/class-tests', formData);
+      if (editingTest) await axios.put(`/class-tests/${editingTest._id}`, formData);
+      else await axios.post('/class-tests', formData);
       showNotification(editingTest ? 'Test updated!' : 'Test scheduled!', 'success');
       setEditingTest(null);
       clearDraft();
@@ -60,7 +60,7 @@ export default function ManageClassTestsPage() {
 
   const handleSelectTest = (test) => {
     setActiveTest(test);
-    axios.get(`/api/class-tests/${test._id}/sheet`).then((res) => {
+    axios.get(`/class-tests/${test._id}/sheet`).then((res) => {
       setSheetRows(res.data.rows || []);
       setActiveView('sheet');
     }).catch(() => showNotification('Failed to load sheet', 'error'));
@@ -70,7 +70,7 @@ export default function ManageClassTestsPage() {
     if (!activeTest) return;
     try {
       setLoadingState((p) => ({ ...p, isSavingMarks: true }));
-      await axios.post(`/api/class-tests/${activeTest._id}/marks`, { marks: sheetRows });
+      await axios.post(`/class-tests/${activeTest._id}/marks`, { marks: sheetRows });
       showNotification('Marks published!', 'success');
       fetchTests();
     } catch {
@@ -84,7 +84,7 @@ export default function ManageClassTestsPage() {
     if (!modals.testToDelete) return;
     try {
       setLoadingState((p) => ({ ...p, isDeleting: true }));
-      await axios.delete(`/api/class-tests/${modals.testToDelete._id}`);
+      await axios.delete(`/class-tests/${modals.testToDelete._id}`);
       showNotification('Test deleted', 'success');
       if (activeTest?._id === modals.testToDelete._id) { setActiveTest(null); setActiveView('list'); }
       setModals((p) => ({ ...p, testToDelete: null }));

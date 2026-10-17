@@ -33,7 +33,7 @@ import {
   ManageClassTestsPage, ClassTestResultsPage, FeeManagementPage, ExamCategoriesPage, RemarksPolicyPage,
   ManageRemarksPage, DatesheetsListPage, NewDatesheetPage, MarkSheetsPage, QuestionPapersPage,
   MasterReportsHubPage, StudentAdmissionReportPage, ParentContactReportPage, StudentReportCardPage,
-  CertificatesPage, ComingSoonPage
+  CertificatesPage, LeaveRequestPage, AttendanceReportPage, ComingSoonPage
 } from './pages/admin';
 
 const adminDynamicRoutes = getAllAdminRoutes();
@@ -74,6 +74,8 @@ function App() {
                     <Route path="/admin/attendance/students" element={<StudentAttendancePage />} />
                     <Route path="/admin/attendance/staff" element={<EmployeeAttendancePage />} />
                     <Route path="/admin/attendance/employees" element={<EmployeeAttendancePage />} />
+                    <Route path="/admin/attendance/leave-request" element={<LeaveRequestPage />} />
+                    <Route path="/admin/attendance/report" element={<AttendanceReportPage />} />
                     <Route path="/admin/exam-management/exams" element={<ExamsListPage />} />
                     <Route path="/admin/exams/schedules" element={<ExamsListPage />} />
                     <Route path="/admin/exams/date-sheets" element={<ExamsListPage />} />
@@ -147,6 +149,8 @@ function App() {
                     <Route path="/teacher/students" element={<TeacherStudentsRosterPage />} />
                     <Route path="/teacher/my-students" element={<TeacherStudentsRosterPage />} />
                     <Route path="/teacher/attendance" element={<StudentAttendancePage />} />
+                    <Route path="/teacher/leaves" element={<LeaveRequestPage />} />
+                    <Route path="/teacher/attendance-report" element={<AttendanceReportPage />} />
                     <Route path="/teacher/homework" element={<ComingSoonPage title="Homework Management" />} />
                     <Route path="/teacher/timetable" element={<ComingSoonPage title="Class Timetable" />} />
                     <Route path="/teacher/quizzes" element={<ComingSoonPage title="Quizzes & Online Tests" />} />

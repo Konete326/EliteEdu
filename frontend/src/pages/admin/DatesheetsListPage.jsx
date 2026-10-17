@@ -16,7 +16,7 @@ const DatesheetsListPage = () => {
   const fetchDatesheets = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('/api/exam-suite/datesheets');
+      const res = await axios.get('/exam-suite/datesheets');
       setDatesheets(res.data.datesheets || []);
     } catch {} finally {
       setLoading(false);
@@ -30,7 +30,7 @@ const DatesheetsListPage = () => {
   const handleDelete = async () => {
     if (!deleteTarget) return;
     try {
-      await axios.delete(`/api/exam-suite/datesheets/${deleteTarget._id}`);
+      await axios.delete(`/exam-suite/datesheets/${deleteTarget._id}`);
       setDeleteTarget(null);
       fetchDatesheets();
     } catch {}

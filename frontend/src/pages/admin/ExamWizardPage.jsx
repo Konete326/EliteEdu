@@ -36,7 +36,7 @@ export default function ExamWizardPage() {
   const fetchPrerequisites = async () => {
     try {
       setPrereqLoading(true);
-      const res = await axios.get('/api/exams/prerequisites');
+      const res = await axios.get('/exams/prerequisites');
       if (res.data?.success) setPrereqs(res.data);
     } catch {
       showNotification('Failed to load prerequisites', 'error');
@@ -48,7 +48,7 @@ export default function ExamWizardPage() {
   useEffect(() => {
     fetchPrerequisites();
     if (isEdit) {
-      axios.get(`/api/exams/${id}`).then((res) => {
+      axios.get(`/exams/${id}`).then((res) => {
         if (res.data?.exam) setFormData(res.data.exam);
       }).catch(() => showNotification('Failed to load exam', 'error'));
     }
@@ -73,8 +73,8 @@ export default function ExamWizardPage() {
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
-      if (isEdit) await axios.put(`/api/exams/${id}`, formData);
-      else await axios.post('/api/exams', formData);
+      if (isEdit) await axios.put(`/exams/${id}`, formData);
+      else await axios.post('/exams', formData);
       showNotification(isEdit ? 'Exam updated!' : 'Exam created and published!', 'success');
       clearDraft();
       navigate('/admin/exam-management/exams');

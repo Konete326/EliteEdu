@@ -37,4 +37,6 @@ export { default as StudentAdmissionReportPage } from './StudentAdmissionReportP
 export { default as ParentContactReportPage } from './ParentContactReportPage';
 export { default as StudentReportCardPage } from './StudentReportCardPage';
 export { default as CertificatesPage } from './CertificatesPage';
+export { default as LeaveRequestPage } from './LeaveRequestPage';
+export { default as AttendanceReportPage } from './AttendanceReportPage';
 export { default as ComingSoonPage } from './ComingSoonPage';

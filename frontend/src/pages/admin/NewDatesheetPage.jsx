@@ -31,7 +31,7 @@ const NewDatesheetPage = () => {
   const [pasteModalOpen, setPasteModalOpen] = useState(false);
 
   const fetchPrereqs = () => {
-    Promise.all([api.get('/api/grades'), api.get('/api/exam-suite/categories'), api.get('/api/subjects'), api.get('/api/teachers')])
+    Promise.all([api.get('/grades'), api.get('/exam-suite/categories'), api.get('/subjects'), api.get('/teachers')])
       .then(([gRes, cRes, sRes, tRes]) => {
         setGrades(gRes.data.grades || gRes.data || []);
         setCategories(cRes.data.categories || []);
@@ -43,7 +43,7 @@ const NewDatesheetPage = () => {
   useEffect(() => {
     fetchPrereqs();
     if (editId) {
-      api.get(`/api/exam-suite/datesheets/${editId}`).then(res => {
+      api.get(`/exam-suite/datesheets/${editId}`).then(res => {
         const d = res.data.datesheet;
         if (d) {
           setForm({
@@ -62,9 +62,9 @@ const NewDatesheetPage = () => {
     setSaving(true);
     try {
       const payload = { ...form, papers };
-      if (editId) await api.put(`/api/exam-suite/datesheets/${editId}`, payload);
+      if (editId) await api.put(`/exam-suite/datesheets/${editId}`, payload);
       else {
-        await api.post('/api/exam-suite/datesheets', payload);
+        await api.post('/exam-suite/datesheets', payload);
         clearDraft();
       }
       navigate('/admin/exam-management/schedule');

@@ -30,8 +30,8 @@ const CertificateTemplatesManager = ({ templates = [], onRefresh }) => {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      if (editingId) await api.put(`/api/certificates/templates/${editingId}`, form);
-      else await api.post('/api/certificates/templates', form);
+      if (editingId) await api.put(`/certificates/templates/${editingId}`, form);
+      else await api.post('/certificates/templates', form);
       setModalOpen(false);
       setEditingId(null);
       onRefresh();
@@ -40,7 +40,7 @@ const CertificateTemplatesManager = ({ templates = [], onRefresh }) => {
 
   const handleDelete = async (id) => {
     try {
-      await api.delete(`/api/certificates/templates/${id}`);
+      await api.delete(`/certificates/templates/${id}`);
       onRefresh();
     } catch {}
   };

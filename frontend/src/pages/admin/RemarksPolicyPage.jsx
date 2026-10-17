@@ -14,8 +14,8 @@ const RemarksPolicyPage = () => {
     try {
       setLoading(true);
       const [polRes, gradeRes] = await Promise.all([
-        axios.get('/api/exam-suite/remarks-policy'),
-        axios.get('/api/grades')
+        axios.get('/exam-suite/remarks-policy'),
+        axios.get('/grades')
       ]);
       setPolicies(polRes.data.policies || []);
       setGrades(gradeRes.data.grades || gradeRes.data || []);
@@ -50,7 +50,7 @@ const RemarksPolicyPage = () => {
     }
     try {
       setSaving(true);
-      await axios.post('/api/exam-suite/remarks-policy', { policies });
+      await axios.post('/exam-suite/remarks-policy', { policies });
       setToastMsg('Remarks policy saved successfully!');
       setTimeout(() => setToastMsg(''), 3000);
       fetchData();

@@ -29,7 +29,7 @@ export default function ClassTestResultsPage() {
   const [reportToPrint, setReportToPrint] = useState(null);
 
   useEffect(() => {
-    axios.get('/api/class-tests/prerequisites').then((res) => {
+    axios.get('/class-tests/prerequisites').then((res) => {
       if (res.data?.success) {
         setPrereqs(res.data);
         if (res.data.grades?.length > 0) setSelectedGrade(res.data.grades[0]._id);
@@ -39,7 +39,7 @@ export default function ClassTestResultsPage() {
 
   useEffect(() => {
     if (!selectedGrade) { setStudents([]); return; }
-    axios.get(`/api/students?grade_id=${selectedGrade}&status=Active&limit=100`).then((res) => {
+    axios.get(`/students?grade_id=${selectedGrade}&status=Active&limit=100`).then((res) => {
       setStudents(res.data?.students || []);
     }).catch(() => {});
   }, [selectedGrade]);
@@ -56,7 +56,7 @@ export default function ClassTestResultsPage() {
         if (fromDate) params.append('from_date', fromDate);
         if (toDate) params.append('to_date', toDate);
       }
-      const res = await axios.get(`/api/class-tests/analytics?${params.toString()}`);
+      const res = await axios.get(`/class-tests/analytics?${params.toString()}`);
       if (res.data?.success) setAnalyticsData(res.data);
     } catch {
       showNotification('Failed to load analytics', 'error');

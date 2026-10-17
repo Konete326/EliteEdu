@@ -24,7 +24,7 @@ export default function ExamMarksModal({ isOpen, onClose, exam, initialPaper, on
   useEffect(() => {
     if (!activePaper) return;
     setIsLoading(true);
-    axios.get(`/api/exams/${exam._id}/marks-sheet?grade_id=${activePaper.grade_id}&section=${activePaper.section || 'A'}&subject_id=${activePaper.subject_id}`)
+    axios.get(`/exams/${exam._id}/marks-sheet?grade_id=${activePaper.grade_id}&section=${activePaper.section || 'A'}&subject_id=${activePaper.subject_id}`)
       .then((res) => setRows(res.data?.rows || []))
       .catch(() => showNotification('Failed to load marks sheet', 'error'))
       .finally(() => setIsLoading(false));
@@ -37,7 +37,7 @@ export default function ExamMarksModal({ isOpen, onClose, exam, initialPaper, on
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      await axios.post(`/api/exams/${exam._id}/marks-sheet`, { grade_id: activePaper.grade_id, section: activePaper.section || 'A', subject_id: activePaper.subject_id, records: rows });
+      await axios.post(`/exams/${exam._id}/marks-sheet`, { grade_id: activePaper.grade_id, section: activePaper.section || 'A', subject_id: activePaper.subject_id, records: rows });
       showNotification('Marks sheet saved and percentages updated!', 'success');
       if (onSaved) onSaved();
       onClose();

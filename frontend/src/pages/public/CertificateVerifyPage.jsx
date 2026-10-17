@@ -15,7 +15,7 @@ const CertificateVerifyPage = () => {
   useEffect(() => {
     setLoading(true);
     setError(false);
-    api.get(`/api/public/verify-certificate/${certNo}`)
+    api.get(`/public/verify-certificate/${certNo}`)
       .then((res) => setCert(res.data.certificate))
       .catch(() => setError(true))
       .finally(() => setLoading(false));

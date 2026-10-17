@@ -15,7 +15,7 @@ const ExamCategoriesPage = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('/api/exam-suite/categories');
+      const res = await axios.get('/exam-suite/categories');
       setCategories(res.data.categories || []);
     } catch {} finally {
       setLoading(false);
@@ -29,9 +29,9 @@ const ExamCategoriesPage = () => {
   const handleSave = async (payload) => {
     try {
       if (selectedCategory) {
-        await axios.put(`/api/exam-suite/categories/${selectedCategory._id}`, payload);
+        await axios.put(`/exam-suite/categories/${selectedCategory._id}`, payload);
       } else {
-        await axios.post('/api/exam-suite/categories', payload);
+        await axios.post('/exam-suite/categories', payload);
       }
       setIsModalOpen(false);
       setSelectedCategory(null);
@@ -42,7 +42,7 @@ const ExamCategoriesPage = () => {
   const handleDelete = async () => {
     if (!deleteTarget) return;
     try {
-      await axios.delete(`/api/exam-suite/categories/${deleteTarget._id}`);
+      await axios.delete(`/exam-suite/categories/${deleteTarget._id}`);
       setDeleteTarget(null);
       fetchCategories();
     } catch {}

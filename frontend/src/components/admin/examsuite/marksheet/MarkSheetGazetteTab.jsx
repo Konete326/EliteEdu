@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Printer } from 'lucide-react';
-import axios from '../../api/axios';
+import api from '../../../../services/api';
 import OfficialSignatureStampBlock from '../../../common/OfficialSignatureStampBlock';
 
 const MarkSheetGazetteTab = ({ grades }) => {
@@ -15,7 +15,7 @@ const MarkSheetGazetteTab = ({ grades }) => {
   useEffect(() => {
     if (!selectedGrade) return;
     setLoading(true);
-    axios.get(`/api/exam-suite/mark-sheets/class-results?grade_id=${selectedGrade}`).then(res => {
+    api.get(`/exam-suite/mark-sheets/class-results?grade_id=${selectedGrade}`).then(res => {
       setGazette(res.data.gazette || []);
     }).catch(() => {}).finally(() => setLoading(false));
   }, [selectedGrade]);

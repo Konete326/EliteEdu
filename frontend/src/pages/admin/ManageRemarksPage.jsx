@@ -19,8 +19,8 @@ const ManageRemarksPage = () => {
     try {
       setLoading(true);
       const [remRes, subRes] = await Promise.all([
-        axios.get('/api/exam-suite/manage-remarks'),
-        axios.get('/api/subjects')
+        axios.get('/exam-suite/manage-remarks'),
+        axios.get('/subjects')
       ]);
       setRemarks(remRes.data.templates || []);
       setSubjects(subRes.data.subjects || subRes.data || []);
@@ -36,9 +36,9 @@ const ManageRemarksPage = () => {
   const handleSave = async (payload) => {
     try {
       if (selectedRemark) {
-        await axios.put(`/api/exam-suite/manage-remarks/${selectedRemark._id}`, payload);
+        await axios.put(`/exam-suite/manage-remarks/${selectedRemark._id}`, payload);
       } else {
-        await axios.post('/api/exam-suite/manage-remarks', payload);
+        await axios.post('/exam-suite/manage-remarks', payload);
       }
       setIsModalOpen(false);
       setSelectedRemark(null);
@@ -49,7 +49,7 @@ const ManageRemarksPage = () => {
   const handleDelete = async () => {
     if (!deleteTarget) return;
     try {
-      await axios.delete(`/api/exam-suite/manage-remarks/${deleteTarget._id}`);
+      await axios.delete(`/exam-suite/manage-remarks/${deleteTarget._id}`);
       setDeleteTarget(null);
       fetchData();
     } catch {}

@@ -35,4 +35,6 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
+authMiddleware.protect = authMiddleware;
 module.exports = authMiddleware;
+module.exports.protect = authMiddleware;

@@ -9,6 +9,8 @@ const DEFAULT_MODULES = [
   { module_key: 'student_id_cards', module_name: 'Student ID Cards Studio', category: 'Academics' },
   { module_key: 'teacher_id_cards', module_name: 'Staff Service ID Cards', category: 'Academics' },
   { module_key: 'attendance', module_name: 'Attendance Tracking', category: 'Operations' },
+  { module_key: 'leave_requests', module_name: 'Leave Request Engine', category: 'Operations' },
+  { module_key: 'attendance_reports', module_name: 'Attendance Reports & Register', category: 'Operations' },
   { module_key: 'fees', module_name: 'Fee Management', category: 'Finance' },
   { module_key: 'accounts', module_name: 'Accounts & Expenses', category: 'Finance' },
   { module_key: 'exams', module_name: 'Examinations & Grading', category: 'Examination' },

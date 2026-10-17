@@ -17,8 +17,8 @@ const GradingPoliciesPage = () => {
     try {
       setLoading(true);
       const [polRes, gradeRes] = await Promise.all([
-        axios.get('/api/grading-policies'),
-        axios.get('/api/grades')
+        axios.get('/grading-policies'),
+        axios.get('/grades')
       ]);
       const pol = polRes.data.policy || {};
       setPolicies(pol.policies || []);
@@ -62,7 +62,7 @@ const GradingPoliciesPage = () => {
     }
     try {
       setSaving(true);
-      await axios.put('/api/grading-policies/policies', { policies });
+      await axios.put('/grading-policies/policies', { policies });
       setToastMsg('Grading policies saved successfully!');
       setTimeout(() => setToastMsg(''), 3000);
       fetchData();
@@ -108,7 +108,7 @@ const GradingPoliciesPage = () => {
           ))}
         </div>
       ) : (
-        <FailCriteriaTab initialCriteria={failCriteria} onSave={async (crit) => { await axios.put('/api/grading-policies/fail-criteria', crit); setToastMsg('Fail criteria updated'); setTimeout(() => setToastMsg(''), 3000); }} saving={saving} />
+        <FailCriteriaTab initialCriteria={failCriteria} onSave={async (crit) => { await axios.put('/grading-policies/fail-criteria', crit); setToastMsg('Fail criteria updated'); setTimeout(() => setToastMsg(''), 3000); }} saving={saving} />
       )}
     </div>
   );

@@ -11,7 +11,7 @@ const EnterMarksModal = ({ isOpen, onClose, sheetId, onMarksSaved }) => {
   useEffect(() => {
     if (!isOpen || !sheetId) return;
     setLoading(true);
-    axios.get(`/api/exam-suite/mark-sheets/${sheetId}`).then(res => {
+    axios.get(`/exam-suite/mark-sheets/${sheetId}`).then(res => {
       const s = res.data.markSheet;
       setSheet(s);
       setEntries(s.marks || []);
@@ -36,7 +36,7 @@ const EnterMarksModal = ({ isOpen, onClose, sheetId, onMarksSaved }) => {
   const handleSave = async (submitStatus = 'Draft') => {
     try {
       setSaving(true);
-      await axios.post(`/api/exam-suite/mark-sheets/${sheetId}/marks`, { marks: entries, status: submitStatus });
+      await axios.post(`/exam-suite/mark-sheets/${sheetId}/marks`, { marks: entries, status: submitStatus });
       onMarksSaved();
       onClose();
     } catch {} finally {
