@@ -20,6 +20,8 @@ export const getAdminNavItems = (schoolType) => [
       { name: 'Students', path: '/admin/students' },
       { name: 'Admission Letter', path: '/admin/students/admission-letter' },
       { name: 'Student ID Cards', path: '/admin/students/id-cards' },
+      { name: 'Certificates Studio', path: '/admin/certificates' },
+      { name: 'Certificate Templates', path: '/admin/certificates/templates' },
       { name: 'Promote Students', path: '/admin/students/promote' },
       { name: 'Online Classes', path: '/admin/online-classes' },
       { name: 'News Feed', path: '/admin/news-feed' },
@@ -144,10 +146,11 @@ export const getAdminNavItems = (schoolType) => [
     title: 'Reports',
     icon: BarChart3,
     subItems: [
-      { name: 'Academic Reports', path: '/admin/reports/academic' },
-      { name: 'Financial Reports', path: '/admin/reports/financial' },
-      { name: 'Attendance Summary', path: '/admin/reports/attendance' },
-      { name: 'Audit Logs', path: '/admin/reports/audit-logs' }
+      { name: 'Master Reports Hub', path: '/admin/reports' },
+      { name: 'Students Report Card', path: '/admin/reports/report-cards' },
+      { name: 'Students Info Report', path: '/admin/reports/student-info' },
+      { name: 'Parents Contact Report', path: '/admin/reports/parent-info' },
+      { name: 'Audit & System Logs', path: '/admin/reports/audit-logs' }
     ]
   },
   {
@@ -274,16 +277,19 @@ export const getNavCategories = (user) => {
       });
     }
 
-    if (allowed.has('reports')) {
+    if (allowed.has('reports') || allowed.has('student_reports') || allowed.has('parent_reports') || allowed.has('report_cards')) {
+      const repSubs = [
+        { name: 'Master Reports Hub', path: '/admin/reports' }
+      ];
+      if (allowed.has('report_cards') || allowed.has('reports')) repSubs.push({ name: 'Students Report Card', path: '/admin/reports/report-cards' });
+      if (allowed.has('student_reports') || allowed.has('reports')) repSubs.push({ name: 'Students Info Report', path: '/admin/reports/student-info' });
+      if (allowed.has('parent_reports') || allowed.has('reports')) repSubs.push({ name: 'Parents Contact Report', path: '/admin/reports/parent-info' });
+      repSubs.push({ name: 'Audit & System Logs', path: '/admin/reports/audit-logs' });
       groups.push({
         type: 'group',
         title: 'Reports',
         icon: BarChart3,
-        subItems: [
-          { name: 'Audit Logs', path: '/admin/reports/audit-logs' },
-          { name: 'Academic Reports', path: '/admin/reports/academic' },
-          { name: 'Financial Reports', path: '/admin/reports/financial' }
-        ]
+        subItems: repSubs
       });
     }
 
@@ -311,24 +317,30 @@ export const getNavCategories = (user) => {
 
   if (user.role === 'Teacher') {
     const permissions = user.app_settings || user.app_permissions || {};
+    const eff = user.effective_permissions || {};
+    const has = (key, fallback = true) => {
+      if (eff[key]?.view !== undefined) return Boolean(eff[key].view);
+      return permissions[key] !== undefined ? permissions[key] !== false : fallback;
+    };
     const subItems = [{ name: 'Dashboard', path: '/teacher' }];
-    if (permissions.students !== false) subItems.push({ name: 'My Students', path: '/teacher/students' });
-    if (permissions.attendance !== false) subItems.push({ name: 'Attendance', path: '/teacher/attendance' });
-    if (permissions.homework !== false) subItems.push({ name: 'Homework', path: '/teacher/homework' });
-    if (permissions.examination !== false || permissions.exam_management) subItems.push({ name: 'Examinations', path: '/teacher/exams' });
-    if (permissions.timetable !== false) subItems.push({ name: 'Timetable', path: '/teacher/timetable' });
-    if (permissions.quizzes !== false) subItems.push({ name: 'Quizzes', path: '/teacher/quizzes' });
-    if (permissions.lectures !== false) subItems.push({ name: 'Lectures', path: '/teacher/lectures' });
-    if (permissions.online_classes !== false) subItems.push({ name: 'Online Classes', path: '/teacher/online-classes' });
-    if (permissions.datesheet !== false) subItems.push({ name: 'Date Sheet', path: '/teacher/datesheet' });
-    if (permissions.salary !== false) subItems.push({ name: 'My Salary', path: '/teacher/salary' });
-    if (permissions.my_profile !== false) subItems.push({ name: 'My Profile', path: '/teacher/profile' });
-    if (permissions.student_promotion || permissions.class_transfer) subItems.push({ name: 'Promote Students', path: '/admin/students/promote' });
-    if (permissions.admission_letter) subItems.push({ name: 'Admission Letters', path: '/admin/students/admission-letter' });
-    if (permissions.student_id_cards) subItems.push({ name: 'Student ID Cards', path: '/admin/students/id-cards' });
-    if (permissions.teacher_id_cards) subItems.push({ name: 'Staff ID Cards', path: '/admin/teachers/id-cards' });
-    if (permissions.grading_policies) subItems.push({ name: 'Grading Policies', path: '/admin/exam-management/grading-policies' });
-    if (permissions.class_tests !== false) subItems.push({ name: 'Class Tests', path: '/teacher/class-tests' });
+    if (has('students')) subItems.push({ name: 'My Students', path: '/teacher/students' });
+    if (has('attendance')) subItems.push({ name: 'Attendance', path: '/teacher/attendance' });
+    if (has('homework')) subItems.push({ name: 'Homework', path: '/teacher/homework' });
+    if (has('examination') || has('exams') || permissions.exam_management) subItems.push({ name: 'Examinations', path: '/teacher/exams' });
+    if (has('timetable')) subItems.push({ name: 'Timetable', path: '/teacher/timetable' });
+    if (has('quizzes')) subItems.push({ name: 'Quizzes', path: '/teacher/quizzes' });
+    if (has('lectures')) subItems.push({ name: 'Lectures', path: '/teacher/lectures' });
+    if (has('online_classes')) subItems.push({ name: 'Online Classes', path: '/teacher/online-classes' });
+    if (has('datesheet')) subItems.push({ name: 'Date Sheet', path: '/teacher/datesheet' });
+    if (has('salary')) subItems.push({ name: 'My Salary', path: '/teacher/salary' });
+    if (has('my_profile')) subItems.push({ name: 'My Profile', path: '/teacher/profile' });
+    if (has('student_promotion', false) || permissions.class_transfer) subItems.push({ name: 'Promote Students', path: '/admin/students/promote' });
+    if (has('admission_letter', false)) subItems.push({ name: 'Admission Letters', path: '/admin/students/admission-letter' });
+    if (has('student_id_cards', false)) subItems.push({ name: 'Student ID Cards', path: '/admin/students/id-cards' });
+    if (has('teacher_id_cards', false)) subItems.push({ name: 'Staff ID Cards', path: '/admin/teachers/id-cards' });
+    if (has('grading_policies', false)) subItems.push({ name: 'Grading Policies', path: '/admin/exam-management/grading-policies' });
+    if (has('class_tests')) subItems.push({ name: 'Class Tests', path: '/teacher/class-tests' });
+    if (has('question_papers')) subItems.push({ name: 'Question Papers', path: '/teacher/question-papers' });
 
     return [{
       type: 'group',
@@ -357,7 +369,9 @@ export const getAllAdminRoutes = () => {
     '/admin/fees/collection', '/admin/fees/structure', '/admin/fees/defaulters',
     '/admin/fees/reports', '/admin/fees/concession',
     '/admin/settings/appearance', '/admin/control-panel/branding', '/admin/reports/audit-logs',
-    '/admin/reports/audit-log', '/admin/students/promote', '/admin/control-panel/class-transfer',
+    '/admin/reports/audit-log', '/admin/reports', '/admin/reports/academic', '/admin/reports/report-cards',
+    '/admin/reports/student-info', '/admin/reports/parent-info',
+    '/admin/students/promote', '/admin/control-panel/class-transfer',
     '/admin/control-panel/user-management', '/admin/settings/roles', '/admin/control-panel/roles', '/admin/roles',
     '/admin/notifications', '/admin/messaging/notifications', '/admin/circular', '/teacher/notifications', '/superadmin/notifications',
     '/admin/settings/general', '/admin/general-settings/signatures',
@@ -415,6 +429,10 @@ export const getRouteTitle = (pathname) => {
   if (pathname === '/superadmin/schools') return 'Schools';
   if (pathname === '/superadmin/schools/new') return 'New School';
   if (pathname === '/superadmin/logs' || pathname === '/admin/reports/audit-logs' || pathname === '/admin/reports/audit-log') return 'System Telemetry & Audit Logs';
+  if (pathname === '/admin/reports' || pathname === '/admin/reports/academic') return 'Master Reports Studio';
+  if (pathname === '/admin/reports/report-cards') return 'Student Report Card Studio';
+  if (pathname === '/admin/reports/student-info') return 'Student Admission & Info Report';
+  if (pathname === '/admin/reports/parent-info') return 'Parent & Student Contact Report';
   if (pathname === '/admin/students/promote' || pathname === '/admin/control-panel/class-transfer') return 'Promote Students & Class Transfer';
   if (pathname === '/admin/control-panel/user-management') return 'User Management';
   if (pathname === '/admin/settings/roles' || pathname === '/admin/control-panel/roles' || pathname === '/admin/roles') return 'Roles & Permissions';

@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const { generateNextEmployeeCode } = require('../utils/employeeCodeGenerator');
 const { sanitizeTeacherPayload } = require('../utils/sanitizePayload');
+const { syncUserPermissions } = require('../utils/permissionResolver');
 
 const syncAssignments = (data) => {
   if (Array.isArray(data.class_assignments)) {
@@ -44,7 +45,8 @@ const addTeacher = async (req, res) => {
       is_active: rest.status !== 'Inactive'
     };
 
-    const payload = sanitizeTeacherPayload(rawPayload);
+    const synced = syncUserPermissions(rawPayload);
+    const payload = sanitizeTeacherPayload(synced);
     syncAssignments(payload);
     const teacher = await User.create(payload);
 
@@ -75,7 +77,8 @@ const updateTeacher = async (req, res) => {
       updateData.is_active = updateData.status === 'Active';
     }
 
-    const cleanUpdateData = sanitizeTeacherPayload(updateData);
+    const synced = syncUserPermissions(updateData);
+    const cleanUpdateData = sanitizeTeacherPayload(synced);
     syncAssignments(cleanUpdateData);
 
     const teacher = await User.findOneAndUpdate(

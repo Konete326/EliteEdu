@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Printer, Key, FileText } from 'lucide-react';
+import OfficialSignatureStampBlock from '../../../common/OfficialSignatureStampBlock';
 
 const PrintQuestionPaperModal = ({ isOpen, onClose, paper }) => {
   const [showAnswerKey, setShowAnswerKey] = useState(false);
@@ -81,15 +82,11 @@ const PrintQuestionPaperModal = ({ isOpen, onClose, paper }) => {
             </div>
           ))}
 
-          <div className="pt-10 flex justify-between text-xs font-sans border-t border-slate-300">
-            <div>
-              <div className="border-b border-slate-400 w-40 h-6 mb-1" />
-              <span>Examiner Signature</span>
-            </div>
-            <div>
-              <div className="border-b border-slate-400 w-40 h-6 mb-1" />
-              <span>Principal / Controller Stamp</span>
-            </div>
+          <div className="pt-6">
+            <OfficialSignatureStampBlock
+              signatureTitle="Examiner Signature"
+              stampTitle="Principal / Controller Stamp"
+            />
           </div>
         </div>
       </div>

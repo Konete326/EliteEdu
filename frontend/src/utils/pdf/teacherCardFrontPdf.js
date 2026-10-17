@@ -111,7 +111,4 @@ export const drawTeacherCardFront = (page, coords, teacher, fonts, style = 'Govt
   page.drawText('Issuing Authority', {
     x: x + 197, y: y + 11, size: 5, font: bold, color: headerColor
   });
-  page.drawText('EliteEdu', {
-    x: x + width - 26, y: y + 3, size: 4.5, font: regular, color: rgb(0.5, 0.5, 0.5)
-  });
 };

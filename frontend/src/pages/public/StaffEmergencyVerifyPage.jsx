@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api';
 import { ShieldCheck, ShieldAlert, Award, Building2, PhoneCall } from 'lucide-react';
 
 const StaffEmergencyVerifyPage = () => {
@@ -11,7 +11,7 @@ const StaffEmergencyVerifyPage = () => {
 
   useEffect(() => {
     let isMounted = true;
-    axios.get(`/api/public/verify-staff/${id}`)
+    api.get(`/public/verify-staff/${id}`)
       .then((res) => { if (isMounted && res.data.success) setData(res.data.data); })
       .catch((err) => { if (isMounted) setError(err.response?.data?.message || 'Link expired or invalid'); })
       .finally(() => { if (isMounted) setLoading(false); });

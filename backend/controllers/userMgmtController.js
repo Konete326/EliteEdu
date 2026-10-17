@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const UserRole = require('../models/UserRole');
+const { syncUserPermissions } = require('../utils/permissionResolver');
 
 const getUsers = async (req, res) => {
   try {
@@ -22,15 +24,11 @@ const getUsers = async (req, res) => {
     const skip = (pageNum - 1) * limitNum;
 
     const [users, total] = await Promise.all([
-      User.find(filter)
-        .select('-password')
+      User.find(filter).select('-password')
         .populate('campus_id', 'name code city address')
         .populate('assigned_campuses', 'name code')
         .populate('custom_role_id', 'name dashboard_type status')
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limitNum)
-        .lean(),
+        .sort({ createdAt: -1 }).skip(skip).limit(limitNum).lean(),
       User.countDocuments(filter)
     ]);
 
@@ -53,25 +51,20 @@ const createUser = async (req, res) => {
       if (existing) return res.status(400).json({ success: false, message: 'Email already registered' });
     }
 
+    const roleDoc = custom_role_id ? await UserRole.findById(custom_role_id).lean() : null;
+    const synced = syncUserPermissions({ custom_role_id: roleDoc });
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = await User.create({
-      name: name.trim(),
-      email: cleanEmail,
-      password: hashedPassword,
-      role,
-      school_id: schoolId,
-      campus_id: campus_id || null,
-      assigned_campuses: campus_id ? [campus_id] : [],
-      custom_role_id: custom_role_id || null,
-      contact_number: contact_number || '',
-      status: 'Active',
-      is_active: true
+      name: name.trim(), email: cleanEmail, password: hashedPassword, role,
+      school_id: schoolId, campus_id: campus_id || null,
+      assigned_campuses: campus_id ? [campus_id] : [], custom_role_id: custom_role_id || null,
+      contact_number: contact_number || '', status: 'Active', is_active: true,
+      app_settings: synced.app_settings, app_permissions: synced.app_permissions
     });
 
-    const populated = await User.findById(user._id)
-      .select('-password')
-      .populate('campus_id', 'name code')
-      .populate('assigned_campuses', 'name code')
+    const populated = await User.findById(user._id).select('-password')
+      .populate('campus_id', 'name code').populate('assigned_campuses', 'name code')
       .populate('custom_role_id', 'name dashboard_type');
 
     res.status(201).json({ success: true, user: populated });
@@ -88,7 +81,13 @@ const updateUser = async (req, res) => {
     if (role) update.role = role;
     if (contact_number !== undefined) update.contact_number = contact_number.trim();
     if (campus_id !== undefined) update.campus_id = campus_id || null;
-    if (custom_role_id !== undefined) update.custom_role_id = custom_role_id || null;
+    if (custom_role_id !== undefined) {
+      update.custom_role_id = custom_role_id || null;
+      const roleDoc = custom_role_id ? await UserRole.findById(custom_role_id).lean() : null;
+      const synced = syncUserPermissions({ custom_role_id: roleDoc });
+      update.app_settings = synced.app_settings;
+      update.app_permissions = synced.app_permissions;
+    }
 
     if (email) {
       const cleanEmail = email.toLowerCase().trim();

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { CampusProvider } from './context/CampusContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
 import { ComingSoonProvider } from './context/ComingSoonContext';
@@ -16,7 +17,9 @@ import MyProfilePage from './pages/common/MyProfilePage';
 import SystemLogsPage from './pages/common/SystemLogsPage';
 import StudentEmergencyVerifyPage from './pages/public/StudentEmergencyVerifyPage';
 import StaffServiceVerifyPage from './pages/public/StaffServiceVerifyPage';
+import CertificateVerifyPage from './pages/public/CertificateVerifyPage';
 import TeacherPortalDashboard from './pages/teacher/TeacherPortalDashboard';
+import TeacherStudentsRosterPage from './pages/teacher/TeacherStudentsRosterPage';
 import RootRedirect from './components/common/RootRedirect';
 import PwaInstallPrompt from './components/common/PwaInstallPrompt';
 import { getAllAdminRoutes } from './config/adminNavConfig';
@@ -28,7 +31,9 @@ import {
   TeacherIdCardsPage, ThemeSettingsPage, GeneralSettingsPage, UserManagementPage, PromoteStudentsPage,
   GeneralSignaturesPage, StudentAttendancePage, EmployeeAttendancePage, ExamsListPage, ExamWizardPage,
   ManageClassTestsPage, ClassTestResultsPage, FeeManagementPage, ExamCategoriesPage, RemarksPolicyPage,
-  ManageRemarksPage, DatesheetsListPage, NewDatesheetPage, MarkSheetsPage, QuestionPapersPage, ComingSoonPage
+  ManageRemarksPage, DatesheetsListPage, NewDatesheetPage, MarkSheetsPage, QuestionPapersPage,
+  MasterReportsHubPage, StudentAdmissionReportPage, ParentContactReportPage, StudentReportCardPage,
+  CertificatesPage, ComingSoonPage
 } from './pages/admin';
 
 const adminDynamicRoutes = getAllAdminRoutes();
@@ -36,119 +41,131 @@ const adminDynamicRoutes = getAllAdminRoutes();
 function App() {
   return (
     <AuthProvider>
-      <ThemeProvider>
-        <ToastProvider>
-          <ComingSoonProvider>
-          <BrowserRouter>
-            <PwaInstallPrompt />
-            <Routes>
-              <Route path="/" element={<RootRedirect />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/unauthorized" element={<UnauthorizedPage />} />
-              <Route path="/verify/student/:id" element={<StudentEmergencyVerifyPage />} />
-              <Route path="/verify/staff/:id" element={<StaffServiceVerifyPage />} />
-              <Route element={<DashboardLayout />}>
-                <Route element={<ProtectedRoute allowedRoles={['SuperAdmin']} />}>
-                  <Route path="/superadmin" element={<SuperAdminDashboard />} />
-                  <Route path="/superadmin/schools" element={<SchoolsList />} />
-                  <Route path="/superadmin/schools/new" element={<SchoolsPage />} />
-                  <Route path="/superadmin/logs" element={<SystemLogsPage />} />
-                  <Route path="/superadmin/notifications" element={<NotificationsPage />} />
-                  <Route path="/superadmin/profile" element={<MyProfilePage />} />
+      <CampusProvider>
+        <ThemeProvider>
+          <ToastProvider>
+            <ComingSoonProvider>
+            <BrowserRouter>
+              <PwaInstallPrompt />
+              <Routes>
+                <Route path="/" element={<RootRedirect />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/unauthorized" element={<UnauthorizedPage />} />
+                <Route path="/verify/student/:id" element={<StudentEmergencyVerifyPage />} />
+                <Route path="/verify/staff/:id" element={<StaffServiceVerifyPage />} />
+                <Route path="/verify/certificate/:certNo" element={<CertificateVerifyPage />} />
+                <Route element={<DashboardLayout />}>
+                  <Route element={<ProtectedRoute allowedRoles={['SuperAdmin']} />}>
+                    <Route path="/superadmin" element={<SuperAdminDashboard />} />
+                    <Route path="/superadmin/schools" element={<SchoolsList />} />
+                    <Route path="/superadmin/schools/new" element={<SchoolsPage />} />
+                    <Route path="/superadmin/logs" element={<SystemLogsPage />} />
+                    <Route path="/superadmin/notifications" element={<NotificationsPage />} />
+                    <Route path="/superadmin/profile" element={<MyProfilePage />} />
+                  </Route>
+                  <Route element={<ProtectedRoute allowedRoles={['Admin', 'Teacher']} />}>
+                    <Route path="/admin/students" element={<StudentsList />} />
+                    <Route path="/admin/students/new" element={<AddStudentPage />} />
+                    <Route path="/admin/students/:id/edit" element={<AddStudentPage />} />
+                    <Route path="/admin/students/admission-letter" element={<AdmissionLetterPage />} />
+                    <Route path="/admin/students/id-cards" element={<StudentIdCardsPage />} />
+                    <Route path="/admin/students/promote" element={<PromoteStudentsPage />} />
+                    <Route path="/admin/control-panel/class-transfer" element={<PromoteStudentsPage />} />
+                    <Route path="/admin/attendance/students" element={<StudentAttendancePage />} />
+                    <Route path="/admin/attendance/staff" element={<EmployeeAttendancePage />} />
+                    <Route path="/admin/attendance/employees" element={<EmployeeAttendancePage />} />
+                    <Route path="/admin/exam-management/exams" element={<ExamsListPage />} />
+                    <Route path="/admin/exams/schedules" element={<ExamsListPage />} />
+                    <Route path="/admin/exams/date-sheets" element={<ExamsListPage />} />
+                    <Route path="/admin/exams/marks" element={<ExamsListPage />} />
+                    <Route path="/admin/exam-management/exams/new" element={<ExamWizardPage />} />
+                    <Route path="/admin/exam-management/exams/:id/edit" element={<ExamWizardPage />} />
+                    <Route path="/admin/exam-management/categories" element={<ExamCategoriesPage />} />
+                    <Route path="/admin/exam-management/remarks-policy" element={<RemarksPolicyPage />} />
+                    <Route path="/admin/exam-management/schedule" element={<DatesheetsListPage />} />
+                    <Route path="/admin/exam-management/schedule/new" element={<NewDatesheetPage />} />
+                    <Route path="/admin/exam-management/manage-remarks" element={<ManageRemarksPage />} />
+                    <Route path="/admin/exam-management/mark-sheets" element={<MarkSheetsPage />} />
+                    <Route path="/admin/exam-management/results" element={<MarkSheetsPage />} />
+                    <Route path="/admin/question-papers" element={<QuestionPapersPage />} />
+                    <Route path="/admin/class-tests/manage" element={<ManageClassTestsPage />} />
+                    <Route path="/admin/class-tests/results" element={<ClassTestResultsPage />} />
+                    <Route path="/teacher/exams" element={<ExamsListPage />} />
+                    <Route path="/teacher/examination" element={<ExamsListPage />} />
+                    <Route path="/teacher/datesheet" element={<DatesheetsListPage />} />
+                    <Route path="/teacher/mark-sheets" element={<MarkSheetsPage />} />
+                    <Route path="/teacher/question-papers" element={<QuestionPapersPage />} />
+                    <Route path="/teacher/class-tests" element={<ManageClassTestsPage />} />
+                    <Route path="/admin/reports" element={<MasterReportsHubPage />} />
+                    <Route path="/admin/reports/academic" element={<MasterReportsHubPage />} />
+                    <Route path="/admin/reports/report-cards" element={<StudentReportCardPage />} />
+                    <Route path="/admin/reports/student-info" element={<StudentAdmissionReportPage />} />
+                    <Route path="/admin/reports/parent-info" element={<ParentContactReportPage />} />
+                    <Route path="/admin/certificates" element={<CertificatesPage />} />
+                    <Route path="/admin/certificates/templates" element={<CertificatesPage defaultTab="templates" />} />
+                  </Route>
+                  <Route element={<ProtectedRoute allowedRoles={['Admin']} requiredModule="fees" />}>
+                    <Route path="/admin/fees" element={<FeeManagementPage initialTab="collection" />} />
+                    <Route path="/admin/fees/collection" element={<FeeManagementPage initialTab="collection" />} />
+                    <Route path="/admin/fees/structure" element={<FeeManagementPage initialTab="structure" />} />
+                    <Route path="/admin/fees/defaulters" element={<FeeManagementPage initialTab="defaulters" />} />
+                    <Route path="/admin/fees/reports" element={<FeeManagementPage initialTab="reports" />} />
+                    <Route path="/admin/fees/concession" element={<FeeManagementPage initialTab="reports" />} />
+                  </Route>
+                  <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
+                    <Route path="/admin" element={<AdminDashboard />} />
+                    <Route path="/admin/campus" element={<CampusPage />} />
+                    <Route path="/admin/grades" element={<GradesPage />} />
+                    <Route path="/admin/subjects" element={<SubjectsPage />} />
+                    <Route path="/admin/teachers" element={<TeachersList />} />
+                    <Route path="/admin/teachers/new" element={<AddTeacherPage />} />
+                    <Route path="/admin/teachers/:id/edit" element={<AddTeacherPage />} />
+                    <Route path="/admin/teachers/id-cards" element={<TeacherIdCardsPage />} />
+                    <Route path="/admin/staff-applicants" element={<StaffApplicantsList />} />
+                    <Route path="/admin/staff-applicants/new" element={<AddStaffApplicantPage />} />
+                    <Route path="/admin/staff-applicants/:id/edit" element={<AddStaffApplicantPage />} />
+                    <Route path="/admin/exam-management/grading-policies" element={<GradingPoliciesPage />} />
+                    <Route path="/admin/exams/grading-policies" element={<GradingPoliciesPage />} />
+                    <Route path="/admin/settings/general" element={<GeneralSettingsPage />} />
+                    <Route path="/admin/general-settings/signatures" element={<GeneralSignaturesPage />} />
+                    <Route path="/admin/settings/signatures" element={<GeneralSignaturesPage />} />
+                    <Route path="/admin/settings/appearance" element={<ThemeSettingsPage />} />
+                    <Route path="/admin/control-panel/branding" element={<ThemeSettingsPage />} />
+                    <Route path="/admin/control-panel/user-management" element={<UserManagementPage defaultTab="users" />} />
+                    <Route path="/admin/settings/roles" element={<UserManagementPage defaultTab="roles" />} />
+                    <Route path="/admin/notifications" element={<NotificationsPage />} />
+                    <Route path="/admin/messaging/notifications" element={<NotificationsPage />} />
+                    <Route path="/admin/circular" element={<NotificationsPage />} />
+                    <Route path="/admin/reports/audit-logs" element={<SystemLogsPage />} />
+                    <Route path="/admin/profile" element={<MyProfilePage />} />
+                    {adminDynamicRoutes.map((r) => (
+                      <Route key={r.path} path={r.path} element={<ComingSoonPage title={r.name} />} />
+                    ))}
+                  </Route>
+                  <Route element={<ProtectedRoute allowedRoles={['Teacher']} />}>
+                    <Route path="/teacher" element={<TeacherPortalDashboard />} />
+                    <Route path="/teacher/students" element={<TeacherStudentsRosterPage />} />
+                    <Route path="/teacher/my-students" element={<TeacherStudentsRosterPage />} />
+                    <Route path="/teacher/attendance" element={<StudentAttendancePage />} />
+                    <Route path="/teacher/homework" element={<ComingSoonPage title="Homework Management" />} />
+                    <Route path="/teacher/timetable" element={<ComingSoonPage title="Class Timetable" />} />
+                    <Route path="/teacher/quizzes" element={<ComingSoonPage title="Quizzes & Online Tests" />} />
+                    <Route path="/teacher/lectures" element={<ComingSoonPage title="Lecture Notes & Syllabus" />} />
+                    <Route path="/teacher/online-classes" element={<ComingSoonPage title="Online Classes" />} />
+                    <Route path="/teacher/salary" element={<ComingSoonPage title="Faculty Salary & Compensation" />} />
+                    <Route path="/teacher/notifications" element={<NotificationsPage />} />
+                    <Route path="/teacher/profile" element={<MyProfilePage />} />
+                    <Route path="/teacher/*" element={<ComingSoonPage title="Teacher Portal Module" />} />
+                  </Route>
                 </Route>
-                <Route element={<ProtectedRoute allowedRoles={['Admin', 'Teacher']} />}>
-                  <Route path="/admin/students" element={<StudentsList />} />
-                  <Route path="/admin/students/new" element={<AddStudentPage />} />
-                  <Route path="/admin/students/:id/edit" element={<AddStudentPage />} />
-                  <Route path="/admin/students/admission-letter" element={<AdmissionLetterPage />} />
-                  <Route path="/admin/students/id-cards" element={<StudentIdCardsPage />} />
-                  <Route path="/admin/students/promote" element={<PromoteStudentsPage />} />
-                  <Route path="/admin/control-panel/class-transfer" element={<PromoteStudentsPage />} />
-                  <Route path="/admin/attendance/students" element={<StudentAttendancePage />} />
-                  <Route path="/admin/attendance/staff" element={<EmployeeAttendancePage />} />
-                  <Route path="/admin/attendance/employees" element={<EmployeeAttendancePage />} />
-                  <Route path="/admin/fees" element={<FeeManagementPage initialTab="collection" />} />
-                  <Route path="/admin/fees/collection" element={<FeeManagementPage initialTab="collection" />} />
-                  <Route path="/admin/fees/structure" element={<FeeManagementPage initialTab="structure" />} />
-                  <Route path="/admin/fees/defaulters" element={<FeeManagementPage initialTab="defaulters" />} />
-                  <Route path="/admin/fees/reports" element={<FeeManagementPage initialTab="reports" />} />
-                  <Route path="/admin/fees/concession" element={<FeeManagementPage initialTab="reports" />} />
-                  <Route path="/admin/exam-management/exams" element={<ExamsListPage />} />
-                  <Route path="/admin/exams/schedules" element={<ExamsListPage />} />
-                  <Route path="/admin/exams/date-sheets" element={<ExamsListPage />} />
-                  <Route path="/admin/exams/marks" element={<ExamsListPage />} />
-                  <Route path="/admin/exam-management/exams/new" element={<ExamWizardPage />} />
-                  <Route path="/admin/exam-management/exams/:id/edit" element={<ExamWizardPage />} />
-                  <Route path="/admin/exam-management/categories" element={<ExamCategoriesPage />} />
-                  <Route path="/admin/exam-management/remarks-policy" element={<RemarksPolicyPage />} />
-                  <Route path="/admin/exam-management/schedule" element={<DatesheetsListPage />} />
-                  <Route path="/admin/exam-management/schedule/new" element={<NewDatesheetPage />} />
-                  <Route path="/admin/exam-management/manage-remarks" element={<ManageRemarksPage />} />
-                  <Route path="/admin/exam-management/mark-sheets" element={<MarkSheetsPage />} />
-                  <Route path="/admin/exam-management/results" element={<MarkSheetsPage />} />
-                  <Route path="/admin/question-papers" element={<QuestionPapersPage />} />
-                  <Route path="/admin/class-tests/manage" element={<ManageClassTestsPage />} />
-                  <Route path="/admin/class-tests/results" element={<ClassTestResultsPage />} />
-                  <Route path="/teacher/exams" element={<ExamsListPage />} />
-                  <Route path="/teacher/examination" element={<ExamsListPage />} />
-                  <Route path="/teacher/datesheet" element={<DatesheetsListPage />} />
-                  <Route path="/teacher/mark-sheets" element={<MarkSheetsPage />} />
-                  <Route path="/teacher/question-papers" element={<QuestionPapersPage />} />
-                  <Route path="/teacher/class-tests" element={<ManageClassTestsPage />} />
-                </Route>
-                <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
-                  <Route path="/admin" element={<AdminDashboard />} />
-                  <Route path="/admin/campus" element={<CampusPage />} />
-                  <Route path="/admin/grades" element={<GradesPage />} />
-                  <Route path="/admin/subjects" element={<SubjectsPage />} />
-                  <Route path="/admin/teachers" element={<TeachersList />} />
-                  <Route path="/admin/teachers/new" element={<AddTeacherPage />} />
-                  <Route path="/admin/teachers/:id/edit" element={<AddTeacherPage />} />
-                  <Route path="/admin/teachers/id-cards" element={<TeacherIdCardsPage />} />
-                  <Route path="/admin/staff-applicants" element={<StaffApplicantsList />} />
-                  <Route path="/admin/staff-applicants/new" element={<AddStaffApplicantPage />} />
-                  <Route path="/admin/staff-applicants/:id/edit" element={<AddStaffApplicantPage />} />
-                  <Route path="/admin/exam-management/grading-policies" element={<GradingPoliciesPage />} />
-                  <Route path="/admin/exams/grading-policies" element={<GradingPoliciesPage />} />
-                  <Route path="/admin/settings/general" element={<GeneralSettingsPage />} />
-                  <Route path="/admin/general-settings/signatures" element={<GeneralSignaturesPage />} />
-                  <Route path="/admin/settings/signatures" element={<GeneralSignaturesPage />} />
-                  <Route path="/admin/settings/appearance" element={<ThemeSettingsPage />} />
-                  <Route path="/admin/control-panel/branding" element={<ThemeSettingsPage />} />
-                  <Route path="/admin/control-panel/user-management" element={<UserManagementPage defaultTab="users" />} />
-                  <Route path="/admin/settings/roles" element={<UserManagementPage defaultTab="roles" />} />
-                  <Route path="/admin/notifications" element={<NotificationsPage />} />
-                  <Route path="/admin/messaging/notifications" element={<NotificationsPage />} />
-                  <Route path="/admin/circular" element={<NotificationsPage />} />
-                  <Route path="/admin/reports/audit-logs" element={<SystemLogsPage />} />
-                  <Route path="/admin/profile" element={<MyProfilePage />} />
-                  {adminDynamicRoutes.map((r) => (
-                    <Route key={r.path} path={r.path} element={<ComingSoonPage title={r.name} />} />
-                  ))}
-                </Route>
-                <Route element={<ProtectedRoute allowedRoles={['Teacher']} />}>
-                  <Route path="/teacher" element={<TeacherPortalDashboard />} />
-                  <Route path="/teacher/students" element={<TeacherPortalDashboard />} />
-                  <Route path="/teacher/my-students" element={<TeacherPortalDashboard />} />
-                  <Route path="/teacher/attendance" element={<StudentAttendancePage />} />
-                  <Route path="/teacher/homework" element={<ComingSoonPage title="Homework Management" />} />
-                  <Route path="/teacher/timetable" element={<ComingSoonPage title="Class Timetable" />} />
-                  <Route path="/teacher/quizzes" element={<ComingSoonPage title="Quizzes & Online Tests" />} />
-                  <Route path="/teacher/lectures" element={<ComingSoonPage title="Lecture Notes & Syllabus" />} />
-                  <Route path="/teacher/online-classes" element={<ComingSoonPage title="Online Classes" />} />
-                  <Route path="/teacher/salary" element={<ComingSoonPage title="Faculty Salary & Compensation" />} />
-                  <Route path="/teacher/notifications" element={<NotificationsPage />} />
-                  <Route path="/teacher/profile" element={<MyProfilePage />} />
-                  <Route path="/teacher/*" element={<ComingSoonPage title="Teacher Portal Module" />} />
-                </Route>
-              </Route>
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </BrowserRouter>
-          {import.meta.env.DEV && <Agentation endpoint="http://localhost:4747" />}
-          </ComingSoonProvider>
-        </ToastProvider>
-      </ThemeProvider>
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </BrowserRouter>
+            {import.meta.env.DEV && <Agentation endpoint="http://localhost:4747" />}
+            </ComingSoonProvider>
+          </ToastProvider>
+        </ThemeProvider>
+      </CampusProvider>
     </AuthProvider>
   );
 }

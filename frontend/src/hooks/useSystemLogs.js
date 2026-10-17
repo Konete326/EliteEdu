@@ -7,7 +7,7 @@ export const useSystemLogs = (user) => {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(25);
+  const [limit, setLimit] = useState(8);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [summary, setSummary] = useState({ totalLogs: 0, networkErrors: 0, consoleErrors: 0, activityLogs: 0 });
@@ -87,8 +87,13 @@ export const useSystemLogs = (user) => {
     fetchLogs(true);
   };
 
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit);
+    setPage(1);
+  };
+
   return {
-    logs, loading, refreshing, error, page, setPage, limit, setLimit, totalPages, total, summary,
+    logs, loading, refreshing, error, page, setPage, limit, setLimit: handleLimitChange, totalPages, total, summary,
     category, setCategory, severity, setSeverity, search, setSearch,
     selectedSchoolId, setSelectedSchoolId, schools, selectedLog, setSelectedLog,
     livePolling, setLivePolling, fetchLogs, deleteLog, clearAllLogs

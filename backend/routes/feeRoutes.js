@@ -8,7 +8,7 @@ const { getFeeSummary, getFeeStudents } = require('../controllers/feeSummaryCont
 
 const router = express.Router();
 
-router.use(authMiddleware, enforceTenantScope, authorizeRoles('Admin', 'Teacher'));
+router.use(authMiddleware, enforceTenantScope, authorizeRoles('Admin'));
 
 router.get('/summary', getFeeSummary);
 router.get('/students', getFeeStudents);

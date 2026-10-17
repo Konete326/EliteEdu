@@ -4,12 +4,14 @@ import {
   PhoneCall, Moon, Sun, Download, Play
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useCampus } from '../../context/CampusContext';
 import { usePwaInstall } from '../../hooks/usePwaInstall';
 import { useComingSoon } from '../../context/ComingSoonContext';
 import TopbarNotifications from './TopbarNotifications';
 
 const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
   const { user } = useAuth();
+  const { campuses, activeCampusId, setActiveCampusId } = useCampus();
   const { openComingSoon } = useComingSoon();
   const { isInstalled, promptInstall } = usePwaInstall();
   const navigate = useNavigate();
@@ -28,18 +30,28 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
 
   return (
     <div className="flex items-center gap-1 sm:gap-2">
-      <button
-        type="button"
-        onClick={() => openComingSoon({ title: 'Campus & Branch Switcher', description: 'Quick branch switching and campus selection will be available soon.', badge: 'Campuses' })}
-        title={schoolPill}
-        className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${
-          isColored ? 'bg-white/15 border-white/20 text-white hover:bg-white/25' : 'bg-surface-secondary dark:bg-surface-secondary-dark border-line dark:border-line-dark text-ink dark:text-ink-dark hover:border-primary/50'
-        }`}
-      >
-        <Building2 className={`w-3.5 h-3.5 shrink-0 ${isColored ? 'text-white' : 'text-primary'}`} />
-        <span className="truncate max-w-[160px] capitalize">{schoolPill}</span>
-        <ChevronsUpDown className={`w-3 h-3 shrink-0 ${isColored ? 'text-white/70' : 'text-ink-muted'}`} />
-      </button>
+      <div className="relative hidden sm:block">
+        <select
+          value={activeCampusId}
+          onChange={(e) => setActiveCampusId(e.target.value)}
+          aria-label="Select Active Campus"
+          className={`flex items-center gap-2 pl-7 pr-3 py-1.5 rounded-lg border text-xs font-semibold transition-colors appearance-none outline-none cursor-pointer ${
+            isColored
+              ? 'bg-white/15 border-white/20 text-white hover:bg-white/25 focus:ring-1 focus:ring-white/40'
+              : 'bg-surface-secondary dark:bg-surface-secondary-dark border-line dark:border-line-dark text-ink dark:text-ink-dark hover:border-primary/50'
+          }`}
+        >
+          <option value="all" className="bg-surface text-ink dark:bg-surface-dark dark:text-ink-dark">
+            {campuses.length > 0 ? 'All Campuses' : schoolPill}
+          </option>
+          {campuses.map((c) => (
+            <option key={c._id} value={c._id} className="bg-surface text-ink dark:bg-surface-dark dark:text-ink-dark">
+              {c.name}
+            </option>
+          ))}
+        </select>
+        <Building2 className={`w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none ${isColored ? 'text-white' : 'text-primary'}`} />
+      </div>
 
       <button
         type="button"

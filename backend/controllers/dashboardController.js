@@ -7,6 +7,7 @@ const Grade = require('../models/Grade');
 const Homework = require('../models/Homework');
 const StudentAttendance = require('../models/StudentAttendance');
 const StaffAttendance = require('../models/StaffAttendance');
+const FeePayment = require('../models/FeePayment');
 const { buildAdminDashboardData } = require('../utils/dashboardDataBuilder');
 
 const getSuperAdminStats = async (req, res) => {
@@ -43,7 +44,7 @@ const getAdminStats = async (req, res) => {
 
   try {
     const todayStr = new Date().toISOString().slice(0, 10);
-    const [school, campuses, teachers, students, totalSubjects, grades, homework, todayAttendance, todayStaffAttendance] = await Promise.all([
+    const [school, campuses, teachers, students, totalSubjects, grades, homework, todayAttendance, todayStaffAttendance, feePayments] = await Promise.all([
       School.findById(schoolId).select('name school_type'),
       Campus.find({ school_id: schoolId }).select('name address status').sort({ createdAt: -1 }),
       User.find({ school_id: schoolId, role: 'Teacher' }).select('name dob campus_id status is_active'),
@@ -52,10 +53,13 @@ const getAdminStats = async (req, res) => {
       Grade.find({ school_id: schoolId }).select('name sections campus_id'),
       Homework.find({ school_id: schoolId }).select('title status is_published campus_id grade_id due_date createdAt'),
       StudentAttendance.find({ school_id: schoolId, date: todayStr }).select('status student_id campus_id').lean(),
-      StaffAttendance.find({ school_id: schoolId, date: todayStr }).select('status staff_id campus_id').lean()
+      StaffAttendance.find({ school_id: schoolId, date: todayStr }).select('status staff_id campus_id').lean(),
+      FeePayment.find({ school_id: schoolId, status: { $ne: 'Void' } }).select('paid_amount balance_due payment_date campus_id').lean()
     ]);
 
-    const dashboardData = buildAdminDashboardData(school, teachers, students, campuses, totalSubjects, grades, homework, todayAttendance, todayStaffAttendance);
+    const dashboardData = buildAdminDashboardData(
+      school, teachers, students, campuses, totalSubjects, grades, homework, todayAttendance, todayStaffAttendance, feePayments
+    );
     res.status(200).json(dashboardData);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch statistics', error: error.message });

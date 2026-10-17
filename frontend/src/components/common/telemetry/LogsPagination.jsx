@@ -37,6 +37,7 @@ const LogsPagination = ({ page, totalPages, total, limit, onPageChange, onLimitC
               onChange={(e) => onLimitChange(Number(e.target.value))}
               className="py-1 px-2 rounded-lg bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark text-ink dark:text-ink-dark text-xs font-semibold focus:outline-hidden cursor-pointer"
             >
+              <option value={8}>8</option>
               <option value={15}>15</option>
               <option value={25}>25</option>
               <option value={50}>50</option>

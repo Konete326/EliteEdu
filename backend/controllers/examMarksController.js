@@ -1,5 +1,6 @@
 const Exam = require('../models/Exam');
 const ExamMark = require('../models/ExamMark');
+const MarkSheet = require('../models/MarkSheet');
 const Student = require('../models/Student');
 const { syncStudentLatestPercentages } = require('../utils/studentExamAggregator');
 const { createSystemNotification } = require('../utils/notificationDispatcher');
@@ -63,6 +64,26 @@ const saveMarksSheet = async (req, res) => {
 
     if (ops.length > 0) await ExamMark.bulkWrite(ops);
 
+    const sheetMarks = records.map((r) => {
+      const tot = (Number(r.theory_obtained) || 0) + (Number(r.practical_obtained) || 0);
+      const max = targetPaper.total_marks || 100;
+      const pct = max > 0 ? Math.round((tot / max) * 100) : 0;
+      return {
+        student_id: r.student_id,
+        obtained_marks: tot,
+        percentage: pct,
+        grade: r.grade_letter || 'F',
+        status_color: pct >= 33 ? '#16A34A' : '#DC2626',
+        is_absent: r.status === 'ABSENT',
+        teacher_remarks: r.remarks || ''
+      };
+    });
+
+    await MarkSheet.findOneAndUpdate(
+      { school_id: schoolId, exam_id: exam._id, grade_id, section, subject_id },
+      { $set: { marks: sheetMarks, status: 'Submitted' } }
+    );
+
     if (paper) {
       paper.marks_submitted = true;
       await exam.save();
@@ -74,10 +95,10 @@ const saveMarksSheet = async (req, res) => {
       createSystemNotification({
         school_id: schoolId,
         title: 'Exam Marks Submitted',
-        message: `${req.user.name || 'Teacher'} submitted marks for ${paper?.subject_name || 'Subject'} (${paper?.grade_name || 'Class'}).`,
+        message: `${req.user.name || 'Teacher'} submitted marks for ${paper?.subject_name || 'Subject'}.`,
         type: 'Academic',
         target_audience: 'Admins',
-        action_url: `/admin/exam-management/exams`,
+        action_url: '/admin/exam-management/exams',
         created_by: req.user._id || req.user.id
       });
     }

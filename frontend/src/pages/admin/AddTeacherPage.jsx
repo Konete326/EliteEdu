@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
 import { useTeacherForm } from '../../hooks/useTeacherForm';
 import PageLoader from '../../components/common/PageLoader';
+import PrerequisiteGuardBanner from '../../components/common/PrerequisiteGuardBanner';
 import TeacherTopActionBar from '../../components/admin/teachers/TeacherTopActionBar';
 import TeacherTabsNav from '../../components/admin/teachers/TeacherTabsNav';
 import TeacherProfileTab from '../../components/admin/teachers/TeacherProfileTab';
@@ -17,10 +18,9 @@ const AddTeacherPage = () => {
   const [activeTab, setActiveTab] = useState('profile');
 
   const {
-    formData, campuses, subjects, grades, customRoles,
-    loading, submitting, error, setError, errors, saveTeacher,
-    handleField, handleEmergency, handleBank,
-    isEditMode, schoolType
+    formData, campuses, subjects, grades, customRoles, loading, submitting, error, setError,
+    errors, saveTeacher, handleField, handleEmergency, handleBank, isEditMode, schoolType,
+    clearDraft, draftSavedAt, fetchPrereqs
   } = useTeacherForm(id);
 
   if (loading) return <PageLoader text="Loading staff records..." />;
@@ -36,18 +36,16 @@ const AddTeacherPage = () => {
     }
   };
 
+  const prereqs = [{ name: 'Campus', count: campuses.length, addPath: '/admin/control-panel/campuses', label: 'Add Campus' }];
+
   return (
     <div className="w-full space-y-6 pb-16">
       <div className="sticky top-[1px] z-20 mt-[1px] pb-2.5 pt-1 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-md border-b border-line dark:border-line-dark space-y-3 shadow-xs">
-        <TeacherTopActionBar
-          isEditMode={isEditMode}
-          staffName={formData.name}
-          schoolType={schoolType}
-          onSave={() => handleSaveAction(true)}
-          submitting={submitting}
-        />
+        <TeacherTopActionBar isEditMode={isEditMode} staffName={formData.name} schoolType={schoolType} onSave={() => handleSaveAction(true)} submitting={submitting} />
         <TeacherTabsNav activeTab={activeTab} onTabChange={setActiveTab} schoolType={schoolType} />
       </div>
+
+      <PrerequisiteGuardBanner prerequisites={prereqs} onRefresh={fetchPrereqs} onResetDraft={clearDraft} draftSavedAt={draftSavedAt} />
 
       {error && (
         <div className="p-3.5 rounded-xl bg-bad-soft dark:bg-bad/10 text-bad border border-bad/20 text-xs flex items-center justify-between">
@@ -57,57 +55,19 @@ const AddTeacherPage = () => {
       )}
 
       {activeTab === 'profile' && (
-        <TeacherProfileTab
-          formData={formData}
-          errors={errors}
-          onFieldChange={handleField}
-          onEmergencyChange={handleEmergency}
-          campuses={campuses}
-          schoolType={schoolType}
-          customRoles={customRoles}
-        />
+        <TeacherProfileTab formData={formData} errors={errors} onFieldChange={handleField} onEmergencyChange={handleEmergency} campuses={campuses} schoolType={schoolType} customRoles={customRoles} />
       )}
-
       {activeTab === 'classes' && (
-        <TeacherClassesTab
-          subjects={subjects}
-          grades={grades}
-          assignments={formData.class_assignments || []}
-          onAssignmentsChange={(a) => handleField('class_assignments', a)}
-        />
+        <TeacherClassesTab subjects={subjects} grades={grades} assignments={formData.class_assignments || []} onAssignmentsChange={(a) => handleField('class_assignments', a)} />
       )}
-
       {activeTab === 'app_settings' && (
-        <TeacherAppSettingsTab
-          permissions={formData.app_permissions}
-          onChange={(p) => handleField('app_permissions', p)}
-          schoolType={schoolType}
-          customRoles={customRoles}
-          selectedRoleId={formData.custom_role_id}
-          onRoleChange={(roleId) => handleField('custom_role_id', roleId)}
-        />
+        <TeacherAppSettingsTab permissions={formData.app_permissions} onChange={(p) => handleField('app_permissions', p)} schoolType={schoolType} customRoles={customRoles} selectedRoleId={formData.custom_role_id} onRoleChange={(roleId) => handleField('custom_role_id', roleId)} />
       )}
-
       {activeTab === 'payroll' && schoolType !== 'Government' && (
-        <TeacherPayrollTab
-          payrollConfig={formData.payroll_config}
-          onPayrollChange={(p) => handleField('payroll_config', p)}
-          basicSalary={formData.basic_salary}
-          onSalaryChange={(s) => handleField('basic_salary', s)}
-          bankDetails={formData.bank_details}
-          onBankChange={handleBank}
-          staffName={formData.name}
-        />
+        <TeacherPayrollTab payrollConfig={formData.payroll_config} onPayrollChange={(p) => handleField('payroll_config', p)} basicSalary={formData.basic_salary} onSalaryChange={(s) => handleField('basic_salary', s)} bankDetails={formData.bank_details} onBankChange={handleBank} staffName={formData.name} />
       )}
-
       {['security_deposit', 'increment_history', 'loan_advance', 'follow_up', 'documents', 'active_sessions'].includes(activeTab) && (
-        <TeacherDependentTabs
-          activeTab={activeTab}
-          teacherId={id}
-          formData={formData}
-          onSaveNow={() => handleSaveAction(false)}
-          onUpdateField={handleField}
-        />
+        <TeacherDependentTabs activeTab={activeTab} teacherId={id} formData={formData} onSaveNow={() => handleSaveAction(false)} onUpdateField={handleField} />
       )}
     </div>
   );

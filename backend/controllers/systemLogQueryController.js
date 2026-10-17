@@ -2,7 +2,7 @@ const SystemLog = require('../models/SystemLog');
 
 const getSystemLogs = async (req, res) => {
   try {
-    const { page = 1, limit = 25, category, severity, search, school_id } = req.query;
+    const { page = 1, limit = 8, category, severity, search, school_id } = req.query;
     const filter = {};
 
     if (req.user.role === 'Admin') {
@@ -34,7 +34,7 @@ const getSystemLogs = async (req, res) => {
     }
 
     const pageNum = Math.max(1, parseInt(page, 10) || 1);
-    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 25));
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 8));
     const skip = (pageNum - 1) * limitNum;
 
     const [logs, total, totalLogs, networkErrors, consoleErrors, activityLogs] = await Promise.all([

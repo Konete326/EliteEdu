@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import { usePersistentFormDraft } from './usePersistentFormDraft';
 
 const INITIAL_FORM = {
   campus_id: '',
@@ -85,7 +87,10 @@ const INITIAL_FORM = {
 
 export const useStudentForm = (id) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const isEditMode = Boolean(id);
+  const draftKey = `student_draft_${user?.school_id || 'default'}`;
+  const [draftForm, setDraftForm, clearDraft, draftSavedAt] = usePersistentFormDraft(draftKey, INITIAL_FORM);
 
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [campuses, setCampuses] = useState([]);
@@ -96,17 +101,25 @@ export const useStudentForm = (id) => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    if (!isEditMode && draftForm) setFormData(draftForm);
+  }, [isEditMode, draftForm]);
+
+  const loadDependencies = async () => {
+    const [cRes, gRes, sRes] = await Promise.all([
+      api.get('/campuses'),
+      api.get('/grades'),
+      api.get('/subjects?limit=200')
+    ]);
+    setCampuses(cRes.data.campuses || []);
+    setGrades(gRes.data.grades || []);
+    setSubjects(sRes.data.subjects || []);
+  };
+
+  useEffect(() => {
     const init = async () => {
       try {
         setLoading(true);
-        const [cRes, gRes, sRes] = await Promise.all([
-          api.get('/campuses'),
-          api.get('/grades'),
-          api.get('/subjects?limit=200')
-        ]);
-        setCampuses(cRes.data.campuses || []);
-        setGrades(gRes.data.grades || []);
-        setSubjects(sRes.data.subjects || []);
+        await loadDependencies();
 
         if (isEditMode) {
           const sRes = await api.get(`/students/${id}`);
@@ -132,10 +145,10 @@ export const useStudentForm = (id) => {
           try {
             const famRes = await api.get('/students/next-family-number');
             if (famRes.data?.family_number) {
-              setFormData((prev) => ({ ...prev, family_number: famRes.data.family_number }));
+              updateForm((prev) => ({ ...prev, family_number: famRes.data.family_number }));
             }
           } catch (e) {
-            setFormData((prev) => ({ ...prev, family_number: 'FAM-0001' }));
+            updateForm((prev) => ({ ...prev, family_number: 'FAM-0001' }));
           }
         }
       } catch (err) {
@@ -149,13 +162,21 @@ export const useStudentForm = (id) => {
 
   const [errors, setErrors] = useState({});
 
+  const updateForm = (updater) => {
+    setFormData((prev) => {
+      const next = typeof updater === 'function' ? updater(prev) : { ...prev, ...updater };
+      if (!isEditMode) setDraftForm(next);
+      return next;
+    });
+  };
+
   const handleField = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    updateForm((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
   };
 
   const handleNestedField = (parent, field, value) => {
-    setFormData((prev) => ({
+    updateForm((prev) => ({
       ...prev,
       [parent]: {
         ...prev[parent],
@@ -165,7 +186,7 @@ export const useStudentForm = (id) => {
   };
 
   const handleToggleAppSetting = (key) => {
-    setFormData((prev) => ({
+    updateForm((prev) => ({
       ...prev,
       app_settings: {
         ...prev.app_settings,
@@ -175,7 +196,7 @@ export const useStudentForm = (id) => {
   };
 
   const handleToggleAllAppSettings = (state) => {
-    setFormData((prev) => {
+    updateForm((prev) => {
       const updated = {};
       Object.keys(prev.app_settings || INITIAL_FORM.app_settings).forEach((k) => {
         updated[k] = state;
@@ -185,7 +206,7 @@ export const useStudentForm = (id) => {
   };
 
   const handleToggleSubject = (subjectId) => {
-    setFormData((prev) => {
+    updateForm((prev) => {
       const current = prev.subjects || [];
       const exists = current.includes(subjectId);
       return {
@@ -216,6 +237,7 @@ export const useStudentForm = (id) => {
       const res = isEditMode
         ? await api.put(`/students/${id}`, formData)
         : await api.post('/students', formData);
+      if (!isEditMode) clearDraft();
       navigate('/admin/students');
       return res.data.student;
     } catch (err) {
@@ -231,10 +253,10 @@ export const useStudentForm = (id) => {
     try {
       const famRes = await api.get('/students/next-family-number');
       if (famRes.data?.family_number) {
-        setFormData((prev) => ({ ...prev, family_number: famRes.data.family_number }));
+        updateForm((prev) => ({ ...prev, family_number: famRes.data.family_number }));
       }
     } catch (e) {
-      setFormData((prev) => ({ ...prev, family_number: 'FAM-0001' }));
+      updateForm((prev) => ({ ...prev, family_number: 'FAM-0001' }));
     }
   };
 
@@ -254,6 +276,9 @@ export const useStudentForm = (id) => {
     handleToggleAppSetting,
     handleToggleAllAppSettings,
     handleToggleSubject,
-    refreshFamilyNumber
+    refreshFamilyNumber,
+    clearDraft,
+    draftSavedAt,
+    fetchPrereqs: loadDependencies
   };
 };

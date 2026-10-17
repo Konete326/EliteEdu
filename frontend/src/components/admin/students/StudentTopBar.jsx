@@ -1,4 +1,4 @@
-import { Plus, Search, X, FileText, CreditCard } from 'lucide-react';
+import { Plus, Search, X, FileText, CreditCard, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const StudentTopBar = ({
@@ -56,9 +56,7 @@ const StudentTopBar = ({
         >
           <option value="all">All Campuses</option>
           {campuses.map((c) => (
-            <option key={c._id} value={c._id}>
-              {c.name}
-            </option>
+            <option key={c._id} value={c._id}>{c.name}</option>
           ))}
         </select>
 
@@ -69,18 +67,16 @@ const StudentTopBar = ({
         >
           <option value="all">All Classes</option>
           {grades.map((g) => (
-            <option key={g._id} value={g._id}>
-              {g.name}
-            </option>
+            <option key={g._id} value={g._id}>{g.name}</option>
           ))}
         </select>
 
         <Link
-          to="/admin/students/promote"
+          to="/admin/reports/report-cards"
           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-line dark:border-white/10 hover:border-primary text-ink-sub dark:text-ink-sub-dark hover:text-primary dark:hover:text-primary-dark text-xs sm:text-sm font-semibold transition-all shadow-xs shrink-0"
         >
-          <CreditCard className="w-4 h-4 text-primary" />
-          <span>Promote</span>
+          <Award className="w-4 h-4 text-primary" />
+          <span>Report Cards</span>
         </Link>
 
         <Link

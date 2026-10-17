@@ -26,6 +26,8 @@ const classTestRoutes = require('./routes/classTestRoutes');
 const feeRoutes = require('./routes/feeRoutes');
 const examSuiteRoutes = require('./routes/examSuiteRoutes');
 const questionPaperRoutes = require('./routes/questionPaperRoutes');
+const reportRoutes = require('./routes/reportRoutes');
+const certificateRoutes = require('./routes/certificateRoutes');
 const auditLogger = require('./middlewares/auditLogger');
 const sanitizePayload = require('./utils/sanitizePayload');
 const seedSuperAdmin = require('./utils/seedSuperAdmin');
@@ -93,6 +95,8 @@ app.use(['/api/class-tests', '/class-tests'], classTestRoutes);
 app.use(['/api/fees', '/fees'], feeRoutes);
 app.use(['/api/exam-suite', '/exam-suite'], examSuiteRoutes);
 app.use(['/api/question-papers', '/question-papers'], questionPaperRoutes);
+app.use(['/api/reports', '/reports'], reportRoutes);
+app.use(['/api/certificates', '/certificates'], certificateRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Server error:', err);

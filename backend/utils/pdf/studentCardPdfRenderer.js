@@ -64,7 +64,6 @@ const drawStudentCardNode = (page, coords, student, fonts, qrImage, options = {}
 
   page.drawRectangle({ x: x + 1, y: y + 1, width: width - 2, height: 11, color: rgb(0.85, 0.68, 0.15) });
   page.drawText('OFFICIAL STUDENT IDENTITY CARD', { x: x + (width / 2) - 48, y: y + 4, size: 5.5, font: bold, color: rgb(0.1, 0.1, 0.1) });
-  page.drawText('EliteEdu', { x: x + width - 26, y: y + 4, size: 4.5, font: regular, color: rgb(0.25, 0.25, 0.25) });
 };
 
 const generateStudentCardsPdf = async (students, options = {}) => {

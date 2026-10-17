@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import { isValidEmail, isValidPhone, isValidCnic } from '../utils/validators';
 
 const INITIAL_FORM_DATA = {
@@ -54,8 +54,8 @@ export const useStaffApplicantForm = (id) => {
     const fetchDropdowns = async () => {
       try {
         const [cRes, tRes] = await Promise.all([
-          axios.get('/api/campuses', { headers }),
-          axios.get('/api/teachers', { headers })
+          api.get('/campuses'),
+          api.get('/teachers')
         ]);
         if (cRes.data.success) setCampuses(cRes.data.campuses || []);
         if (tRes.data.success) setTeachers(tRes.data.teachers || []);
@@ -71,7 +71,7 @@ export const useStaffApplicantForm = (id) => {
     const fetchApplicant = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`/api/staff-applicants/${id}`, { headers });
+        const res = await api.get(`/staff-applicants/${id}`);
         if (res.data.success && res.data.applicant) {
           const app = res.data.applicant;
           setFormData({
@@ -148,9 +148,9 @@ export const useStaffApplicantForm = (id) => {
       };
 
       if (id) {
-        await axios.put(`/api/staff-applicants/${id}`, payload, { headers });
+        await api.put(`/staff-applicants/${id}`, payload);
       } else {
-        await axios.post('/api/staff-applicants', payload, { headers });
+        await api.post('/staff-applicants', payload);
       }
 
       navigate('/admin/staff-applicants');

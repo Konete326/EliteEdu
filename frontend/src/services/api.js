@@ -14,6 +14,10 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  const activeCampus = localStorage.getItem('elite_active_campus_id');
+  if (activeCampus && activeCampus !== 'all') {
+    config.headers['x-campus-id'] = activeCampus;
+  }
   const lastAction = getLastClickedElement();
   if (lastAction) {
     config.headers['x-client-action'] = lastAction;

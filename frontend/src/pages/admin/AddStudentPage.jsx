@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
 import { useStudentForm } from '../../hooks/useStudentForm';
 import PageLoader from '../../components/common/PageLoader';
+import PrerequisiteGuardBanner from '../../components/common/PrerequisiteGuardBanner';
 import StudentTopActionBar from '../../components/admin/students/StudentTopActionBar';
 import StudentTabsNav from '../../components/admin/students/StudentTabsNav';
 import StudentProfileTab from '../../components/admin/students/tabs/StudentProfileTab';
@@ -20,7 +21,8 @@ const AddStudentPage = () => {
   const {
     formData, campuses, grades, subjects, loading, submitting, error, setError,
     errors, saveStudent, handleField, handleNestedField, handleToggleAppSetting,
-    handleToggleAllAppSettings, handleToggleSubject, refreshFamilyNumber
+    handleToggleAllAppSettings, handleToggleSubject, refreshFamilyNumber,
+    clearDraft, draftSavedAt, fetchPrereqs
   } = useStudentForm(id);
 
   const currentGradeName = grades.find(
@@ -39,24 +41,23 @@ const AddStudentPage = () => {
     }
   };
 
+  const prereqs = [
+    { name: 'Campus', count: campuses.length, addPath: '/admin/control-panel/campuses', label: 'Add Campus' },
+    { name: 'Grade', count: grades.length, addPath: '/admin/academic/grades', label: 'Add Grade' }
+  ];
+
   return (
     <div className="w-full space-y-6 pb-16">
       <div className="sticky top-[1px] z-20 mt-[1px] pb-2.5 pt-1 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-md border-b border-line dark:border-line-dark space-y-3 shadow-xs">
-        <StudentTopActionBar
-          isEditMode={Boolean(id)}
-          studentName={formData.name}
-          onSave={handleSave}
-          submitting={submitting}
-        />
+        <StudentTopActionBar isEditMode={Boolean(id)} studentName={formData.name} onSave={handleSave} submitting={submitting} />
         <StudentTabsNav activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
 
+      <PrerequisiteGuardBanner prerequisites={prereqs} onRefresh={fetchPrereqs} onResetDraft={clearDraft} draftSavedAt={draftSavedAt} />
+
       {error && (
         <div className="p-3.5 rounded-xl bg-bad-soft dark:bg-bad/10 text-bad border border-bad/20 text-xs flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{error}</span>
-          </div>
+          <div className="flex items-center gap-2"><AlertCircle className="w-4 h-4 shrink-0" /><span>{error}</span></div>
           <button type="button" onClick={() => setError('')} className="underline font-semibold cursor-pointer">Dismiss</button>
         </div>
       )}
@@ -65,12 +66,7 @@ const AddStudentPage = () => {
         <StudentProfileTab formData={formData} errors={errors} campuses={campuses} grades={grades} onChange={handleField} />
       )}
       {activeTab === 'family' && (
-        <StudentFamilyTab
-          formData={formData}
-          onNestedChange={handleNestedField}
-          onChange={handleField}
-          onRefreshFamilyNumber={refreshFamilyNumber}
-        />
+        <StudentFamilyTab formData={formData} onNestedChange={handleNestedField} onChange={handleField} onRefreshFamilyNumber={refreshFamilyNumber} />
       )}
       {activeTab === 'contact' && (
         <StudentContactTab formData={formData} onNestedChange={handleNestedField} onChange={handleField} />
@@ -79,20 +75,10 @@ const AddStudentPage = () => {
         <StudentAcademicTab formData={formData} onNestedChange={handleNestedField} />
       )}
       {activeTab === 'subjects' && (
-        <StudentSubjectsTab
-          subjects={subjects}
-          selectedSubjectIds={formData.subjects || []}
-          onToggleSubject={handleToggleSubject}
-          onChange={handleField}
-          currentGradeName={currentGradeName}
-        />
+        <StudentSubjectsTab subjects={subjects} selectedSubjectIds={formData.subjects || []} onToggleSubject={handleToggleSubject} onChange={handleField} currentGradeName={currentGradeName} />
       )}
       {activeTab === 'app_settings' && (
-        <StudentAppSettingsTab
-          appSettings={formData.app_settings}
-          onToggleSetting={handleToggleAppSetting}
-          onToggleAll={handleToggleAllAppSettings}
-        />
+        <StudentAppSettingsTab appSettings={formData.app_settings} onToggleSetting={handleToggleAppSetting} onToggleAll={handleToggleAllAppSettings} />
       )}
       {activeTab === 'documents' && (
         <StudentDocumentsTab formData={formData} onChange={handleField} />

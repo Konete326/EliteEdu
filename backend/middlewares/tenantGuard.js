@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const { resolveEffectivePermissions } = require('../utils/permissionResolver');
 
 const enforceTenantScope = (req, res, next) => {
   if (!req.user) {
@@ -43,21 +44,24 @@ const requireTeacherPermission = (permissionKey) => {
       const teacher = await User.findOne({
         _id: req.user.id,
         school_id: req.user.school_id
-      }).select('status is_active app_settings app_permissions');
+      }).select('status is_active app_settings app_permissions custom_role_id').populate('custom_role_id');
 
       if (!teacher || teacher.status === 'Inactive' || teacher.is_active === false) {
         return res.status(403).json({ success: false, message: 'Teacher account is inactive' });
       }
 
-      const permissions = teacher.app_settings || teacher.app_permissions || {};
-      if (permissionKey && permissions[permissionKey] === false) {
+      const { effective, appSettings } = resolveEffectivePermissions(teacher);
+      const isAllowed = permissionKey ? (appSettings[permissionKey] !== false || effective[permissionKey]?.view === true) : true;
+
+      if (!isAllowed) {
         return res.status(403).json({
           success: false,
           message: `Access denied for module: ${permissionKey}`
         });
       }
 
-      req.teacherPermissions = permissions;
+      req.teacherPermissions = appSettings;
+      req.effectivePermissions = effective;
       next();
     } catch (err) {
       res.status(500).json({ success: false, message: 'Permission verification failed' });

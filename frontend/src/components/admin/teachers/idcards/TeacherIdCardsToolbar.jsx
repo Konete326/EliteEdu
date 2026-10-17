@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import TeacherCardsFilterBar from './TeacherCardsFilterBar';
 
 const STYLES = [
-  { id: 'GovtSindh', label: 'Govt of Sindh' },
-  { id: 'Institutional', label: 'Institutional' },
-  { id: 'ModernMinimal', label: 'Modern Minimal' }
+  { id: 'GovtSindh', label: 'Official Service Card' },
+  { id: 'Style 1', label: 'Style 1 (Modern Executive)' },
+  { id: 'Style 2', label: 'Style 2 (Minimalist Corporate)' },
+  { id: 'Style 3', label: 'Style 3 (Landscape Badge)' }
 ];
 
 const SIDES = [

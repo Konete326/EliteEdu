@@ -1,0 +1,24 @@
+const mongoose = require('mongoose');
+
+const certificateTemplateSchema = new mongoose.Schema(
+  {
+    school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true, index: true },
+    name: { type: String, required: true, trim: true },
+    recipient_type: { type: String, enum: ['Student', 'Staff', 'Both'], default: 'Student' },
+    heading: { type: String, required: true, trim: true },
+    sub_heading: { type: String, default: 'THIS IS TO CERTIFY THAT', trim: true },
+    body_template: { type: String, required: true, trim: true },
+    design_style: {
+      type: String,
+      enum: ['royal_gold', 'emerald_modern', 'classic_academic', 'minimal_corporate', 'ribbon_prestigious'],
+      default: 'royal_gold'
+    },
+    accent_color: { type: String, default: '#0d9488' },
+    is_default: { type: Boolean, default: false }
+  },
+  { timestamps: true }
+);
+
+certificateTemplateSchema.index({ school_id: 1, name: 1 });
+
+module.exports = mongoose.model('CertificateTemplate', certificateTemplateSchema);

@@ -82,12 +82,8 @@ const TeacherServiceCardBack = ({ teacher, config = {}, style = 'GovtSindh' }) =
         </div>
       </div>
 
-      <div className={`${bannerColor} flex items-center justify-between py-0.5 px-2 font-black text-[6.5px] tracking-widest uppercase shrink-0 relative z-10`}>
+      <div className={`${bannerColor} flex items-center justify-center py-0.5 px-2 font-black text-[6.5px] tracking-widest uppercase shrink-0 relative z-10`}>
         <span className="truncate">IF FOUND PLEASE DROP IN THE LETTER BOX</span>
-        <div className="flex items-center gap-0.5 text-[6px] font-normal opacity-75 shrink-0">
-          <img src="/logo.png" alt="" className="w-2 h-2 object-contain" />
-          <span>EliteEdu</span>
-        </div>
       </div>
     </div>
   );

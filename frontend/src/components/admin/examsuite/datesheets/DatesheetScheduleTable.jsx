@@ -1,5 +1,6 @@
 import React from 'react';
 import { Upload, Table, Plus, Trash2 } from 'lucide-react';
+import OfficialSignatureStampBlock from '../../../common/OfficialSignatureStampBlock';
 
 const DatesheetScheduleTable = ({ papers, subjects, teachers, onAddRow, onUpdateRow, onRemoveRow, onOpenPDFModal, onOpenPasteModal }) => {
   const handleDateChange = (idx, dateVal) => {
@@ -95,6 +96,13 @@ const DatesheetScheduleTable = ({ papers, subjects, teachers, onAddRow, onUpdate
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
+        <OfficialSignatureStampBlock
+          signatureTitle="Examination Incharge"
+          stampTitle="Head of Institution Seal"
+        />
       </div>
     </div>
   );

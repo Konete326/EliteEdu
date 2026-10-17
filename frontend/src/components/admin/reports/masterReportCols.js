@@ -1,0 +1,20 @@
+export const MASTER_REPORT_COLS = [
+  { key: 'sr', label: '#', visible: true },
+  { key: 'gr_number', label: 'GR #', visible: true },
+  { key: 'name', label: 'Name', visible: true },
+  { key: 'father_name', label: 'Father Name', visible: true },
+  { key: 'class_name', label: 'Class', visible: true },
+  { key: 'section', label: 'Sec', visible: true },
+  { key: 'gender', label: 'Gender', visible: true },
+  { key: 'age', label: 'Age', visible: true },
+  { key: 'dob', label: 'DOB', visible: true },
+  { key: 'phone', label: 'Phone', visible: true },
+  { key: 'father_contact', label: 'Father Contact', visible: true },
+  { key: 'status', label: 'Status', visible: true },
+  { key: 'admission_date', label: 'Adm Date', visible: true },
+  { key: 'date_of_leaving', label: 'DOL', visible: false },
+  { key: 'leaving_reason', label: 'Reason', visible: false },
+  { key: 'academic_session', label: 'Session', visible: true },
+  { key: 'email', label: 'Email', visible: false },
+  { key: 'registration_date', label: 'Reg Date', visible: false }
+];

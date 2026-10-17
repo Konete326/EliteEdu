@@ -1,0 +1,20 @@
+export const PARENT_REPORT_COLS = [
+  { key: 'sr', label: 'Sr', visible: true },
+  { key: 'id', label: 'ID', visible: true },
+  { key: 'name', label: 'Name', visible: true },
+  { key: 'class_name', label: 'Class', visible: true },
+  { key: 'father_name', label: 'Father Name', visible: true },
+  { key: 'father_cnic', label: 'Father National ID', visible: true },
+  { key: 'father_education', label: 'Father Education', visible: true },
+  { key: 'father_mobile', label: 'Father Mobile No', visible: true },
+  { key: 'father_occupation', label: 'Father Occupation', visible: true },
+  { key: 'father_profession', label: 'Father Profession', visible: true },
+  { key: 'father_income', label: 'Father Income', visible: true },
+  { key: 'mother_name', label: 'Mother Name', visible: true },
+  { key: 'mother_cnic', label: 'Mother National ID', visible: true },
+  { key: 'mother_education', label: 'Mother Education', visible: true },
+  { key: 'mother_mobile', label: 'Mother Mobile No', visible: true },
+  { key: 'mother_occupation', label: 'Mother Occupation', visible: true },
+  { key: 'mother_profession', label: 'Mother Profession', visible: true },
+  { key: 'mother_income', label: 'Mother Income', visible: true }
+];

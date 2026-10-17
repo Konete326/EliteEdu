@@ -4,6 +4,33 @@ const User = require('../models/User');
 const { getSchoolMeta } = require('../utils/schoolMeta');
 const { extractClientIp } = require('../utils/uaParser');
 const { isIpBlocked, createLoginSession, ensureActiveSession } = require('./authSessionHelper');
+const { resolveEffectivePermissions } = require('../utils/permissionResolver');
+
+const buildUserPayload = (user, meta) => {
+  const { effective, appSettings } = resolveEffectivePermissions(user);
+  return {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    contact_number: user.contact_number || '',
+    photo_url: user.photo_url || '',
+    school_id: user.school_id,
+    campus_id: user.campus_id,
+    assigned_campuses: user.assigned_campuses || [],
+    custom_role_id: user.custom_role_id,
+    custom_role: user.custom_role_id,
+    permissions: user.custom_role_id?.permissions || [],
+    effective_permissions: effective,
+    dashboard_type: user.custom_role_id?.dashboard_type || (user.role === 'Admin' ? 'AdminDashboard' : 'TeacherDashboard'),
+    school_type: meta.school_type,
+    school_name: meta.school_name,
+    school_logo: meta.school_logo,
+    school_slogan: meta.school_slogan,
+    theme_settings: meta.theme_settings,
+    app_settings: appSettings
+  };
+};
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -38,6 +65,7 @@ const login = async (req, res) => {
         role: user.role,
         custom_role_id: user.custom_role_id?._id || user.custom_role_id || null,
         school_id: user.school_id,
+        campus_id: user.campus_id,
         school_type: meta.school_type,
         school_name: meta.school_name,
         session_id: sessionId,
@@ -49,26 +77,7 @@ const login = async (req, res) => {
 
     res.status(200).json({
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        contact_number: user.contact_number || '',
-        photo_url: user.photo_url || '',
-        school_id: user.school_id,
-        campus_id: user.campus_id,
-        custom_role_id: user.custom_role_id,
-        custom_role: user.custom_role_id,
-        permissions: user.custom_role_id?.permissions || [],
-        dashboard_type: user.custom_role_id?.dashboard_type || (user.role === 'Admin' ? 'AdminDashboard' : 'TeacherDashboard'),
-        school_type: meta.school_type,
-        school_name: meta.school_name,
-        school_logo: meta.school_logo,
-        school_slogan: meta.school_slogan,
-        theme_settings: meta.theme_settings,
-        app_settings: user.app_settings || user.app_permissions || {}
-      }
+      user: buildUserPayload(user, meta)
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error during login' });
@@ -86,26 +95,7 @@ const getMe = async (req, res) => {
     const meta = await getSchoolMeta(user.school_id);
 
     res.status(200).json({
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        contact_number: user.contact_number || '',
-        photo_url: user.photo_url || '',
-        school_id: user.school_id,
-        campus_id: user.campus_id,
-        custom_role_id: user.custom_role_id,
-        custom_role: user.custom_role_id,
-        permissions: user.custom_role_id?.permissions || [],
-        dashboard_type: user.custom_role_id?.dashboard_type || (user.role === 'Admin' ? 'AdminDashboard' : 'TeacherDashboard'),
-        school_type: meta.school_type,
-        school_name: meta.school_name,
-        school_logo: meta.school_logo,
-        school_slogan: meta.school_slogan,
-        theme_settings: meta.theme_settings,
-        app_settings: user.app_settings || user.app_permissions || {}
-      }
+      user: buildUserPayload(user, meta)
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });

@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
@@ -10,25 +11,47 @@ const NotificationsPage = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const isAdmin = user?.role === 'Admin' || user?.role === 'SuperAdmin';
+  const leftColRef = useRef(null);
+  const [leftHeight, setLeftHeight] = useState(573);
+  const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' ? window.innerWidth >= 1280 : true);
 
   const {
-    notifications, campuses, total, unreadCount, page, totalPages, loading,
+    notifications, campuses, total, unreadCount, page, totalPages, limit, setLimit, loading,
     search, setSearch, category, setCategory, unreadOnly, setUnreadOnly,
     deleteTarget, setDeleteTarget, setPage, loadNotifications, toggleRead,
     markAllRead, confirmDelete
   } = useNotifications(token, isAdmin);
 
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1280);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (!leftColRef.current) return;
+    const updateHeight = () => {
+      if (leftColRef.current?.offsetHeight) {
+        setLeftHeight(Math.round(leftColRef.current.offsetHeight));
+      }
+    };
+    updateHeight();
+    const observer = new ResizeObserver(() => updateHeight());
+    observer.observe(leftColRef.current);
+    return () => observer.disconnect();
+  }, [isAdmin, campuses]);
+
   const urgentCount = notifications.filter((n) => n.priority === 'Urgent').length;
 
   return (
-    <div className="w-full space-y-5 pb-10">
+    <div className="w-full space-y-5 pb-4 sm:pb-6">
       <div>
         <h1 className="text-2xl font-bold text-ink dark:text-ink-dark tracking-tight">Notification Center & Broadcasts</h1>
         <p className="text-xs text-ink-muted dark:text-ink-muted-dark mt-0.5">Institutional announcements, academic alerts, and real-time campus broadcasts.</p>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
-        <div className="xl:col-span-4 space-y-4">
+        <div ref={leftColRef} className="xl:col-span-4 space-y-4">
           {isAdmin ? (
             <NotificationComposerCard campuses={campuses} token={token} onCreated={() => { setPage(1); loadNotifications(); }} />
           ) : (
@@ -36,7 +59,10 @@ const NotificationsPage = () => {
           )}
         </div>
 
-        <div className="xl:col-span-8">
+        <div
+          className="xl:col-span-8 flex flex-col min-h-0 xl:h-[573px]"
+          style={isDesktop && leftHeight ? { height: `${leftHeight}px` } : undefined}
+        >
           <NotificationFeedList
             notifications={notifications}
             loading={loading}
@@ -50,6 +76,8 @@ const NotificationsPage = () => {
             page={page}
             totalPages={totalPages}
             total={total}
+            limit={limit}
+            onLimitChange={setLimit}
             onPageChange={setPage}
             isAdmin={isAdmin}
             onToggleRead={toggleRead}

@@ -1,5 +1,6 @@
 import { GraduationCap } from 'lucide-react';
 import { renderSvgBarcode, renderSvgQrCode, generateStudentVerifyUrl } from '../../../../utils/idCardCodeGenerator';
+import OfficialSignatureStampBlock from '../../../common/OfficialSignatureStampBlock';
 
 const Style3Card = ({ student, config = {} }) => {
   const campus = student?.campus_id || {};
@@ -56,18 +57,18 @@ const Style3Card = ({ student, config = {} }) => {
         </div>
       </div>
 
-      <div className="pt-1.5 border-t border-black/10 dark:border-white/10 flex items-center justify-between relative z-10">
-        <span className="text-[8px] font-bold text-ink-muted uppercase">Authorized Pass</span>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-0.5 text-[7px] text-ink-muted/80 font-semibold select-none">
-            <img src="/logo.png" alt="" className="w-2.5 h-2.5 object-contain opacity-60" />
-            <span>EliteEdu</span>
-          </div>
+      <div className="pt-1 border-t border-black/10 dark:border-white/10 flex items-center justify-between gap-1 relative z-10">
+        <OfficialSignatureStampBlock compact={true} showStamp={true} signatureTitle="Principal" stampTitle="Seal" />
+        <div className="flex flex-col items-end gap-0.5">
           {config.showQr !== false && (
             <a href={verifyUrl} target="_blank" rel="noreferrer" title="Click to verify">
-              {renderSvgQrCode(verifyUrl, 34)}
+              {renderSvgQrCode(verifyUrl, 28)}
             </a>
           )}
+          <div className="flex items-center gap-0.5 text-[6.5px] text-gray-400 font-semibold select-none">
+            <GraduationCap className="w-2 h-2 text-primary" />
+            <span>EliteEdu</span>
+          </div>
         </div>
       </div>
     </div>

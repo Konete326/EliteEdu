@@ -1,5 +1,6 @@
 import { GraduationCap } from 'lucide-react';
 import { renderSvgBarcode, renderSvgQrCode, generateStudentVerifyUrl } from '../../../../utils/idCardCodeGenerator';
+import OfficialSignatureStampBlock from '../../../common/OfficialSignatureStampBlock';
 
 const DefaultCard = ({ student, config = {} }) => {
   const campus = student?.campus_id || {};
@@ -76,10 +77,10 @@ const DefaultCard = ({ student, config = {} }) => {
             </a>
           )}
         </div>
-        <div className="flex items-center justify-between pt-1 text-[7px] text-ink-muted/80">
-          <span>Valid Session 2026-27</span>
-          <div className="flex items-center gap-0.5 font-semibold opacity-60">
-            <img src="/logo.png" alt="" className="w-2 h-2 object-contain" />
+        <div className="pt-0.5 border-t border-black/10 dark:border-white/10 flex items-end justify-between">
+          <OfficialSignatureStampBlock compact={true} showStamp={true} signatureTitle="Principal" stampTitle="Seal" />
+          <div className="flex items-center gap-0.5 text-[6.5px] font-bold text-gray-400 select-none pb-0.5">
+            <GraduationCap className="w-2.5 h-2.5 text-primary" />
             <span>EliteEdu</span>
           </div>
         </div>

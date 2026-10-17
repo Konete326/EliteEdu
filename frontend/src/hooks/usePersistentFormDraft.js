@@ -54,5 +54,13 @@ export const usePersistentFormDraft = (key, initialValue = {}) => {
     } catch {}
   }, [key]);
 
-  return { draftData, setDraftData, updateDraft, clearDraft, lastSavedAt };
+  const result = { draftData, setDraftData, updateDraft, clearDraft, lastSavedAt };
+  result[Symbol.iterator] = function* () {
+    yield draftData;
+    yield setDraftData;
+    yield clearDraft;
+    yield lastSavedAt;
+    yield updateDraft;
+  };
+  return result;
 };

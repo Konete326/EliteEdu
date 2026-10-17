@@ -8,13 +8,17 @@ export const usePermissions = () => {
   const can = (moduleKey, action = 'view') => {
     if (isSuperAdmin) return true;
 
+    const modKey = moduleKey?.toLowerCase();
+    const effective = user?.effective_permissions;
+    if (effective && effective[modKey] && effective[modKey][action] !== undefined) {
+      return Boolean(effective[modKey][action]);
+    }
+
     const customRole = user?.custom_role_id || user?.custom_role;
     const permissions = user?.permissions || customRole?.permissions;
 
     if (Array.isArray(permissions) && permissions.length > 0) {
-      const mod = permissions.find(
-        (p) => p.module_key?.toLowerCase() === moduleKey?.toLowerCase()
-      );
+      const mod = permissions.find((p) => p.module_key?.toLowerCase() === modKey);
       if (!mod) return false;
       return Boolean(mod[action]);
     }

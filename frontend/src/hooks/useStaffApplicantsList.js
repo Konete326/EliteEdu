@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 export const useStaffApplicantsList = () => {
   const [applicants, setApplicants] = useState([]);
@@ -25,9 +25,6 @@ export const useStaffApplicantsList = () => {
   const [isMapView, setIsMapView] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
-  const token = localStorage.getItem('token');
-  const headers = { Authorization: `Bearer ${token}` };
-
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 3000);
@@ -46,7 +43,7 @@ export const useStaffApplicantsList = () => {
         search: searchQuery.trim() || undefined
       };
 
-      const res = await axios.get('/api/staff-applicants', { headers, params });
+      const res = await api.get('/staff-applicants', { params });
       if (res.data.success) {
         setApplicants(res.data.applicants || []);
         setTotalPages(res.data.totalPages || 1);
@@ -67,8 +64,8 @@ export const useStaffApplicantsList = () => {
     const fetchMetadata = async () => {
       try {
         const [campusRes, teacherRes] = await Promise.all([
-          axios.get('/api/campuses', { headers }),
-          axios.get('/api/teachers', { headers })
+          api.get('/campuses'),
+          api.get('/teachers')
         ]);
         if (campusRes.data.success) setCampuses(campusRes.data.campuses || []);
         if (teacherRes.data.success) setTeachers(teacherRes.data.teachers || []);
@@ -85,7 +82,7 @@ export const useStaffApplicantsList = () => {
       const payload = { status: newStatus };
       if (approvedSalary !== undefined) payload.approved_salary = approvedSalary;
 
-      const res = await axios.patch(`/api/staff-applicants/${id}/status`, payload, { headers });
+      const res = await api.patch(`/staff-applicants/${id}/status`, payload);
       if (res.data.success) {
         setApplicants((prev) =>
           prev.map((app) => (app._id === id ? res.data.applicant : app))
@@ -103,7 +100,7 @@ export const useStaffApplicantsList = () => {
     if (!applicantToConvert) return;
     try {
       setActionLoading(true);
-      const res = await axios.post(`/api/staff-applicants/${applicantToConvert._id}/convert`, {}, { headers });
+      const res = await api.post(`/staff-applicants/${applicantToConvert._id}/convert`, {});
       if (res.data.success) {
         setApplicants((prev) =>
           prev.map((app) => (app._id === applicantToConvert._id ? res.data.applicant : app))
@@ -122,7 +119,7 @@ export const useStaffApplicantsList = () => {
     if (!applicantToDelete) return;
     try {
       setActionLoading(true);
-      await axios.delete(`/api/staff-applicants/${applicantToDelete._id}`, { headers });
+      await api.delete(`/staff-applicants/${applicantToDelete._id}`);
       setApplicants((prev) => prev.filter((a) => a._id !== applicantToDelete._id));
       setTotalApplicants((prev) => Math.max(0, prev - 1));
       showToast('Applicant record deleted');

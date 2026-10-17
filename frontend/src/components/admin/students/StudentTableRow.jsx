@@ -1,4 +1,5 @@
-import { FileText, Calendar, Pencil, Trash2, Eye, CreditCard } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { FileText, Calendar, Pencil, Trash2, Eye, CreditCard, Award, ShieldCheck } from 'lucide-react';
 import usePermissions from '../../../hooks/usePermissions';
 
 const StudentTableRow = ({ student, onEdit, onDelete, onView, onOpenLedger, onOpenAttendance, onOpenAdmissionLetter, onOpenIdCard }) => {
@@ -80,6 +81,12 @@ const StudentTableRow = ({ student, onEdit, onDelete, onView, onOpenLedger, onOp
           <button type="button" onClick={() => onOpenIdCard(student)} title="Print ID Card" className="p-1.5 rounded-lg text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20">
             <CreditCard className="w-4 h-4 text-primary" />
           </button>
+          <Link to={`/admin/reports/report-cards?studentId=${student._id}`} title="Report Card" className="p-1.5 rounded-lg text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20">
+            <Award className="w-4 h-4 text-primary" />
+          </Link>
+          <Link to={`/admin/certificates?studentId=${student._id}`} title="Generate Certificate" className="p-1.5 rounded-lg text-ink-muted hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+          </Link>
           <button type="button" onClick={() => onView(student)} title="View Details" className="p-1.5 rounded-lg text-ink-muted hover:text-ink dark:hover:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#1f1f1f]">
             <Eye className="w-4 h-4" />
           </button>

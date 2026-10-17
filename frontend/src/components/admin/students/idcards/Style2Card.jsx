@@ -1,4 +1,6 @@
 import { renderSvgBarcode, renderSvgQrCode, generateStudentVerifyUrl } from '../../../../utils/idCardCodeGenerator';
+import OfficialSignatureStampBlock from '../../../common/OfficialSignatureStampBlock';
+import { GraduationCap } from 'lucide-react';
 
 const Style2Card = ({ student, config = {} }) => {
   const campus = student?.campus_id || {};
@@ -53,21 +55,22 @@ const Style2Card = ({ student, config = {} }) => {
         </div>
       </div>
 
-      <div className="pt-2 border-t-2 border-black dark:border-white/20 flex items-center justify-between gap-2 print:border-black relative z-10">
-        <div className="space-y-1 text-black dark:text-white print:text-black">
-          {config.showBarcode !== false && renderSvgBarcode(grNumber, 75, 18)}
+      <div className="pt-1.5 border-t-2 border-black dark:border-white/20 flex items-center justify-between gap-1 print:border-black relative z-10">
+        <div className="space-y-0.5 text-black dark:text-white print:text-black">
+          {config.showBarcode !== false && renderSvgBarcode(grNumber, 65, 14)}
           <span className="text-[7px] font-mono block tracking-widest">*{grNumber}*</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-0.5 text-[7px] font-semibold text-ink-muted/80 select-none">
-            <img src="/logo.png" alt="" className="w-2.5 h-2.5 object-contain opacity-60" />
-            <span>EliteEdu</span>
-          </div>
+        <OfficialSignatureStampBlock compact={true} showStamp={true} signatureTitle="Principal" stampTitle="Seal" />
+        <div className="flex flex-col items-end gap-0.5">
           {config.showQr !== false && (
             <a href={verifyUrl} target="_blank" rel="noreferrer" title="Verify student">
-              {renderSvgQrCode(verifyUrl, 38)}
+              {renderSvgQrCode(verifyUrl, 30)}
             </a>
           )}
+          <div className="flex items-center gap-0.5 text-[6.5px] font-bold text-gray-400 select-none">
+            <GraduationCap className="w-2 h-2 text-primary" />
+            <span>EliteEdu</span>
+          </div>
         </div>
       </div>
     </div>

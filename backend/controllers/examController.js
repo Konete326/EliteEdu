@@ -1,6 +1,8 @@
 const Exam = require('../models/Exam');
 const ExamMark = require('../models/ExamMark');
+const MarkSheet = require('../models/MarkSheet');
 const { dispatchExaminerAlerts } = require('../utils/examAlertDispatcher');
+const { syncMarkSheetsForExam } = require('./datesheetSyncHelper');
 
 const getExams = async (req, res) => {
   try {
@@ -59,6 +61,7 @@ const createExam = async (req, res) => {
       school_id: schoolId,
       created_by: req.user._id || req.user.id
     });
+    await syncMarkSheetsForExam(exam, schoolId, req.user._id || req.user.id);
     dispatchExaminerAlerts(exam, schoolId, req.user._id || req.user.id);
     res.status(201).json({ success: true, exam });
   } catch (err) {
@@ -75,6 +78,7 @@ const updateExam = async (req, res) => {
       { new: true, runValidators: true }
     );
     if (!exam) return res.status(404).json({ success: false, message: 'Exam not found' });
+    await syncMarkSheetsForExam(exam, schoolId, req.user._id || req.user.id);
     dispatchExaminerAlerts(exam, schoolId, req.user._id || req.user.id);
     res.status(200).json({ success: true, exam });
   } catch (err) {
@@ -87,7 +91,10 @@ const deleteExam = async (req, res) => {
     const schoolId = req.user.school_id;
     const exam = await Exam.findOneAndDelete({ _id: req.params.id, school_id: schoolId });
     if (!exam) return res.status(404).json({ success: false, message: 'Exam not found' });
-    await ExamMark.deleteMany({ exam_id: exam._id, school_id: schoolId });
+    await Promise.all([
+      ExamMark.deleteMany({ exam_id: exam._id, school_id: schoolId }),
+      MarkSheet.deleteMany({ exam_id: exam._id, school_id: schoolId })
+    ]);
     res.status(200).json({ success: true, message: 'Exam and linked marks deleted' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Printer } from 'lucide-react';
 import axios from '../../api/axios';
+import OfficialSignatureStampBlock from '../../../common/OfficialSignatureStampBlock';
 
 const MarkSheetGazetteTab = ({ grades }) => {
   const [selectedGrade, setSelectedGrade] = useState('');
@@ -40,38 +41,46 @@ const MarkSheetGazetteTab = ({ grades }) => {
           No finalized results found for this class. Enter and submit marks to view gazette.
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-xs">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50/80 dark:bg-slate-800/50 text-slate-500 font-semibold uppercase">
-              <tr>
-                <th className="p-3">Rank</th>
-                <th className="p-3">Roll No</th>
-                <th className="p-3">Student Name</th>
-                <th className="p-3">Obtained / Max</th>
-                <th className="p-3">%</th>
-                <th className="p-3">Grade</th>
-                <th className="p-3">Teacher Remark</th>
-                <th className="p-3">Principal Remark</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {gazette.map((st, idx) => (
-                <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
-                  <td className="p-3 font-bold text-slate-800 dark:text-white">#{st.rank}</td>
-                  <td className="p-3 font-mono text-slate-500">{st.roll_number}</td>
-                  <td className="p-3 font-bold text-slate-800 dark:text-white">{st.name}</td>
-                  <td className="p-3 font-semibold">{st.total_obtained} / {st.total_max}</td>
-                  <td className="p-3 font-bold text-primary">{st.percentage}%</td>
-                  <td className="p-3">
-                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-primary text-white">{st.overall_grade}</span>
-                  </td>
-                  <td className="p-3 text-[11px] text-slate-500 italic max-w-xs truncate">{st.teacher_remark}</td>
-                  <td className="p-3 text-[11px] text-slate-500 italic max-w-xs truncate">{st.principal_remark}</td>
+        <>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-xs">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50/80 dark:bg-slate-800/50 text-slate-500 font-semibold uppercase">
+                <tr>
+                  <th className="p-3">Rank</th>
+                  <th className="p-3">Roll No</th>
+                  <th className="p-3">Student Name</th>
+                  <th className="p-3">Obtained / Max</th>
+                  <th className="p-3">%</th>
+                  <th className="p-3">Grade</th>
+                  <th className="p-3">Teacher Remark</th>
+                  <th className="p-3">Principal Remark</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {gazette.map((st, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                    <td className="p-3 font-bold text-slate-800 dark:text-white">#{st.rank}</td>
+                    <td className="p-3 font-mono text-slate-500">{st.roll_number}</td>
+                    <td className="p-3 font-bold text-slate-800 dark:text-white">{st.name}</td>
+                    <td className="p-3 font-semibold">{st.total_obtained} / {st.total_max}</td>
+                    <td className="p-3 font-bold text-primary">{st.percentage}%</td>
+                    <td className="p-3">
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-primary text-white">{st.overall_grade}</span>
+                    </td>
+                    <td className="p-3 text-[11px] text-slate-500 italic max-w-xs truncate">{st.teacher_remark}</td>
+                    <td className="p-3 text-[11px] text-slate-500 italic max-w-xs truncate">{st.principal_remark}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="pt-4">
+            <OfficialSignatureStampBlock
+              signatureTitle="Controller of Examinations"
+              stampTitle="Institutional Gazette Seal"
+            />
+          </div>
+        </>
       )}
     </div>
   );

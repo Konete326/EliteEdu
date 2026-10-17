@@ -1,4 +1,4 @@
-import { Pencil, Trash2, IdCard, KeyRound, CreditCard } from 'lucide-react';
+import { Pencil, Trash2, IdCard, KeyRound, CreditCard, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import usePermissions from '../../../hooks/usePermissions';
 
@@ -87,12 +87,11 @@ const TeacherTableRow = ({ teacher, onToggleStatus, onEdit, onDelete, onView, on
       </td>
       <td className="px-5 py-3.5 text-right">
         <div className="flex items-center justify-end gap-1">
-          <Link
-            to={`/admin/teachers/id-cards?teacherId=${teacher._id}`}
-            title="Service ID Card"
-            className="p-1.5 rounded-lg text-ink-muted hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
-          >
+          <Link to={`/admin/teachers/id-cards?teacherId=${teacher._id}`} title="Service ID Card" className="p-1.5 rounded-lg text-ink-muted hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30">
             <CreditCard className="w-4 h-4" />
+          </Link>
+          <Link to={`/admin/certificates?staffId=${teacher._id}`} title="Staff Certificate" className="p-1.5 rounded-lg text-ink-muted hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950/30">
+            <ShieldCheck className="w-4 h-4 text-purple-600" />
           </Link>
           <button type="button" onClick={() => onView(teacher)} title="View Details" className="p-1.5 rounded-lg text-ink-muted hover:text-ink hover:bg-surface-secondary">
             <IdCard className="w-4 h-4" />

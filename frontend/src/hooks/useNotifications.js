@@ -10,6 +10,7 @@ export const useNotifications = (token, isAdmin) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [limit, setLimit] = useState(6);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
@@ -22,7 +23,7 @@ export const useNotifications = (token, isAdmin) => {
       setLoading(true);
       const params = new URLSearchParams({
         page: String(page),
-        limit: '15',
+        limit: String(limit),
         type: category,
         search,
         unread_only: String(unreadOnly)
@@ -40,7 +41,7 @@ export const useNotifications = (token, isAdmin) => {
     } catch {} finally {
       setLoading(false);
     }
-  }, [token, page, category, search, unreadOnly]);
+  }, [token, page, limit, category, search, unreadOnly]);
 
   useEffect(() => { loadNotifications(); }, [loadNotifications]);
 
@@ -92,8 +93,13 @@ export const useNotifications = (token, isAdmin) => {
     }
   };
 
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit);
+    setPage(1);
+  };
+
   return {
-    notifications, campuses, total, unreadCount, page, totalPages, loading,
+    notifications, campuses, total, unreadCount, page, totalPages, limit, setLimit: handleLimitChange, loading,
     search, setSearch, category, setCategory, unreadOnly, setUnreadOnly,
     deleteTarget, setDeleteTarget, setPage, loadNotifications, toggleRead,
     markAllRead, confirmDelete

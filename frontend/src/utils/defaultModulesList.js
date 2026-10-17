@@ -16,6 +16,11 @@ export const DEFAULT_MODULES = [
   { module_key: 'question_papers', module_name: 'Question Papers Studio', category: 'Examination' },
   { module_key: 'grading_policies', module_name: 'Grading Policies & Criteria', category: 'Examination' },
   { module_key: 'reports', module_name: 'Reports & Analytics', category: 'Operations' },
+  { module_key: 'student_reports', module_name: 'Student Reports', category: 'Operations' },
+  { module_key: 'parent_reports', module_name: 'Parent Contact Reports', category: 'Operations' },
+  { module_key: 'report_cards', module_name: 'Student Report Cards', category: 'Examination' },
+  { module_key: 'attendance_reports', module_name: 'Attendance Reports', category: 'Operations' },
+  { module_key: 'exam_reports', module_name: 'Exam Reports', category: 'Examination' },
   { module_key: 'control_panel', module_name: 'Control Panel & Settings', category: 'Administration' },
   { module_key: 'user_management', module_name: 'User & Role Management', category: 'Administration' }
 ];

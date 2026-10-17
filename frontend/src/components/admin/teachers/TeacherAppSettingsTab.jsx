@@ -28,7 +28,14 @@ const MODULE_TO_APP_MAP = {
   students: ['students', 'timetable', 'planner'],
   subjects: ['resources', 'lectures'],
   teachers: ['my_profile', 'update_picture'],
-  fees: ['salary']
+  fees: ['salary'],
+  homework: ['homework'],
+  online_classes: ['online_classes'],
+  events: ['events'],
+  complaints: ['complaints'],
+  feedback: ['feedback'],
+  counseling: ['counseling'],
+  lost_and_found: ['lost_and_found']
 };
 
 const TeacherAppSettingsTab = ({
