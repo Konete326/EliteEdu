@@ -3,6 +3,7 @@ import { X, Shield } from 'lucide-react';
 import { getApiBase } from '../../../utils/apiBase';
 import { getInitialPermissions } from '../../../utils/defaultModulesList';
 import RolePermissionsTable from './RolePermissionsTable';
+import RoleNameSuggestionsInput from './RoleNameSuggestionsInput';
 
 const RoleFormModal = ({ role, campuses = [], token, onClose, onSaved }) => {
   const isEdit = Boolean(role?._id);
@@ -69,10 +70,7 @@ const RoleFormModal = ({ role, campuses = [], token, onClose, onSaved }) => {
         <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-6 space-y-4 text-xs">
           {error && <div className="p-2.5 bg-bad/10 border border-bad/20 rounded-xl text-bad font-medium">{error}</div>}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="block font-semibold text-ink dark:text-ink-dark mb-1">Role Name *</label>
-              <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Senior Teacher" className="w-full px-3 py-2 rounded-xl bg-surface-secondary/40 border border-line text-ink outline-none focus:border-primary" />
-            </div>
+            <RoleNameSuggestionsInput value={name} onChange={setName} token={token} />
             <div>
               <label className="block font-semibold text-ink dark:text-ink-dark mb-1">Dashboard Template</label>
               <select value={dashboardType} onChange={(e) => setDashboardType(e.target.value)} className="w-full px-3 py-2 rounded-xl bg-surface-secondary/40 border border-line text-ink outline-none focus:border-primary">

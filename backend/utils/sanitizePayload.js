@@ -26,7 +26,7 @@ const cleanEmptyValues = (obj, objectIdKeys = [], dateKeys = [], numberKeys = []
 };
 
 const sanitizeTeacherPayload = (data) => {
-  const objectIdKeys = ['campus_id', 'supervisor'];
+  const objectIdKeys = ['campus_id', 'supervisor', 'custom_role_id'];
   const dateKeys = ['dob', 'cnic_expiry', 'joining_date', 'regularization_date', 'appointment_date'];
   const numberKeys = ['basic_salary'];
   return cleanEmptyValues(data, objectIdKeys, dateKeys, numberKeys);
@@ -53,7 +53,7 @@ const sanitizeGradePayload = (data) => {
 
 const sanitizePayload = (obj) => {
   if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return obj;
-  const objectIdKeys = ['campus_id', 'grade_admitted', 'current_grade', 'class_teacher', 'replacement_staff', 'supervisor', 'converted_user_id'];
+  const objectIdKeys = ['campus_id', 'grade_admitted', 'current_grade', 'class_teacher', 'replacement_staff', 'supervisor', 'converted_user_id', 'custom_role_id'];
   const dateKeys = ['dob', 'admission_date', 'joining_date', 'regularization_date', 'appointment_date', 'cnic_expiry', 'applied_on', 'added_on'];
   const numberKeys = ['basic_salary', 'monthly_fee', 'discount', 'total_siblings', 'expected_salary', 'approved_salary', 'experience_years'];
   return cleanEmptyValues(obj, objectIdKeys, dateKeys, numberKeys);

@@ -29,6 +29,7 @@ export const useTeacherForm = (id) => {
   const [campuses, setCampuses] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [grades, setGrades] = useState([]);
+  const [customRoles, setCustomRoles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -38,10 +39,16 @@ export const useTeacherForm = (id) => {
     const init = async () => {
       try {
         setLoading(true);
-        const [cRes, sRes, gRes] = await Promise.all([api.get('/campuses'), api.get('/subjects?limit=200'), api.get('/grades')]);
-        setCampuses(cRes.data.campuses || []);
-        setSubjects(sRes.data.subjects || []);
-        setGrades(gRes.data.grades || []);
+        const [cRes, sRes, gRes, rRes] = await Promise.allSettled([
+          api.get('/campuses'),
+          api.get('/subjects?limit=200'),
+          api.get('/grades'),
+          api.get('/user-management/roles')
+        ]);
+        if (cRes.status === 'fulfilled') setCampuses(cRes.value.data.campuses || []);
+        if (sRes.status === 'fulfilled') setSubjects(sRes.value.data.subjects || []);
+        if (gRes.status === 'fulfilled') setGrades(gRes.value.data.grades || []);
+        if (rRes.status === 'fulfilled') setCustomRoles(rRes.value.data.roles || []);
 
         if (isEditMode) {
           const t = (await api.get(`/teachers/${id}`)).data.teacher;
@@ -49,6 +56,7 @@ export const useTeacherForm = (id) => {
             ...INITIAL_FORM,
             ...t,
             campus_id: t.campus_id?._id || t.campus_id || '',
+            custom_role_id: t.custom_role_id?._id || t.custom_role_id || '',
             bank_details: { ...INITIAL_FORM.bank_details, ...(t.bank_details || {}) },
             emergency_contact: { ...INITIAL_FORM.emergency_contact, ...(t.emergency_contact || {}) },
             app_permissions: t.app_permissions || {},
@@ -104,7 +112,9 @@ export const useTeacherForm = (id) => {
   };
 
   return {
-    formData, campuses, subjects, grades, loading, submitting, error, setError, errors, saveTeacher,
+    formData, campuses, subjects, grades, customRoles, loading, submitting, error, setError, errors, saveTeacher,
     handleField, handleEmergency, handleBank, isEditMode, schoolType: user?.school_type || 'Private'
   };
 };
+
+export default useTeacherForm;

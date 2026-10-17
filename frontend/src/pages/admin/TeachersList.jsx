@@ -15,7 +15,7 @@ const TeachersList = () => {
   const [passwordTeacher, setPasswordTeacher] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   const {
-    teachers, campuses, loading, error, setError,
+    teachers, campuses, loading, error, setError, designations,
     selectedCampus, setSelectedCampus,
     selectedDesignation, setSelectedDesignation,
     searchQuery, setSearchQuery,
@@ -32,7 +32,7 @@ const TeachersList = () => {
         campuses={campuses}
         selectedCampus={selectedCampus}
         onCampusChange={setSelectedCampus}
-        designations={DESIGNATIONS}
+        designations={designations || DESIGNATIONS}
         selectedDesignation={selectedDesignation}
         onDesignationChange={setSelectedDesignation}
       />

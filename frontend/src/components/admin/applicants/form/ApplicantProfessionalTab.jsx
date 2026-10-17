@@ -1,9 +1,25 @@
+import { useState, useEffect } from 'react';
+import { getApiBase } from '../../../../utils/apiBase';
+
 const AVAILABILITIES = ['Full Time', 'Part Time', 'Contract', 'Visiting'];
 const BPS_GRADES = Array.from({ length: 21 }, (_, i) => `BPS-${i + 1}`);
 const DEPT_CHIPS = ['Academics', 'Administration', 'Science', 'Mathematics', 'English', 'Sales', 'Sports'];
 const DESIG_CHIPS = ['Primary Teacher', 'Assistant', 'Campus Head', 'JEST', 'PST', 'Subject Specialist'];
 
 const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
+  const [customRoles, setCustomRoles] = useState([]);
+
+  useEffect(() => {
+    fetch(`${getApiBase()}/user-management/roles`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.roles) setCustomRoles(d.roles.map((r) => r.name));
+      })
+      .catch(() => {});
+  }, []);
+
+  const allDesigChips = Array.from(new Set([...DESIG_CHIPS, ...customRoles]));
+
   return (
     <div className="p-6 rounded-2xl bg-surface dark:bg-[#111111] border border-line dark:border-white/10 shadow-sm space-y-6">
       <h3 className="text-sm font-bold text-ink dark:text-ink-dark pb-2 border-b border-line dark:border-white/10">
@@ -40,7 +56,7 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
                 key={chip}
                 type="button"
                 onClick={() => onChange('department', chip)}
-                className="px-2 py-0.5 text-[10px] rounded-md bg-surface-secondary dark:bg-white/5 hover:bg-primary/10 text-ink-muted hover:text-primary transition-colors"
+                className="px-2 py-0.5 text-[10px] rounded-md bg-surface-secondary dark:bg-white/5 hover:bg-primary/10 text-ink-muted hover:text-primary transition-colors cursor-pointer"
               >
                 {chip}
               </button>
@@ -58,12 +74,12 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
             className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-black/20 text-ink dark:text-ink-dark outline-none focus:border-primary/60 font-medium"
           />
           <div className="flex flex-wrap gap-1 mt-1.5">
-            {DESIG_CHIPS.map((chip) => (
+            {allDesigChips.slice(0, 10).map((chip) => (
               <button
                 key={chip}
                 type="button"
                 onClick={() => onChange('designation', chip)}
-                className="px-2 py-0.5 text-[10px] rounded-md bg-surface-secondary dark:bg-white/5 hover:bg-primary/10 text-ink-muted hover:text-primary transition-colors"
+                className="px-2 py-0.5 text-[10px] rounded-md bg-surface-secondary dark:bg-white/5 hover:bg-primary/10 text-ink-muted hover:text-primary transition-colors cursor-pointer"
               >
                 {chip}
               </button>

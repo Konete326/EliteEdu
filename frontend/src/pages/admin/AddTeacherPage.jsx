@@ -17,7 +17,7 @@ const AddTeacherPage = () => {
   const [activeTab, setActiveTab] = useState('profile');
 
   const {
-    formData, campuses, subjects, grades,
+    formData, campuses, subjects, grades, customRoles,
     loading, submitting, error, setError, errors, saveTeacher,
     handleField, handleEmergency, handleBank,
     isEditMode, schoolType
@@ -64,6 +64,7 @@ const AddTeacherPage = () => {
           onEmergencyChange={handleEmergency}
           campuses={campuses}
           schoolType={schoolType}
+          customRoles={customRoles}
         />
       )}
 
@@ -81,6 +82,9 @@ const AddTeacherPage = () => {
           permissions={formData.app_permissions}
           onChange={(p) => handleField('app_permissions', p)}
           schoolType={schoolType}
+          customRoles={customRoles}
+          selectedRoleId={formData.custom_role_id}
+          onRoleChange={(roleId) => handleField('custom_role_id', roleId)}
         />
       )}
 

@@ -1,11 +1,12 @@
 const UserRole = require('../models/UserRole');
 const User = require('../models/User');
 const { getDefaultRoleTemplates } = require('../utils/defaultRolesSeed');
+const resolveSchoolId = require('../utils/schoolResolver');
 
 const getRoles = async (req, res) => {
   try {
-    const schoolId = req.user.role === 'Admin' ? req.user.school_id : (req.query.school_id || req.user.school_id);
-    const filter = { school_id: schoolId };
+    const schoolId = await resolveSchoolId(req);
+    const filter = schoolId ? { school_id: schoolId } : {};
     if (req.query.campus_id) filter.campus_id = req.query.campus_id;
 
     let roles = await UserRole.find(filter).populate('campus_id', 'name code').sort({ createdAt: 1 }).lean();
@@ -16,17 +17,10 @@ const getRoles = async (req, res) => {
       roles = await UserRole.find(filter).populate('campus_id', 'name code').sort({ createdAt: 1 }).lean();
     }
 
-    const counts = await User.aggregate([
-      { $match: { school_id: schoolId, custom_role_id: { $ne: null } } },
-      { $group: { _id: '$custom_role_id', count: { $sum: 1 } } }
-    ]);
+    const matchUser = schoolId ? { school_id: schoolId, custom_role_id: { $ne: null } } : { custom_role_id: { $ne: null } };
+    const counts = await User.aggregate([{ $match: matchUser }, { $group: { _id: '$custom_role_id', count: { $sum: 1 } } }]);
     const countMap = counts.reduce((acc, c) => ({ ...acc, [String(c._id)]: c.count }), {});
-
-    const enriched = roles.map((r) => ({
-      ...r,
-      user_count: countMap[String(r._id)] || 0
-    }));
-
+    const enriched = roles.map((r) => ({ ...r, user_count: countMap[String(r._id)] || 0 }));
     res.status(200).json({ success: true, roles: enriched });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -37,19 +31,15 @@ const createRole = async (req, res) => {
   try {
     const { name, description, dashboard_type, permissions = [], campus_id, status = 'Active' } = req.body;
     if (!name) return res.status(400).json({ success: false, message: 'Role name is required' });
+    const schoolId = await resolveSchoolId(req);
+    if (!schoolId) return res.status(400).json({ success: false, message: 'School ID is required' });
 
-    const schoolId = req.user.role === 'Admin' ? req.user.school_id : (req.body.school_id || req.user.school_id);
     const role = await UserRole.create({
-      school_id: schoolId,
-      campus_id: campus_id || null,
-      name: name.trim(),
+      school_id: schoolId, campus_id: campus_id || null, name: name.trim(),
       description: description ? description.trim() : '',
       dashboard_type: dashboard_type || 'TeacherDashboard',
-      permissions,
-      status,
-      is_system: false
+      permissions, status, is_system: false
     });
-
     res.status(201).json({ success: true, role });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

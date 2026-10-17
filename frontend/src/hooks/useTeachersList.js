@@ -18,11 +18,19 @@ export const useTeachersList = () => {
   const [viewTeacher, setViewTeacher] = useState(null);
   const [teacherToDelete, setTeacherToDelete] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [designations, setDesignations] = useState(DESIGNATIONS);
 
   const fetchCampuses = async () => {
     try {
-      const res = await api.get('/campuses');
-      setCampuses(res.data.campuses || []);
+      const [cRes, rRes] = await Promise.allSettled([
+        api.get('/campuses'),
+        api.get('/user-management/roles')
+      ]);
+      if (cRes.status === 'fulfilled') setCampuses(cRes.value.data.campuses || []);
+      if (rRes.status === 'fulfilled' && rRes.value.data.roles) {
+        const names = rRes.value.data.roles.map((ro) => ro.name);
+        setDesignations(Array.from(new Set([...DESIGNATIONS, ...names])));
+      }
     } catch (err) {
       console.error(err);
     }
@@ -91,7 +99,7 @@ export const useTeachersList = () => {
   };
 
   return {
-    teachers, campuses, loading, error, setError,
+    teachers, campuses, loading, error, setError, designations,
     selectedCampus, setSelectedCampus,
     selectedDesignation, setSelectedDesignation,
     searchQuery, setSearchQuery,

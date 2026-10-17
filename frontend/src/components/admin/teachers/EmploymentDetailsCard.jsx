@@ -8,7 +8,7 @@ const DESIGNATIONS = [
 
 const BPS_GRADES = Array.from({ length: 21 }, (_, i) => `BPS-${i + 1}`);
 
-const EmploymentDetailsCard = ({ formData, errors = {}, onChange, campuses = [], schoolType }) => {
+const EmploymentDetailsCard = ({ formData, errors = {}, onChange, campuses = [], schoolType, customRoles = [] }) => {
   const isGovt = schoolType === 'Government';
 
   return (
@@ -53,14 +53,36 @@ const EmploymentDetailsCard = ({ formData, errors = {}, onChange, campuses = [],
             onChange={(e) => onChange('designation', e.target.value)}
             className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none font-semibold cursor-pointer"
           >
-            {DESIGNATIONS.map((d) => (
-              <option key={d} value={d}>{d.replace('_', ' ')}</option>
-            ))}
+            <optgroup label="Standard Designations">
+              {DESIGNATIONS.map((d) => (
+                <option key={d} value={d}>{d.replace('_', ' ')}</option>
+              ))}
+            </optgroup>
+            {customRoles.length > 0 && (
+              <optgroup label="Custom Roles (Settings)">
+                {customRoles.map((r) => (
+                  <option key={r._id} value={r.name}>{r.name}</option>
+                ))}
+              </optgroup>
+            )}
           </select>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div>
+          <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">System Custom Role</label>
+          <select
+            value={formData.custom_role_id || ''}
+            onChange={(e) => onChange('custom_role_id', e.target.value)}
+            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none font-semibold cursor-pointer"
+          >
+            <option value="">None (Standard Teacher)</option>
+            {customRoles.map((r) => (
+              <option key={r._id} value={r._id}>{r.name} ({r.dashboard_type?.replace('Dashboard', '') || 'Teacher'})</option>
+            ))}
+          </select>
+        </div>
         <div>
           <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">BPS Grade (Optional)</label>
           <select

@@ -3,12 +3,12 @@ import EmploymentDetailsCard from './EmploymentDetailsCard';
 import AddressEmergencyCard from './AddressEmergencyCard';
 import ChildrenTimingsCard from './ChildrenTimingsCard';
 
-const TeacherProfileTab = ({ formData, errors = {}, onFieldChange, onEmergencyChange, campuses, schoolType }) => {
+const TeacherProfileTab = ({ formData, errors = {}, onFieldChange, onEmergencyChange, campuses, schoolType, customRoles = [] }) => {
   return (
     <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
       <div className="xl:col-span-7 space-y-6">
         <BasicInformationCard formData={formData} errors={errors} onChange={onFieldChange} />
-        <EmploymentDetailsCard formData={formData} errors={errors} onChange={onFieldChange} campuses={campuses} schoolType={schoolType} />
+        <EmploymentDetailsCard formData={formData} errors={errors} onChange={onFieldChange} campuses={campuses} schoolType={schoolType} customRoles={customRoles} />
       </div>
       <div className="xl:col-span-5 space-y-6">
         <AddressEmergencyCard formData={formData} onChange={onFieldChange} onEmergencyChange={onEmergencyChange} />
