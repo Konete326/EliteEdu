@@ -20,4 +20,6 @@ export { default as GeneralSignaturesPage } from './GeneralSignaturesPage';
 export { default as StudentAttendancePage } from './StudentAttendancePage';
 export { default as StaffAttendancePage } from './StaffAttendancePage';
 export { default as EmployeeAttendancePage } from './EmployeeAttendancePage';
+export { default as ExamsListPage } from './ExamsListPage';
+export { default as ExamWizardPage } from './ExamWizardPage';
 export { default as ComingSoonPage } from './ComingSoonPage';

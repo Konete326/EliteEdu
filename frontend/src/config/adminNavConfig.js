@@ -108,6 +108,7 @@ export const getAdminNavItems = (schoolType) => [
     title: 'Exam Management',
     icon: Award,
     subItems: [
+      { name: 'Examinations', path: '/admin/exam-management/exams' },
       { name: 'Exam Grading', path: '/admin/exam-management/grading-policies' },
       { name: 'Exam Schedules', path: '/admin/exams/schedules' },
       { name: 'Date Sheets', path: '/admin/exams/date-sheets' },
@@ -185,7 +186,7 @@ export const getNavCategories = (user) => {
     if (permissions.students !== false) subItems.push({ name: 'My Students', path: '/teacher/students' });
     if (permissions.attendance !== false) subItems.push({ name: 'Attendance', path: '/teacher/attendance' });
     if (permissions.homework !== false) subItems.push({ name: 'Homework', path: '/teacher/homework' });
-    if (permissions.examination !== false) subItems.push({ name: 'Examination', path: '/teacher/examination' });
+    if (permissions.examination !== false || permissions.exam_management) subItems.push({ name: 'Examinations', path: '/teacher/exams' });
     if (permissions.timetable !== false) subItems.push({ name: 'Timetable', path: '/teacher/timetable' });
     if (permissions.quizzes !== false) subItems.push({ name: 'Quizzes', path: '/teacher/quizzes' });
     if (permissions.lectures !== false) subItems.push({ name: 'Lectures', path: '/teacher/lectures' });
@@ -215,6 +216,8 @@ export const getAllAdminRoutes = () => {
     '/admin', '/admin/teachers', '/admin/teachers/id-cards', '/admin/campus', '/admin/subjects',
     '/admin/grades', '/admin/students', '/admin/students/admission-letter', '/admin/students/id-cards',
     '/admin/staff-applicants', '/admin/exam-management/grading-policies', '/admin/exams/grading-policies',
+    '/admin/exam-management/exams', '/admin/exam-management/exams/new', '/admin/exams/schedules',
+    '/admin/exams/date-sheets', '/admin/exams/marks', '/teacher/exams',
     '/admin/settings/appearance', '/admin/control-panel/branding', '/admin/reports/audit-logs',
     '/admin/reports/audit-log', '/admin/students/promote', '/admin/control-panel/class-transfer',
     '/admin/control-panel/user-management', '/admin/settings/roles', '/admin/control-panel/roles', '/admin/roles',
@@ -253,6 +256,9 @@ export const getRouteTitle = (pathname) => {
   if (pathname === '/admin/students/id-cards') return 'Student ID Cards';
   if (pathname === '/admin/settings/appearance' || pathname === '/admin/control-panel/branding') return 'Theme & Appearance';
   if (pathname === '/admin/exam-management/grading-policies' || pathname === '/admin/exams/grading-policies') return 'Exam Grading';
+  if (pathname === '/admin/exam-management/exams' || pathname === '/admin/exams/schedules' || pathname === '/admin/exams/date-sheets' || pathname === '/admin/exams/marks' || pathname === '/teacher/exams' || pathname === '/teacher/examination' || pathname === '/teacher/datesheet') return 'Examinations & Assessments';
+  if (pathname === '/admin/exam-management/exams/new') return 'Exam Setup Wizard';
+  if (pathname.startsWith('/admin/exam-management/exams/') && pathname.endsWith('/edit')) return 'Edit Exam';
   if (pathname === '/admin/profile' || pathname === '/superadmin/profile' || pathname === '/teacher/profile') return 'My Profile';
   if (pathname === '/superadmin') return 'Dashboard';
   if (pathname === '/superadmin/schools') return 'Schools';

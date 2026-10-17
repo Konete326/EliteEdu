@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Printer, Calendar, Award, FileSpreadsheet } from 'lucide-react';
-import axios from '../../../utils/axiosConfig';
+import axios from '../../../../utils/axiosConfig';
 import ExamDatesheetPrintView from './ExamDatesheetPrintView';
 import ExamAwardListPrintView from './ExamAwardListPrintView';
 import ExamGazettePrintView from './ExamGazettePrintView';

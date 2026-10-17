@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save, FileSpreadsheet } from 'lucide-react';
-import axios from '../../../utils/axiosConfig';
-import { useNotification } from '../../../context/NotificationContext';
+import axios from '../../../../utils/axiosConfig';
+import { useNotification } from '../../../../context/NotificationContext';
 import ExamMarksRowItem from './ExamMarksRowItem';
 
 export default function ExamMarksModal({ isOpen, onClose, exam, initialPaper, onSaved }) {

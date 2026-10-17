@@ -5,6 +5,7 @@ import { getApiBase } from '../../../utils/apiBase';
 const UserFormModal = ({ user, roles = [], campuses = [], token, onClose, onSaved }) => {
   const isEdit = Boolean(user?._id);
   const [showPassword, setShowPassword] = useState(false);
+  const [readOnlyPassword, setReadOnlyPassword] = useState(true);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -16,6 +17,20 @@ const UserFormModal = ({ user, roles = [], campuses = [], token, onClose, onSave
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    setFormData({
+      name: user?.name || '',
+      email: user?.email || '',
+      contact_number: user?.contact_number || '',
+      role: user?.role || 'Teacher',
+      custom_role_id: user?.custom_role_id?._id || user?.custom_role_id || '',
+      campus_id: user?.campus_id?._id || user?.campus_id || '',
+      password: ''
+    });
+    setShowPassword(false);
+    setReadOnlyPassword(true);
+  }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,6 +72,8 @@ const UserFormModal = ({ user, roles = [], campuses = [], token, onClose, onSave
         </div>
 
         <form onSubmit={handleSubmit} autoComplete="off" className="p-6 space-y-4 text-xs">
+          <input type="text" name="fake_username_autofill" className="hidden" tabIndex={-1} aria-hidden="true" autoComplete="off" />
+          <input type="password" name="fake_password_autofill" className="hidden" tabIndex={-1} aria-hidden="true" autoComplete="off" />
           {error && <div className="p-2.5 bg-bad/10 border border-bad/20 rounded-xl text-bad text-xs font-medium">{error}</div>}
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2">
@@ -65,7 +82,7 @@ const UserFormModal = ({ user, roles = [], campuses = [], token, onClose, onSave
             </div>
             <div>
               <label className="block font-semibold text-ink dark:text-ink-dark mb-1">Email</label>
-              <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-surface-secondary/40 border border-line dark:border-line-dark text-ink dark:text-ink-dark outline-none focus:border-primary" />
+              <input type="email" autoComplete="off" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-surface-secondary/40 border border-line dark:border-line-dark text-ink dark:text-ink-dark outline-none focus:border-primary" />
             </div>
             <div>
               <label className="block font-semibold text-ink dark:text-ink-dark mb-1">Phone Number</label>
@@ -98,7 +115,11 @@ const UserFormModal = ({ user, roles = [], campuses = [], token, onClose, onSave
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
+                    name="new_user_password_field"
+                    id="new_user_password_field"
                     required
+                    readOnly={readOnlyPassword}
+                    onFocus={() => setReadOnlyPassword(false)}
                     autoComplete="new-password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}

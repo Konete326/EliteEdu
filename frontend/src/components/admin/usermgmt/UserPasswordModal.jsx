@@ -5,6 +5,7 @@ import { getApiBase } from '../../../utils/apiBase';
 const UserPasswordModal = ({ user, token, onClose, onSuccess }) => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [readOnly, setReadOnly] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -49,14 +50,21 @@ const UserPasswordModal = ({ user, token, onClose, onSuccess }) => {
           </button>
         </div>
 
-        <form onSubmit={handleReset} className="p-6 space-y-4 text-xs">
+        <form onSubmit={handleReset} autoComplete="off" className="p-6 space-y-4 text-xs">
+          <input type="text" name="fake_username_autofill" className="hidden" tabIndex={-1} aria-hidden="true" autoComplete="off" />
+          <input type="password" name="fake_password_autofill" className="hidden" tabIndex={-1} aria-hidden="true" autoComplete="off" />
           {error && <div className="p-2.5 bg-bad/10 border border-bad/20 rounded-xl text-bad text-xs font-medium">{error}</div>}
           <div>
             <label className="block font-semibold text-ink dark:text-ink-dark mb-1">New Secure Password</label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
+                name="new_admin_reset_password"
+                id="new_admin_reset_password"
                 required
+                readOnly={readOnly}
+                onFocus={() => setReadOnly(false)}
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter at least 6 characters"
@@ -64,8 +72,10 @@ const UserPasswordModal = ({ user, token, onClose, onSuccess }) => {
               />
               <button
                 type="button"
+                tabIndex={-1}
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink transition-colors cursor-pointer"
+                title={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>

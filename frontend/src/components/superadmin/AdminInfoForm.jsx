@@ -1,6 +1,8 @@
-import { User } from 'lucide-react';
+import { useState } from 'react';
+import { User, Eye, EyeOff } from 'lucide-react';
 
 const AdminInfoForm = ({ admin, setAdmin, errors = {} }) => {
+  const [showPassword, setShowPassword] = useState(false);
   const getFieldClass = (hasError) =>
     `w-full px-3 py-2 rounded-lg border bg-white dark:bg-surface-secondary-dark text-ink dark:text-ink-dark text-sm focus:outline-none focus:ring-2 ${
       hasError
@@ -26,7 +28,27 @@ const AdminInfoForm = ({ admin, setAdmin, errors = {} }) => {
         </div>
         <div>
           <label className="block text-xs font-medium text-ink-sub dark:text-ink-sub-dark mb-1">Password *</label>
-          <input required type="password" minLength={6} value={admin.password} onChange={(e) => setAdmin({ ...admin, password: e.target.value })} className={getFieldClass(errors.adminPassword)} placeholder="Min 6 characters" />
+          <div className="relative">
+            <input
+              required
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="new-password"
+              minLength={6}
+              value={admin.password}
+              onChange={(e) => setAdmin({ ...admin, password: e.target.value })}
+              className={`${getFieldClass(errors.adminPassword)} pr-10`}
+              placeholder="Min 6 characters"
+            />
+            <button
+              type="button"
+              tabIndex={-1}
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink cursor-pointer"
+              title={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
           {errors.adminPassword && <p className="text-bad text-xs mt-1">{errors.adminPassword}</p>}
         </div>
       </div>
