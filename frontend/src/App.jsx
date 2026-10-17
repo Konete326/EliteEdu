@@ -1,9 +1,11 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './context/ToastContext';
 import { ComingSoonProvider } from './context/ComingSoonContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import DashboardLayout from './components/layout/DashboardLayout';
+import NotificationsPage from './pages/common/NotificationsPage';
 import LoginPage from './pages/auth/LoginPage';
 import UnauthorizedPage from './components/common/UnauthorizedPage';
 import SuperAdminDashboard from './pages/superadmin/SuperAdminDashboard';
@@ -21,11 +23,10 @@ import { getAllAdminRoutes } from './config/adminNavConfig';
 import { Agentation } from 'agentation';
 import './utils/telemetryAgent';
 import {
-  AdminDashboard, TeachersList, AddTeacherPage, CampusPage, SubjectsPage, GradesPage,
-  StudentsList, AddStudentPage, StaffApplicantsList, AddStaffApplicantPage, GradingPoliciesPage,
-  AdmissionLetterPage, StudentIdCardsPage, TeacherIdCardsPage, ThemeSettingsPage, GeneralSettingsPage,
-  UserManagementPage, PromoteStudentsPage, GeneralSignaturesPage, StudentAttendancePage,
-  StaffAttendancePage, EmployeeAttendancePage, ComingSoonPage
+  AdminDashboard, TeachersList, AddTeacherPage, CampusPage, SubjectsPage, GradesPage, StudentsList, AddStudentPage,
+  StaffApplicantsList, AddStaffApplicantPage, GradingPoliciesPage, AdmissionLetterPage, StudentIdCardsPage,
+  TeacherIdCardsPage, ThemeSettingsPage, GeneralSettingsPage, UserManagementPage, PromoteStudentsPage,
+  GeneralSignaturesPage, StudentAttendancePage, EmployeeAttendancePage, ComingSoonPage
 } from './pages/admin';
 
 const adminDynamicRoutes = getAllAdminRoutes();
@@ -34,7 +35,8 @@ function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <ComingSoonProvider>
+        <ToastProvider>
+          <ComingSoonProvider>
           <BrowserRouter>
             <PwaInstallPrompt />
             <Routes>
@@ -49,6 +51,7 @@ function App() {
                   <Route path="/superadmin/schools" element={<SchoolsList />} />
                   <Route path="/superadmin/schools/new" element={<SchoolsPage />} />
                   <Route path="/superadmin/logs" element={<SystemLogsPage />} />
+                  <Route path="/superadmin/notifications" element={<NotificationsPage />} />
                   <Route path="/superadmin/profile" element={<MyProfilePage />} />
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['Admin', 'Teacher']} />}>
@@ -84,8 +87,9 @@ function App() {
                   <Route path="/admin/control-panel/branding" element={<ThemeSettingsPage />} />
                   <Route path="/admin/control-panel/user-management" element={<UserManagementPage defaultTab="users" />} />
                   <Route path="/admin/settings/roles" element={<UserManagementPage defaultTab="roles" />} />
-                  <Route path="/admin/control-panel/roles" element={<UserManagementPage defaultTab="roles" />} />
-                  <Route path="/admin/roles" element={<UserManagementPage defaultTab="roles" />} />
+                  <Route path="/admin/notifications" element={<NotificationsPage />} />
+                  <Route path="/admin/messaging/notifications" element={<NotificationsPage />} />
+                  <Route path="/admin/circular" element={<NotificationsPage />} />
                   <Route path="/admin/reports/audit-logs" element={<SystemLogsPage />} />
                   <Route path="/admin/profile" element={<MyProfilePage />} />
                   {adminDynamicRoutes.map((r) => (
@@ -96,6 +100,7 @@ function App() {
                   <Route path="/teacher" element={<TeacherPortalDashboard />} />
                   <Route path="/teacher/students" element={<TeacherPortalDashboard />} />
                   <Route path="/teacher/attendance" element={<StudentAttendancePage />} />
+                  <Route path="/teacher/notifications" element={<NotificationsPage />} />
                   <Route path="/teacher/profile" element={<MyProfilePage />} />
                 </Route>
               </Route>
@@ -103,7 +108,8 @@ function App() {
             </Routes>
           </BrowserRouter>
           {import.meta.env.DEV && <Agentation endpoint="http://localhost:4747" />}
-        </ComingSoonProvider>
+          </ComingSoonProvider>
+        </ToastProvider>
       </ThemeProvider>
     </AuthProvider>
   );

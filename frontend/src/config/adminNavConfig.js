@@ -96,6 +96,7 @@ export const getAdminNavItems = (schoolType) => [
     title: 'Messaging',
     icon: MessageSquare,
     subItems: [
+      { name: 'Notification Center', path: '/admin/notifications' },
       { name: 'Chat', path: '/admin/messaging/chat' },
       { name: 'SMS Broadcast', path: '/admin/messaging/sms' },
       { name: 'WhatsApp Alerts', path: '/admin/messaging/whatsapp' },
@@ -217,6 +218,7 @@ export const getAllAdminRoutes = () => {
     '/admin/settings/appearance', '/admin/control-panel/branding', '/admin/reports/audit-logs',
     '/admin/reports/audit-log', '/admin/students/promote', '/admin/control-panel/class-transfer',
     '/admin/control-panel/user-management', '/admin/settings/roles', '/admin/control-panel/roles', '/admin/roles',
+    '/admin/notifications', '/admin/messaging/notifications', '/admin/circular', '/teacher/notifications', '/superadmin/notifications',
     '/admin/settings/general', '/admin/general-settings/signatures',
     '/admin/settings/signatures', '/admin/attendance/students', '/admin/attendance/staff',
     '/admin/attendance/employees'
@@ -259,6 +261,7 @@ export const getRouteTitle = (pathname) => {
   if (pathname === '/admin/students/promote' || pathname === '/admin/control-panel/class-transfer') return 'Promote Students & Class Transfer';
   if (pathname === '/admin/control-panel/user-management') return 'User Management';
   if (pathname === '/admin/settings/roles' || pathname === '/admin/control-panel/roles' || pathname === '/admin/roles') return 'Roles & Permissions';
+  if (pathname === '/admin/notifications' || pathname === '/admin/messaging/notifications' || pathname === '/admin/circular' || pathname === '/teacher/notifications' || pathname === '/superadmin/notifications') return 'Notification Center & Broadcasts';
   if (pathname === '/admin/general-settings/signatures' || pathname === '/admin/settings/signatures') return 'Digital Signatures & Stamps Studio';
   if (pathname === '/admin/attendance/students') return 'Student Attendance';
   if (pathname === '/admin/attendance/staff' || pathname === '/admin/attendance/employees') return 'Staff Attendance';
