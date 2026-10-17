@@ -1,13 +1,13 @@
 const StaffApplicant = require('../models/StaffApplicant');
 const { buildApplicantFilter } = require('./staffApplicantFilterHelper');
 const { sanitizeApplicantPayload } = require('../utils/sanitizeData');
+const { createSystemNotification } = require('../utils/notificationDispatcher');
 
 const getApplicants = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
     const { page = 1, limit = 20 } = req.query;
     const filter = buildApplicantFilter(req.query, schoolId);
-
     const pageNum = Math.max(1, parseInt(page, 10));
     const limitNum = Math.max(1, parseInt(limit, 10));
     const skip = (pageNum - 1) * limitNum;
@@ -67,6 +67,15 @@ const createApplicant = async (req, res) => {
     });
 
     const applicant = await StaffApplicant.create(payload);
+    createSystemNotification({
+      school_id: schoolId,
+      title: 'New Staff Applicant',
+      message: `New applicant received: ${name.trim()} (${rest.applying_for_position || 'Staff'}).`,
+      type: 'Admission',
+      target_audience: 'Admins',
+      action_url: '/admin/staff-applicants',
+      created_by: req.user?._id || req.user?.id
+    });
     res.status(201).json({ success: true, applicant });
   } catch (error) {
     res.status(500).json({ message: 'Failed to create applicant', error: error.message });
@@ -102,9 +111,5 @@ const deleteApplicant = async (req, res) => {
 };
 
 module.exports = {
-  getApplicants,
-  getApplicantById,
-  createApplicant,
-  updateApplicant,
-  deleteApplicant
+  getApplicants, getApplicantById, createApplicant, updateApplicant, deleteApplicant
 };

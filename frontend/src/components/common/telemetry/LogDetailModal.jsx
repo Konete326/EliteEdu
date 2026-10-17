@@ -1,88 +1,78 @@
-import { X, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
+import { X, Copy, Check, Trash2 } from 'lucide-react';
+import { formatDiagnosticReport } from '../../../utils/logDiagnosticsFormatter';
+import LogDetailBody from './LogDetailBody';
 
-const LogDetailModal = ({ log, onClose }) => {
-  const [copied, setCopied] = useState(false);
-  if (!log) return null;
+const SEVERITY_COLORS = {
+  CRITICAL: 'bg-bad/15 text-bad border-bad/30',
+  ERROR: 'bg-bad/10 text-bad border-bad/20',
+  WARNING: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+  INFO: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20'
+};
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(JSON.stringify(log, null, 2));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+const LogDetailModal = ({ isOpen, onClose, log, onDeleteLog, isSuperAdmin }) => {
+  const [copiedType, setCopiedType] = useState(null);
+
+  if (!isOpen || !log) return null;
+
+  const handleCopy = (text, type) => {
+    navigator.clipboard.writeText(text);
+    setCopiedType(type);
+    setTimeout(() => setCopiedType(null), 2000);
   };
 
+  const sevBadge = SEVERITY_COLORS[log.severity] || SEVERITY_COLORS.INFO;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-      <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl w-full max-w-2xl shadow-xl overflow-hidden flex flex-col max-h-[85vh]">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-line dark:border-line-dark">
-          <div>
-            <h3 className="text-sm font-bold text-ink dark:text-ink-dark">Log Event Details</h3>
-            <span className="text-[11px] text-ink-muted">{log._id}</span>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1 rounded-lg text-ink-muted hover:text-ink dark:hover:text-ink-dark hover:bg-surface-secondary cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <div className="p-5 overflow-y-auto space-y-4 text-xs">
-          <div className="grid grid-cols-2 gap-3 bg-surface-secondary/40 p-3 rounded-xl">
-            <div>
-              <span className="text-ink-muted block text-[10px] uppercase font-bold">Category / Severity</span>
-              <span className="font-semibold text-ink dark:text-ink-dark">{log.category} · {log.severity}</span>
-            </div>
-            <div>
-              <span className="text-ink-muted block text-[10px] uppercase font-bold">User</span>
-              <span className="font-semibold text-ink dark:text-ink-dark">{log.user_name || 'Anonymous'}</span>
-            </div>
-            <div className="col-span-2">
-              <span className="text-ink-muted block text-[10px] uppercase font-bold">Message</span>
-              <span className="font-medium text-ink dark:text-ink-dark">{log.message || '—'}</span>
-            </div>
-            {log.endpoint && (
-              <div className="col-span-2">
-                <span className="text-ink-muted block text-[10px] uppercase font-bold">Endpoint</span>
-                <span className="font-mono text-ink dark:text-ink-dark">{log.endpoint}</span>
-              </div>
-            )}
-            {log.page_url && (
-              <div className="col-span-2">
-                <span className="text-ink-muted block text-[10px] uppercase font-bold">Page URL</span>
-                <span className="font-mono text-ink dark:text-ink-dark">{log.page_url}</span>
-              </div>
-            )}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
+      <div className="w-full max-w-3xl max-h-[90vh] bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl shadow-xl overflow-hidden flex flex-col">
+        <div className="p-4 border-b border-line dark:border-line-dark flex items-center justify-between gap-3 bg-surface-secondary/40">
+          <div className="flex items-center gap-2">
+            <span className={`px-2.5 py-0.5 rounded-lg text-xs font-bold border ${sevBadge}`}>
+              {log.severity || 'INFO'}
+            </span>
+            <span className="text-xs font-bold text-ink dark:text-ink-dark">{log.category}</span>
+            <span className="text-[11px] text-ink-muted">• ID: {log._id?.slice(-8)}</span>
           </div>
 
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] font-bold text-ink-muted uppercase">Payload & Metadata</span>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => handleCopy(formatDiagnosticReport(log), 'report')}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-surface dark:bg-surface-dark border border-line dark:border-line-dark text-ink dark:text-ink-dark hover:bg-surface-secondary transition-all cursor-pointer"
+            >
+              {copiedType === 'report' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copiedType === 'report' ? 'Report Copied' : 'Copy Report'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleCopy(JSON.stringify(log, null, 2), 'json')}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-surface dark:bg-surface-dark border border-line dark:border-line-dark text-ink dark:text-ink-dark hover:bg-surface-secondary transition-all cursor-pointer"
+            >
+              {copiedType === 'json' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copiedType === 'json' ? 'JSON Copied' : 'Copy JSON'}</span>
+            </button>
+            {isSuperAdmin && (
               <button
                 type="button"
-                onClick={handleCopy}
-                className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline cursor-pointer"
+                onClick={() => { onDeleteLog(log); onClose(); }}
+                className="p-1.5 rounded-lg text-bad hover:bg-bad/10 transition-all cursor-pointer"
+                title="Delete log"
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-good" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copied ? 'Copied' : 'Copy JSON'}</span>
+                <Trash2 className="w-4 h-4" />
               </button>
-            </div>
-            <pre className="p-3 rounded-xl bg-slate-950 text-emerald-400 font-mono text-[11px] overflow-x-auto max-h-60 border border-slate-800">
-              {JSON.stringify(log.payload || log, null, 2)}
-            </pre>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-ink-muted hover:text-ink hover:bg-surface-secondary transition-all cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
-        <div className="px-5 py-3 border-t border-line dark:border-line-dark flex justify-end">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-semibold bg-surface-secondary text-ink hover:bg-line transition-colors cursor-pointer"
-          >
-            Close
-          </button>
-        </div>
+        <LogDetailBody log={log} copiedType={copiedType} onCopy={handleCopy} />
       </div>
     </div>
   );

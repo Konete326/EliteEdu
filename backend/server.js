@@ -20,6 +20,7 @@ const promotionRoutes = require('./routes/promotionRoutes');
 const signatureRoutes = require('./routes/signatureRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
 const staffAttendanceRoutes = require('./routes/staffAttendanceRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 const auditLogger = require('./middlewares/auditLogger');
 const sanitizePayload = require('./utils/sanitizePayload');
 const seedSuperAdmin = require('./utils/seedSuperAdmin');
@@ -94,6 +95,7 @@ app.use(['/api/promotions', '/promotions'], promotionRoutes);
 app.use(['/api/signatures', '/signatures'], signatureRoutes);
 app.use(['/api/attendance', '/attendance'], attendanceRoutes);
 app.use(['/api/staff-attendance', '/staff-attendance'], staffAttendanceRoutes);
+app.use(['/api/notifications', '/notifications'], notificationRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Server error:', err);

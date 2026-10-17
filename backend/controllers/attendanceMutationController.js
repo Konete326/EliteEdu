@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Student = require('../models/Student');
 const StudentAttendance = require('../models/StudentAttendance');
 const { verifyClassAccess } = require('../utils/attendanceAccessHelper');
+const { createSystemNotification } = require('../utils/notificationDispatcher');
 
 const markBulkAttendance = async (req, res) => {
   try {
@@ -34,6 +35,15 @@ const markBulkAttendance = async (req, res) => {
     }));
 
     await StudentAttendance.bulkWrite(ops);
+    createSystemNotification({
+      school_id: req.user.school_id,
+      title: 'Attendance Sheet Submitted',
+      message: `Attendance for ${records.length} students recorded for date ${date}.`,
+      type: 'Attendance',
+      target_audience: 'Admins',
+      action_url: '/admin/attendance/students',
+      created_by: req.user.id
+    });
     res.status(200).json({ success: true, count: records.length, message: 'Attendance sheet saved successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

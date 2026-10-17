@@ -7,6 +7,7 @@ export const useSystemLogs = (user) => {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(25);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [summary, setSummary] = useState({ totalLogs: 0, networkErrors: 0, consoleErrors: 0, activityLogs: 0 });
@@ -25,7 +26,7 @@ export const useSystemLogs = (user) => {
     try {
       if (!silent) setLoading(true);
       else setRefreshing(true);
-      const params = { page, limit: 25 };
+      const params = { page, limit };
       if (category !== 'ALL') params.category = category;
       if (severity !== 'ALL') params.severity = severity;
       if (search.trim()) params.search = search.trim();
@@ -50,7 +51,7 @@ export const useSystemLogs = (user) => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [page, category, severity, search, selectedSchoolId, user?.role]);
+  }, [page, limit, category, severity, search, selectedSchoolId, user?.role]);
 
   useEffect(() => {
     fetchLogs();
@@ -87,7 +88,7 @@ export const useSystemLogs = (user) => {
   };
 
   return {
-    logs, loading, refreshing, error, page, setPage, totalPages, total, summary,
+    logs, loading, refreshing, error, page, setPage, limit, setLimit, totalPages, total, summary,
     category, setCategory, severity, setSeverity, search, setSearch,
     selectedSchoolId, setSelectedSchoolId, schools, selectedLog, setSelectedLog,
     livePolling, setLivePolling, fetchLogs, deleteLog, clearAllLogs

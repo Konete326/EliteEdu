@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import {
   Building2, ChevronsUpDown, LayoutGrid, MessageCircle,
-  PhoneCall, Bell, Moon, Sun, Download, Play
+  PhoneCall, Moon, Sun, Download, Play
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { usePwaInstall } from '../../hooks/usePwaInstall';
 import { useComingSoon } from '../../context/ComingSoonContext';
+import TopbarNotifications from './TopbarNotifications';
 
 const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
   const { user } = useAuth();
@@ -66,9 +67,7 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
         <PhoneCall className="w-4 h-4" />
       </button>
 
-      <button type="button" onClick={() => openComingSoon({ title: 'Notifications & Alerts', description: 'Real-time alert notifications are coming soon.', badge: 'Notifications' })} className={btnClass} title="Notifications">
-        <Bell className="w-4 h-4" />
-      </button>
+      <TopbarNotifications isColored={isColored} btnClass={btnClass} />
 
       {!isInstalled && (
         <button

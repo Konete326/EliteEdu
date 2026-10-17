@@ -3,6 +3,7 @@ const Student = require('../models/Student');
 const { generateNextGrNumber } = require('../utils/grNumberGenerator');
 const { generateNextFamilyNumber } = require('../utils/familyNumberGenerator');
 const { sanitizeStudentPayload } = require('../utils/sanitizeData');
+const { createSystemNotification } = require('../utils/notificationDispatcher');
 
 const createStudent = async (req, res) => {
   try {
@@ -40,6 +41,16 @@ const createStudent = async (req, res) => {
     };
 
     const student = await Student.create(sanitizeStudentPayload(rawStudent));
+    createSystemNotification({
+      school_id: schoolId,
+      campus_id: finalCampusId,
+      title: 'New Student Enrolled',
+      message: `${name.trim()} (GR: ${finalGr}) enrolled successfully.`,
+      type: 'Admission',
+      target_audience: 'Admins',
+      action_url: '/admin/students',
+      created_by: req.user?._id || req.user?.id
+    });
     res.status(201).json({ success: true, student });
   } catch (error) {
     res.status(500).json({ message: 'Failed to create student', error: error.message });

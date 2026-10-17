@@ -5,18 +5,19 @@ import LogsHeaderBar from '../../components/common/telemetry/LogsHeaderBar';
 import LogsKpiGrid from '../../components/common/telemetry/LogsKpiGrid';
 import LogsFilterBar from '../../components/common/telemetry/LogsFilterBar';
 import LogsTable from '../../components/common/telemetry/LogsTable';
-import LogInspectorPanel from '../../components/common/telemetry/LogInspectorPanel';
+import LogDetailModal from '../../components/common/telemetry/LogDetailModal';
 import LogsModals from '../../components/common/telemetry/LogsModals';
 
 const SystemLogsPage = () => {
   const { user } = useAuth();
   const {
-    logs, loading, refreshing, error, page, setPage, totalPages, total, summary,
+    logs, loading, refreshing, error, page, setPage, limit, setLimit, totalPages, total, summary,
     category, setCategory, severity, setSeverity, search, setSearch,
-    selectedSchoolId, setSelectedSchoolId, schools, selectedLog, setSelectedLog,
+    selectedSchoolId, setSelectedSchoolId, schools,
     livePolling, setLivePolling, fetchLogs, deleteLog, clearAllLogs
   } = useSystemLogs(user);
 
+  const [inspectingLog, setInspectingLog] = useState(null);
   const [logToDelete, setLogToDelete] = useState(null);
   const [showClearModal, setShowClearModal] = useState(false);
 
@@ -72,30 +73,29 @@ const SystemLogsPage = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 items-start">
-        <div className="xl:col-span-7 space-y-4">
-          <LogsTable
-            logs={logs}
-            loading={loading}
-            selectedLog={selectedLog}
-            onSelectLog={setSelectedLog}
-            onDeleteLog={(l) => setLogToDelete(l)}
-            isSuperAdmin={isSuperAdmin}
-            page={page}
-            setPage={setPage}
-            totalPages={totalPages}
-            total={total}
-          />
-        </div>
-
-        <div className="xl:col-span-5">
-          <LogInspectorPanel
-            log={selectedLog}
-            onDeleteLog={(l) => setLogToDelete(l)}
-            isSuperAdmin={isSuperAdmin}
-          />
-        </div>
+      <div className="w-full">
+        <LogsTable
+          logs={logs}
+          loading={loading}
+          isSuperAdmin={isSuperAdmin}
+          onView={(l) => setInspectingLog(l)}
+          onDelete={(l) => setLogToDelete(l)}
+          page={page}
+          setPage={setPage}
+          limit={limit}
+          setLimit={setLimit}
+          totalPages={totalPages}
+          total={total}
+        />
       </div>
+
+      <LogDetailModal
+        isOpen={Boolean(inspectingLog)}
+        onClose={() => setInspectingLog(null)}
+        log={inspectingLog}
+        onDeleteLog={(l) => setLogToDelete(l)}
+        isSuperAdmin={isSuperAdmin}
+      />
 
       <LogsModals
         logToDelete={logToDelete}

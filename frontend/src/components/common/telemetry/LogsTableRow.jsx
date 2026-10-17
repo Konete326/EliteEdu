@@ -1,95 +1,80 @@
-import { useState } from 'react';
-import { Copy, Check, Trash2, Clock } from 'lucide-react';
-import { formatDiagnosticReport, getExpiresInDays } from '../../../utils/logDiagnosticsFormatter';
+import { Eye, Trash2, Copy, Check } from 'lucide-react';
 
-const getCategoryBadge = (cat) => {
-  switch (cat) {
-    case 'NETWORK_ERROR': return 'bg-bad/10 text-bad border-bad/20';
-    case 'CONSOLE_ERROR': return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
-    case 'RUNTIME_ERROR': return 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20';
-    case 'SERVER_ERROR': return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20';
-    default: return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20';
-  }
+const SEVERITY_COLORS = {
+  CRITICAL: 'bg-bad/15 text-bad border-bad/30',
+  ERROR: 'bg-bad/10 text-bad border-bad/20',
+  WARNING: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+  INFO: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20'
 };
 
-const LogsTableRow = ({ log, isSelected, onSelect, onDelete, isSuperAdmin }) => {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = (e) => {
-    e.stopPropagation();
-    const text = formatDiagnosticReport(log);
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleDelete = (e) => {
-    e.stopPropagation();
-    onDelete(log);
-  };
+const LogsTableRow = ({ log, onView, onDelete, onCopy, isCopied, isSuperAdmin }) => {
+  const sevBadge = SEVERITY_COLORS[log.severity] || SEVERITY_COLORS.INFO;
 
   return (
     <tr
-      onClick={() => onSelect(log)}
-      className={`border-b border-line/60 dark:border-line-dark/60 text-xs transition-colors cursor-pointer select-none ${
-        isSelected
-          ? 'bg-primary/5 dark:bg-primary/10 border-l-4 border-l-primary'
-          : 'hover:bg-surface-secondary/40 dark:hover:bg-surface-secondary-dark/30'
-      }`}
+      onClick={() => onView(log)}
+      className="hover:bg-surface-secondary/40 dark:hover:bg-surface-secondary-dark/40 transition-colors cursor-pointer group"
     >
-      <td className="py-2.5 px-3 whitespace-nowrap">
-        <div className="font-semibold text-ink dark:text-ink-dark">
-          {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-        </div>
-        <div className="text-[10px] text-ink-muted dark:text-ink-muted-dark flex items-center gap-1 mt-0.5">
-          <Clock className="w-2.5 h-2.5 text-primary" />
-          <span>{getExpiresInDays(log.createdAt)}</span>
-        </div>
-      </td>
-
-      <td className="py-2.5 px-3 whitespace-nowrap">
-        <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-bold border ${getCategoryBadge(log.category)}`}>
-          {log.category.replace('_', ' ')}
-        </span>
-        <div className="text-[10px] text-ink-muted dark:text-ink-muted-dark truncate max-w-[120px] mt-0.5">
-          {log.school_name || 'Global'}
+      <td className="py-3 px-4 whitespace-nowrap">
+        <div className="flex items-center gap-1.5">
+          <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${sevBadge}`}>
+            {log.severity || 'INFO'}
+          </span>
+          <span className="text-[11px] font-medium text-ink-muted">{log.category}</span>
         </div>
       </td>
-
-      <td className="py-2.5 px-3 whitespace-nowrap">
-        <div className="font-medium text-ink dark:text-ink-dark truncate max-w-[110px]">
-          {log.user_name}
-        </div>
-        <span className="text-[10px] text-ink-muted dark:text-ink-muted-dark">
-          {log.user_role}
-        </span>
+      <td className="py-3 px-4 whitespace-nowrap font-mono text-[11px]">
+        <span className="font-bold text-ink dark:text-ink-dark">{log.method || 'GET'}</span>
+        {log.status_code && (
+          <span className={`ml-1.5 px-1.5 py-0.2 rounded text-[10px] font-bold ${log.status_code >= 400 ? 'bg-bad/15 text-bad' : 'bg-emerald-500/15 text-emerald-600'}`}>
+            {log.status_code}
+          </span>
+        )}
       </td>
-
-      <td className="py-2.5 px-3 max-w-[180px]">
-        <div className="text-[11px] font-medium text-primary dark:text-primary-dark truncate" title={log.last_clicked_element}>
-          {log.last_clicked_element || 'Direct / Initial Load'}
-        </div>
-        <div className="text-ink-sub dark:text-ink-sub-dark truncate text-[11px] mt-0.5" title={log.message}>
-          {log.message}
-        </div>
+      <td className="py-3 px-4 max-w-sm font-medium text-ink dark:text-ink-dark truncate" title={log.message}>
+        <div>{log.message}</div>
+        {log.last_clicked_element && (
+          <div className="text-[10px] text-ink-muted truncate font-normal">Action: {log.last_clicked_element}</div>
+        )}
       </td>
-
-      <td className="py-2.5 px-3 text-right whitespace-nowrap">
-        <div className="flex items-center justify-end gap-1">
+      <td className="py-3 px-4 whitespace-nowrap">
+        <div className="font-semibold text-ink dark:text-ink-dark">{log.user_name || 'Anonymous'}</div>
+        <div className="text-[10px] text-ink-muted">{log.school_name || 'Global'}</div>
+      </td>
+      <td className="py-3 px-4 max-w-[200px] truncate text-ink-muted font-mono text-[11px]" title={log.endpoint || log.page_url}>
+        {log.endpoint || log.page_url || '—'}
+      </td>
+      <td className="py-3 px-4 whitespace-nowrap text-ink-muted text-[11px]">
+        {new Date(log.createdAt).toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' })}
+      </td>
+      <td className="py-3 px-4 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
+        <div className="inline-flex items-center gap-1">
           <button
             type="button"
-            onClick={handleCopy}
-            className="p-1.5 rounded-lg text-ink-muted hover:text-ink dark:hover:text-ink-dark hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark transition-all cursor-pointer"
-            title="Copy diagnostic report"
+            onClick={(e) => onCopy(e, log)}
+            className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+              isCopied
+                ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+                : 'border-transparent hover:border-line hover:bg-surface-secondary text-ink-muted hover:text-ink'
+            }`}
+            title={isCopied ? 'Copied to clipboard' : 'Copy diagnostic error'}
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+            {isCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+          </button>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onView(log); }}
+            className="p-1.5 rounded-lg border border-transparent hover:border-line hover:bg-surface-secondary text-ink-muted hover:text-primary transition-all cursor-pointer"
+            title="View full log details"
+          >
+            <Eye className="w-3.5 h-3.5" />
           </button>
           {isSuperAdmin && (
             <button
               type="button"
-              onClick={handleDelete}
-              className="p-1.5 rounded-lg text-bad hover:bg-bad/10 transition-all cursor-pointer"
-              title="Delete log"
+              onClick={(e) => { e.stopPropagation(); onDelete(log); }}
+              className="p-1.5 rounded-lg border border-transparent hover:border-bad/20 hover:bg-bad/10 text-ink-muted hover:text-bad transition-all cursor-pointer"
+              title="Delete log entry"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>

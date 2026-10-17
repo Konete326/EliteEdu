@@ -1,6 +1,7 @@
 const Student = require('../models/Student');
 const Grade = require('../models/Grade');
 const PromotionLog = require('../models/PromotionLog');
+const { createSystemNotification } = require('../utils/notificationDispatcher');
 
 const promoteStudents = async (req, res) => {
   try {
@@ -17,23 +18,16 @@ const promoteStudents = async (req, res) => {
     if (!target_grade_id) {
       return res.status(400).json({ success: false, message: 'Target grade is required' });
     }
-
     const [sourceGrade, targetGrade] = await Promise.all([
       source_grade_id ? Grade.findById(source_grade_id).lean() : null,
       Grade.findById(target_grade_id).lean()
     ]);
-
-    if (!targetGrade) {
-      return res.status(404).json({ success: false, message: 'Target grade not found' });
-    }
+    if (!targetGrade) return res.status(404).json({ success: false, message: 'Target grade not found' });
 
     let toPromoteIds = [];
     let toRetainIds = [];
-
     if (mode === 'Auto_Criteria') {
-      if (!source_grade_id) {
-        return res.status(400).json({ success: false, message: 'Source grade required for auto promotion' });
-      }
+      if (!source_grade_id) return res.status(400).json({ success: false, message: 'Source grade required for auto promotion' });
       const pool = await Student.find({ school_id: schoolId, current_grade: source_grade_id, status: 'Active' });
       pool.forEach((s) => {
         const score = typeof s.latest_exam_percentage === 'number' ? s.latest_exam_percentage : 70;
@@ -91,6 +85,18 @@ const promoteStudents = async (req, res) => {
       retained_count: toRetainIds.length,
       student_ids: toPromoteIds,
       promoted_by: req.user.id
+    });
+
+    createSystemNotification({
+      school_id: schoolId,
+      campus_id: targetGrade.campus_id || null,
+      title: 'Students Promoted',
+      message: `${toPromoteIds.length} students promoted to ${toName} (${target_section}).`,
+      type: 'Promotion',
+      priority: 'Important',
+      target_audience: 'All',
+      action_url: '/admin/students/promote',
+      created_by: req.user.id
     });
 
     return res.status(200).json({
