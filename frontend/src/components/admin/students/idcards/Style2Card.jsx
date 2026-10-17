@@ -5,8 +5,8 @@ const Style2Card = ({ student, config = {} }) => {
   const school = student?.school_id || {};
   const campusName = school.name || campus.name || 'ELITE EDUCATIONAL SYSTEM';
   const logo = school.logo_url || campus.logo;
-  const grNumber = student?.gr_number || '0000';
-  const rawGrade = student?.current_grade?.name || '1';
+  const grNumber = student?.gr_number || '—';
+  const rawGrade = student?.current_grade?.name || 'Grade';
   const cleanGrade = rawGrade.replace(/^class\s*/i, '');
   const className = `${cleanGrade}${student?.current_section ? ` (${student.current_section})` : ''}`;
   const doa = student?.admission_date

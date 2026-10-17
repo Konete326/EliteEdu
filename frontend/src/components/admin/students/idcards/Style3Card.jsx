@@ -4,10 +4,10 @@ import { renderSvgBarcode, renderSvgQrCode, generateStudentVerifyUrl } from '../
 const Style3Card = ({ student, config = {} }) => {
   const campus = student?.campus_id || {};
   const school = student?.school_id || {};
-  const campusName = school.name || campus.name || 'APWA GBSS J-1';
+  const campusName = school.name || campus.name || 'INSTITUTION';
   const logo = school.logo_url || campus.logo;
-  const grNumber = student?.gr_number || '0000';
-  const rawGrade = student?.current_grade?.name || '1';
+  const grNumber = student?.gr_number || '—';
+  const rawGrade = student?.current_grade?.name || 'Grade';
   const cleanGrade = rawGrade.replace(/^class\s*/i, '');
   const className = `${cleanGrade}${student?.current_section ? `-${student.current_section}` : ''}`;
   const doa = student?.admission_date

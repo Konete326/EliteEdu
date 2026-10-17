@@ -10,11 +10,11 @@ const generateStudentQrPng = async (student, baseUrl = 'https://elitedev-edu.ver
       n: student.name,
       f: student.father_name || '',
       g: student.gr_number || '',
-      cl: student.current_grade?.name || 'Grade 10',
-      sec: student.current_section || 'A',
-      bg: student.blood_group || 'O+',
+      cl: student.current_grade?.name || '',
+      sec: student.current_section || '',
+      bg: student.blood_group || '',
       em: student.emergency_contact_number || student.contact_number || '',
-      ca: student.campus_id?.name || 'Main Campus',
+      ca: student.campus_id?.name || '',
       st: student.status || 'Active'
     };
     const signedOffline = createSignedOfflinePayload(payload);
@@ -29,7 +29,7 @@ const drawStudentCardNode = (page, coords, student, fonts, qrImage, options = {}
   const { x, y, width, height } = coords;
   const { bold, regular } = fonts;
   const campus = student?.campus_id || {};
-  const schoolName = (options?.school?.name || campus?.name || 'ELITE EDU HIGHER SECONDARY SCHOOL').toUpperCase();
+  const schoolName = (options?.school?.name || campus?.name || '—').toUpperCase();
   const slogan = (options?.school?.slogan || campus?.motto || 'Strive for Excellence').toUpperCase();
 
   page.drawRectangle({ x, y, width, height, color: rgb(1, 1, 1), borderColor: rgb(0.8, 0.8, 0.8), borderWidth: 0.8 });
@@ -49,10 +49,11 @@ const drawStudentCardNode = (page, coords, student, fonts, qrImage, options = {}
   tY -= 10;
   page.drawText(`Father: ${student?.father_name || '—'}`, { x: tX, y: tY, size: 6.5, font: regular, color: rgb(0.25, 0.25, 0.25) });
   tY -= 10;
-  const grName = student?.current_grade?.name || 'Grade 10';
-  page.drawText(`Class: ${grName.replace(/^class\s*/i, '')} (${student?.current_section || 'A'})`, { x: tX, y: tY, size: 6.5, font: bold, color: rgb(0.08, 0.25, 0.5) });
+  const grName = student?.current_grade?.name || '—';
+  const secName = student?.current_section ? ` (${student.current_section})` : '';
+  page.drawText(`Class: ${grName.replace(/^class\s*/i, '')}${secName}`, { x: tX, y: tY, size: 6.5, font: bold, color: rgb(0.08, 0.25, 0.5) });
   tY -= 10;
-  page.drawText(`GR #: ${student?.gr_number || '1001'}`, { x: tX, y: tY, size: 6.5, font: bold, color: rgb(0.1, 0.1, 0.1) });
+  page.drawText(`GR #: ${student?.gr_number || '—'}`, { x: tX, y: tY, size: 6.5, font: bold, color: rgb(0.1, 0.1, 0.1) });
   tY -= 10;
   page.drawText(`Emergency: ${student?.emergency_contact_number || student?.contact_number || '—'}`, { x: tX, y: tY, size: 6, font: regular, color: rgb(0.3, 0.3, 0.3) });
 

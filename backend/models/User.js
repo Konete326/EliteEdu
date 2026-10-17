@@ -31,15 +31,7 @@ const userSchema = new mongoose.Schema(
     is_coordinator: { type: Boolean, default: false },
     employee_code: { type: String, trim: true, default: '' },
     department: { type: String, trim: true, default: 'Academics' },
-    designation: {
-      type: String,
-      enum: [
-        'PST', 'JEST', 'JST', 'HST', 'SST', 'HEADMASTER', 'INCHARGE_HEADMASTER',
-        'SECTION_INCHARGE', 'AT', 'OT', 'DT', 'SLT', 'SS', 'NAIB_QASID',
-        'MALI', 'CHOWKIDAR', 'SWEEPER', 'PEON', 'OTHER'
-      ],
-      default: 'PST'
-    },
+    designation: { type: String, trim: true, default: 'Staff' },
     bps_grade: { type: String, trim: true, default: '' },
     personal_id: { type: String, trim: true, default: '' },
     qualification: { type: String, trim: true, default: '' },

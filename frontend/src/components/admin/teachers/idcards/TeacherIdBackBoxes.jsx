@@ -1,5 +1,9 @@
 export const formatCnicArray = (cnic) => {
-  const digits = String(cnic || '4220198632893').replace(/\D/g, '').padEnd(13, ' ');
+  const raw = String(cnic || '').replace(/\D/g, '');
+  if (!raw) {
+    return [' ', ' ', ' ', ' ', ' ', '-', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '-', ' '];
+  }
+  const digits = raw.padEnd(13, ' ');
   return [
     digits[0], digits[1], digits[2], digits[3], digits[4],
     '-',
@@ -10,8 +14,9 @@ export const formatCnicArray = (cnic) => {
 };
 
 export const formatPersonalIdArray = (pid) => {
-  const digits = String(pid || '11034103').replace(/\D/g, '').slice(0, 8).padEnd(8, ' ');
-  return digits.split('');
+  const raw = String(pid || '').replace(/\D/g, '').slice(0, 8);
+  if (!raw) return Array(8).fill(' ');
+  return raw.padEnd(8, ' ').split('');
 };
 
 const TeacherIdBackBoxes = ({ cnic, personalId, dob }) => {

@@ -44,13 +44,13 @@ const verifyStudent = async (req, res, next) => {
         emergency_contact_no: emergencyPhone
       },
       institution: {
-        school_name: student.school_id?.name || 'Elite Educational System',
-        campus_name: student.campus_id?.name || student.school_id?.name || 'Campus APWA GBSS J-1',
-        campus_address: student.campus_id?.address || 'Area Korangi, Karachi',
-        campus_phone: student.campus_id?.contact_number || '03422667599',
-        campus_website: student.campus_id?.website || 'https://elitedev-edu.vercel.app',
-        semis_code: student.campus_id?.semis_code || '408110114',
-        area: student.campus_id?.area || 'KORANGI'
+        school_name: student.school_id?.name || '—',
+        campus_name: student.campus_id?.name || student.school_id?.name || '—',
+        campus_address: student.campus_id?.address || '—',
+        campus_phone: student.campus_id?.contact_number || '—',
+        campus_website: student.campus_id?.website || '',
+        semis_code: student.campus_id?.semis_code || '—',
+        area: student.campus_id?.area || '—'
       }
     };
 

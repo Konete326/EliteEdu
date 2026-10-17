@@ -4,13 +4,13 @@ import { renderSvgBarcode, renderSvgQrCode, generateStudentVerifyUrl } from '../
 const DefaultCard = ({ student, config = {} }) => {
   const campus = student?.campus_id || {};
   const school = student?.school_id || {};
-  const campusName = school.name || campus.name || 'CAMPUS APWA GBSS J-1';
+  const campusName = school.name || campus.name || 'INSTITUTION';
   const logo = school.logo_url || campus.logo;
-  const area = campus.area ? `AREA ${campus.area.toUpperCase()} SEMIS` : 'AREA KORANGI SEMIS';
-  const semis = campus.semis_code || school.affiliation_number || '408110114';
+  const area = campus.area ? `AREA ${campus.area.toUpperCase()} SEMIS` : '';
+  const semis = campus.semis_code || school.affiliation_number || '';
   const motto = config.motto || school.slogan || '';
-  const grNumber = student?.gr_number || '0000';
-  const rawGrade = student?.current_grade?.name || 'Grade-1';
+  const grNumber = student?.gr_number || '—';
+  const rawGrade = student?.current_grade?.name || 'Grade';
   const cleanGrade = rawGrade.replace(/^class\s*/i, '');
   const className = `${cleanGrade}${student?.current_section ? ` (${student.current_section})` : ''}`;
   const doa = student?.admission_date

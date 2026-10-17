@@ -55,12 +55,13 @@ export const drawStudentCard = (page, coords, student, fonts, qrImage) => {
     x: textX, y: textY, size: 6.5, font: regular, color: rgb(0.25, 0.25, 0.25)
   });
   textY -= 10;
-  const gradeName = student?.current_grade?.name || student?.grade_name || 'Grade 10';
-  page.drawText(`Class: ${gradeName.replace(/^class\s*/i, '')} (${student?.current_section || 'A'})`, {
+  const gradeName = student?.current_grade?.name || student?.grade_name || '—';
+  const secName = student?.current_section ? ` (${student.current_section})` : '';
+  page.drawText(`Class: ${gradeName.replace(/^class\s*/i, '')}${secName}`, {
     x: textX, y: textY, size: 6.5, font: bold, color: rgb(0.08, 0.25, 0.5)
   });
   textY -= 10;
-  page.drawText(`GR #: ${student?.gr_number || '1001'}`, {
+  page.drawText(`GR #: ${student?.gr_number || '—'}`, {
     x: textX, y: textY, size: 6.5, font: bold, color: rgb(0.1, 0.1, 0.1)
   });
   textY -= 10;

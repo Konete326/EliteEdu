@@ -5,7 +5,9 @@ import TeacherCardEditFields from './TeacherCardEditFields';
 
 const TeacherCardEditModal = ({ isOpen, teacher, onClose, onSaveSuccess }) => {
   const [formData, setFormData] = useState({
-    blood_group: 'O+',
+    cnic: '',
+    blood_group: '',
+    designation: '',
     semis_code: '',
     vendor_no: '',
     sed_no: '',
@@ -20,7 +22,9 @@ const TeacherCardEditModal = ({ isOpen, teacher, onClose, onSaveSuccess }) => {
   useEffect(() => {
     if (teacher) {
       setFormData({
-        blood_group: teacher.blood_group || 'O+',
+        cnic: teacher.cnic || '',
+        blood_group: teacher.blood_group || '',
+        designation: teacher.designation || '',
         semis_code: teacher.semis_code || '',
         vendor_no: teacher.vendor_no || '',
         sed_no: teacher.sed_no || '',

@@ -13,7 +13,7 @@ export const drawTeacherCardBack = (page, coords, teacher, fonts, qrImage, style
   });
 
   page.drawText('C.N.I.C:', { x: x + 8, y: y + height - 16, size: 5.5, font: bold, color: rgb(0.2, 0.2, 0.2) });
-  const cnicStr = (teacher?.cnic || '42201-1234567-1').padEnd(15, ' ');
+  const cnicStr = teacher?.cnic ? String(teacher.cnic).padEnd(15, ' ') : '';
   for (let i = 0; i < 15; i++) {
     const boxX = x + 38 + i * 8.5;
     page.drawRectangle({
@@ -21,13 +21,13 @@ export const drawTeacherCardBack = (page, coords, teacher, fonts, qrImage, style
       borderColor: rgb(0.65, 0.65, 0.65), borderWidth: 0.5, color: rgb(0.98, 0.98, 0.99)
     });
     const char = cnicStr[i] || '';
-    if (char) {
+    if (char && char !== ' ') {
       page.drawText(char, { x: boxX + 2, y: y + height - 18, size: 5.5, font: mono, color: rgb(0.1, 0.1, 0.1) });
     }
   }
 
   page.drawText('Pers #:', { x: x + 8, y: y + height - 31, size: 5.5, font: bold, color: rgb(0.2, 0.2, 0.2) });
-  const persStr = (teacher?.personal_id || teacher?.employee_code || '11034103').padEnd(8, ' ');
+  const persStr = (teacher?.personal_id || teacher?.employee_code) ? String(teacher.personal_id || teacher.employee_code).slice(0, 8).padEnd(8, ' ') : '';
   for (let i = 0; i < 8; i++) {
     const boxX = x + 38 + i * 8.5;
     page.drawRectangle({
@@ -35,16 +35,16 @@ export const drawTeacherCardBack = (page, coords, teacher, fonts, qrImage, style
       borderColor: rgb(0.65, 0.65, 0.65), borderWidth: 0.5, color: rgb(0.98, 0.98, 0.99)
     });
     const char = persStr[i] || '';
-    if (char) {
+    if (char && char !== ' ') {
       page.drawText(char, { x: boxX + 2, y: y + height - 32, size: 5.5, font: mono, color: rgb(0.1, 0.1, 0.1) });
     }
   }
 
-  const dobStr = teacher?.dob ? new Date(teacher.dob).toLocaleDateString('en-GB') : '15-08-1988';
+  const dobStr = teacher?.dob ? new Date(teacher.dob).toLocaleDateString('en-GB') : '—';
   page.drawText(`D.O.B: ${dobStr}`, { x: x + 120, y: y + height - 31, size: 5.5, font: bold, color: rgb(0.2, 0.2, 0.2) });
 
   const apptDate = teacher?.appointment_date || teacher?.joining_date;
-  const apptStr = apptDate ? new Date(apptDate).toLocaleDateString('en-GB') : '01-04-2015';
+  const apptStr = apptDate ? new Date(apptDate).toLocaleDateString('en-GB') : '—';
   let curY = y + height - 44;
 
   const drawRow = (label, val, highlightColor = rgb(0.1, 0.1, 0.1)) => {
@@ -54,12 +54,13 @@ export const drawTeacherCardBack = (page, coords, teacher, fonts, qrImage, style
     curY -= 10;
   };
 
+  const emailVal = teacher?.email && !teacher.email.includes('@school.local') ? teacher.email : '—';
   drawRow('Date of Appt:', apptStr);
-  drawRow('Place of Posting:', campus.name || 'G.B.S.S Apwa, J-1 Area, Korangi Karachi');
-  drawRow('SEMIS / Vendor:', `${teacher?.semis_code || '408110114'}  •  Vendor: ${teacher?.vendor_no || '1045231'}`);
-  drawRow('Address:', teacher?.current_address || campus.address || 'Karachi, Sindh');
-  drawRow('Phone / Blood:', `${teacher?.contact_number || '03422667599'}  •  Blood: ${teacher?.blood_group || 'O+'}`, rgb(0.8, 0.1, 0.1));
-  drawRow('E-mail / SED:', `${teacher?.email || 'staff@school.local'}  •  SED: ${teacher?.sed_no || 'SED-9921'}`);
+  drawRow('Place of Posting:', campus.name || '—');
+  drawRow('SEMIS / Vendor:', `${teacher?.semis_code || campus?.semis_code || '—'}  •  Vendor: ${teacher?.vendor_no || '—'}`);
+  drawRow('Address:', teacher?.current_address || campus.address || '—');
+  drawRow('Phone / Blood:', `${teacher?.contact_number || '—'}  •  Blood: ${teacher?.blood_group || '—'}`, teacher?.blood_group ? rgb(0.8, 0.1, 0.1) : rgb(0.1, 0.1, 0.1));
+  drawRow('E-mail / SED:', `${emailVal}  •  SED: ${teacher?.sed_no || '—'}`);
 
   if (qrImage) {
     page.drawImage(qrImage, { x: x + 205, y: y + 30, width: 44, height: 44 });

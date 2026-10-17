@@ -9,12 +9,35 @@ const TeacherCardEditFields = ({ formData, setFormData }) => {
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3 text-xs">
         <div>
+          <label className="block font-semibold mb-1">C.N.I.C # (13 Digits)</label>
+          <input
+            type="text"
+            value={formData.cnic || ''}
+            onChange={(e) => handleChange('cnic', e.target.value)}
+            placeholder="e.g. 42201-1234567-1"
+            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 outline-none font-mono"
+          />
+        </div>
+
+        <div>
+          <label className="block font-semibold mb-1">Designation</label>
+          <input
+            type="text"
+            value={formData.designation || ''}
+            onChange={(e) => handleChange('designation', e.target.value)}
+            placeholder="e.g. Teacher, Fee Collector, PST"
+            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 outline-none"
+          />
+        </div>
+
+        <div>
           <label className="block font-semibold mb-1">Blood Group (Optional)</label>
           <select
-            value={formData.blood_group}
+            value={formData.blood_group || ''}
             onChange={(e) => handleChange('blood_group', e.target.value)}
             className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 outline-none"
           >
+            <option value="">Not Specified</option>
             {bloodGroups.map((bg) => (
               <option key={bg} value={bg}>{bg}</option>
             ))}
@@ -25,9 +48,9 @@ const TeacherCardEditFields = ({ formData, setFormData }) => {
           <label className="block font-semibold mb-1">Personal ID # (8 Digits)</label>
           <input
             type="text"
-            value={formData.personal_id}
+            value={formData.personal_id || ''}
             onChange={(e) => handleChange('personal_id', e.target.value)}
-            placeholder="11034103"
+            placeholder="e.g. 11034103"
             className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 outline-none font-mono"
           />
         </div>
@@ -36,9 +59,9 @@ const TeacherCardEditFields = ({ formData, setFormData }) => {
           <label className="block font-semibold mb-1">SEMIS Code (Optional)</label>
           <input
             type="text"
-            value={formData.semis_code}
+            value={formData.semis_code || ''}
             onChange={(e) => handleChange('semis_code', e.target.value)}
-            placeholder="408110114"
+            placeholder="e.g. 408110114"
             className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 outline-none font-mono"
           />
         </div>
@@ -47,9 +70,9 @@ const TeacherCardEditFields = ({ formData, setFormData }) => {
           <label className="block font-semibold mb-1">Vendor No (Optional)</label>
           <input
             type="text"
-            value={formData.vendor_no}
+            value={formData.vendor_no || ''}
             onChange={(e) => handleChange('vendor_no', e.target.value)}
-            placeholder="1045231"
+            placeholder="e.g. 1045231"
             className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 outline-none font-mono"
           />
         </div>
@@ -58,9 +81,9 @@ const TeacherCardEditFields = ({ formData, setFormData }) => {
           <label className="block font-semibold mb-1">SED # (Optional)</label>
           <input
             type="text"
-            value={formData.sed_no}
+            value={formData.sed_no || ''}
             onChange={(e) => handleChange('sed_no', e.target.value)}
-            placeholder="SED-9921"
+            placeholder="e.g. SED-9921"
             className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 outline-none"
           />
         </div>
@@ -69,7 +92,7 @@ const TeacherCardEditFields = ({ formData, setFormData }) => {
           <label className="block font-semibold mb-1">Father / Spouse Name</label>
           <input
             type="text"
-            value={formData.father_name}
+            value={formData.father_name || ''}
             onChange={(e) => handleChange('father_name', e.target.value)}
             placeholder="Father or Husband name"
             className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 outline-none"
@@ -81,9 +104,9 @@ const TeacherCardEditFields = ({ formData, setFormData }) => {
         <label className="block font-semibold mb-1">Current Posting Address</label>
         <input
           type="text"
-          value={formData.current_address}
+          value={formData.current_address || ''}
           onChange={(e) => handleChange('current_address', e.target.value)}
-          placeholder="e.g. Korangi 4, Karachi"
+          placeholder="e.g. Campus Address, City"
           className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 outline-none"
         />
       </div>

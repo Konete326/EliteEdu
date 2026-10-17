@@ -8,7 +8,7 @@ const TeacherServiceCardBack = ({ teacher, config = {}, style = 'GovtSindh' }) =
   const verifyUrl = generateStaffVerifyUrl(teacher);
 
   const bannerColor = style === 'Institutional' ? 'bg-slate-900 text-white' : 'bg-emerald-800 text-white';
-  const dobStr = teacher?.dob ? new Date(teacher.dob).toLocaleDateString('en-GB').replace(/\//g, '-') : 'DD-MM-YYYY';
+  const dobStr = teacher?.dob ? new Date(teacher.dob).toLocaleDateString('en-GB').replace(/\//g, '-') : '—';
   const apptDateStr = teacher?.appointment_date || teacher?.joining_date
     ? new Date(teacher.appointment_date || teacher.joining_date).toLocaleDateString('en-GB').replace(/\//g, '-')
     : '—';
@@ -27,13 +27,13 @@ const TeacherServiceCardBack = ({ teacher, config = {}, style = 'GovtSindh' }) =
 
             <div className="flex items-baseline gap-1">
               <span className="font-bold text-gray-600 dark:text-gray-400 text-[6.5px] uppercase shrink-0">Place of Posting:</span>
-              <span className="border-b border-gray-300 flex-1 truncate font-semibold">{campus.name || 'G.B.S.S Apwa, J-1 Area, Korangi Karachi'}</span>
+              <span className="border-b border-gray-300 flex-1 truncate font-semibold">{campus.name || school.name || '—'}</span>
             </div>
 
             <div className="grid grid-cols-2 gap-1">
               <div className="flex items-baseline gap-1">
                 <span className="font-bold text-gray-600 dark:text-gray-400 text-[6.5px] uppercase shrink-0">SEMIS Code:</span>
-                <span className="border-b border-gray-300 flex-1 truncate font-mono">{teacher.semis_code || campus.semis_code || '408110114'}</span>
+                <span className="border-b border-gray-300 flex-1 truncate font-mono">{teacher.semis_code || campus.semis_code || '—'}</span>
               </div>
               <div className="flex items-baseline gap-1">
                 <span className="font-bold text-gray-600 dark:text-gray-400 text-[6.5px] uppercase shrink-0">Vendor No:</span>
@@ -43,7 +43,7 @@ const TeacherServiceCardBack = ({ teacher, config = {}, style = 'GovtSindh' }) =
 
             <div className="flex items-baseline gap-1">
               <span className="font-bold text-gray-600 dark:text-gray-400 text-[6.5px] uppercase shrink-0">Address:</span>
-              <span className="border-b border-gray-300 flex-1 truncate font-medium">{teacher.current_address || campus.address || 'Karachi, Sindh'}</span>
+              <span className="border-b border-gray-300 flex-1 truncate font-medium">{teacher.current_address || campus.address || '—'}</span>
             </div>
 
             <div className="grid grid-cols-2 gap-1">
@@ -53,7 +53,7 @@ const TeacherServiceCardBack = ({ teacher, config = {}, style = 'GovtSindh' }) =
               </div>
               <div className="flex items-baseline gap-1">
                 <span className="font-bold text-gray-600 dark:text-gray-400 text-[6.5px] uppercase shrink-0">Blood Group:</span>
-                <span className="border-b border-gray-300 flex-1 truncate font-bold text-red-600">{teacher.blood_group || 'O+'}</span>
+                <span className={`border-b border-gray-300 flex-1 truncate font-bold ${teacher.blood_group ? 'text-red-600' : ''}`}>{teacher.blood_group || '—'}</span>
               </div>
             </div>
 
