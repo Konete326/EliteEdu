@@ -64,3 +64,5 @@ export const usePersistentFormDraft = (key, initialValue = {}) => {
   };
   return result;
 };
+
+export default usePersistentFormDraft;

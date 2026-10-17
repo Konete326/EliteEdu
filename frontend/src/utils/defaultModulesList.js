@@ -22,7 +22,12 @@ export const DEFAULT_MODULES = [
   { module_key: 'attendance_reports', module_name: 'Attendance Reports', category: 'Operations' },
   { module_key: 'exam_reports', module_name: 'Exam Reports', category: 'Examination' },
   { module_key: 'control_panel', module_name: 'Control Panel & Settings', category: 'Administration' },
-  { module_key: 'user_management', module_name: 'User & Role Management', category: 'Administration' }
+  { module_key: 'user_management', module_name: 'User & Role Management', category: 'Administration' },
+  { module_key: 'crm', module_name: 'CRM & Admissions', category: 'CRM' },
+  { module_key: 'crm_inquiries', module_name: 'Inquiries & Leads', category: 'CRM' },
+  { module_key: 'crm_pipeline', module_name: 'Admissions Pipeline', category: 'CRM' },
+  { module_key: 'crm_followups', module_name: 'Lead Follow-ups', category: 'CRM' },
+  { module_key: 'crm_analytics', module_name: 'Lead Analytics', category: 'CRM' }
 ];
 
 export const getInitialPermissions = (rolePermissions = []) => {

@@ -30,6 +30,7 @@ const reportRoutes = require('./routes/reportRoutes');
 const certificateRoutes = require('./routes/certificateRoutes');
 const leaveRequestRoutes = require('./routes/leaveRequestRoutes');
 const attendanceReportRoutes = require('./routes/attendanceReportRoutes');
+const crmRoutes = require('./routes/crmRoutes');
 const auditLogger = require('./middlewares/auditLogger');
 const sanitizePayload = require('./utils/sanitizePayload');
 const seedSuperAdmin = require('./utils/seedSuperAdmin');
@@ -98,6 +99,7 @@ app.use(['/api/reports', '/reports'], reportRoutes);
 app.use(['/api/certificates', '/certificates'], certificateRoutes);
 app.use(['/api/leaves', '/leaves'], leaveRequestRoutes);
 app.use(['/api/attendance-reports', '/attendance-reports'], attendanceReportRoutes);
+app.use(['/api/crm', '/crm'], crmRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Server error:', err);

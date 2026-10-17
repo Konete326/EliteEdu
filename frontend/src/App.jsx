@@ -33,7 +33,8 @@ import {
   ManageClassTestsPage, ClassTestResultsPage, FeeManagementPage, ExamCategoriesPage, RemarksPolicyPage,
   ManageRemarksPage, DatesheetsListPage, NewDatesheetPage, MarkSheetsPage, QuestionPapersPage,
   MasterReportsHubPage, StudentAdmissionReportPage, ParentContactReportPage, StudentReportCardPage,
-  CertificatesPage, LeaveRequestPage, AttendanceReportPage, ComingSoonPage
+  CertificatesPage, LeaveRequestPage, AttendanceReportPage,
+  CrmLeadsPage, CrmLeadFormPage, CrmPipelinePage, CrmFollowUpsPage, CrmAnalyticsPage, ComingSoonPage
 } from './pages/admin';
 
 const adminDynamicRoutes = getAllAdminRoutes();
@@ -105,6 +106,13 @@ function App() {
                     <Route path="/admin/reports/parent-info" element={<ParentContactReportPage />} />
                     <Route path="/admin/certificates" element={<CertificatesPage />} />
                     <Route path="/admin/certificates/templates" element={<CertificatesPage defaultTab="templates" />} />
+                    <Route path="/admin/crm/inquiries" element={<CrmLeadsPage />} />
+                    <Route path="/admin/crm/leads" element={<CrmLeadsPage />} />
+                    <Route path="/admin/crm/inquiries/new" element={<CrmLeadFormPage />} />
+                    <Route path="/admin/crm/inquiries/:id/edit" element={<CrmLeadFormPage />} />
+                    <Route path="/admin/crm/admissions" element={<CrmPipelinePage />} />
+                    <Route path="/admin/crm/follow-ups" element={<CrmFollowUpsPage />} />
+                    <Route path="/admin/crm/analytics" element={<CrmAnalyticsPage />} />
                   </Route>
                   <Route element={<ProtectedRoute allowedRoles={['Admin']} requiredModule="fees" />}>
                     <Route path="/admin/fees" element={<FeeManagementPage initialTab="collection" />} />

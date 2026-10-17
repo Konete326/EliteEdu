@@ -4,40 +4,23 @@ const ALL_APP_KEYS = [
   'salary', 'events', 'complaints', 'feedback', 'counseling',
   'lost_and_found', 'resources', 'my_profile', 'update_picture',
   'student_promotion', 'class_tests', 'question_papers', 'certificates',
-  'reports', 'student_reports', 'parent_reports', 'report_cards', 'attendance_reports', 'exam_reports', 'leave_requests'
+  'reports', 'student_reports', 'parent_reports', 'report_cards', 'attendance_reports', 'exam_reports', 'leave_requests',
+  'crm', 'crm_inquiries', 'crm_pipeline', 'crm_followups', 'crm_analytics'
 ];
 
 const MODULE_KEY_MAP = {
-  attendance: ['attendance'],
-  homework: ['homework'],
-  examination: ['exams', 'examination'],
-  datesheet: ['exams', 'datesheet'],
-  quizzes: ['exams', 'quizzes'],
-  students: ['students'],
-  student_promotion: ['student_promotion', 'students'],
-  class_tests: ['class_tests', 'exams'],
-  question_papers: ['question_papers', 'exams'],
-  certificates: ['certificates'],
-  timetable: ['timetable'],
-  lectures: ['lectures'],
-  online_classes: ['online_classes'],
-  planner: ['planner'],
-  salary: ['salary', 'fees'],
-  events: ['events'],
-  complaints: ['complaints'],
-  feedback: ['feedback'],
-  counseling: ['counseling'],
-  lost_and_found: ['lost_and_found'],
-  resources: ['resources', 'subjects'],
-  my_profile: ['my_profile'],
-  update_picture: ['update_picture'],
-  reports: ['reports'],
-  student_reports: ['reports', 'students'],
-  parent_reports: ['reports', 'students'],
-  report_cards: ['reports', 'exams', 'students'],
-  attendance_reports: ['reports', 'attendance', 'attendance_reports'],
-  leave_requests: ['attendance', 'leave_requests'],
-  exam_reports: ['reports', 'exams']
+  attendance: ['attendance'], homework: ['homework'], examination: ['exams', 'examination'],
+  datesheet: ['exams', 'datesheet'], quizzes: ['exams', 'quizzes'], students: ['students'],
+  student_promotion: ['student_promotion', 'students'], class_tests: ['class_tests', 'exams'],
+  question_papers: ['question_papers', 'exams'], certificates: ['certificates'], timetable: ['timetable'],
+  lectures: ['lectures'], online_classes: ['online_classes'], planner: ['planner'], salary: ['salary', 'fees'],
+  events: ['events'], complaints: ['complaints'], feedback: ['feedback'], counseling: ['counseling'],
+  lost_and_found: ['lost_and_found'], resources: ['resources', 'subjects'], my_profile: ['my_profile'],
+  update_picture: ['update_picture'], reports: ['reports'], student_reports: ['reports', 'students'],
+  parent_reports: ['reports', 'students'], report_cards: ['reports', 'exams', 'students'],
+  attendance_reports: ['reports', 'attendance', 'attendance_reports'], leave_requests: ['attendance', 'leave_requests'],
+  exam_reports: ['reports', 'exams'], crm: ['crm'], crm_inquiries: ['crm', 'crm_inquiries'],
+  crm_pipeline: ['crm', 'crm_pipeline'], crm_followups: ['crm', 'crm_followups'], crm_analytics: ['crm', 'crm_analytics']
 };
 
 const resolveEffectivePermissions = (user) => {
