@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Eye, EyeOff } from 'lucide-react';
 import { getApiBase } from '../../../utils/apiBase';
 
 const UserFormModal = ({ user, roles = [], campuses = [], token, onClose, onSaved }) => {
   const isEdit = Boolean(user?._id);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -55,7 +56,7 @@ const UserFormModal = ({ user, roles = [], campuses = [], token, onClose, onSave
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+        <form onSubmit={handleSubmit} autoComplete="off" className="p-6 space-y-4 text-xs">
           {error && <div className="p-2.5 bg-bad/10 border border-bad/20 rounded-xl text-bad text-xs font-medium">{error}</div>}
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2">
@@ -94,7 +95,26 @@ const UserFormModal = ({ user, roles = [], campuses = [], token, onClose, onSave
             {!isEdit && (
               <div>
                 <label className="block font-semibold text-ink dark:text-ink-dark mb-1">Password *</label>
-                <input type="password" required value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-surface-secondary/40 border border-line dark:border-line-dark text-ink dark:text-ink-dark outline-none focus:border-primary" />
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    autoComplete="new-password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    placeholder="Enter password"
+                    className="w-full pl-3 pr-10 py-2 rounded-xl bg-surface-secondary/40 border border-line dark:border-line-dark text-ink dark:text-ink-dark outline-none focus:border-primary text-xs"
+                  />
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-ink-muted hover:text-ink dark:hover:text-ink-dark transition-colors cursor-pointer"
+                    title={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
             )}
           </div>
