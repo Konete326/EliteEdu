@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Filter } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import axios from '../../api/axios';
+import MarkSheetTabsHeader from '../../components/admin/examsuite/marksheet/MarkSheetTabsHeader';
 import MarkSheetBrowseTab from '../../components/admin/examsuite/marksheet/MarkSheetBrowseTab';
 import MarkSheetAttendanceTab from '../../components/admin/examsuite/marksheet/MarkSheetAttendanceTab';
 import MarkSheetGazetteTab from '../../components/admin/examsuite/marksheet/MarkSheetGazetteTab';
@@ -9,14 +10,6 @@ import MarkSheetSettingsTab from '../../components/admin/examsuite/marksheet/Mar
 import NewMarkSheetModal from '../../components/admin/examsuite/marksheet/NewMarkSheetModal';
 import EnterMarksModal from '../../components/admin/examsuite/marksheet/EnterMarksModal';
 import DeleteClassTestModal from '../../components/admin/classtests/DeleteClassTestModal';
-
-const TABS = [
-  { id: 'browse', label: 'Browse Sheets' },
-  { id: 'attendance', label: 'Exam Attendance' },
-  { id: 'results', label: 'Class Results' },
-  { id: 'lock', label: 'Lock Results' },
-  { id: 'settings', label: 'Exam Settings' }
-];
 
 const MarkSheetsPage = () => {
   const [activeTab, setActiveTab] = useState('browse');
@@ -50,9 +43,7 @@ const MarkSheetsPage = () => {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
   const handleCreateSheet = async (payload) => {
     try {
@@ -90,21 +81,7 @@ const MarkSheetsPage = () => {
         </button>
       </div>
 
-      <div className="flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto gap-2">
-        {TABS.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-colors whitespace-nowrap ${
-              activeTab === tab.id
-                ? 'bg-white dark:bg-slate-900 border-t-2 border-primary text-primary shadow-xs'
-                : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <MarkSheetTabsHeader activeTab={activeTab} onSelectTab={setActiveTab} />
 
       {loading ? (
         <div className="py-20 text-center text-xs text-slate-400">Loading mark sheets...</div>
