@@ -204,6 +204,10 @@ export const getNavCategories = (user) => {
     if (allowed.has('admission_letter')) mainSub.push({ name: 'Admission Letter', path: '/admin/students/admission-letter' });
     if (allowed.has('student_id_cards')) mainSub.push({ name: 'Student ID Cards', path: '/admin/students/id-cards' });
     if (allowed.has('teacher_id_cards')) mainSub.push({ name: 'Staff Service ID Cards', path: '/admin/teachers/id-cards' });
+    if (allowed.has('certificates')) {
+      mainSub.push({ name: 'Certificates Studio', path: '/admin/certificates' });
+      mainSub.push({ name: 'Certificate Templates', path: '/admin/certificates/templates' });
+    }
     if (user.role === 'Teacher') mainSub.push({ name: 'My Profile', path: '/teacher/profile' });
 
     groups.push({
@@ -341,6 +345,7 @@ export const getNavCategories = (user) => {
     if (has('grading_policies', false)) subItems.push({ name: 'Grading Policies', path: '/admin/exam-management/grading-policies' });
     if (has('class_tests')) subItems.push({ name: 'Class Tests', path: '/teacher/class-tests' });
     if (has('question_papers')) subItems.push({ name: 'Question Papers', path: '/teacher/question-papers' });
+    if (has('certificates', false)) subItems.push({ name: 'Certificates Studio', path: '/admin/certificates' });
 
     return [{
       type: 'group',
@@ -376,7 +381,8 @@ export const getAllAdminRoutes = () => {
     '/admin/notifications', '/admin/messaging/notifications', '/admin/circular', '/teacher/notifications', '/superadmin/notifications',
     '/admin/settings/general', '/admin/general-settings/signatures',
     '/admin/settings/signatures', '/admin/attendance/students', '/admin/attendance/staff',
-    '/admin/attendance/employees'
+    '/admin/attendance/employees',
+    '/admin/certificates', '/admin/certificates/templates'
   ]);
   const routes = [];
   allGroups.forEach((group) => {
@@ -433,6 +439,8 @@ export const getRouteTitle = (pathname) => {
   if (pathname === '/admin/reports/report-cards') return 'Student Report Card Studio';
   if (pathname === '/admin/reports/student-info') return 'Student Admission & Info Report';
   if (pathname === '/admin/reports/parent-info') return 'Parent & Student Contact Report';
+  if (pathname === '/admin/certificates') return 'Certificates Studio';
+  if (pathname === '/admin/certificates/templates') return 'Certificate Templates Studio';
   if (pathname === '/admin/students/promote' || pathname === '/admin/control-panel/class-transfer') return 'Promote Students & Class Transfer';
   if (pathname === '/admin/control-panel/user-management') return 'User Management';
   if (pathname === '/admin/settings/roles' || pathname === '/admin/control-panel/roles' || pathname === '/admin/roles') return 'Roles & Permissions';
