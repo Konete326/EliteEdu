@@ -1,101 +1,115 @@
-import { useState } from 'react';
-import { BarChart2, AlertTriangle, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { useGradingPolicy } from '../../hooks/useGradingPolicy';
-import GradingHeaderBar from '../../components/admin/exams/GradingHeaderBar';
-import MarksGradingTab from '../../components/admin/exams/MarksGradingTab';
+import React, { useState, useEffect } from 'react';
+import { Save, CheckCircle2, Sliders, AlertTriangle } from 'lucide-react';
+import axios from '../../api/axios';
+import GradingPolicyCard from '../../components/admin/examsuite/grading/GradingPolicyCard';
 import FailCriteriaTab from '../../components/admin/exams/FailCriteriaTab';
-import PageLoader from '../../components/common/PageLoader';
-import ConfirmModal from '../../components/common/ConfirmModal';
 
 const GradingPoliciesPage = () => {
-  const [activeTab, setActiveTab] = useState('scale');
-  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
-  const {
-    policy, campuses, selectedCampus, setSelectedCampus,
-    loading, saving, error, setError, success, setSuccess,
-    saveScale, saveCriteria, resetDefaults
-  } = useGradingPolicy();
+  const [activeTab, setActiveTab] = useState('cards');
+  const [policies, setPolicies] = useState([]);
+  const [failCriteria, setFailCriteria] = useState(null);
+  const [grades, setGrades] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [toastMsg, setToastMsg] = useState('');
 
-  const handleResetConfirm = async () => {
-    setResetConfirmOpen(false);
-    await resetDefaults();
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [polRes, gradeRes] = await Promise.all([
+        axios.get('/api/grading-policies'),
+        axios.get('/api/grades')
+      ]);
+      const pol = polRes.data.policy || {};
+      setPolicies(pol.policies || []);
+      setFailCriteria(pol.fail_criteria || null);
+      setGrades(gradeRes.data.grades || gradeRes.data || []);
+    } catch {} finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleUpdate = (idx, updated) => {
+    const list = [...policies];
+    list[idx] = updated;
+    setPolicies(list);
+  };
+
+  const handleAddAfter = (idx) => {
+    const list = [...policies];
+    list.splice(idx + 1, 0, {
+      letter_grade: 'B', from_percent: 50, to_percent: 59,
+      status: 'Passed', status_color: '#3B82F6', apply_to_all_classes: true, target_grades: []
+    });
+    setPolicies(list);
+  };
+
+  const handleRemove = (idx) => {
+    setPolicies(policies.filter((_, i) => i !== idx));
+  };
+
+  const handleSaveAll = async () => {
+    for (const p of policies) {
+      if (!p.letter_grade?.trim() || p.from_percent === undefined || p.to_percent === undefined) {
+        setToastMsg('Please fill all required grade and percentage fields');
+        setTimeout(() => setToastMsg(''), 3000);
+        return;
+      }
+    }
+    try {
+      setSaving(true);
+      await axios.put('/api/grading-policies/policies', { policies });
+      setToastMsg('Grading policies saved successfully!');
+      setTimeout(() => setToastMsg(''), 3000);
+      fetchData();
+    } catch {} finally {
+      setSaving(false);
+    }
   };
 
   return (
-    <div className="space-y-5 max-w-7xl mx-auto">
-      <GradingHeaderBar
-        campuses={campuses}
-        selectedCampus={selectedCampus}
-        onCampusChange={setSelectedCampus}
-        onResetClick={() => setResetConfirmOpen(true)}
-        saving={saving}
-      />
-
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setActiveTab('scale')}
-          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-            activeTab === 'scale'
-              ? 'bg-primary text-white shadow-sm'
-              : 'bg-surface dark:bg-[#121217] text-ink-sub dark:text-ink-sub-dark border border-line dark:border-line-dark hover:bg-surface-secondary/70'
-          }`}
-        >
-          <BarChart2 className="w-4 h-4" />
-          <span>Marks Grading</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('criteria')}
-          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-            activeTab === 'criteria'
-              ? 'bg-primary text-white shadow-sm'
-              : 'bg-surface dark:bg-[#121217] text-ink-sub dark:text-ink-sub-dark border border-line dark:border-line-dark hover:bg-surface-secondary/70'
-          }`}
-        >
-          <AlertTriangle className="w-4 h-4" />
-          <span>Fail Criteria</span>
-        </button>
+    <div className="p-4 sm:p-6 space-y-6 max-w-5xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">Grading Policies</h1>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Set percentage thresholds, letter grades, and fail criteria.</p>
+        </div>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+            <button type="button" onClick={() => setActiveTab('cards')} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${activeTab === 'cards' ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-xs' : 'text-slate-500'}`}>Policy Cards</button>
+            <button type="button" onClick={() => setActiveTab('criteria')} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${activeTab === 'criteria' ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-xs' : 'text-slate-500'}`}>Fail Criteria</button>
+          </div>
+          {activeTab === 'cards' && (
+            <button onClick={handleSaveAll} disabled={saving} className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-xs font-semibold bg-primary text-white hover:bg-primary-hover shadow-xs">
+              <Save size={15} />
+              {saving ? 'Saving...' : 'Save All'}
+            </button>
+          )}
+        </div>
       </div>
 
-      {error && (
-        <div className="p-3.5 rounded-xl bg-bad-soft dark:bg-bad/10 text-bad border border-bad/20 text-xs flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{error}</span>
-          </div>
-          <button type="button" onClick={() => setError('')} className="underline font-semibold">Dismiss</button>
-        </div>
-      )}
-
-      {success && (
-        <div className="p-3.5 rounded-xl bg-good/10 text-good border border-good/20 text-xs flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 shrink-0" />
-            <span>{success}</span>
-          </div>
-          <button type="button" onClick={() => setSuccess('')} className="underline font-semibold">Dismiss</button>
+      {toastMsg && (
+        <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2 border border-emerald-200 dark:border-emerald-800">
+          <CheckCircle2 size={16} />
+          {toastMsg}
         </div>
       )}
 
       {loading ? (
-        <PageLoader text="Loading grading policy..." />
-      ) : activeTab === 'scale' ? (
-        <MarksGradingTab initialScale={policy?.grading_scale} onSave={saveScale} saving={saving} />
+        <div className="py-20 text-center text-xs text-slate-400">Loading grading policies...</div>
+      ) : activeTab === 'cards' ? (
+        <div className="space-y-4">
+          {policies.map((p, idx) => (
+            <GradingPolicyCard key={p._id || idx} policy={p} index={idx} total={policies.length} grades={grades} onChange={(u) => handleUpdate(idx, u)} onAddAfter={() => handleAddAfter(idx)} onRemove={() => handleRemove(idx)} />
+          ))}
+        </div>
       ) : (
-        <FailCriteriaTab initialCriteria={policy?.fail_criteria} onSave={saveCriteria} saving={saving} />
+        <FailCriteriaTab initialCriteria={failCriteria} onSave={async (crit) => { await axios.put('/api/grading-policies/fail-criteria', crit); setToastMsg('Fail criteria updated'); setTimeout(() => setToastMsg(''), 3000); }} saving={saving} />
       )}
-
-      <ConfirmModal
-        isOpen={resetConfirmOpen}
-        onClose={() => setResetConfirmOpen(false)}
-        onConfirm={handleResetConfirm}
-        title="Reset Standard Grading Scale"
-        message="This will reset the grading scale and fail criteria to Pakistani board defaults for the selected campus. Continue?"
-        confirmText="Reset Defaults"
-        confirmStyle="danger"
-      />
     </div>
   );
 };

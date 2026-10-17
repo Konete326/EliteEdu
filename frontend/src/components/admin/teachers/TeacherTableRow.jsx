@@ -1,7 +1,10 @@
 import { Pencil, Trash2, IdCard, KeyRound, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import usePermissions from '../../../hooks/usePermissions';
 
 const TeacherTableRow = ({ teacher, onToggleStatus, onEdit, onDelete, onView, onOpenPassword }) => {
+  const { canDelete } = usePermissions();
+  const hasDelete = canDelete('teachers');
   const isActive = teacher.status === 'Active';
   const initials = teacher.name
     ? teacher.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
@@ -100,9 +103,11 @@ const TeacherTableRow = ({ teacher, onToggleStatus, onEdit, onDelete, onView, on
           <button type="button" onClick={() => onEdit(teacher)} title="Edit Teacher" className="p-1.5 rounded-lg text-ink-muted hover:text-primary hover:bg-primary-soft">
             <Pencil className="w-4 h-4" />
           </button>
-          <button type="button" onClick={() => onDelete(teacher)} title="Delete Teacher" className="p-1.5 rounded-lg text-bad/80 hover:text-bad hover:bg-bad-soft">
-            <Trash2 className="w-4 h-4" />
-          </button>
+          {hasDelete && (
+            <button type="button" onClick={() => onDelete(teacher)} title="Delete Teacher" className="p-1.5 rounded-lg text-bad/80 hover:text-bad hover:bg-bad-soft">
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </td>
     </tr>

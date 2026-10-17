@@ -27,7 +27,8 @@ import {
   StaffApplicantsList, AddStaffApplicantPage, GradingPoliciesPage, AdmissionLetterPage, StudentIdCardsPage,
   TeacherIdCardsPage, ThemeSettingsPage, GeneralSettingsPage, UserManagementPage, PromoteStudentsPage,
   GeneralSignaturesPage, StudentAttendancePage, EmployeeAttendancePage, ExamsListPage, ExamWizardPage,
-  ManageClassTestsPage, ClassTestResultsPage, ComingSoonPage
+  ManageClassTestsPage, ClassTestResultsPage, FeeManagementPage, ExamCategoriesPage, RemarksPolicyPage,
+  ManageRemarksPage, DatesheetsListPage, NewDatesheetPage, MarkSheetsPage, QuestionPapersPage, ComingSoonPage
 } from './pages/admin';
 
 const adminDynamicRoutes = getAllAdminRoutes();
@@ -56,19 +57,43 @@ function App() {
                   <Route path="/superadmin/profile" element={<MyProfilePage />} />
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['Admin', 'Teacher']} />}>
+                  <Route path="/admin/students" element={<StudentsList />} />
+                  <Route path="/admin/students/new" element={<AddStudentPage />} />
+                  <Route path="/admin/students/:id/edit" element={<AddStudentPage />} />
+                  <Route path="/admin/students/admission-letter" element={<AdmissionLetterPage />} />
+                  <Route path="/admin/students/id-cards" element={<StudentIdCardsPage />} />
                   <Route path="/admin/students/promote" element={<PromoteStudentsPage />} />
                   <Route path="/admin/control-panel/class-transfer" element={<PromoteStudentsPage />} />
+                  <Route path="/admin/attendance/students" element={<StudentAttendancePage />} />
+                  <Route path="/admin/attendance/staff" element={<EmployeeAttendancePage />} />
+                  <Route path="/admin/attendance/employees" element={<EmployeeAttendancePage />} />
+                  <Route path="/admin/fees" element={<FeeManagementPage initialTab="collection" />} />
+                  <Route path="/admin/fees/collection" element={<FeeManagementPage initialTab="collection" />} />
+                  <Route path="/admin/fees/structure" element={<FeeManagementPage initialTab="structure" />} />
+                  <Route path="/admin/fees/defaulters" element={<FeeManagementPage initialTab="defaulters" />} />
+                  <Route path="/admin/fees/reports" element={<FeeManagementPage initialTab="reports" />} />
+                  <Route path="/admin/fees/concession" element={<FeeManagementPage initialTab="reports" />} />
                   <Route path="/admin/exam-management/exams" element={<ExamsListPage />} />
                   <Route path="/admin/exams/schedules" element={<ExamsListPage />} />
                   <Route path="/admin/exams/date-sheets" element={<ExamsListPage />} />
                   <Route path="/admin/exams/marks" element={<ExamsListPage />} />
                   <Route path="/admin/exam-management/exams/new" element={<ExamWizardPage />} />
                   <Route path="/admin/exam-management/exams/:id/edit" element={<ExamWizardPage />} />
+                  <Route path="/admin/exam-management/categories" element={<ExamCategoriesPage />} />
+                  <Route path="/admin/exam-management/remarks-policy" element={<RemarksPolicyPage />} />
+                  <Route path="/admin/exam-management/schedule" element={<DatesheetsListPage />} />
+                  <Route path="/admin/exam-management/schedule/new" element={<NewDatesheetPage />} />
+                  <Route path="/admin/exam-management/manage-remarks" element={<ManageRemarksPage />} />
+                  <Route path="/admin/exam-management/mark-sheets" element={<MarkSheetsPage />} />
+                  <Route path="/admin/exam-management/results" element={<MarkSheetsPage />} />
+                  <Route path="/admin/question-papers" element={<QuestionPapersPage />} />
                   <Route path="/admin/class-tests/manage" element={<ManageClassTestsPage />} />
                   <Route path="/admin/class-tests/results" element={<ClassTestResultsPage />} />
                   <Route path="/teacher/exams" element={<ExamsListPage />} />
                   <Route path="/teacher/examination" element={<ExamsListPage />} />
-                  <Route path="/teacher/datesheet" element={<ExamsListPage />} />
+                  <Route path="/teacher/datesheet" element={<DatesheetsListPage />} />
+                  <Route path="/teacher/mark-sheets" element={<MarkSheetsPage />} />
+                  <Route path="/teacher/question-papers" element={<QuestionPapersPage />} />
                   <Route path="/teacher/class-tests" element={<ManageClassTestsPage />} />
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
@@ -80,19 +105,11 @@ function App() {
                   <Route path="/admin/teachers/new" element={<AddTeacherPage />} />
                   <Route path="/admin/teachers/:id/edit" element={<AddTeacherPage />} />
                   <Route path="/admin/teachers/id-cards" element={<TeacherIdCardsPage />} />
-                  <Route path="/admin/students" element={<StudentsList />} />
-                  <Route path="/admin/students/new" element={<AddStudentPage />} />
-                  <Route path="/admin/students/:id/edit" element={<AddStudentPage />} />
                   <Route path="/admin/staff-applicants" element={<StaffApplicantsList />} />
                   <Route path="/admin/staff-applicants/new" element={<AddStaffApplicantPage />} />
                   <Route path="/admin/staff-applicants/:id/edit" element={<AddStaffApplicantPage />} />
                   <Route path="/admin/exam-management/grading-policies" element={<GradingPoliciesPage />} />
                   <Route path="/admin/exams/grading-policies" element={<GradingPoliciesPage />} />
-                  <Route path="/admin/students/admission-letter" element={<AdmissionLetterPage />} />
-                  <Route path="/admin/students/id-cards" element={<StudentIdCardsPage />} />
-                  <Route path="/admin/attendance/students" element={<StudentAttendancePage />} />
-                  <Route path="/admin/attendance/staff" element={<EmployeeAttendancePage />} />
-                  <Route path="/admin/attendance/employees" element={<EmployeeAttendancePage />} />
                   <Route path="/admin/settings/general" element={<GeneralSettingsPage />} />
                   <Route path="/admin/general-settings/signatures" element={<GeneralSignaturesPage />} />
                   <Route path="/admin/settings/signatures" element={<GeneralSignaturesPage />} />
@@ -112,9 +129,17 @@ function App() {
                 <Route element={<ProtectedRoute allowedRoles={['Teacher']} />}>
                   <Route path="/teacher" element={<TeacherPortalDashboard />} />
                   <Route path="/teacher/students" element={<TeacherPortalDashboard />} />
+                  <Route path="/teacher/my-students" element={<TeacherPortalDashboard />} />
                   <Route path="/teacher/attendance" element={<StudentAttendancePage />} />
+                  <Route path="/teacher/homework" element={<ComingSoonPage title="Homework Management" />} />
+                  <Route path="/teacher/timetable" element={<ComingSoonPage title="Class Timetable" />} />
+                  <Route path="/teacher/quizzes" element={<ComingSoonPage title="Quizzes & Online Tests" />} />
+                  <Route path="/teacher/lectures" element={<ComingSoonPage title="Lecture Notes & Syllabus" />} />
+                  <Route path="/teacher/online-classes" element={<ComingSoonPage title="Online Classes" />} />
+                  <Route path="/teacher/salary" element={<ComingSoonPage title="Faculty Salary & Compensation" />} />
                   <Route path="/teacher/notifications" element={<NotificationsPage />} />
                   <Route path="/teacher/profile" element={<MyProfilePage />} />
+                  <Route path="/teacher/*" element={<ComingSoonPage title="Teacher Portal Module" />} />
                 </Route>
               </Route>
               <Route path="*" element={<NotFoundPage />} />

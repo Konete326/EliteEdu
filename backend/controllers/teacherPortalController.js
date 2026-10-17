@@ -12,7 +12,8 @@ const getTeacherPortalMe = async (req, res) => {
       .select('-password')
       .populate('campus_id', 'name code address contact_number')
       .populate('subjects', 'name code')
-      .populate('grades', 'name sections');
+      .populate('grades', 'name sections')
+      .populate('custom_role_id');
 
     if (!teacher || teacher.status === 'Inactive') {
       return res.status(403).json({ success: false, message: 'Teacher profile not accessible' });
@@ -30,6 +31,8 @@ const getTeacherPortalMe = async (req, res) => {
       teacher,
       class_teacher_grades: classTeacherGrades,
       permissions,
+      custom_role: teacher.custom_role_id || null,
+      role_permissions: teacher.custom_role_id?.permissions || [],
       theme_settings: school?.theme_settings || null
     });
   } catch (error) {

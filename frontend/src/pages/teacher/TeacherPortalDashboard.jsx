@@ -5,6 +5,7 @@ import TeacherStatsGrid from '../../components/teacher/TeacherStatsGrid';
 import TeacherPermittedActions from '../../components/teacher/TeacherPermittedActions';
 import TeacherClassesCard from '../../components/teacher/TeacherClassesCard';
 import TeacherStudentsCard from '../../components/teacher/TeacherStudentsCard';
+import TeacherRoleScopeCard from '../../components/teacher/TeacherRoleScopeCard';
 
 const TeacherPortalDashboard = () => {
   const [profileData, setProfileData] = useState(null);
@@ -57,30 +58,36 @@ const TeacherPortalDashboard = () => {
 
   const teacher = profileData?.teacher || {};
   const permissions = profileData?.permissions || {};
+  const customRole = profileData?.custom_role || teacher.custom_role_id || null;
   const classTeacherGrades = profileData?.class_teacher_grades || [];
 
   const assignedClassesCount = (teacher.class_assignments?.length || 0) + classTeacherGrades.length;
-  const activePermissionsCount = Object.values(permissions).filter((v) => v !== false).length;
+  const activePermissionsCount = customRole?.permissions?.length
+    ? customRole.permissions.filter((p) => p.view).length
+    : Object.values(permissions).filter((v) => v !== false).length;
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="w-full space-y-6 min-w-0">
       <TeacherProfileHero teacher={teacher} />
 
-      <TeacherStatsGrid
-        classesCount={assignedClassesCount}
-        subjectsCount={teacher.subjects?.length || 0}
-        studentsCount={students.length}
-        permissionsCount={activePermissionsCount}
-      />
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+        <div className="xl:col-span-8 space-y-6 min-w-0">
+          <TeacherStatsGrid
+            classesCount={assignedClassesCount}
+            subjectsCount={teacher.subjects?.length || 0}
+            studentsCount={students.length}
+            permissionsCount={activePermissionsCount}
+          />
 
-      <TeacherPermittedActions permissions={permissions} />
+          <TeacherPermittedActions permissions={permissions} customRole={customRole} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
-          <TeacherClassesCard teacher={teacher} classTeacherGrades={classTeacherGrades} />
-        </div>
-        <div className="lg:col-span-2">
           <TeacherStudentsCard students={students} loading={loading} />
+        </div>
+
+        <div className="xl:col-span-4 space-y-6 min-w-0">
+          <TeacherClassesCard teacher={teacher} classTeacherGrades={classTeacherGrades} />
+
+          <TeacherRoleScopeCard customRole={customRole} teacher={teacher} />
         </div>
       </div>
     </div>

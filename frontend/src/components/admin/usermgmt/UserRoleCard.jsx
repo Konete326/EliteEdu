@@ -1,6 +1,9 @@
 import { Shield, LayoutDashboard, Copy, Trash2, Edit2, Users } from 'lucide-react';
+import usePermissions from '../../../hooks/usePermissions';
 
 const UserRoleCard = ({ role, onDashboard, onCopy, onEdit, onDelete }) => {
+  const { canDelete } = usePermissions();
+  const hasDelete = canDelete('user_management');
   const activeModules = (role.permissions || []).filter(
     (p) => p.view || p.add || p.edit || p.delete || p.filter || p.reports
   ).length;
@@ -58,7 +61,7 @@ const UserRoleCard = ({ role, onDashboard, onCopy, onEdit, onDelete }) => {
         >
           <Edit2 className="w-4 h-4" />
         </button>
-        {!role.is_system && (
+        {!role.is_system && hasDelete && (
           <button
             type="button"
             onClick={() => onDelete(role)}

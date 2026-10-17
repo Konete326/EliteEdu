@@ -9,10 +9,12 @@ import ExamsTable from '../../components/admin/exams/manager/ExamsTable';
 import ExamMarksModal from '../../components/admin/exams/sheets/ExamMarksModal';
 import ExamPrintModal from '../../components/admin/exams/sheets/ExamPrintModal';
 import DeleteExamModal from '../../components/admin/exams/manager/DeleteExamModal';
+import usePermissions from '../../hooks/usePermissions';
 
 export default function ExamsListPage() {
   const { user } = useAuth();
   const { showNotification } = useNotification();
+  const { canDelete, canEdit: canEditPerm, canAdd } = usePermissions();
   const [exams, setExams] = useState([]);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -66,7 +68,7 @@ export default function ExamsListPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-5 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 space-y-5 w-full">
       <div>
         <h1 className="text-xl font-black text-text-primary dark:text-text-primary-dark">Examinations & Assessments</h1>
         <p className="text-xs text-text-muted dark:text-text-muted-dark">Manage terms, datesheets, teacher assignments, and award lists</p>
@@ -74,8 +76,8 @@ export default function ExamsListPage() {
 
       <TeacherAssignedExamsBanner exams={exams} currentUserId={user?._id || user?.id} onOpenMarksModal={(ex, p) => { setSelectedExamForMarks(ex); setInitialPaperForMarks(p); }} />
       <ExamsKpiStrip exams={exams} total={total} />
-      <ExamsFilterBar filters={filters} setFilters={setFilters} onReset={() => setFilters({ page: 1, limit: 10, search: '', term_type: 'All', status: 'All', campus_id: '' })} campuses={campuses} canCreate={canManage} />
-      <ExamsTable exams={exams} page={filters.page} totalPages={totalPages} onPageChange={(p) => setFilters((f) => ({ ...f, page: p }))} onOpenMarksModal={(ex) => { setSelectedExamForMarks(ex); setInitialPaperForMarks(null); }} onOpenPrintModal={(ex) => setSelectedExamForPrint(ex)} onDelete={(ex) => setExamToDelete(ex)} canEdit={canManage} />
+      <ExamsFilterBar filters={filters} setFilters={setFilters} onReset={() => setFilters({ page: 1, limit: 10, search: '', term_type: 'All', status: 'All', campus_id: '' })} campuses={campuses} canCreate={canManage && canAdd('exams')} />
+      <ExamsTable exams={exams} page={filters.page} totalPages={totalPages} onPageChange={(p) => setFilters((f) => ({ ...f, page: p }))} onOpenMarksModal={(ex) => { setSelectedExamForMarks(ex); setInitialPaperForMarks(null); }} onOpenPrintModal={(ex) => setSelectedExamForPrint(ex)} onDelete={canDelete('exams') ? (ex) => setExamToDelete(ex) : null} canEdit={canManage && canEditPerm('exams')} canDelete={canDelete('exams')} />
 
       <ExamMarksModal isOpen={Boolean(selectedExamForMarks)} onClose={() => { setSelectedExamForMarks(null); setInitialPaperForMarks(null); }} exam={selectedExamForMarks} initialPaper={initialPaperForMarks} onSaved={fetchExams} />
       <ExamPrintModal isOpen={Boolean(selectedExamForPrint)} onClose={() => setSelectedExamForPrint(null)} exam={selectedExamForPrint} />

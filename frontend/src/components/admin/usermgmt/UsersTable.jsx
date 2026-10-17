@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { MoreHorizontal, Edit2, Key, Building2, Trash2, Power } from 'lucide-react';
+import usePermissions from '../../../hooks/usePermissions';
 
 const UsersTable = ({ users, selectedUser, onSelectUser, onEdit, onToggleStatus, onResetPassword, onAssignCampus, onDelete }) => {
+  const { canDelete } = usePermissions();
+  const hasDelete = canDelete('user_management');
   const [activeMenuId, setActiveMenuId] = useState(null);
 
   return (
@@ -89,10 +92,14 @@ const UsersTable = ({ users, selectedUser, onSelectUser, onEdit, onToggleStatus,
                         <button type="button" onClick={() => { setActiveMenuId(null); onAssignCampus(u); }} className="w-full px-3 py-1.5 flex items-center gap-2 hover:bg-surface-secondary text-ink cursor-pointer">
                           <Building2 className="w-3.5 h-3.5" /> Assign Campus
                         </button>
-                        <div className="border-t border-line dark:border-line-dark my-1" />
-                        <button type="button" onClick={() => { setActiveMenuId(null); onDelete(u); }} className="w-full px-3 py-1.5 flex items-center gap-2 hover:bg-bad/10 text-bad cursor-pointer">
-                          <Trash2 className="w-3.5 h-3.5" /> Delete User
-                        </button>
+                        {hasDelete && (
+                          <>
+                            <div className="border-t border-line dark:border-line-dark my-1" />
+                            <button type="button" onClick={() => { setActiveMenuId(null); onDelete(u); }} className="w-full px-3 py-1.5 flex items-center gap-2 hover:bg-bad/10 text-bad cursor-pointer">
+                              <Trash2 className="w-3.5 h-3.5" /> Delete User
+                            </button>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>

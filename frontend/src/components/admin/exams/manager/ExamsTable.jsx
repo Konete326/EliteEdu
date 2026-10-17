@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, FileSpreadsheet, Printer, Edit3, Trash2, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 
-export default function ExamsTable({ exams = [], page = 1, totalPages = 1, onPageChange, onOpenMarksModal, onOpenPrintModal, onDelete, canEdit = true }) {
+export default function ExamsTable({ exams = [], page = 1, totalPages = 1, onPageChange, onOpenMarksModal, onOpenPrintModal, onDelete, canEdit = true, canDelete = true }) {
   if (exams.length === 0) {
     return (
       <div className="p-12 text-center rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark">
@@ -61,7 +61,7 @@ export default function ExamsTable({ exams = [], page = 1, totalPages = 1, onPag
                         <Edit3 className="w-3.5 h-3.5" />
                       </Link>
                     )}
-                    {canEdit && (
+                    {canDelete && onDelete && (
                       <button type="button" onClick={() => onDelete(exam)} className="p-1.5 rounded-lg border border-line dark:border-line-dark hover:bg-red-50 dark:hover:bg-red-950/20 text-red-500" title="Delete Exam">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>

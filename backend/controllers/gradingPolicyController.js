@@ -1,12 +1,5 @@
-const mongoose = require('mongoose');
-const { GradingPolicy, DEFAULT_SCALE, DEFAULT_FAIL_CRITERIA } = require('../models/GradingPolicy');
-const Campus = require('../models/Campus');
-
-const resolveCampusRef = async (campusId, schoolId) => {
-  if (!campusId || campusId === 'all' || !mongoose.Types.ObjectId.isValid(campusId)) return null;
-  const campus = await Campus.findOne({ _id: campusId, school_id: schoolId });
-  return campus ? campus._id : null;
-};
+const { GradingPolicy, DEFAULT_SCALE, DEFAULT_POLICIES, DEFAULT_FAIL_CRITERIA } = require('../models/GradingPolicy');
+const resolveCampusRef = require('../utils/campusResolver');
 
 const getGradingPolicy = async (req, res) => {
   try {
@@ -19,9 +12,13 @@ const getGradingPolicy = async (req, res) => {
       policy = await GradingPolicy.create({
         school_id: schoolId,
         campus_id: campusRef,
+        policies: DEFAULT_POLICIES,
         grading_scale: DEFAULT_SCALE,
         fail_criteria: DEFAULT_FAIL_CRITERIA
       });
+    } else if (!policy.policies || policy.policies.length === 0) {
+      policy.policies = DEFAULT_POLICIES;
+      await policy.save();
     }
 
     res.status(200).json({ success: true, policy });
@@ -30,62 +27,45 @@ const getGradingPolicy = async (req, res) => {
   }
 };
 
-const saveGradingScale = async (req, res) => {
+const savePolicies = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
-    if (!schoolId) return res.status(400).json({ message: 'School ID required' });
-    const { campus_id, grading_scale } = req.body;
-
-    if (!Array.isArray(grading_scale) || grading_scale.length === 0) {
-      return res.status(400).json({ message: 'Grading scale cannot be empty' });
+    const { campus_id, policies } = req.body;
+    if (!Array.isArray(policies) || policies.length === 0) {
+      return res.status(400).json({ message: 'Policies array cannot be empty' });
     }
 
-    for (const item of grading_scale) {
-      if (!item.grade?.trim()) return res.status(400).json({ message: 'Grade name is required for all rows' });
-      const from = Number(item.percent_from);
-      const upto = Number(item.percent_upto);
-      if (isNaN(from) || isNaN(upto) || from < 0 || upto > 100 || from > upto) {
-        return res.status(400).json({ message: `Invalid percentage range for grade ${item.grade}` });
-      }
-      if (!['PASS', 'FAIL'].includes(item.status)) {
-        return res.status(400).json({ message: `Status must be PASS or FAIL for grade ${item.grade}` });
-      }
-    }
+    const legacyScale = policies.map(p => ({
+      grade: p.letter_grade,
+      percent_from: Number(p.from_percent),
+      percent_upto: Number(p.to_percent),
+      status: Number(p.from_percent) >= 33 ? 'PASS' : 'FAIL',
+      remarks: p.status || ''
+    }));
 
     const campusRef = await resolveCampusRef(campus_id, schoolId);
     const policy = await GradingPolicy.findOneAndUpdate(
       { school_id: schoolId, campus_id: campusRef },
-      { grading_scale },
+      { policies, grading_scale: legacyScale },
       { new: true, upsert: true, setDefaultsOnInsert: true }
     );
 
-    res.status(200).json({ success: true, message: 'Grading scale saved successfully', policy });
+    res.status(200).json({ success: true, message: 'Policies saved successfully', policy });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to save grading scale', error: error.message });
+    res.status(500).json({ message: 'Failed to save policies', error: error.message });
   }
 };
 
 const saveFailCriteria = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
-    if (!schoolId) return res.status(400).json({ message: 'School ID required' });
     const { campus_id, overall_percentage, subject_percentage, min_failed_subjects } = req.body;
-
-    const op = Number(overall_percentage);
-    const sp = Number(subject_percentage);
-    const ms = Number(min_failed_subjects);
-
-    if (isNaN(op) || op < 0 || op > 100) return res.status(400).json({ message: 'Overall percentage must be 0-100' });
-    if (isNaN(sp) || sp < 0 || sp > 100) return res.status(400).json({ message: 'Subject percentage must be 0-100' });
-    if (isNaN(ms) || ms < 1) return res.status(400).json({ message: 'Minimum failed subjects must be at least 1' });
-
     const campusRef = await resolveCampusRef(campus_id, schoolId);
     const policy = await GradingPolicy.findOneAndUpdate(
       { school_id: schoolId, campus_id: campusRef },
-      { fail_criteria: { overall_percentage: op, subject_percentage: sp, min_failed_subjects: ms } },
+      { fail_criteria: { overall_percentage, subject_percentage, min_failed_subjects } },
       { new: true, upsert: true, setDefaultsOnInsert: true }
     );
-
     res.status(200).json({ success: true, message: 'Fail criteria saved successfully', policy });
   } catch (error) {
     res.status(500).json({ message: 'Failed to save fail criteria', error: error.message });
@@ -95,24 +75,16 @@ const saveFailCriteria = async (req, res) => {
 const resetDefaultScale = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
-    if (!schoolId) return res.status(400).json({ message: 'School ID required' });
     const campusRef = await resolveCampusRef(req.body.campus_id, schoolId);
-
     const policy = await GradingPolicy.findOneAndUpdate(
       { school_id: schoolId, campus_id: campusRef },
-      { grading_scale: DEFAULT_SCALE, fail_criteria: DEFAULT_FAIL_CRITERIA },
+      { policies: DEFAULT_POLICIES, grading_scale: DEFAULT_SCALE, fail_criteria: DEFAULT_FAIL_CRITERIA },
       { new: true, upsert: true, setDefaultsOnInsert: true }
     );
-
-    res.status(200).json({ success: true, message: 'Standard scale reset successfully', policy });
+    res.status(200).json({ success: true, message: 'Standard policies reset successfully', policy });
   } catch (error) {
     res.status(500).json({ message: 'Failed to reset standard scale', error: error.message });
   }
 };
 
-module.exports = {
-  getGradingPolicy,
-  saveGradingScale,
-  saveFailCriteria,
-  resetDefaultScale
-};
+module.exports = { getGradingPolicy, savePolicies, saveFailCriteria, resetDefaultScale, saveGradingScale: savePolicies };

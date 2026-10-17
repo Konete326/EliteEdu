@@ -1,6 +1,6 @@
 import {
   LayoutGrid, CalendarCheck, DollarSign, Landmark, GraduationCap,
-  Users, MessageSquare, Award, Calendar, Bus, BarChart3, Sliders, ClipboardCheck
+  Users, MessageSquare, Award, Calendar, Bus, BarChart3, Sliders
 } from 'lucide-react';
 
 export const getAdminNavItems = (schoolType) => [
@@ -48,11 +48,11 @@ export const getAdminNavItems = (schoolType) => [
       title: 'Fee Management',
       icon: DollarSign,
       subItems: [
-        { name: 'Fee Structure', path: '/admin/fees/structure' },
         { name: 'Fee Collection', path: '/admin/fees/collection' },
-        { name: 'Fee Concession', path: '/admin/fees/concession' },
+        { name: 'Fee Structure', path: '/admin/fees/structure' },
         { name: 'Defaulters List', path: '/admin/fees/defaulters' },
-        { name: 'Fee Reports', path: '/admin/fees/reports' }
+        { name: 'Fee Reports', path: '/admin/fees/reports' },
+        { name: 'Fee Concession', path: '/admin/fees/concession' }
       ]
     },
     {
@@ -108,22 +108,13 @@ export const getAdminNavItems = (schoolType) => [
     title: 'Exam Management',
     icon: Award,
     subItems: [
-      { name: 'Examinations', path: '/admin/exam-management/exams' },
-      { name: 'Exam Grading', path: '/admin/exam-management/grading-policies' },
-      { name: 'Exam Schedules', path: '/admin/exams/schedules' },
-      { name: 'Date Sheets', path: '/admin/exams/date-sheets' },
-      { name: 'Marks Entry', path: '/admin/exams/marks' },
-      { name: 'Report Cards', path: '/admin/exams/report-cards' },
-      { name: 'Question Papers', path: '/admin/exams/question-papers' }
-    ]
-  },
-  {
-    type: 'group',
-    title: 'Class Tests',
-    icon: ClipboardCheck,
-    subItems: [
-      { name: 'Manage Test Marks', path: '/admin/class-tests/manage' },
-      { name: 'Test Results & Reports', path: '/admin/class-tests/results' }
+      { name: 'Exam Categories', path: '/admin/exam-management/categories' },
+      { name: 'Grading Policies', path: '/admin/exam-management/grading-policies' },
+      { name: 'Remarks Policy', path: '/admin/exam-management/remarks-policy' },
+      { name: 'Date Sheet', path: '/admin/exam-management/schedule' },
+      { name: 'Manage Remarks', path: '/admin/exam-management/manage-remarks' },
+      { name: 'Mark Sheets', path: '/admin/exam-management/mark-sheets' },
+      { name: 'Question Papers', path: '/admin/question-papers' }
     ]
   },
   {
@@ -189,6 +180,135 @@ export const getNavCategories = (user) => {
       ]
     }];
   }
+
+  const customRole = user?.custom_role_id || user?.custom_role;
+  const rawPerms = user?.permissions || customRole?.permissions;
+
+  if (Array.isArray(rawPerms) && rawPerms.length > 0) {
+    const allowed = new Set(rawPerms.filter((p) => p.view).map((p) => p.module_key?.toLowerCase()));
+    const groups = [];
+
+    const mainSub = [
+      { name: 'Dashboard', path: user.role === 'Teacher' ? '/teacher' : '/admin' }
+    ];
+
+    if (allowed.has('campus')) mainSub.push({ name: 'Campus', path: '/admin/campus' });
+    if (allowed.has('grades')) mainSub.push({ name: 'Grades', path: '/admin/grades' });
+    if (allowed.has('subjects')) mainSub.push({ name: 'Subjects', path: '/admin/subjects' });
+    if (allowed.has('teachers')) mainSub.push({ name: 'Teachers', path: '/admin/teachers' });
+    if (allowed.has('students')) mainSub.push({ name: 'Students', path: '/admin/students' });
+    if (allowed.has('student_promotion')) mainSub.push({ name: 'Promote Students', path: '/admin/students/promote' });
+    if (allowed.has('admission_letter')) mainSub.push({ name: 'Admission Letter', path: '/admin/students/admission-letter' });
+    if (allowed.has('student_id_cards')) mainSub.push({ name: 'Student ID Cards', path: '/admin/students/id-cards' });
+    if (allowed.has('teacher_id_cards')) mainSub.push({ name: 'Staff Service ID Cards', path: '/admin/teachers/id-cards' });
+    if (user.role === 'Teacher') mainSub.push({ name: 'My Profile', path: '/teacher/profile' });
+
+    groups.push({
+      type: 'group',
+      title: customRole?.name ? customRole.name : 'Main',
+      icon: LayoutGrid,
+      subItems: mainSub
+    });
+
+    if (allowed.has('fees')) {
+      groups.push({
+        type: 'group',
+        title: 'Fee Management',
+        icon: DollarSign,
+        subItems: [
+          { name: 'Fee Collection', path: '/admin/fees/collection' },
+          { name: 'Fee Structure', path: '/admin/fees/structure' },
+          { name: 'Defaulters List', path: '/admin/fees/defaulters' },
+          { name: 'Fee Reports', path: '/admin/fees/reports' },
+          { name: 'Fee Concession', path: '/admin/fees/concession' }
+        ]
+      });
+    }
+
+    if (allowed.has('accounts')) {
+      groups.push({
+        type: 'group',
+        title: 'Accounts',
+        icon: Landmark,
+        subItems: [
+          { name: 'Chart of Accounts', path: '/admin/accounts/chart' },
+          { name: 'Income', path: '/admin/accounts/income' },
+          { name: 'Expenses', path: '/admin/accounts/expenses' },
+          { name: 'Transactions', path: '/admin/accounts/transactions' },
+          { name: 'Balance Sheet', path: '/admin/accounts/balance-sheet' }
+        ]
+      });
+    }
+
+    if (allowed.has('attendance')) {
+      groups.push({
+        type: 'group',
+        title: 'Attendance',
+        icon: CalendarCheck,
+        subItems: [
+          { name: 'Student Attendance', path: '/admin/attendance/students' },
+          { name: 'Staff Attendance', path: '/admin/attendance/staff' },
+          { name: 'Employees Attendance', path: '/admin/attendance/employees' },
+          { name: 'Attendance Report', path: '/admin/attendance/report' }
+        ]
+      });
+    }
+
+    if (allowed.has('exams') || allowed.has('grading_policies')) {
+      const examSubs = [];
+      if (allowed.has('exams')) {
+        examSubs.push({ name: 'Examinations', path: '/admin/exam-management/exams' });
+        examSubs.push({ name: 'Manage Class Tests', path: '/admin/class-tests/manage' });
+        examSubs.push({ name: 'Exam Schedules', path: '/admin/exams/schedules' });
+        examSubs.push({ name: 'Date Sheets', path: '/admin/exams/date-sheets' });
+        examSubs.push({ name: 'Marks Entry', path: '/admin/exams/marks' });
+      }
+      if (allowed.has('grading_policies')) {
+        examSubs.push({ name: 'Exam Grading', path: '/admin/exam-management/grading-policies' });
+      }
+      groups.push({
+        type: 'group',
+        title: 'Exam Management',
+        icon: Award,
+        subItems: examSubs
+      });
+    }
+
+    if (allowed.has('reports')) {
+      groups.push({
+        type: 'group',
+        title: 'Reports',
+        icon: BarChart3,
+        subItems: [
+          { name: 'Audit Logs', path: '/admin/reports/audit-logs' },
+          { name: 'Academic Reports', path: '/admin/reports/academic' },
+          { name: 'Financial Reports', path: '/admin/reports/financial' }
+        ]
+      });
+    }
+
+    if (allowed.has('control_panel') || allowed.has('user_management')) {
+      const cpSubs = [];
+      if (allowed.has('control_panel')) {
+        cpSubs.push({ name: 'General Settings', path: '/admin/settings/general' });
+        cpSubs.push({ name: 'Digital Signatures & Stamps', path: '/admin/general-settings/signatures' });
+        cpSubs.push({ name: 'Theme & Branding', path: '/admin/control-panel/branding' });
+      }
+      if (allowed.has('user_management')) {
+        cpSubs.push({ name: 'User Management', path: '/admin/control-panel/user-management' });
+        cpSubs.push({ name: 'Roles & Permissions', path: '/admin/settings/roles' });
+      }
+      groups.push({
+        type: 'group',
+        title: 'Control Panel',
+        icon: Sliders,
+        subItems: cpSubs
+      });
+    }
+
+    return groups;
+  }
+
   if (user.role === 'Teacher') {
     const permissions = user.app_settings || user.app_permissions || {};
     const subItems = [{ name: 'Dashboard', path: '/teacher' }];
@@ -217,6 +337,7 @@ export const getNavCategories = (user) => {
       subItems
     }];
   }
+
   return getAdminNavItems(user.school_type);
 };
 
@@ -228,7 +349,13 @@ export const getAllAdminRoutes = () => {
     '/admin/staff-applicants', '/admin/exam-management/grading-policies', '/admin/exams/grading-policies',
     '/admin/exam-management/exams', '/admin/exam-management/exams/new', '/admin/exams/schedules',
     '/admin/exams/date-sheets', '/admin/exams/marks', '/teacher/exams',
+    '/admin/exam-management/categories', '/admin/exam-management/remarks-policy',
+    '/admin/exam-management/schedule', '/admin/exam-management/schedule/new',
+    '/admin/exam-management/manage-remarks', '/admin/exam-management/mark-sheets',
+    '/admin/exam-management/results', '/admin/question-papers',
     '/admin/class-tests/manage', '/admin/class-tests/results', '/teacher/class-tests',
+    '/admin/fees/collection', '/admin/fees/structure', '/admin/fees/defaulters',
+    '/admin/fees/reports', '/admin/fees/concession',
     '/admin/settings/appearance', '/admin/control-panel/branding', '/admin/reports/audit-logs',
     '/admin/reports/audit-log', '/admin/students/promote', '/admin/control-panel/class-transfer',
     '/admin/control-panel/user-management', '/admin/settings/roles', '/admin/control-panel/roles', '/admin/roles',
@@ -265,8 +392,19 @@ export const getRouteTitle = (pathname) => {
   if (pathname.startsWith('/admin/students/') && pathname.endsWith('/edit')) return 'Edit Student';
   if (pathname === '/admin/students/admission-letter') return 'Admission Letter';
   if (pathname === '/admin/students/id-cards') return 'Student ID Cards';
+  if (pathname === '/admin/fees/collection') return 'Fee Collection Counter';
+  if (pathname === '/admin/fees/structure') return 'Fee Structure & Rates';
+  if (pathname === '/admin/fees/defaulters') return 'Fee Defaulters & Arrears';
+  if (pathname === '/admin/fees/reports' || pathname === '/admin/fees/concession') return 'Fee Reports & Concessions';
   if (pathname === '/admin/settings/appearance' || pathname === '/admin/control-panel/branding') return 'Theme & Appearance';
   if (pathname === '/admin/exam-management/grading-policies' || pathname === '/admin/exams/grading-policies') return 'Exam Grading';
+  if (pathname === '/admin/exam-management/categories') return 'Exam Categories';
+  if (pathname === '/admin/exam-management/remarks-policy') return 'Remarks Policy';
+  if (pathname === '/admin/exam-management/schedule') return 'Datesheets';
+  if (pathname === '/admin/exam-management/schedule/new') return 'New Datesheet';
+  if (pathname === '/admin/exam-management/manage-remarks') return 'Manage Remarks';
+  if (pathname === '/admin/exam-management/mark-sheets') return 'Mark Sheets';
+  if (pathname === '/admin/question-papers') return 'Question Papers Studio';
   if (pathname === '/admin/exam-management/exams' || pathname === '/admin/exams/schedules' || pathname === '/admin/exams/date-sheets' || pathname === '/admin/exams/marks' || pathname === '/teacher/exams' || pathname === '/teacher/examination' || pathname === '/teacher/datesheet') return 'Examinations & Assessments';
   if (pathname === '/admin/exam-management/exams/new') return 'Exam Setup Wizard';
   if (pathname.startsWith('/admin/exam-management/exams/') && pathname.endsWith('/edit')) return 'Edit Exam';
@@ -295,6 +433,7 @@ export const getRouteTitle = (pathname) => {
   if (pathname === '/teacher/online-classes') return 'Online Classes';
   if (pathname === '/teacher/datesheet') return 'Date Sheet';
   if (pathname === '/teacher/salary') return 'My Salary';
+
   const allGroups = getAdminNavItems('Private');
   for (const group of allGroups) {
     const match = group.subItems?.find((sub) => sub.path === pathname);

@@ -1,6 +1,9 @@
 import { FileText, Calendar, Pencil, Trash2, Eye, CreditCard } from 'lucide-react';
+import usePermissions from '../../../hooks/usePermissions';
 
 const StudentTableRow = ({ student, onEdit, onDelete, onView, onOpenLedger, onOpenAttendance, onOpenAdmissionLetter, onOpenIdCard }) => {
+  const { canDelete } = usePermissions();
+  const hasDelete = canDelete('students');
   const initials = student.name ? student.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) : 'ST';
   const admissionDateStr = student.admission_date ? new Date(student.admission_date).toLocaleDateString() : '—';
 
@@ -83,9 +86,11 @@ const StudentTableRow = ({ student, onEdit, onDelete, onView, onOpenLedger, onOp
           <button type="button" onClick={() => onEdit(student)} title="Edit Student" className="p-1.5 rounded-lg text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20">
             <Pencil className="w-4 h-4" />
           </button>
-          <button type="button" onClick={() => onDelete(student)} title="Delete Student" className="p-1.5 rounded-lg text-bad/80 hover:text-bad hover:bg-bad-soft dark:hover:bg-bad/20">
-            <Trash2 className="w-4 h-4" />
-          </button>
+          {hasDelete && (
+            <button type="button" onClick={() => onDelete(student)} title="Delete Student" className="p-1.5 rounded-lg text-bad/80 hover:text-bad hover:bg-bad-soft dark:hover:bg-bad/20">
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </td>
     </tr>
