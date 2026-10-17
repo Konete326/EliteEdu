@@ -58,7 +58,11 @@ const Style2Card = ({ student, config = {} }) => {
           {config.showBarcode !== false && renderSvgBarcode(grNumber, 75, 18)}
           <span className="text-[7px] font-mono block tracking-widest">*{grNumber}*</span>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-0.5 text-[7px] font-semibold text-ink-muted/80 select-none">
+            <img src="/logo.png" alt="" className="w-2.5 h-2.5 object-contain opacity-60" />
+            <span>EliteEdu</span>
+          </div>
           {config.showQr !== false && (
             <a href={verifyUrl} target="_blank" rel="noreferrer" title="Verify student">
               {renderSvgQrCode(verifyUrl, 38)}

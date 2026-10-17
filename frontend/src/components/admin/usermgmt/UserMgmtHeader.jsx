@@ -2,19 +2,28 @@ import { Users, Shield, Radio } from 'lucide-react';
 
 const TABS = [
   { id: 'users', label: 'Users Management', icon: Users },
-  { id: 'roles', label: 'User Roles', icon: Shield },
+  { id: 'roles', label: 'Roles & Permissions', icon: Shield },
   { id: 'sessions', label: 'Session Management', icon: Radio }
 ];
 
 const UserMgmtHeader = ({ activeTab, onSelectTab }) => {
+  const isRoles = activeTab === 'roles';
+  const isSessions = activeTab === 'sessions';
+  const title = isRoles ? 'Roles & Permissions' : isSessions ? 'Session Management' : 'User Management';
+  const subtitle = isRoles
+    ? 'Define institutional roles, assign dashboard templates, and configure granular permission matrices.'
+    : isSessions
+    ? 'Monitor live concurrent user sessions, device footprints, and manage IP restrictions.'
+    : 'Manage system users, multi-campus roles, permission matrices, and live active sessions.';
+
   return (
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-bold text-ink dark:text-ink-dark tracking-tight">
-          User Management
+          {title}
         </h1>
         <p className="text-xs text-ink-muted dark:text-ink-muted-dark mt-0.5">
-          Manage system users, multi-campus roles, permission matrices, and live active sessions.
+          {subtitle}
         </p>
       </div>
 

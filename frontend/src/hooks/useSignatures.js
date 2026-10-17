@@ -30,7 +30,16 @@ export const useSignatures = () => {
   const saveSignature = async (payload) => {
     try {
       setSaving(true);
-      const res = await api.post('/signatures', payload);
+      let userId;
+      try {
+        const raw = localStorage.getItem('user');
+        if (raw) {
+          const u = JSON.parse(raw);
+          userId = u?._id || u?.id;
+        }
+      } catch (e) {}
+      const body = userId ? { user_id: userId, ...payload } : payload;
+      const res = await api.post('/signatures', body);
       setFeedback({
         type: 'success',
         title: 'Success',

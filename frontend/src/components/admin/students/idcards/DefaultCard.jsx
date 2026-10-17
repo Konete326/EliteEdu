@@ -76,6 +76,13 @@ const DefaultCard = ({ student, config = {} }) => {
             </a>
           )}
         </div>
+        <div className="flex items-center justify-between pt-1 text-[7px] text-ink-muted/80">
+          <span>Valid Session 2026-27</span>
+          <div className="flex items-center gap-0.5 font-semibold opacity-60">
+            <img src="/logo.png" alt="" className="w-2 h-2 object-contain" />
+            <span>EliteEdu</span>
+          </div>
+        </div>
       </div>
     </div>
   );

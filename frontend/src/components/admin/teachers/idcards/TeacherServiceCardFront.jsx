@@ -86,6 +86,10 @@ const TeacherServiceCardFront = ({ teacher, config = {}, style = 'GovtSindh' }) 
 
           <div className="flex items-end justify-between pt-1">
             <p className="text-[6px] font-mono text-gray-500">ID: {teacher._id?.slice(-6)?.toUpperCase()}</p>
+            <div className="flex items-center gap-0.5 text-[6.5px] font-semibold text-gray-400/80 dark:text-gray-500 select-none">
+              <img src="/logo.png" alt="" className="w-2 h-2 object-contain opacity-60" />
+              <span>EliteEdu</span>
+            </div>
             <div className="text-right">
               <div className="border-b border-gray-400 w-16 mb-0.5" />
               <p className="text-[6px] font-bold text-gray-600 dark:text-gray-400 uppercase">Holder's Signature</p>

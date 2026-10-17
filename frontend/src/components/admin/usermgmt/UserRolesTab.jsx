@@ -53,8 +53,15 @@ const UserRolesTab = ({ roles = [], campuses = [], onRefresh }) => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
-        {filteredRoles.map((r) => {
+      {filteredRoles.length === 0 ? (
+        <div className="p-8 text-center bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl">
+          <Shield className="w-8 h-8 text-ink-muted mx-auto mb-2 opacity-50" />
+          <p className="text-sm font-semibold text-ink dark:text-ink-dark">No roles found</p>
+          <p className="text-xs text-ink-muted mt-0.5">Click "Add Role" to define an institutional role and permissions matrix.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
+          {filteredRoles.map((r) => {
           const activeModules = (r.permissions || []).filter((p) => p.view || p.add || p.edit || p.delete || p.filter || p.reports).length;
           return (
             <div key={r._id} className="p-4 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs flex flex-col justify-between space-y-3">
@@ -92,6 +99,7 @@ const UserRolesTab = ({ roles = [], campuses = [], onRefresh }) => {
           );
         })}
       </div>
+      )}
 
       {(isAddOpen || editRole) && <RoleFormModal role={editRole} campuses={campuses} token={token} onClose={() => { setIsAddOpen(false); setEditRole(null); }} onSaved={onRefresh} />}
       {dashboardRole && <AssignDashboardModal role={dashboardRole} token={token} onClose={() => setDashboardRole(null)} onSaved={onRefresh} />}

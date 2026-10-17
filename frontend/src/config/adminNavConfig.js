@@ -216,7 +216,8 @@ export const getAllAdminRoutes = () => {
     '/admin/staff-applicants', '/admin/exam-management/grading-policies', '/admin/exams/grading-policies',
     '/admin/settings/appearance', '/admin/control-panel/branding', '/admin/reports/audit-logs',
     '/admin/reports/audit-log', '/admin/students/promote', '/admin/control-panel/class-transfer',
-    '/admin/control-panel/user-management', '/admin/settings/general', '/admin/general-settings/signatures',
+    '/admin/control-panel/user-management', '/admin/settings/roles', '/admin/control-panel/roles', '/admin/roles',
+    '/admin/settings/general', '/admin/general-settings/signatures',
     '/admin/settings/signatures', '/admin/attendance/students', '/admin/attendance/staff',
     '/admin/attendance/employees'
   ]);
@@ -257,6 +258,7 @@ export const getRouteTitle = (pathname) => {
   if (pathname === '/superadmin/logs' || pathname === '/admin/reports/audit-logs' || pathname === '/admin/reports/audit-log') return 'System Telemetry & Audit Logs';
   if (pathname === '/admin/students/promote' || pathname === '/admin/control-panel/class-transfer') return 'Promote Students & Class Transfer';
   if (pathname === '/admin/control-panel/user-management') return 'User Management';
+  if (pathname === '/admin/settings/roles' || pathname === '/admin/control-panel/roles' || pathname === '/admin/roles') return 'Roles & Permissions';
   if (pathname === '/admin/general-settings/signatures' || pathname === '/admin/settings/signatures') return 'Digital Signatures & Stamps Studio';
   if (pathname === '/admin/attendance/students') return 'Student Attendance';
   if (pathname === '/admin/attendance/staff' || pathname === '/admin/attendance/employees') return 'Staff Attendance';

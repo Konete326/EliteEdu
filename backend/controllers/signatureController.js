@@ -8,8 +8,9 @@ const getSignatures = async (req, res) => {
       filter.is_stamp = req.query.is_stamp === 'true';
     }
     if (req.user.role === 'Teacher') {
+      const uId = req.user._id || req.user.id;
       filter.$or = [
-        { user_id: req.user._id },
+        { user_id: uId },
         { is_stamp: true }
       ];
     }
@@ -18,6 +19,9 @@ const getSignatures = async (req, res) => {
       .sort({ is_default: -1, createdAt: -1 });
     res.status(200).json({ success: true, data: items });
   } catch (err) {
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({ success: false, message: err.message });
+    }
     res.status(500).json({ success: false, message: err.message });
   }
 };
@@ -29,6 +33,10 @@ const createSignature = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Label and signature image are required' });
     }
     const schoolId = req.user.school_id;
+    const userId = req.user?._id || req.user?.id || req.body?.user_id;
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'User identifier is required' });
+    }
     if (is_default) {
       await DigitalSignature.updateMany(
         { school_id: schoolId, is_stamp: Boolean(is_stamp) },
@@ -37,7 +45,7 @@ const createSignature = async (req, res) => {
     }
     const signature = await DigitalSignature.create({
       school_id: schoolId,
-      user_id: req.user._id,
+      user_id: userId,
       label: label.trim(),
       type: type || 'Upload',
       image_url,
@@ -46,6 +54,9 @@ const createSignature = async (req, res) => {
     });
     res.status(201).json({ success: true, data: signature });
   } catch (err) {
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({ success: false, message: err.message });
+    }
     res.status(500).json({ success: false, message: err.message });
   }
 };

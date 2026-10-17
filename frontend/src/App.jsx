@@ -82,7 +82,10 @@ function App() {
                   <Route path="/admin/settings/signatures" element={<GeneralSignaturesPage />} />
                   <Route path="/admin/settings/appearance" element={<ThemeSettingsPage />} />
                   <Route path="/admin/control-panel/branding" element={<ThemeSettingsPage />} />
-                  <Route path="/admin/control-panel/user-management" element={<UserManagementPage />} />
+                  <Route path="/admin/control-panel/user-management" element={<UserManagementPage defaultTab="users" />} />
+                  <Route path="/admin/settings/roles" element={<UserManagementPage defaultTab="roles" />} />
+                  <Route path="/admin/control-panel/roles" element={<UserManagementPage defaultTab="roles" />} />
+                  <Route path="/admin/roles" element={<UserManagementPage defaultTab="roles" />} />
                   <Route path="/admin/reports/audit-logs" element={<SystemLogsPage />} />
                   <Route path="/admin/profile" element={<MyProfilePage />} />
                   {adminDynamicRoutes.map((r) => (

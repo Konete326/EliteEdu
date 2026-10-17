@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { getApiBase } from '../../utils/apiBase';
 import UserMgmtHeader from '../../components/admin/usermgmt/UserMgmtHeader';
@@ -9,15 +10,45 @@ import UserMgmtSidebar from '../../components/admin/usermgmt/UserMgmtSidebar';
 import UserFormModal from '../../components/admin/usermgmt/UserFormModal';
 import RoleFormModal from '../../components/admin/usermgmt/RoleFormModal';
 
-const UserManagementPage = () => {
+const UserManagementPage = ({ defaultTab }) => {
   const { token } = useAuth();
-  const [activeTab, setActiveTab] = useState('users');
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const getInitialTab = () => {
+    if (defaultTab) return defaultTab;
+    if (location.pathname.includes('roles')) return 'roles';
+    if (location.pathname.includes('sessions')) return 'sessions';
+    return 'users';
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
   const [campuses, setCampuses] = useState([]);
   const [roles, setRoles] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [totalUsers, setTotalUsers] = useState(0);
   const [showAddUser, setShowAddUser] = useState(false);
   const [showAddRole, setShowAddRole] = useState(false);
+
+  useEffect(() => {
+    if (defaultTab) {
+      setActiveTab(defaultTab);
+    } else if (location.pathname.includes('roles')) {
+      setActiveTab('roles');
+    } else if (location.pathname.includes('sessions')) {
+      setActiveTab('sessions');
+    }
+  }, [defaultTab, location.pathname]);
+
+  const handleSelectTab = (t) => {
+    setActiveTab(t);
+    setSelectedUser(null);
+    if (t === 'roles' && location.pathname !== '/admin/settings/roles') {
+      navigate('/admin/settings/roles', { replace: true });
+    } else if (t === 'users' && location.pathname !== '/admin/control-panel/user-management') {
+      navigate('/admin/control-panel/user-management', { replace: true });
+    }
+  };
 
   const loadData = useCallback(async () => {
     if (!token) return;
@@ -36,7 +67,7 @@ const UserManagementPage = () => {
 
   return (
     <div className="w-full space-y-5">
-      <UserMgmtHeader activeTab={activeTab} onSelectTab={(t) => { setActiveTab(t); setSelectedUser(null); }} />
+      <UserMgmtHeader activeTab={activeTab} onSelectTab={handleSelectTab} />
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
         <div className="xl:col-span-8 2xl:col-span-9 min-w-0">

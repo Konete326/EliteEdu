@@ -60,6 +60,10 @@ const Style1Card = ({ student, config = {} }) => {
       <div className="p-2 border-t border-black/10 dark:border-white/10 flex items-center justify-between gap-1 text-black dark:text-white print:text-black relative z-10">
         {config.showBarcode !== false && renderSvgBarcode(grNumber, 70, 16)}
         <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-0.5 text-[7px] text-ink-muted/80 font-semibold select-none">
+            <img src="/logo.png" alt="" className="w-2.5 h-2.5 object-contain opacity-60" />
+            <span>EliteEdu</span>
+          </div>
           {config.showQr !== false && (
             <a href={verifyUrl} target="_blank" rel="noreferrer" title="Click to verify">
               {renderSvgQrCode(verifyUrl, 34)}
