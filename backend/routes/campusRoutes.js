@@ -10,7 +10,7 @@ const {
 
 const router = express.Router();
 
-router.use(authMiddleware, authorizeRoles('Admin'));
+router.use(authMiddleware, authorizeRoles('Admin', 'SuperAdmin'));
 
 router.get('/', getCampuses);
 router.post('/', createCampus);

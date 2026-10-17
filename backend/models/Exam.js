@@ -17,6 +17,7 @@ const paperSchema = new mongoose.Schema({
   practical_marks: { type: Number, default: 25, min: 0 },
   total_marks: { type: Number, default: 100, min: 0 },
   passing_marks: { type: Number, default: 33, min: 0 },
+  question_paper_id: { type: mongoose.Schema.Types.ObjectId, ref: 'QuestionPaper', default: null },
   marks_submitted: { type: Boolean, default: false }
 }, { _id: true });
 

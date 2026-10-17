@@ -1,11 +1,10 @@
 const Campus = require('../models/Campus');
+const resolveSchoolId = require('../utils/schoolResolver');
 
 const getCampuses = async (req, res) => {
   try {
-    const schoolId = req.user?.school_id;
-    if (!schoolId) {
-      return res.status(403).json({ message: 'School association required' });
-    }
+    const schoolId = await resolveSchoolId(req);
+    if (!schoolId) return res.status(200).json({ success: true, campuses: [] });
 
     const campuses = await Campus.find({ school_id: schoolId })
       .populate('school_id', 'name logo_url')
@@ -18,10 +17,8 @@ const getCampuses = async (req, res) => {
 
 const createCampus = async (req, res) => {
   try {
-    const schoolId = req.user?.school_id;
-    if (!schoolId) {
-      return res.status(403).json({ message: 'School association required' });
-    }
+    const schoolId = await resolveSchoolId(req);
+    if (!schoolId) return res.status(400).json({ message: 'School association required' });
 
     const { name, email, website, address, contact_number, status, image_url, image } = req.body;
 
@@ -52,7 +49,7 @@ const createCampus = async (req, res) => {
 
 const updateCampus = async (req, res) => {
   try {
-    const schoolId = req.user?.school_id;
+    const schoolId = await resolveSchoolId(req);
     const { id } = req.params;
     const { name, email, website, address, contact_number, status, image_url, image } = req.body;
 
@@ -74,11 +71,8 @@ const updateCampus = async (req, res) => {
     else if (image !== undefined) updateData.image_url = image.trim();
     if (status !== undefined) updateData.status = status;
 
-    const campus = await Campus.findOneAndUpdate(
-      { _id: id, school_id: schoolId },
-      updateData,
-      { new: true, runValidators: true }
-    );
+    const filter = schoolId ? { _id: id, school_id: schoolId } : { _id: id };
+    const campus = await Campus.findOneAndUpdate(filter, updateData, { new: true, runValidators: true });
 
     if (!campus) {
       return res.status(404).json({ message: 'Campus not found or unauthorized' });
@@ -92,10 +86,11 @@ const updateCampus = async (req, res) => {
 
 const deleteCampus = async (req, res) => {
   try {
-    const schoolId = req.user?.school_id;
+    const schoolId = await resolveSchoolId(req);
     const { id } = req.params;
 
-    const campus = await Campus.findOneAndDelete({ _id: id, school_id: schoolId });
+    const filter = schoolId ? { _id: id, school_id: schoolId } : { _id: id };
+    const campus = await Campus.findOneAndDelete(filter);
     if (!campus) {
       return res.status(404).json({ message: 'Campus not found or unauthorized' });
     }

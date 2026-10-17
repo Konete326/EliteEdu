@@ -6,10 +6,12 @@ const UserFormModal = ({ user, roles = [], campuses = [], token, onClose, onSave
   const isEdit = Boolean(user?._id);
   const [showPassword, setShowPassword] = useState(false);
   const [readOnlyPassword, setReadOnlyPassword] = useState(true);
+  const [liveRoles, setLiveRoles] = useState(roles);
+  const [liveCampuses, setLiveCampuses] = useState(campuses);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
-    contact_number: user?.contact_number || '',
+    contact_number: user?.contact_number || user?.phone || user?.whatsapp_number || '',
     role: user?.role || 'Teacher',
     custom_role_id: user?.custom_role_id?._id || user?.custom_role_id || '',
     campus_id: user?.campus_id?._id || user?.campus_id || '',
@@ -19,10 +21,38 @@ const UserFormModal = ({ user, roles = [], campuses = [], token, onClose, onSave
   const [error, setError] = useState('');
 
   useEffect(() => {
+    let active = true;
+    const fetchLiveOptions = async () => {
+      if (!token) return;
+      try {
+        const h = { Authorization: `Bearer ${token}` };
+        const [cRes, rRes] = await Promise.all([
+          fetch(`${getApiBase()}/campuses`, { headers: h }).then((r) => r.json()),
+          fetch(`${getApiBase()}/user-management/roles`, { headers: h }).then((r) => r.json())
+        ]);
+        if (active) {
+          if (cRes?.campuses) setLiveCampuses(cRes.campuses);
+          if (rRes?.roles) setLiveRoles(rRes.roles);
+        }
+      } catch {}
+    };
+    fetchLiveOptions();
+    return () => { active = false; };
+  }, [token]);
+
+  useEffect(() => {
+    if (roles?.length) setLiveRoles(roles);
+  }, [roles]);
+
+  useEffect(() => {
+    if (campuses?.length) setLiveCampuses(campuses);
+  }, [campuses]);
+
+  useEffect(() => {
     setFormData({
       name: user?.name || '',
       email: user?.email || '',
-      contact_number: user?.contact_number || '',
+      contact_number: user?.contact_number || user?.phone || user?.whatsapp_number || '',
       role: user?.role || 'Teacher',
       custom_role_id: user?.custom_role_id?._id || user?.custom_role_id || '',
       campus_id: user?.campus_id?._id || user?.campus_id || '',
@@ -99,14 +129,14 @@ const UserFormModal = ({ user, roles = [], campuses = [], token, onClose, onSave
               <label className="block font-semibold text-ink dark:text-ink-dark mb-1">Custom Role</label>
               <select value={formData.custom_role_id} onChange={(e) => setFormData({ ...formData, custom_role_id: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-surface-secondary/40 border border-line dark:border-line-dark text-ink dark:text-ink-dark outline-none focus:border-primary">
                 <option value="">None (Standard)</option>
-                {roles.map((r) => <option key={r._id} value={r._id}>{r.name}</option>)}
+                {liveRoles.map((r) => <option key={r._id} value={r._id}>{r.name}</option>)}
               </select>
             </div>
             <div className={isEdit ? 'col-span-2' : ''}>
               <label className="block font-semibold text-ink dark:text-ink-dark mb-1">Campus</label>
               <select value={formData.campus_id} onChange={(e) => setFormData({ ...formData, campus_id: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-surface-secondary/40 border border-line dark:border-line-dark text-ink dark:text-ink-dark outline-none focus:border-primary">
                 <option value="">All / Main Campus</option>
-                {campuses.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                {liveCampuses.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
               </select>
             </div>
             {!isEdit && (
