@@ -24,6 +24,7 @@ const authMiddleware = async (req, res, next) => {
       _id: decoded.id,
       name: decoded.name || 'User',
       role: decoded.role,
+      custom_role_id: decoded.custom_role_id || null,
       school_id: decoded.school_id,
       school_name: decoded.school_name || 'Global / System',
       session_id: decoded.session_id || null

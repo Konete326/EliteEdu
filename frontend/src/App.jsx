@@ -26,7 +26,8 @@ import {
   AdminDashboard, TeachersList, AddTeacherPage, CampusPage, SubjectsPage, GradesPage, StudentsList, AddStudentPage,
   StaffApplicantsList, AddStaffApplicantPage, GradingPoliciesPage, AdmissionLetterPage, StudentIdCardsPage,
   TeacherIdCardsPage, ThemeSettingsPage, GeneralSettingsPage, UserManagementPage, PromoteStudentsPage,
-  GeneralSignaturesPage, StudentAttendancePage, EmployeeAttendancePage, ExamsListPage, ExamWizardPage, ComingSoonPage
+  GeneralSignaturesPage, StudentAttendancePage, EmployeeAttendancePage, ExamsListPage, ExamWizardPage,
+  ManageClassTestsPage, ClassTestResultsPage, ComingSoonPage
 } from './pages/admin';
 
 const adminDynamicRoutes = getAllAdminRoutes();
@@ -63,9 +64,12 @@ function App() {
                   <Route path="/admin/exams/marks" element={<ExamsListPage />} />
                   <Route path="/admin/exam-management/exams/new" element={<ExamWizardPage />} />
                   <Route path="/admin/exam-management/exams/:id/edit" element={<ExamWizardPage />} />
+                  <Route path="/admin/class-tests/manage" element={<ManageClassTestsPage />} />
+                  <Route path="/admin/class-tests/results" element={<ClassTestResultsPage />} />
                   <Route path="/teacher/exams" element={<ExamsListPage />} />
                   <Route path="/teacher/examination" element={<ExamsListPage />} />
                   <Route path="/teacher/datesheet" element={<ExamsListPage />} />
+                  <Route path="/teacher/class-tests" element={<ManageClassTestsPage />} />
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
                   <Route path="/admin" element={<AdminDashboard />} />

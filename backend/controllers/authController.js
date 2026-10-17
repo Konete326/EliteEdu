@@ -12,7 +12,7 @@ const login = async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    const user = await User.findOne({ email: email.toLowerCase().trim() }).populate('custom_role_id');
     if (!user || !user.is_active || user.status === 'Inactive') {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
@@ -36,6 +36,7 @@ const login = async (req, res) => {
         id: user._id,
         name: user.name,
         role: user.role,
+        custom_role_id: user.custom_role_id?._id || user.custom_role_id || null,
         school_id: user.school_id,
         school_type: meta.school_type,
         school_name: meta.school_name,
@@ -58,6 +59,9 @@ const login = async (req, res) => {
         school_id: user.school_id,
         campus_id: user.campus_id,
         custom_role_id: user.custom_role_id,
+        custom_role: user.custom_role_id,
+        permissions: user.custom_role_id?.permissions || [],
+        dashboard_type: user.custom_role_id?.dashboard_type || (user.role === 'Admin' ? 'AdminDashboard' : 'TeacherDashboard'),
         school_type: meta.school_type,
         school_name: meta.school_name,
         school_logo: meta.school_logo,
@@ -73,7 +77,7 @@ const login = async (req, res) => {
 
 const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-password');
+    const user = await User.findById(req.user.id).select('-password').populate('custom_role_id');
     if (!user || !user.is_active || user.status === 'Inactive') {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -92,6 +96,9 @@ const getMe = async (req, res) => {
         school_id: user.school_id,
         campus_id: user.campus_id,
         custom_role_id: user.custom_role_id,
+        custom_role: user.custom_role_id,
+        permissions: user.custom_role_id?.permissions || [],
+        dashboard_type: user.custom_role_id?.dashboard_type || (user.role === 'Admin' ? 'AdminDashboard' : 'TeacherDashboard'),
         school_type: meta.school_type,
         school_name: meta.school_name,
         school_logo: meta.school_logo,

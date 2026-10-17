@@ -12,6 +12,7 @@ export const DEFAULT_MODULES = [
   { module_key: 'fees', module_name: 'Fee Management', category: 'Finance' },
   { module_key: 'accounts', module_name: 'Accounts & Expenses', category: 'Finance' },
   { module_key: 'exams', module_name: 'Examinations & Grading', category: 'Examination' },
+  { module_key: 'class_tests', module_name: 'Class Tests & Test Reports', category: 'Examination' },
   { module_key: 'grading_policies', module_name: 'Grading Policies & Criteria', category: 'Examination' },
   { module_key: 'reports', module_name: 'Reports & Analytics', category: 'Operations' },
   { module_key: 'control_panel', module_name: 'Control Panel & Settings', category: 'Administration' },

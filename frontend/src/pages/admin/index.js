@@ -22,4 +22,6 @@ export { default as StaffAttendancePage } from './StaffAttendancePage';
 export { default as EmployeeAttendancePage } from './EmployeeAttendancePage';
 export { default as ExamsListPage } from './ExamsListPage';
 export { default as ExamWizardPage } from './ExamWizardPage';
+export { default as ManageClassTestsPage } from './ManageClassTestsPage';
+export { default as ClassTestResultsPage } from './ClassTestResultsPage';
 export { default as ComingSoonPage } from './ComingSoonPage';

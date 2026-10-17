@@ -1,6 +1,6 @@
 import {
   LayoutGrid, CalendarCheck, DollarSign, Landmark, GraduationCap,
-  Users, MessageSquare, Award, Calendar, Bus, BarChart3, Sliders
+  Users, MessageSquare, Award, Calendar, Bus, BarChart3, Sliders, ClipboardCheck
 } from 'lucide-react';
 
 export const getAdminNavItems = (schoolType) => [
@@ -119,6 +119,15 @@ export const getAdminNavItems = (schoolType) => [
   },
   {
     type: 'group',
+    title: 'Class Tests',
+    icon: ClipboardCheck,
+    subItems: [
+      { name: 'Manage Test Marks', path: '/admin/class-tests/manage' },
+      { name: 'Test Results & Reports', path: '/admin/class-tests/results' }
+    ]
+  },
+  {
+    type: 'group',
     title: 'Planners',
     icon: Calendar,
     subItems: [
@@ -199,6 +208,7 @@ export const getNavCategories = (user) => {
     if (permissions.student_id_cards) subItems.push({ name: 'Student ID Cards', path: '/admin/students/id-cards' });
     if (permissions.teacher_id_cards) subItems.push({ name: 'Staff ID Cards', path: '/admin/teachers/id-cards' });
     if (permissions.grading_policies) subItems.push({ name: 'Grading Policies', path: '/admin/exam-management/grading-policies' });
+    if (permissions.class_tests !== false) subItems.push({ name: 'Class Tests', path: '/teacher/class-tests' });
 
     return [{
       type: 'group',
@@ -218,6 +228,7 @@ export const getAllAdminRoutes = () => {
     '/admin/staff-applicants', '/admin/exam-management/grading-policies', '/admin/exams/grading-policies',
     '/admin/exam-management/exams', '/admin/exam-management/exams/new', '/admin/exams/schedules',
     '/admin/exams/date-sheets', '/admin/exams/marks', '/teacher/exams',
+    '/admin/class-tests/manage', '/admin/class-tests/results', '/teacher/class-tests',
     '/admin/settings/appearance', '/admin/control-panel/branding', '/admin/reports/audit-logs',
     '/admin/reports/audit-log', '/admin/students/promote', '/admin/control-panel/class-transfer',
     '/admin/control-panel/user-management', '/admin/settings/roles', '/admin/control-panel/roles', '/admin/roles',
@@ -259,6 +270,8 @@ export const getRouteTitle = (pathname) => {
   if (pathname === '/admin/exam-management/exams' || pathname === '/admin/exams/schedules' || pathname === '/admin/exams/date-sheets' || pathname === '/admin/exams/marks' || pathname === '/teacher/exams' || pathname === '/teacher/examination' || pathname === '/teacher/datesheet') return 'Examinations & Assessments';
   if (pathname === '/admin/exam-management/exams/new') return 'Exam Setup Wizard';
   if (pathname.startsWith('/admin/exam-management/exams/') && pathname.endsWith('/edit')) return 'Edit Exam';
+  if (pathname === '/admin/class-tests/manage' || pathname === '/teacher/class-tests') return 'Manage Class Tests & Marks';
+  if (pathname === '/admin/class-tests/results') return 'Test Results & Reports';
   if (pathname === '/admin/profile' || pathname === '/superadmin/profile' || pathname === '/teacher/profile') return 'My Profile';
   if (pathname === '/superadmin') return 'Dashboard';
   if (pathname === '/superadmin/schools') return 'Schools';
