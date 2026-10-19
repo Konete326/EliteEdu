@@ -2,30 +2,30 @@ import { Sliders, Save, CheckCircle2, Building, ShieldCheck } from 'lucide-react
 
 const GeneralSettingsHeader = ({ settings, isDirty, saving, onSave }) => {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-xs">
+    <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8 mb-6 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div className="flex items-center gap-3.5">
-        <div className="w-11 h-11 rounded-2xl bg-primary-soft dark:bg-primary/20 flex items-center justify-center text-primary dark:text-primary-dark shrink-0">
-          <Sliders className="w-5 h-5" />
+        <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 font-bold">
+          <Sliders className="w-6 h-6" />
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-lg font-bold text-ink dark:text-ink-dark">
+            <h1 className="text-xl font-black text-ink dark:text-ink-dark tracking-tight">
               General Settings
             </h1>
             {settings?.code && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-dark">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-primary/10 text-primary">
                 <Building className="w-3 h-3" />
                 {settings.code}
               </span>
             )}
             {settings?.school_type && (
-              <span className="hidden md:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-secondary dark:bg-white/10 text-ink-sub dark:text-ink-sub-dark">
+              <span className="hidden md:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-secondary text-ink-muted">
                 <ShieldCheck className="w-3 h-3 text-good" />
                 {settings.school_type} School
               </span>
             )}
           </div>
-          <p className="text-xs text-ink-muted dark:text-ink-muted-dark">
+          <p className="text-xs font-semibold text-ink-muted">
             Manage institutional identity, official report credentials, and dynamic PDF templates
           </p>
         </div>

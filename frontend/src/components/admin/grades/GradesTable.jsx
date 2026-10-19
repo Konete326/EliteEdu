@@ -1,6 +1,10 @@
-import { GripVertical, Eye, Pencil, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import GradeTableRow from './GradeTableRow';
 
-const GradesTable = ({ grades = [], onEdit, onView, onDelete, onToggleStatus }) => {
+const GradesTable = ({ grades = [], onEdit, onView, onDelete, onToggleStatus, onReorder }) => {
+  const [draggedIdx, setDraggedIdx] = useState(null);
+  const [dragOverIdx, setDragOverIdx] = useState(null);
+
   if (grades.length === 0) {
     return (
       <div className="py-16 text-center text-ink-muted">
@@ -9,6 +13,38 @@ const GradesTable = ({ grades = [], onEdit, onView, onDelete, onToggleStatus }) 
       </div>
     );
   }
+
+  const handleDragStart = (e, index) => {
+    setDraggedIdx(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(index));
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragOverIdx !== index) setDragOverIdx(index);
+  };
+
+  const handleDrop = (e, targetIdx) => {
+    e.preventDefault();
+    if (draggedIdx === null || draggedIdx === targetIdx) {
+      setDraggedIdx(null);
+      setDragOverIdx(null);
+      return;
+    }
+    const updated = [...grades];
+    const [moved] = updated.splice(draggedIdx, 1);
+    updated.splice(targetIdx, 0, moved);
+    setDraggedIdx(null);
+    setDragOverIdx(null);
+    if (onReorder) onReorder(updated);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIdx(null);
+    setDragOverIdx(null);
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -23,61 +59,23 @@ const GradesTable = ({ grades = [], onEdit, onView, onDelete, onToggleStatus }) 
           </tr>
         </thead>
         <tbody className="divide-y divide-line/60 dark:divide-line-dark/60 text-xs">
-          {grades.map((grade) => (
-            <tr key={grade._id} className="hover:bg-surface-secondary/40 transition-colors group">
-              <td className="py-3 px-4">
-                <div className="flex items-center gap-2.5">
-                  <GripVertical className="w-4 h-4 text-ink-muted/40 cursor-grab shrink-0" />
-                  <span className="font-bold text-ink dark:text-ink-dark">{grade.name}</span>
-                </div>
-              </td>
-              <td className="py-3 px-4">
-                <div className="flex flex-wrap gap-1.5 items-center">
-                  {grade.sections?.map((sec, i) => (
-                    <span key={i} className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
-                      {sec}
-                    </span>
-                  ))}
-                </div>
-              </td>
-              <td className="py-3 px-4 text-ink dark:text-ink-dark font-medium">
-                {grade.class_teacher?.name || '—'}
-              </td>
-              <td className="py-3 px-4 text-center">
-                <button
-                  type="button"
-                  onClick={() => onToggleStatus(grade)}
-                  className={`w-10 h-5.5 rounded-full transition-colors relative p-0.5 inline-flex items-center ${grade.status === 'Active' ? 'bg-primary' : 'bg-bad'}`}
-                >
-                  <div className={`w-4.5 h-4.5 rounded-full bg-white transition-transform ${grade.status === 'Active' ? 'translate-x-4.5' : 'translate-x-0'}`} />
-                </button>
-              </td>
-              <td className="py-3 px-4 text-right">
-                <div className="flex items-center justify-end gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => onView(grade)}
-                    className="p-1.5 rounded-lg border border-purple-100 dark:border-purple-900/30 bg-purple-50 dark:bg-purple-950/30 text-primary hover:bg-purple-100"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onEdit(grade)}
-                    className="p-1.5 rounded-lg border border-purple-100 dark:border-purple-900/30 bg-purple-50 dark:bg-purple-950/30 text-primary hover:bg-purple-100"
-                  >
-                    <Pencil className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onDelete(grade)}
-                    className="p-1.5 rounded-lg border border-red-100 dark:border-red-900/30 bg-red-50 dark:bg-red-950/30 text-bad hover:bg-red-100"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </td>
-            </tr>
+          {grades.map((grade, index) => (
+            <GradeTableRow
+              key={grade._id}
+              grade={grade}
+              index={index}
+              isDragged={draggedIdx === index}
+              isDragOver={dragOverIdx === index}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              onDragEnd={handleDragEnd}
+              onView={onView}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              onToggleStatus={onToggleStatus}
+              canReorder={Boolean(onReorder)}
+            />
           ))}
         </tbody>
       </table>

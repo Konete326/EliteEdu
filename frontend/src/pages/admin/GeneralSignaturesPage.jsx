@@ -49,43 +49,49 @@ const GeneralSignaturesPage = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 border-b border-line dark:border-white/10 pb-3">
-        {[
-          { id: 'canvas', label: 'Draw with Touch/Mouse', icon: PenTool },
-          { id: 'upload', label: 'Upload Signature Photo', icon: Upload },
-          { id: 'stamp', label: 'Official Seal / Rubber Stamp', icon: Stamp }
-        ].map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
-                isActive
-                  ? 'bg-primary text-white shadow-xs'
-                  : 'bg-surface dark:bg-[#0c0c0c] border border-line dark:border-white/10 text-text-muted hover:text-text'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
+        <div className="xl:col-span-5 space-y-4">
+          <div className="flex items-center gap-1.5 p-1 bg-surface-alt dark:bg-white/5 rounded-xl border border-line dark:border-white/10 text-xs">
+            {[
+              { id: 'canvas', label: 'Draw Vector', icon: PenTool },
+              { id: 'upload', label: 'Upload Photo', icon: Upload },
+              { id: 'stamp', label: 'Official Seal', icon: Stamp }
+            ].map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 py-2 px-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    isActive
+                      ? 'bg-primary text-white shadow-xs'
+                      : 'text-text-muted hover:text-text'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
 
-      <div>
-        {activeTab === 'canvas' && <SignatureCanvas onSave={saveSignature} saving={saving} />}
-        {activeTab === 'upload' && <SignatureUploadCard onSave={saveSignature} saving={saving} />}
-        {activeTab === 'stamp' && <StampUploadCard onSave={saveSignature} saving={saving} />}
-      </div>
+          <div>
+            {activeTab === 'canvas' && <SignatureCanvas onSave={saveSignature} saving={saving} />}
+            {activeTab === 'upload' && <SignatureUploadCard onSave={saveSignature} saving={saving} />}
+            {activeTab === 'stamp' && <StampUploadCard onSave={saveSignature} saving={saving} />}
+          </div>
+        </div>
 
-      <SignaturesList
-        signatures={signatures}
-        onSetDefault={setDefault}
-        onDelete={deleteSignature}
-      />
+        <div className="xl:col-span-7">
+          <SignaturesList
+            signatures={signatures}
+            onSetDefault={setDefault}
+            onDelete={deleteSignature}
+          />
+        </div>
+      </div>
 
       <SettingsFeedbackModal feedback={feedback} onClose={closeFeedback} />
     </div>

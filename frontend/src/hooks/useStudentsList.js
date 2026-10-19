@@ -38,8 +38,10 @@ export const useStudentsList = () => {
       if (selectedGrade !== 'all') params.grade_id = selectedGrade;
       const res = await api.get('/students', { params });
       setStudents(res.data.students || []);
-      setTotalPages(res.data.pagination?.totalPages || 1);
-      setTotalStudents(res.data.pagination?.total || 0);
+      const total = res.data.totalCount ?? res.data.pagination?.total ?? res.data.total ?? 0;
+      const pages = res.data.totalPages ?? res.data.pagination?.totalPages ?? 1;
+      setTotalPages(pages);
+      setTotalStudents(total);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load students');
     } finally {

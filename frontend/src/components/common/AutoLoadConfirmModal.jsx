@@ -12,7 +12,8 @@ const AutoLoadConfirmModal = ({
     'Loads official standard courses from Class 1 to Class 10',
     'Maintains data integrity without deleting your existing items',
     'Assigns default subject codes, categories, and credit configurations'
-  ]
+  ],
+  sequencePreview = null
 }) => {
   if (!isOpen) return null;
 
@@ -22,7 +23,7 @@ const AutoLoadConfirmModal = ({
         className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={!isLoading ? onClose : undefined}
       />
-      <div className="relative w-full max-w-md bg-surface dark:bg-[#0c0c0f] border border-line dark:border-white/10 rounded-2xl p-6 shadow-2xl z-10 space-y-5 animate-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md bg-surface dark:bg-[#0c0c0f] border border-line dark:border-white/10 rounded-2xl p-6 shadow-2xl z-10 space-y-4 animate-in zoom-in-95 duration-200">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark flex items-center justify-center shrink-0 border border-primary/20 shadow-xs">
@@ -56,6 +57,23 @@ const AutoLoadConfirmModal = ({
               </li>
             ))}
           </ul>
+          {sequencePreview && sequencePreview.length > 0 && (
+            <div className="pt-2 border-t border-line/60 dark:border-white/5 space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-ink-muted block">
+                Standard Class Sequence:
+              </span>
+              <div className="flex flex-wrap gap-1">
+                {sequencePreview.map((item) => (
+                  <span
+                    key={item}
+                    className="px-2 py-0.5 rounded-md bg-primary-soft/80 dark:bg-primary/20 text-primary dark:text-primary-dark text-[10px] font-bold border border-primary/20"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-2 text-[11px] text-ink-muted dark:text-ink-muted-dark px-1">
@@ -63,12 +81,12 @@ const AutoLoadConfirmModal = ({
           <span>Safe action: existing classes and customized subjects will not be overwritten.</span>
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-2">
+        <div className="flex items-center justify-end gap-3 pt-1">
           <button
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="px-4 py-2.5 rounded-xl border border-line dark:border-white/10 text-xs font-semibold text-ink-sub dark:text-ink-sub-dark hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark transition-all disabled:opacity-40 cursor-pointer"
+            className="px-4 py-2 rounded-xl border border-line dark:border-white/10 text-xs font-semibold text-ink-sub dark:text-ink-sub-dark hover:bg-surface-secondary transition-all disabled:opacity-40 cursor-pointer"
           >
             Cancel
           </button>
@@ -76,7 +94,7 @@ const AutoLoadConfirmModal = ({
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-sm shadow-primary/25 disabled:opacity-60 cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-sm shadow-primary/25 disabled:opacity-60 cursor-pointer"
           >
             {isLoading ? (
               <>

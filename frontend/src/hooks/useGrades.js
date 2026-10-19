@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import { sortGradesInSequence } from '../utils/gradeSortHelper';
 
 export const useGrades = () => {
   const [grades, setGrades] = useState([]);
@@ -16,7 +17,7 @@ export const useGrades = () => {
         api.get('/campuses'),
         api.get('/teachers')
       ]);
-      setGrades(gRes.data?.grades || []);
+      setGrades(sortGradesInSequence(gRes.data?.grades || []));
       setCampuses(cRes.data?.campuses || []);
       setTeachers(tRes.data?.teachers || []);
     } catch (err) {
@@ -54,6 +55,18 @@ export const useGrades = () => {
     setGrades((prev) => prev.filter((g) => g._id !== gradeId));
   };
 
+  const reorderGrades = async (newOrderedGrades) => {
+    setGrades(newOrderedGrades);
+    try {
+      await api.patch('/grades/reorder', {
+        orderedIds: newOrderedGrades.map((g) => g._id)
+      });
+    } catch (err) {
+      console.error(err);
+      fetchData();
+    }
+  };
+
   const autoLoadGrades = async (campusId) => {
     try {
       setIsSeeding(true);
@@ -66,5 +79,8 @@ export const useGrades = () => {
     }
   };
 
-  return { grades, campuses, teachers, loading, isSeeding, saveGrade, toggleStatus, deleteGrade, autoLoadGrades };
+  return {
+    grades, campuses, teachers, loading, isSeeding,
+    saveGrade, toggleStatus, deleteGrade, reorderGrades, autoLoadGrades
+  };
 };

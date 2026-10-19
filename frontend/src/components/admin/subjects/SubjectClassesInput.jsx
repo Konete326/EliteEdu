@@ -1,16 +1,23 @@
-import { DEFAULT_CLASSES, CURRICULUM_TIERS } from '../../../utils/curriculumPresets';
+import { DEFAULT_CLASSES } from '../../../utils/curriculumPresets';
 
-const QUICK_TIERS = [
-  { label: 'All 1-10', classes: DEFAULT_CLASSES },
-  { label: 'Class 1-2', classes: ['Class 1', 'Class 2'] },
-  { label: 'Class 3-5', classes: ['Class 3', 'Class 4', 'Class 5'] },
-  { label: 'Class 6-8', classes: ['Class 6', 'Class 7', 'Class 8'] },
-  { label: 'Class 9', classes: ['Class 9'] },
-  { label: 'Class 10', classes: ['Class 10'] },
-  { label: 'Matric (9-10)', classes: ['Class 9', 'Class 10'] }
-];
+const SubjectClassesInput = ({ selectedClasses = [], grades = [], onChange }) => {
+  const gradeNames = grades.map((g) => g.name || g).filter(Boolean);
+  const combined = gradeNames.length > 0 ? gradeNames : DEFAULT_CLASSES;
+  const availableClasses = Array.from(new Set([...combined, ...selectedClasses]));
 
-const SubjectClassesInput = ({ selectedClasses = [], onChange }) => {
+  const ece = availableClasses.filter((c) => /nursery|playgroup|kg|prep|montessori|early/i.test(c));
+  const primary = availableClasses.filter((c) => /class\s*[1-5]\b|grade\s*[1-5]\b/i.test(c));
+  const middle = availableClasses.filter((c) => /class\s*[6-8]\b|grade\s*[6-8]\b/i.test(c));
+  const sec = availableClasses.filter((c) => /class\s*(9|10)\b|grade\s*(9|10)\b|matric/i.test(c));
+
+  const quickTiers = [
+    { label: 'All Classes', classes: availableClasses },
+    ...(ece.length > 0 ? [{ label: 'Pre-Primary', classes: ece }] : []),
+    ...(primary.length > 0 ? [{ label: 'Class 1-5', classes: primary }] : []),
+    ...(middle.length > 0 ? [{ label: 'Class 6-8', classes: middle }] : []),
+    ...(sec.length > 0 ? [{ label: 'Matric (9-10)', classes: sec }] : [])
+  ];
+
   const toggleClass = (className) => {
     if (selectedClasses.includes(className)) {
       onChange(selectedClasses.filter((c) => c !== className));
@@ -20,7 +27,7 @@ const SubjectClassesInput = ({ selectedClasses = [], onChange }) => {
   };
 
   const applyTier = (tierClasses) => {
-    const allIncluded = tierClasses.every((c) => selectedClasses.includes(c));
+    const allIncluded = tierClasses.length > 0 && tierClasses.every((c) => selectedClasses.includes(c));
     if (allIncluded) {
       onChange(selectedClasses.filter((c) => !tierClasses.includes(c)));
     } else {
@@ -37,21 +44,21 @@ const SubjectClassesInput = ({ selectedClasses = [], onChange }) => {
         <button
           type="button"
           onClick={() => onChange([])}
-          className="text-[11px] text-ink-muted hover:text-bad transition-colors"
+          className="text-[11px] text-ink-muted hover:text-bad transition-colors cursor-pointer"
         >
-          Clear
+          Clear All
         </button>
       </div>
 
       <div className="flex flex-wrap gap-1 pb-1">
-        {QUICK_TIERS.map((tier) => {
-          const isActive = tier.classes.every((c) => selectedClasses.includes(c));
+        {quickTiers.map((tier) => {
+          const isActive = tier.classes.length > 0 && tier.classes.every((c) => selectedClasses.includes(c));
           return (
             <button
               key={tier.label}
               type="button"
               onClick={() => applyTier(tier.classes)}
-              className={`px-2 py-0.5 rounded-md text-[10px] font-semibold transition-all ${
+              className={`px-2 py-0.5 rounded-md text-[10px] font-semibold transition-all cursor-pointer ${
                 isActive
                   ? 'bg-primary text-white shadow-xs'
                   : 'bg-surface dark:bg-[#1f1f1f] border border-line dark:border-white/10 text-ink-muted hover:text-ink'
@@ -63,15 +70,16 @@ const SubjectClassesInput = ({ selectedClasses = [], onChange }) => {
         })}
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 pt-1">
-        {DEFAULT_CLASSES.map((cls) => {
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-1.5 pt-1 max-h-56 overflow-y-auto">
+        {availableClasses.map((cls) => {
           const isSelected = selectedClasses.includes(cls);
           return (
             <button
               key={cls}
               type="button"
               onClick={() => toggleClass(cls)}
-              className={`px-2 py-1.5 rounded-lg text-xs font-medium text-center transition-all ${
+              title={cls}
+              className={`px-2 py-1.5 rounded-lg text-xs font-medium text-center truncate transition-all cursor-pointer ${
                 isSelected
                   ? 'bg-primary/15 dark:bg-primary/25 border-primary text-primary dark:text-primary-dark font-semibold border shadow-xs'
                   : 'bg-surface dark:bg-[#1a1a1a] border border-line dark:border-white/10 text-ink-sub dark:text-ink-muted-dark hover:border-primary/40'

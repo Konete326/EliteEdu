@@ -10,10 +10,25 @@ const certificateTemplateSchema = new mongoose.Schema(
     body_template: { type: String, required: true, trim: true },
     design_style: {
       type: String,
-      enum: ['royal_gold', 'emerald_modern', 'classic_academic', 'minimal_corporate', 'ribbon_prestigious'],
-      default: 'royal_gold'
+      enum: [
+        'academic_gold_hatch',
+        'floral_corner_filigree',
+        'guilloche_rosette_burgundy',
+        'navy_ribbon_halftone',
+        'royal_gold',
+        'emerald_modern',
+        'classic_academic',
+        'minimal_corporate',
+        'ribbon_prestigious'
+      ],
+      default: 'academic_gold_hatch'
     },
-    accent_color: { type: String, default: '#0d9488' },
+    orientation: {
+      type: String,
+      enum: ['landscape', 'portrait'],
+      default: 'landscape'
+    },
+    accent_color: { type: String, default: '#b59449' },
     is_default: { type: Boolean, default: false }
   },
   { timestamps: true }

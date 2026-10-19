@@ -7,6 +7,7 @@ export const SUBJECT_NAME_REGEX = /^[a-zA-Z0-9\s\-&]{1,50}$/;
 export const SUBJECT_CODE_REGEX = /^[a-zA-Z0-9\s\-]{1,20}$/;
 export const GRADE_NAME_REGEX = /^[A-Za-z0-9\s\-()]{1,40}$/;
 export const SECTION_NAME_REGEX = /^[A-Za-z0-9\s\-_]{1,25}$/;
+export const CAMPUS_NAME_REGEX = /^[A-Za-z0-9\s\-&/.,()]{2,60}$/;
 export const CNIC_REGEX = /^\d{5}-\d{7}-\d{1}$/;
 export const IBAN_ACCOUNT_REGEX = /^[A-Za-z0-9\s\-]{8,34}$/;
 
@@ -47,6 +48,11 @@ export const isValidGradeName = (name) => {
   return GRADE_NAME_REGEX.test(String(name).trim());
 };
 
+export const isValidCampusName = (name) => {
+  if (!name || !String(name).trim()) return false;
+  return CAMPUS_NAME_REGEX.test(String(name).trim());
+};
+
 export const isValidSections = (sections) => {
   if (!Array.isArray(sections) || sections.length === 0) return false;
   return sections.every(
@@ -75,28 +81,22 @@ export const isValidIbanOrAccount = (val) => {
 
 export const generateSubjectCode = (name) => {
   if (!name || !name.trim()) return '';
-  const words = name.trim().split(/\s+/).filter(Boolean);
+  const clean = name.replace(/[^\w\s-]/g, '').trim();
+  const words = clean.split(/\s+/).filter(Boolean);
   if (words.length > 1) {
-    return words.map((w) => w[0]).join('').toUpperCase().slice(0, 10);
+    const acronym = words.map((w) => w[0]).join('').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (acronym.length >= 2) return acronym.slice(0, 10);
   }
-  const single = words[0].toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const single = (words[0] || name).toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (!single) return '';
   if (single.length <= 4) return single;
   const commonMap = {
-    MATHEMATICS: 'MATH',
-    PHYSICS: 'PHY',
-    CHEMISTRY: 'CHEM',
-    BIOLOGY: 'BIO',
-    ISLAMIYAT: 'ISL',
-    ISLAMIAT: 'ISL',
-    ENGLISH: 'ENG',
-    SCIENCE: 'SCI',
-    ARABIC: 'ARB',
-    SINDHI: 'SND',
-    DRAWING: 'DRW',
-    MATH: 'MATH',
-    HISTORY: 'HIST',
-    GEOGRAPHY: 'GEOG',
-    PAKISTAN: 'PST'
+    MATHEMATICS: 'MATH', PHYSICS: 'PHY', CHEMISTRY: 'CHEM', BIOLOGY: 'BIO',
+    ISLAMIYAT: 'ISL', ISLAMIAT: 'ISL', ENGLISH: 'ENG', SCIENCE: 'SCI',
+    ARABIC: 'ARB', SINDHI: 'SND', DRAWING: 'DRW', MATH: 'MATH',
+    HISTORY: 'HIST', GEOGRAPHY: 'GEOG', PAKISTAN: 'PST', COMPUTER: 'COMP',
+    ECONOMICS: 'ECON', ACCOUNTING: 'ACC', STATISTICS: 'STAT', COMMERCE: 'COMM',
+    URDU: 'URDU'
   };
   return commonMap[single] || single.slice(0, 4);
 };

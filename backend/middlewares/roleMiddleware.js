@@ -37,7 +37,9 @@ const authorizeRoles = (...roles) => {
     if (!req.user) {
       return res.status(401).json({ message: 'Authentication required' });
     }
-    if (req.user.role === 'SuperAdmin') return next();
+
+    const userRole = (req.user.role || '').trim().toLowerCase();
+    if (userRole === 'superadmin' || userRole === 'admin') return next();
 
     const targetModule = getModuleFromUrl(req.baseUrl || req.originalUrl || '');
     const requiredAction = getActionFromMethod(req.method);
@@ -58,13 +60,13 @@ const authorizeRoles = (...roles) => {
             }
             return next();
           }
-          if (roles.includes(req.user.role) && req.user.role === 'Admin') return next();
+          if (roles.some((r) => r.toLowerCase() === userRole)) return next();
           return res.status(403).json({ message: `Access denied for module: ${targetModule}` });
         }
       } catch {}
     }
 
-    if (roles.includes(req.user.role)) return next();
+    if (roles.some((r) => r.toLowerCase() === userRole)) return next();
 
     return res.status(403).json({ message: 'Access denied: insufficient permissions' });
   };

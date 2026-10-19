@@ -11,7 +11,7 @@ import CrmQrInquiryModal from '../../components/admin/crm/leads/CrmQrInquiryModa
 
 const INITIAL_FILTERS = {
   search: '', campus_id: 'all', grade_id: 'all', lead_status: 'all', lead_source: 'all',
-  priority: 'all', show_converted: false, follow_up_filter: 'all', page: 1, limit: 15
+  priority: 'all', show_converted: false, follow_up_filter: 'all', page: 1, limit: 10
 };
 
 export default function CrmLeadsPage() {

@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 
 const paperSchema = new mongoose.Schema({
-  grade_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Grade', required: true },
+  grade_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Grade', default: null },
   grade_name: { type: String, default: '' },
   section: { type: String, default: 'A' },
-  subject_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Subject', required: true },
-  subject_name: { type: String, required: true },
+  subject_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Subject', default: null },
+  subject_name: { type: String, default: '' },
   subject_code: { type: String, default: '' },
+  teacher_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
   examiner_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
   examiner_name: { type: String, default: '' },
   invigilator_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
@@ -26,7 +27,7 @@ const paperSchema = new mongoose.Schema({
 }, { _id: true });
 
 const targetClassSchema = new mongoose.Schema({
-  grade_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Grade', required: true },
+  grade_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Grade', default: null },
   grade_name: { type: String, default: '' },
   section: { type: String, default: 'A' }
 }, { _id: false });
@@ -34,9 +35,9 @@ const targetClassSchema = new mongoose.Schema({
 const examSchema = new mongoose.Schema({
   school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true, index: true },
   campus_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Campus', default: null },
-  title: { type: String, required: true, trim: true },
+  title: { type: String, default: '', trim: true },
   exam_category_id: { type: mongoose.Schema.Types.ObjectId, ref: 'ExamCategory', default: null },
-  term_type: { type: String, default: 'Mid Term' },
+  term_type: { type: String, default: 'Mid Term', trim: true },
   academic_session: { type: String, default: '2026-2027', trim: true },
   start_date: { type: Date, default: null },
   end_date: { type: Date, default: null },
@@ -47,12 +48,8 @@ const examSchema = new mongoose.Schema({
   pass_percentage: { type: Number, default: 33, min: 0, max: 100 },
   target_classes: { type: [targetClassSchema], default: [] },
   papers: { type: [paperSchema], default: [] },
-  status: {
-    type: String,
-    enum: ['Draft', 'Scheduled', 'Ongoing', 'Marks_Entry', 'Published'],
-    default: 'Draft'
-  },
-  created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  status: { type: String, default: 'Draft', trim: true },
+  created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }
 }, { timestamps: true });
 
 examSchema.index({ school_id: 1, createdAt: -1 });

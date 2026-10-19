@@ -14,7 +14,13 @@ const StudentMonthlyRegisterTab = ({ activeCampusId }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    api.get('/grades').then((r) => setGrades(r.data?.grades || r.data || [])).catch(() => {});
+    api.get('/grades').then((r) => {
+      const gList = r.data?.grades || r.data || [];
+      setGrades(gList);
+      if (gList.length > 0 && selectedGrade === 'all') {
+        setSelectedGrade(gList[0]._id);
+      }
+    }).catch(() => {});
   }, []);
 
   const loadMatrix = async () => {

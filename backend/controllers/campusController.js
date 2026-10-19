@@ -26,6 +26,9 @@ const createCampus = async (req, res) => {
       return res.status(400).json({ message: 'Campus name is required' });
     }
 
+    const dupCreate = await Campus.findOne({ school_id: schoolId, name: { $regex: `^${name.trim()}$`, $options: 'i' } });
+    if (dupCreate) return res.status(400).json({ message: `Campus name "${name.trim()}" is already in use` });
+
     if (status && !['Active', 'Inactive'].includes(status)) {
       return res.status(400).json({ message: 'Status must be either Active or Inactive' });
     }
@@ -62,7 +65,11 @@ const updateCampus = async (req, res) => {
     }
 
     const updateData = {};
-    if (name !== undefined) updateData.name = name.trim();
+    if (name !== undefined) {
+      const dupUpdate = await Campus.findOne({ school_id: schoolId, _id: { $ne: id }, name: { $regex: `^${name.trim()}$`, $options: 'i' } });
+      if (dupUpdate) return res.status(400).json({ message: `Campus name "${name.trim()}" is already in use` });
+      updateData.name = name.trim();
+    }
     if (email !== undefined) updateData.email = email.trim().toLowerCase();
     if (website !== undefined) updateData.website = website.trim();
     if (address !== undefined) updateData.address = address.trim();

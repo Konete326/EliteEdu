@@ -3,10 +3,11 @@ const ExamMark = require('../models/ExamMark');
 const MarkSheet = require('../models/MarkSheet');
 const { dispatchExaminerAlerts } = require('../utils/examAlertDispatcher');
 const { syncMarkSheetsForExam } = require('./datesheetSyncHelper');
+const { sanitizeExamPayload } = require('../utils/examPayloadSanitizer');
 
 const getExams = async (req, res) => {
   try {
-    const schoolId = req.user.school_id;
+    const schoolId = req.user.school_id || req.schoolId;
     const query = { school_id: schoolId };
 
     if (req.query.campus_id) query.campus_id = req.query.campus_id;
@@ -43,7 +44,8 @@ const getExams = async (req, res) => {
 
 const getExamById = async (req, res) => {
   try {
-    const exam = await Exam.findOne({ _id: req.params.id, school_id: req.user.school_id })
+    const schoolId = req.user.school_id || req.schoolId;
+    const exam = await Exam.findOne({ _id: req.params.id, school_id: schoolId })
       .populate('campus_id', 'name code address logo')
       .populate('grading_policy_id');
     if (!exam) return res.status(404).json({ success: false, message: 'Exam not found' });
@@ -55,10 +57,13 @@ const getExamById = async (req, res) => {
 
 const createExam = async (req, res) => {
   try {
-    const schoolId = req.user.school_id;
+    const schoolId = req.user.school_id || req.schoolId;
+    const sanitized = sanitizeExamPayload(req.body);
+    const title = sanitized.title || `${sanitized.academic_session} ${sanitized.term_type || 'Exam'}`.trim();
     const exam = await Exam.create({
-      ...req.body,
+      ...sanitized,
       school_id: schoolId,
+      title,
       created_by: req.user._id || req.user.id
     });
     await syncMarkSheetsForExam(exam, schoolId, req.user._id || req.user.id);
@@ -71,11 +76,12 @@ const createExam = async (req, res) => {
 
 const updateExam = async (req, res) => {
   try {
-    const schoolId = req.user.school_id;
+    const schoolId = req.user.school_id || req.schoolId;
+    const sanitized = sanitizeExamPayload(req.body);
     const exam = await Exam.findOneAndUpdate(
       { _id: req.params.id, school_id: schoolId },
-      { $set: req.body },
-      { new: true, runValidators: true }
+      { $set: sanitized },
+      { new: true }
     );
     if (!exam) return res.status(404).json({ success: false, message: 'Exam not found' });
     await syncMarkSheetsForExam(exam, schoolId, req.user._id || req.user.id);
@@ -88,14 +94,14 @@ const updateExam = async (req, res) => {
 
 const deleteExam = async (req, res) => {
   try {
-    const schoolId = req.user.school_id;
+    const schoolId = req.user.school_id || req.schoolId;
     const exam = await Exam.findOneAndDelete({ _id: req.params.id, school_id: schoolId });
     if (!exam) return res.status(404).json({ success: false, message: 'Exam not found' });
     await Promise.all([
-      ExamMark.deleteMany({ exam_id: exam._id, school_id: schoolId }),
-      MarkSheet.deleteMany({ exam_id: exam._id, school_id: schoolId })
+      ExamMark.deleteMany({ exam_id: req.params.id, school_id: schoolId }),
+      MarkSheet.deleteMany({ exam_id: req.params.id, school_id: schoolId })
     ]);
-    res.status(200).json({ success: true, message: 'Exam and linked marks deleted' });
+    res.status(200).json({ success: true, message: 'Exam removed' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

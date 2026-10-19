@@ -41,7 +41,7 @@ const SavedCertificatesTable = ({
             type="button"
             onClick={() => setIsCameraOpen(true)}
             className="px-3 py-1.5 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary hover:text-white text-primary text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
-            title="Scan Certificate QR with Camera"
+            title="Scan Certificate QR"
           >
             <Camera size={13} />
             <span className="hidden sm:inline">Scan QR</span>
@@ -56,13 +56,13 @@ const SavedCertificatesTable = ({
 
       <div className="overflow-x-auto rounded-xl border border-line dark:border-line-dark">
         <table className="w-full text-left text-xs border-collapse">
-          <thead className="bg-surface-secondary/70 dark:bg-white/[0.03] border-b border-line dark:border-line-dark text-[11px] font-bold text-ink-muted uppercase">
+          <thead className="bg-surface-secondary/70 dark:bg-white/[0.03] border-b border-line text-[11px] font-bold text-ink-muted uppercase">
             <tr>
-              <th className="py-2.5 px-3">ID / Serial</th>
-              <th className="py-2.5 px-3">Certificate Template</th>
-              <th className="py-2.5 px-3">Recipient Type</th>
-              <th className="py-2.5 px-3">Recipient Name</th>
-              <th className="py-2.5 px-3">Generated On</th>
+              <th className="py-2.5 px-3">Serial</th>
+              <th className="py-2.5 px-3">Template</th>
+              <th className="py-2.5 px-3">Type</th>
+              <th className="py-2.5 px-3">Recipient</th>
+              <th className="py-2.5 px-3">Date</th>
               <th className="py-2.5 px-3 text-right">Actions</th>
             </tr>
           </thead>
@@ -75,33 +75,23 @@ const SavedCertificatesTable = ({
                   <td className="py-2.5 px-3 font-mono font-bold text-primary">{c.certificate_no}</td>
                   <td className="py-2.5 px-3">
                     <span className="font-bold text-slate-800 dark:text-white block">{c.template_name}</span>
-                    <span className="text-[10px] text-ink-muted capitalize">{c.design_style?.replace('_', ' ')}</span>
+                    <span className="text-[10px] text-ink-muted capitalize">{c.orientation || 'landscape'} • {c.design_style?.replace(/_/g, ' ')}</span>
                   </td>
                   <td className="py-2.5 px-3">
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                      c.recipient_type === 'Student' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300' : 'bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300'
-                    }`}>
-                      {c.recipient_type}
-                    </span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary">{c.recipient_type}</span>
                   </td>
                   <td className="py-2.5 px-3">
                     <span className="font-bold block text-slate-800 dark:text-white">{c.recipient_name}</span>
-                    <span className="text-[10px] text-ink-muted">{c.class_or_designation} {c.identifier_code ? `(${c.identifier_code})` : ''}</span>
+                    <span className="text-[10px] text-ink-muted">{c.class_or_designation}</span>
                   </td>
                   <td className="py-2.5 px-3 font-mono text-ink-muted">
                     {new Date(c.issue_date || c.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </td>
                   <td className="py-2.5 px-3 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => onPreview(c)} className="p-1.5 rounded-lg border border-line hover:bg-surface-secondary text-ink-muted hover:text-primary cursor-pointer" title="Preview">
-                        <Eye size={13} />
-                      </button>
-                      <button onClick={() => onPrintRow(c)} className="p-1.5 rounded-lg border border-line hover:bg-surface-secondary text-ink-muted hover:text-primary cursor-pointer" title="Print">
-                        <Printer size={13} />
-                      </button>
-                      <button onClick={() => onDelete(c._id)} className="p-1.5 rounded-lg border border-line hover:bg-bad/10 text-ink-muted hover:text-bad cursor-pointer" title="Delete">
-                        <Trash2 size={13} />
-                      </button>
+                      <button onClick={() => onPreview(c)} className="p-1.5 rounded-lg border border-line hover:bg-surface-secondary text-ink-muted hover:text-primary cursor-pointer"><Eye size={13} /></button>
+                      <button onClick={() => onPrintRow(c)} className="p-1.5 rounded-lg border border-line hover:bg-surface-secondary text-ink-muted hover:text-primary cursor-pointer"><Printer size={13} /></button>
+                      <button onClick={() => onDelete(c._id)} className="p-1.5 rounded-lg border border-line hover:bg-bad/10 text-ink-muted hover:text-bad cursor-pointer"><Trash2 size={13} /></button>
                     </div>
                   </td>
                 </tr>
@@ -121,13 +111,7 @@ const SavedCertificatesTable = ({
         </div>
       )}
 
-      <CameraScannerModal
-        isOpen={isCameraOpen}
-        onClose={() => setIsCameraOpen(false)}
-        onScan={handleCameraScan}
-        title="Certificate QR Scanner"
-        subtitle="Align printed certificate QR code to find record"
-      />
+      <CameraScannerModal isOpen={isCameraOpen} onClose={() => setIsCameraOpen(false)} onScan={handleCameraScan} title="Certificate QR Scanner" subtitle="Align printed certificate QR code to find record" />
     </div>
   );
 };

@@ -39,8 +39,8 @@ const AddTeacherPage = () => {
   const prereqs = [{ name: 'Campus', count: campuses.length, addPath: '/admin/control-panel/campuses', label: 'Add Campus' }];
 
   return (
-    <div className="w-full space-y-6 pb-16">
-      <div className="sticky top-[1px] z-20 mt-[1px] pb-2.5 pt-1 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-md border-b border-line dark:border-line-dark space-y-3 shadow-xs">
+    <div className="-mt-4 sm:-mt-6 lg:-mt-8 w-full space-y-6 pb-16">
+      <div className="sticky top-0 z-20 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-2.5 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-md border-b border-line dark:border-line-dark space-y-3 shadow-xs">
         <TeacherTopActionBar isEditMode={isEditMode} staffName={formData.name} schoolType={schoolType} onSave={() => handleSaveAction(true)} submitting={submitting} />
         <TeacherTabsNav activeTab={activeTab} onTabChange={setActiveTab} schoolType={schoolType} />
       </div>

@@ -1,9 +1,10 @@
 const Exam = require('../models/Exam');
 const { syncMarkSheetsForExam, notifyStaffForExam } = require('./datesheetSyncHelper');
+const { sanitizeExamPayload } = require('../utils/examPayloadSanitizer');
 
 const getDatesheets = async (req, res) => {
   try {
-    const school_id = req.user.school_id;
+    const school_id = req.user.school_id || req.schoolId;
     const { grade_id, status, session } = req.query;
     const query = { school_id };
     if (grade_id) query.grade_id = grade_id;
@@ -15,7 +16,7 @@ const getDatesheets = async (req, res) => {
       .populate('exam_category_id', 'name')
       .sort({ createdAt: -1 });
 
-    const formatted = datesheets.map(d => ({
+    const formatted = datesheets.map((d) => ({
       _id: d._id,
       session: d.academic_session || '2026-2027',
       class_name: d.grade_id?.name || d.target_classes?.[0]?.grade_name || 'All Classes',
@@ -36,7 +37,7 @@ const getDatesheets = async (req, res) => {
 
 const getDatesheetById = async (req, res) => {
   try {
-    const datesheet = await Exam.findOne({ _id: req.params.id, school_id: req.user.school_id })
+    const datesheet = await Exam.findOne({ _id: req.params.id, school_id: req.user.school_id || req.schoolId })
       .populate('grade_id', 'name')
       .populate('exam_category_id', 'name')
       .populate('papers.subject_id', 'name code')
@@ -51,17 +52,17 @@ const getDatesheetById = async (req, res) => {
 
 const createDatesheet = async (req, res) => {
   try {
-    const school_id = req.user.school_id;
-    const { title, academic_session, status, grade_id, section, exam_category_id, start_date, end_date, instructions, papers } = req.body;
+    const school_id = req.user.school_id || req.schoolId;
+    const sanitized = sanitizeExamPayload(req.body);
+    const title = sanitized.title || `${sanitized.academic_session} ${sanitized.term_type || 'Exam'} ${sanitized.status || 'Datesheet'}`.trim();
     const exam = await Exam.create({
-      school_id, title: title || `${academic_session} ${status} Schedule`,
-      academic_session: academic_session || '2026-2027', status: status || 'Draft',
-      grade_id: grade_id || null, section: section || '', exam_category_id: exam_category_id || null,
-      start_date, end_date, instructions, papers: Array.isArray(papers) ? papers : [],
-      created_by: req.user._id
+      ...sanitized,
+      school_id,
+      title,
+      created_by: req.user._id || req.user.id
     });
-    await syncMarkSheetsForExam(exam, school_id, req.user._id);
-    await notifyStaffForExam(exam, school_id, req.user._id);
+    await syncMarkSheetsForExam(exam, school_id, req.user._id || req.user.id);
+    await notifyStaffForExam(exam, school_id, req.user._id || req.user.id);
     res.status(201).json({ success: true, datesheet: exam });
   } catch (error) {
     res.status(500).json({ message: 'Failed to create datesheet', error: error.message });
@@ -70,14 +71,16 @@ const createDatesheet = async (req, res) => {
 
 const updateDatesheet = async (req, res) => {
   try {
+    const school_id = req.user.school_id || req.schoolId;
+    const sanitized = sanitizeExamPayload(req.body);
     const exam = await Exam.findOneAndUpdate(
-      { _id: req.params.id, school_id: req.user.school_id },
-      req.body,
+      { _id: req.params.id, school_id },
+      { $set: sanitized },
       { new: true }
     );
     if (!exam) return res.status(404).json({ message: 'Datesheet not found' });
-    await syncMarkSheetsForExam(exam, req.user.school_id, req.user._id);
-    await notifyStaffForExam(exam, req.user.school_id, req.user._id);
+    await syncMarkSheetsForExam(exam, school_id, req.user._id || req.user.id);
+    await notifyStaffForExam(exam, school_id, req.user._id || req.user.id);
     res.json({ success: true, datesheet: exam });
   } catch (error) {
     res.status(500).json({ message: 'Failed to update datesheet', error: error.message });
@@ -86,7 +89,7 @@ const updateDatesheet = async (req, res) => {
 
 const deleteDatesheet = async (req, res) => {
   try {
-    await Exam.findOneAndDelete({ _id: req.params.id, school_id: req.user.school_id });
+    await Exam.findOneAndDelete({ _id: req.params.id, school_id: req.user.school_id || req.schoolId });
     res.json({ success: true, message: 'Datesheet removed' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to delete datesheet', error: error.message });

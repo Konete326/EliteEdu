@@ -2,13 +2,13 @@ import { Building2, School, Mail, Phone, Globe, MapPin, Calendar, Clock } from '
 import DefaultCampusBanner from './DefaultCampusBanner';
 import { useAuth } from '../../../context/AuthContext';
 
-const CampusDetailsView = ({ campus, onClose }) => {
+const CampusDetailsView = ({ campus, onClose, schoolLogo: propLogo }) => {
   const { user } = useAuth();
   const isActive = campus.status === 'Active';
   const hasImage = Boolean(campus.image_url || campus.image);
   const imageUrl = campus.image_url || campus.image;
   const websiteUrl = campus.website?.startsWith('http') ? campus.website : `https://${campus.website}`;
-  const schoolLogo = campus.school_id?.logo_url || user?.school_logo || campus.logo;
+  const schoolLogo = propLogo || campus.school_id?.logo_url || user?.school_logo || campus.logo;
 
   return (
     <div className="space-y-5">

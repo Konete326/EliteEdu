@@ -38,7 +38,12 @@ export const usePwaInstall = () => {
 
   const [isStandalone, setIsStandalone] = useState(checkIsStandalone);
   const [hasPrompt, setHasPrompt] = useState(Boolean(globalDeferredPrompt));
-  const [showPrompt, setShowPrompt] = useState(Boolean(globalDeferredPrompt));
+  const [showPrompt, setShowPrompt] = useState(() => {
+    if (typeof window !== 'undefined' && sessionStorage.getItem('pwa_prompt_dismissed')) {
+      return false;
+    }
+    return Boolean(globalDeferredPrompt);
+  });
   const [showGuide, setShowGuide] = useState(false);
   const [guidePlatform, setGuidePlatform] = useState('desktop');
 
@@ -66,7 +71,8 @@ export const usePwaInstall = () => {
       const standalone = checkIsStandalone();
       setIsStandalone(standalone);
       setHasPrompt(Boolean(globalDeferredPrompt));
-      if (!standalone && globalDeferredPrompt) {
+      const isDismissed = typeof window !== 'undefined' && sessionStorage.getItem('pwa_prompt_dismissed');
+      if (!standalone && globalDeferredPrompt && !isDismissed) {
         setShowPrompt(true);
       }
     };
@@ -107,7 +113,12 @@ export const usePwaInstall = () => {
     setShowGuide,
     guidePlatform,
     promptInstall,
-    closePrompt: () => setShowPrompt(false),
+    closePrompt: () => {
+      try {
+        sessionStorage.setItem('pwa_prompt_dismissed', 'true');
+      } catch {}
+      setShowPrompt(false);
+    },
     closeGuide: () => setShowGuide(false)
   };
 };

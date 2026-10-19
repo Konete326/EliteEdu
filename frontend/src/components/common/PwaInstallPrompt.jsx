@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Download, X } from 'lucide-react';
 import { usePwaInstall } from '../../hooks/usePwaInstall';
 import PwaInstallGuideModal from './PwaInstallGuideModal';
@@ -15,20 +15,41 @@ const PwaInstallPrompt = () => {
   } = usePwaInstall();
 
   const [progressWidth, setProgressWidth] = useState(100);
+  const [isClosing, setIsClosing] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const isClosingRef = useRef(false);
+
+  const handleDismiss = useCallback(() => {
+    if (isClosingRef.current) return;
+    isClosingRef.current = true;
+    setIsClosing(true);
+    setTimeout(() => {
+      closePrompt();
+      setIsClosing(false);
+      isClosingRef.current = false;
+      setProgressWidth(100);
+    }, 300);
+  }, [closePrompt]);
 
   useEffect(() => {
     if (!showPrompt) {
       setProgressWidth(100);
+      setIsClosing(false);
+      isClosingRef.current = false;
       return;
     }
 
     const interval = 100;
-    const step = 100 / (10000 / interval);
+    const duration = 10000;
+    const step = 100 / (duration / interval);
 
     const timer = setInterval(() => {
+      if (isPaused) return;
+
       setProgressWidth((prev) => {
-        if (prev <= 0) {
+        if (prev - step <= 0) {
           clearInterval(timer);
+          handleDismiss();
           return 0;
         }
         return Math.max(0, prev - step);
@@ -36,12 +57,20 @@ const PwaInstallPrompt = () => {
     }, interval);
 
     return () => clearInterval(timer);
-  }, [showPrompt]);
+  }, [showPrompt, isPaused, handleDismiss]);
 
   return (
     <>
       {!isInstalled && showPrompt && (
-        <div className="fixed top-3 left-3 right-3 sm:left-auto sm:right-4 sm:w-88 z-50 select-none animate-in fade-in slide-in-from-top-4 duration-300">
+        <div
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          className={`fixed top-3 left-3 right-3 sm:left-auto sm:right-4 sm:w-88 z-50 select-none transition-all duration-300 ${
+            isClosing
+              ? 'opacity-0 -translate-y-4 pointer-events-none'
+              : 'opacity-100 translate-y-0 animate-in fade-in slide-in-from-top-4 duration-300'
+          }`}
+        >
           <div className="relative overflow-hidden rounded-2xl bg-surface/95 dark:bg-[#121212]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-2xl p-4 transition-all">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
@@ -58,9 +87,9 @@ const PwaInstallPrompt = () => {
               </div>
               <button
                 type="button"
-                onClick={closePrompt}
+                onClick={handleDismiss}
                 aria-label="Close install prompt"
-                className="p-1 rounded-lg text-ink-muted hover:text-ink hover:bg-surface-secondary dark:hover:bg-white/5 transition-colors"
+                className="p-1 rounded-lg text-ink-muted hover:text-ink hover:bg-surface-secondary dark:hover:bg-white/5 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -77,7 +106,7 @@ const PwaInstallPrompt = () => {
               </button>
               <button
                 type="button"
-                onClick={closePrompt}
+                onClick={handleDismiss}
                 className="px-3 py-1.5 rounded-xl border border-line dark:border-white/10 text-xs font-semibold text-ink-sub dark:text-ink-sub-dark hover:bg-surface-secondary dark:hover:bg-white/5 transition-colors cursor-pointer"
               >
                 Later

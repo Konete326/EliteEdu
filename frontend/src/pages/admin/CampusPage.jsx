@@ -79,6 +79,7 @@ const CampusPage = () => {
         isOpen={modalState.isOpen}
         mode={modalState.mode}
         campus={modalState.campus}
+        existingCampuses={campuses}
         onClose={() => setModalState({ isOpen: false, mode: 'add', campus: null })}
         onSubmit={handleFormSubmit}
         isSubmitting={isSubmitting}

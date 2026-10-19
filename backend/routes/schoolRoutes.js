@@ -3,6 +3,7 @@ const { registerSchool, getSchools } = require('../controllers/schoolController'
 const { updateSchool, toggleSchoolStatus, deleteSchool } = require('../controllers/schoolManageController');
 const { getSchoolTheme, updateSchoolTheme } = require('../controllers/schoolThemeController');
 const { getSchoolGeneralSettings, updateSchoolGeneralSettings } = require('../controllers/schoolSettingsController');
+const { resetSchoolData } = require('../controllers/schoolResetController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const authorizeRoles = require('../middlewares/roleMiddleware');
 
@@ -12,6 +13,7 @@ router.get('/general-settings', authMiddleware, getSchoolGeneralSettings);
 router.put('/general-settings', authMiddleware, authorizeRoles('Admin', 'SuperAdmin'), updateSchoolGeneralSettings);
 router.get('/theme', authMiddleware, getSchoolTheme);
 router.patch('/theme', authMiddleware, authorizeRoles('Admin'), updateSchoolTheme);
+router.post('/reset-data', authMiddleware, authorizeRoles('Admin', 'SuperAdmin'), resetSchoolData);
 router.post('/', authMiddleware, authorizeRoles('SuperAdmin'), registerSchool);
 router.get('/', authMiddleware, authorizeRoles('SuperAdmin'), getSchools);
 router.put('/:id', authMiddleware, authorizeRoles('SuperAdmin'), updateSchool);

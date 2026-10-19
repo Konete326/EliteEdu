@@ -31,6 +31,10 @@ const gradeSchema = new mongoose.Schema(
       type: String,
       enum: ['Active', 'Inactive'],
       default: 'Active'
+    },
+    order: {
+      type: Number,
+      default: 0
     }
   },
   {
@@ -39,5 +43,6 @@ const gradeSchema = new mongoose.Schema(
 );
 
 gradeSchema.index({ school_id: 1, campus_id: 1, name: 1 });
+gradeSchema.index({ school_id: 1, order: 1 });
 
 module.exports = mongoose.model('Grade', gradeSchema);

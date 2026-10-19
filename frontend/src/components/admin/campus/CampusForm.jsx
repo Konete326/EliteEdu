@@ -1,4 +1,4 @@
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import CampusImageUploadField from './CampusImageUploadField';
 import CampusContactFields from './CampusContactFields';
 
@@ -9,6 +9,7 @@ const CampusForm = ({
   isFormValid,
   isSubmitting,
   isNameValid,
+  nameError,
   isEmailValid,
   isWebsiteValid,
   isPhoneValid,
@@ -24,22 +25,30 @@ const CampusForm = ({
         <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
           Campus Name <span className="text-bad">*</span>
         </label>
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={onChange}
-          onBlur={() => onBlur('name')}
-          placeholder="e.g. Main Campus / North Branch"
-          className={`w-full px-3.5 py-2 rounded-xl text-sm bg-surface dark:bg-[#141414] border ${
-            touched.name && !isNameValid
-              ? 'border-bad focus:ring-bad'
-              : 'border-line dark:border-white/10 focus:border-primary'
-          } text-ink dark:text-ink-dark outline-none focus:ring-2 focus:ring-primary/20 transition-all`}
-        />
-        {touched.name && !isNameValid && (
-          <p className="flex items-center gap-1 text-xs text-bad mt-1">
-            <AlertCircle className="w-3.5 h-3.5" /> Campus name is required
+        <div className="relative">
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={onChange}
+            onBlur={() => onBlur('name')}
+            placeholder="e.g. Main Campus / North Branch"
+            className={`w-full px-3.5 py-2 pr-9 rounded-xl text-sm bg-surface dark:bg-[#141414] border ${
+              nameError
+                ? 'border-bad focus:ring-bad/20'
+                : formData.name.trim() && isNameValid
+                ? 'border-good focus:ring-good/20'
+                : 'border-line dark:border-white/10 focus:border-primary'
+            } text-ink dark:text-ink-dark outline-none focus:ring-2 focus:ring-primary/20 transition-all`}
+          />
+          {formData.name.trim() && isNameValid && (
+            <CheckCircle2 className="w-4 h-4 text-good absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          )}
+        </div>
+        {nameError && (
+          <p className="flex items-center gap-1 text-xs text-bad mt-1 font-medium animate-in fade-in duration-150">
+            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+            <span>{nameError}</span>
           </p>
         )}
       </div>
@@ -85,7 +94,7 @@ const CampusForm = ({
         </button>
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !isFormValid}
           className="px-5 py-2 rounded-xl text-sm font-medium text-white transition-all bg-primary hover:bg-primary-hover shadow-md hover:shadow-lg disabled:opacity-50"
         >
           {isSubmitting ? 'Saving...' : mode === 'edit' ? 'Update Campus' : 'Create Campus'}

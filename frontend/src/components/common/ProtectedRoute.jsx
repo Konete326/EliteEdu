@@ -8,11 +8,25 @@ const ProtectedRoute = ({ allowedRoles = [], requiredModule = null }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (user.role === 'SuperAdmin') {
+  const userRole = (user.role || '').trim().toLowerCase();
+
+  if (userRole === 'superadmin') {
     return <Outlet />;
   }
 
-  const hasRole = allowedRoles.length === 0 || allowedRoles.includes(user.role);
+  const isSuperAdminOnly = allowedRoles.length > 0 &&
+    allowedRoles.every((r) => r.toLowerCase() === 'superadmin');
+
+  if (isSuperAdminOnly) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  if (userRole === 'admin') {
+    return <Outlet />;
+  }
+
+  const hasRole = allowedRoles.length === 0 ||
+    allowedRoles.some((r) => r.toLowerCase() === userRole);
 
   if (requiredModule) {
     const modKey = requiredModule.toLowerCase();

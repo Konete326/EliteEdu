@@ -23,7 +23,7 @@ const SubjectPagination = ({ currentPage, totalPages, totalItems, limit, onPageC
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 bg-surface dark:bg-[#0c0c0c] border-t border-line dark:border-white/10 text-xs text-ink-muted dark:text-ink-muted-dark">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 bg-surface dark:bg-[#0c0c0c] border-t border-line dark:border-white/10 text-xs text-ink-muted dark:text-ink-muted-dark">
       <div>
         {start}–{end} of {totalItems}
       </div>

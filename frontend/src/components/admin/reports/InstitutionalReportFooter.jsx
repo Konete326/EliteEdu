@@ -9,7 +9,7 @@ const InstitutionalReportFooter = ({
   const { activeCount = 0, registeredCount = 0, inactiveCount = 0, suspendedCount = 0, leftCount = 0 } = counters;
 
   return (
-    <div className="mt-6 pt-3 border-t border-line space-y-4">
+    <div className="mt-6 pt-3 border-t border-line space-y-4 relative">
       {showCounters && (
         <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-surface-secondary/70 border border-line text-xs font-bold">
           <div className="flex items-center gap-1.5 text-good">
@@ -49,6 +49,10 @@ const InstitutionalReportFooter = ({
           />
         </div>
       )}
+
+      <div className="flex justify-end pt-1">
+        <span className="text-[8px] font-bold tracking-widest text-ink-muted/30 select-none uppercase">EliteEdu</span>
+      </div>
     </div>
   );
 };

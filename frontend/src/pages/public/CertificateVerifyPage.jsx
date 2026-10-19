@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { CheckCircle2, AlertTriangle, ShieldCheck, GraduationCap, Camera } from 'lucide-react';
 import api from '../../services/api';
 import CameraScannerModal from '../../components/common/scanner/CameraScannerModal';
+import CertificateVerifyDetails from './CertificateVerifyDetails';
 
 const CertificateVerifyPage = () => {
   const { certNo } = useParams();
@@ -47,24 +48,11 @@ const CertificateVerifyPage = () => {
           <AlertTriangle className="w-12 h-12 text-red-500 mx-auto" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Certificate Verification Failed</h2>
           <p className="text-xs text-slate-500">No official record exists for serial #{certNo}. This certificate may be invalid or revoked.</p>
-          <div className="pt-2">
-            <button
-              type="button"
-              onClick={() => setIsCameraOpen(true)}
-              className="px-4 py-2.5 rounded-xl bg-primary text-white text-xs font-bold flex items-center justify-center gap-2 mx-auto cursor-pointer hover:bg-primary-hover transition-all"
-            >
-              <Camera className="w-4 h-4" />
-              <span>Scan QR with Camera</span>
-            </button>
-          </div>
+          <button type="button" onClick={() => setIsCameraOpen(true)} className="px-4 py-2.5 rounded-xl bg-primary text-white text-xs font-bold flex items-center justify-center gap-2 mx-auto cursor-pointer hover:bg-primary-hover transition-all">
+            <Camera className="w-4 h-4" /> <span>Scan QR with Camera</span>
+          </button>
         </div>
-        <CameraScannerModal
-          isOpen={isCameraOpen}
-          onClose={() => setIsCameraOpen(false)}
-          onScan={handleCameraScan}
-          title="Scan Certificate QR"
-          subtitle="Align printed certificate QR code to verify record"
-        />
+        <CameraScannerModal isOpen={isCameraOpen} onClose={() => setIsCameraOpen(false)} onScan={handleCameraScan} title="Scan Certificate QR" subtitle="Align printed certificate QR code to verify record" />
       </div>
     );
   }
@@ -81,14 +69,8 @@ const CertificateVerifyPage = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setIsCameraOpen(true)}
-              className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold flex items-center gap-1 cursor-pointer"
-              title="Scan Another Certificate"
-            >
-              <Camera size={14} />
-              <span className="hidden sm:inline">Scan</span>
+            <button type="button" onClick={() => setIsCameraOpen(true)} className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold flex items-center gap-1 cursor-pointer" title="Scan Another Certificate">
+              <Camera size={14} /><span className="hidden sm:inline">Scan</span>
             </button>
             <span className="px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-mono text-[11px] font-bold">
               {cert.certificate_no}
@@ -106,24 +88,7 @@ const CertificateVerifyPage = () => {
           </div>
         </div>
 
-        <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl text-xs space-y-2 border border-slate-200 dark:border-slate-800">
-          <div className="flex justify-between border-b border-slate-200 dark:border-slate-700/50 pb-1.5">
-            <span className="text-slate-500">Issued To:</span>
-            <strong className="text-slate-900 dark:text-white">{cert.recipient_name}</strong>
-          </div>
-          <div className="flex justify-between border-b border-slate-200 dark:border-slate-700/50 pb-1.5">
-            <span className="text-slate-500">Father / Guardian:</span>
-            <span>{cert.father_name || '—'}</span>
-          </div>
-          <div className="flex justify-between border-b border-slate-200 dark:border-slate-700/50 pb-1.5">
-            <span className="text-slate-500">Class / Designation:</span>
-            <span>{cert.class_or_designation}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-slate-500">Issue Date:</span>
-            <span className="font-mono">{new Date(cert.issue_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
-          </div>
-        </div>
+        <CertificateVerifyDetails cert={cert} />
 
         <p className="text-xs text-slate-700 dark:text-slate-300 font-serif text-center leading-relaxed italic bg-amber-50/50 dark:bg-slate-800/20 p-4 rounded-xl border border-amber-200/50 dark:border-amber-900/20">
           "{cert.resolved_body}"
@@ -135,13 +100,7 @@ const CertificateVerifyPage = () => {
         </div>
       </div>
 
-      <CameraScannerModal
-        isOpen={isCameraOpen}
-        onClose={() => setIsCameraOpen(false)}
-        onScan={handleCameraScan}
-        title="Scan Certificate QR"
-        subtitle="Align printed certificate QR code to verify record"
-      />
+      <CameraScannerModal isOpen={isCameraOpen} onClose={() => setIsCameraOpen(false)} onScan={handleCameraScan} title="Scan Certificate QR" subtitle="Align printed certificate QR code to verify record" />
     </div>
   );
 };

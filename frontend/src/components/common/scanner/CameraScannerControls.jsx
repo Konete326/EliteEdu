@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Flashlight, FlashlightOff, Image, SwitchCamera, CheckSquare, Square } from 'lucide-react';
+import { Flashlight, FlashlightOff, Image, SwitchCamera, CheckSquare, Square, Zap } from 'lucide-react';
 
 const CameraScannerControls = ({
   cameras = [],
@@ -10,7 +10,8 @@ const CameraScannerControls = ({
   onToggleTorch,
   onScanFile,
   continuous,
-  onToggleContinuous
+  onToggleContinuous,
+  onSimulateScan
 }) => {
   const fileInputRef = useRef(null);
 
@@ -26,7 +27,7 @@ const CameraScannerControls = ({
     <div className="w-full space-y-3 pt-2">
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
         {cameras.length > 1 && (
-          <div className="flex items-center gap-1.5 flex-1 min-w-[180px]">
+          <div className="flex items-center gap-1.5 flex-1 min-w-[160px]">
             <SwitchCamera className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <select
               value={selectedCameraId}
@@ -42,7 +43,7 @@ const CameraScannerControls = ({
           </div>
         )}
 
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center gap-1.5 ml-auto">
           {hasTorch && (
             <button
               type="button"
@@ -50,7 +51,7 @@ const CameraScannerControls = ({
               className={`p-2 rounded-xl border text-xs font-bold flex items-center gap-1 cursor-pointer transition-all ${
                 isTorchOn
                   ? 'bg-amber-400 text-slate-950 border-amber-500 shadow-md'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700'
               }`}
               title="Toggle Flashlight"
             >
@@ -59,23 +60,27 @@ const CameraScannerControls = ({
             </button>
           )}
 
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleFileChange}
-          />
-
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-all"
-            title="Scan from Saved Image"
+            className="px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1 cursor-pointer"
           >
             <Image className="w-3.5 h-3.5 text-primary" />
-            <span>Upload Image</span>
+            <span>Image</span>
           </button>
+
+          {onSimulateScan && (
+            <button
+              type="button"
+              onClick={onSimulateScan}
+              className="px-2.5 py-1.5 rounded-xl border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 text-xs font-bold flex items-center gap-1 cursor-pointer"
+              title="Simulate instant scan for desktop testing without physical card"
+            >
+              <Zap className="w-3.5 h-3.5 text-primary" />
+              <span>Test Scan</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -85,14 +90,10 @@ const CameraScannerControls = ({
           onClick={() => onToggleContinuous(!continuous)}
           className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 cursor-pointer font-medium hover:text-primary transition-colors"
         >
-          {continuous ? (
-            <CheckSquare className="w-3.5 h-3.5 text-emerald-500" />
-          ) : (
-            <Square className="w-3.5 h-3.5 text-slate-400" />
-          )}
-          <span>Continuous scanning mode (Rapid attendance)</span>
+          {continuous ? <CheckSquare className="w-3.5 h-3.5 text-emerald-500" /> : <Square className="w-3.5 h-3.5 text-slate-400" />}
+          <span>Continuous rapid mode</span>
         </button>
-        <span className="font-mono text-[10px] text-slate-400">QR & Barcode</span>
+        <span className="font-mono text-[10px] text-slate-400">QR / Barcode</span>
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import TeacherPermittedActions from '../../components/teacher/TeacherPermittedAc
 import TeacherClassesCard from '../../components/teacher/TeacherClassesCard';
 import TeacherStudentsCard from '../../components/teacher/TeacherStudentsCard';
 import TeacherRoleScopeCard from '../../components/teacher/TeacherRoleScopeCard';
+import TeacherLiveScheduleWidget from '../../components/teacher/timetable/TeacherLiveScheduleWidget';
 
 const TeacherPortalDashboard = () => {
   const [profileData, setProfileData] = useState(null);
@@ -85,8 +86,8 @@ const TeacherPortalDashboard = () => {
         </div>
 
         <div className="xl:col-span-4 space-y-6 min-w-0">
+          <TeacherLiveScheduleWidget />
           <TeacherClassesCard teacher={teacher} classTeacherGrades={classTeacherGrades} />
-
           <TeacherRoleScopeCard customRole={customRole} teacher={teacher} />
         </div>
       </div>

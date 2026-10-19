@@ -2,6 +2,7 @@ const Student = require('../models/Student');
 const MarkSheet = require('../models/MarkSheet');
 const ClassTest = require('../models/ClassTest');
 const StudentAttendance = require('../models/StudentAttendance');
+const BehaviorRecord = require('../models/BehaviorRecord');
 const { GradingPolicy, DEFAULT_POLICIES } = require('../models/GradingPolicy');
 const RemarkPolicy = require('../models/RemarkPolicy');
 const { getInstitutionHeader, calculateAge } = require('../utils/reportHelpers');
@@ -15,7 +16,7 @@ const getStudentReportCard = async (req, res) => {
       .lean();
     if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
 
-    const [markSheets, classTests, attendanceRecords, gradingDoc, remarkPolicies, header] = await Promise.all([
+    const [markSheets, classTests, attendanceRecords, gradingDoc, remarkPolicies, header, behaviorRecord] = await Promise.all([
       MarkSheet.find({ school_id: req.user.school_id, 'marks.student_id': studentId })
         .populate('subject_id', 'name code')
         .populate('exam_id', 'title term year session')
@@ -29,7 +30,8 @@ const getStudentReportCard = async (req, res) => {
       StudentAttendance.find({ school_id: req.user.school_id, student_id: studentId }).lean(),
       GradingPolicy.findOne({ school_id: req.user.school_id }).lean(),
       RemarkPolicy.find({ school_id: req.user.school_id }).lean(),
-      getInstitutionHeader(req.user.school_id, student.campus_id?._id)
+      getInstitutionHeader(req.user.school_id, student.campus_id?._id),
+      BehaviorRecord.findOne({ school_id: req.user.school_id, student_id: studentId }).sort({ createdAt: -1 }).lean()
     ]);
 
     const examResults = markSheets.map((ms) => {
@@ -104,7 +106,8 @@ const getStudentReportCard = async (req, res) => {
         teacher: teacherRemarkObj?.remark || 'Good effort. Keep progressing.',
         principal: principalRemarkObj?.remark || 'Promoted to the next class.'
       },
-      attendance: { totalDays, presentDays, absentDays, leaveDays, attendancePercentage }
+      attendance: { totalDays, presentDays, absentDays, leaveDays, attendancePercentage },
+      behaviorRecord: behaviorRecord || null
     });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });

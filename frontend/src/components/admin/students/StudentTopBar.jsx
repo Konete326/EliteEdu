@@ -1,4 +1,4 @@
-import { Plus, Search, X, FileText, CreditCard, Award } from 'lucide-react';
+import { Plus, Search, X, FileText, CreditCard, Award, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const StudentTopBar = ({
@@ -13,18 +13,23 @@ const StudentTopBar = ({
   totalCount
 }) => {
   return (
-    <div className="sticky top-[1px] z-20 mt-[1px] flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-sm transition-all">
+    <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8 mb-6 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-1">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-bold text-ink dark:text-ink-dark tracking-tight">Students</h1>
-            <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-surface-secondary dark:bg-[#1a1a1a] text-ink-muted border border-line dark:border-white/10">
-              {totalCount} total
-            </span>
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">
+            <GraduationCap className="w-6 h-6" />
           </div>
-          <p className="text-xs text-ink-muted dark:text-ink-muted-dark mt-0.5">
-            Student roster, enrollment records, and academic status.
-          </p>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-black text-ink dark:text-ink-dark tracking-tight">Student Directory</h1>
+              <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
+                {totalCount} total
+              </span>
+            </div>
+            <p className="text-xs font-semibold text-ink-muted mt-0.5">
+              Student roster, enrollment records, and academic status
+            </p>
+          </div>
         </div>
 
         <div className="relative flex-1 max-w-sm sm:ml-4">

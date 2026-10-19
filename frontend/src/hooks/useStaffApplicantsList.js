@@ -11,7 +11,7 @@ export const useStaffApplicantsList = () => {
   const [selectedAvailability, setSelectedAvailability] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
-  const [limit] = useState(20);
+  const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalApplicants, setTotalApplicants] = useState(0);
   const [loading, setLoading] = useState(true);

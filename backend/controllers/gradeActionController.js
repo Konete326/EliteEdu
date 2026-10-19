@@ -19,12 +19,13 @@ const bulkSeedGrades = async (req, res) => {
 
     const toInsert = DEFAULT_CLASSES
       .filter((name) => !existingNames.has(name.toLowerCase()))
-      .map((name) => ({
+      .map((name, index) => ({
         school_id: schoolId,
         campus_id: campusRef,
         name,
         sections: ['A', 'B'],
-        status: 'Active'
+        status: 'Active',
+        order: existing.length + index + 1
       }));
 
     if (toInsert.length > 0) {
@@ -52,4 +53,24 @@ const toggleGradeStatus = async (req, res) => {
   }
 };
 
-module.exports = { bulkSeedGrades, toggleGradeStatus };
+const reorderGrades = async (req, res) => {
+  try {
+    const schoolId = req.user?.school_id;
+    const { orderedIds } = req.body;
+    if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
+      return res.status(400).json({ message: 'orderedIds array required' });
+    }
+    const bulkOps = orderedIds.map((id, index) => ({
+      updateOne: {
+        filter: { _id: id, school_id: schoolId },
+        update: { $set: { order: index + 1 } }
+      }
+    }));
+    await Grade.bulkWrite(bulkOps);
+    res.status(200).json({ success: true, message: 'Grades order updated successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to reorder grades', error: error.message });
+  }
+};
+
+module.exports = { bulkSeedGrades, toggleGradeStatus, reorderGrades };

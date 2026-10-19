@@ -23,11 +23,27 @@ export const DEFAULT_MODULES = [
   { module_key: 'exam_reports', module_name: 'Exam Reports', category: 'Examination' },
   { module_key: 'control_panel', module_name: 'Control Panel & Settings', category: 'Administration' },
   { module_key: 'user_management', module_name: 'User & Role Management', category: 'Administration' },
+  { module_key: 'timetable', module_name: 'Smart Timetable Management', category: 'Academics' },
+  { module_key: 'lms', module_name: 'LMS & Syllabus Tracker', category: 'Academics' },
+  { module_key: 'homework', module_name: 'Homework & Assignments', category: 'Academics' },
+  { module_key: 'lectures', module_name: 'Recorded Lectures & Material', category: 'Academics' },
+  { module_key: 'quizzes', module_name: 'Online Quizzes & Assessments', category: 'Academics' },
+  { module_key: 'online_classes', module_name: 'Live Virtual Classes', category: 'Academics' },
   { module_key: 'crm', module_name: 'CRM & Admissions', category: 'CRM' },
   { module_key: 'crm_inquiries', module_name: 'Inquiries & Leads', category: 'CRM' },
   { module_key: 'crm_pipeline', module_name: 'Admissions Pipeline', category: 'CRM' },
   { module_key: 'crm_followups', module_name: 'Lead Follow-ups', category: 'CRM' },
-  { module_key: 'crm_analytics', module_name: 'Lead Analytics', category: 'CRM' }
+  { module_key: 'crm_analytics', module_name: 'Lead Analytics', category: 'CRM' },
+  { module_key: 'store_pos', module_name: 'Bookstore & POS Inventory', category: 'Finance' },
+  { module_key: 'behavior', module_name: 'Affective & Psychomotor Behavior', category: 'Academics' },
+  { module_key: 'behavior_skills', module_name: 'Behavior & Skills Assessment', category: 'Academics' },
+  { module_key: 'campus_transfer', module_name: 'Campus Transfer', category: 'Academics' },
+  { module_key: 'operations', module_name: 'Campus Operations & Activities', category: 'Operations' },
+  { module_key: 'bulk_migration', module_name: 'Bulk Data Migration Engine', category: 'Administration' },
+  { module_key: 'transport', module_name: 'Transport & Fleet Management', category: 'Operations' },
+  { module_key: 'van_management', module_name: 'Van & Transport Management', category: 'Operations' },
+  { module_key: 'student_portal', module_name: 'Student & Parent Portal', category: 'Academics' },
+  { module_key: 'messenger', module_name: 'Internal Staff Messenger', category: 'Communications' }
 ];
 
 export const getInitialPermissions = (rolePermissions = []) => {

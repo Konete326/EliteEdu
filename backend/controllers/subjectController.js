@@ -5,7 +5,7 @@ const Campus = require('../models/Campus');
 const getSubjects = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
-    const { campus_id, search, class_name, page = 1, limit = 50 } = req.query;
+    const { campus_id, search, class_name, page = 1, limit = 10 } = req.query;
     const filter = { school_id: schoolId };
 
     if (campus_id && campus_id !== 'all' && mongoose.Types.ObjectId.isValid(campus_id)) {

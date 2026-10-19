@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import IdCardsToolbar from '../../components/admin/students/idcards/IdCardsToolbar';
-import IdCardsSheetPage from '../../components/admin/students/idcards/IdCardsSheetPage';
-import IdCardCustomizeModal from '../../components/admin/students/idcards/IdCardCustomizeModal';
+import UniversalIdCardToolbar from '../../components/common/idcards/UniversalIdCardToolbar';
+import UniversalIdCardSheet from '../../components/common/idcards/UniversalIdCardSheet';
+import useIdCardInstitution from '../../components/common/idcards/useIdCardInstitution';
 import { useIdCardsData } from '../../components/admin/students/idcards/useIdCardsData';
 import { exportStudentCardsPdf } from '../../utils/pdf/studentCardPdfExporter';
 
@@ -23,22 +23,26 @@ const StudentIdCardsPage = () => {
     selectedIds,
     filteredStudents,
     selectedStudents,
-    chunks,
     handleToggleSelect,
     handleToggleSelectAll
   } = useIdCardsData(initialStudentId);
 
-  const [selectedStyle, setSelectedStyle] = useState('Default');
-  const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+  const institution = useIdCardInstitution(selectedCampus);
+
+  const [template, setTemplate] = useState('template_1_curve_blue');
+  const [orientation, setOrientation] = useState('vertical');
+  const [accentColor, setAccentColor] = useState('#003B73');
+  const [sideMode, setSideMode] = useState('front');
   const [isExporting, setIsExporting] = useState(false);
-  const [config, setConfig] = useState({
-    motto: '',
-    accentColor: '#3b82f6',
-    showBarcode: true,
-    showQr: true,
-    showBloodGroup: true,
-    showMotto: true
-  });
+
+  const chunkSize = orientation === 'horizontal' ? 6 : 8;
+  const chunks = useMemo(() => {
+    const list = [];
+    for (let i = 0; i < selectedStudents.length; i += chunkSize) {
+      list.push(selectedStudents.slice(i, i + chunkSize));
+    }
+    return list;
+  }, [selectedStudents, chunkSize]);
 
   const handleExportPdf = async () => {
     try {
@@ -53,9 +57,15 @@ const StudentIdCardsPage = () => {
 
   return (
     <div className="space-y-6">
-      <IdCardsToolbar
-        selectedStyle={selectedStyle}
-        onSelectStyle={setSelectedStyle}
+      <UniversalIdCardToolbar
+        template={template}
+        onTemplateChange={setTemplate}
+        orientation={orientation}
+        onOrientationChange={setOrientation}
+        accentColor={accentColor}
+        onAccentColorChange={setAccentColor}
+        sideMode={sideMode}
+        onSideModeChange={setSideMode}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         campuses={campuses}
@@ -67,16 +77,8 @@ const StudentIdCardsPage = () => {
         selectedCount={selectedStudents.length}
         totalCount={filteredStudents.length}
         onToggleSelectAll={handleToggleSelectAll}
-        onOpenCustomize={() => setIsCustomizeOpen(true)}
         onExportPdf={handleExportPdf}
         isExporting={isExporting}
-      />
-
-      <IdCardCustomizeModal
-        isOpen={isCustomizeOpen}
-        onClose={() => setIsCustomizeOpen(false)}
-        config={config}
-        onConfigChange={setConfig}
       />
 
       {loading ? (
@@ -88,15 +90,19 @@ const StudentIdCardsPage = () => {
       ) : (
         <div className="space-y-8">
           {chunks.map((chunk, idx) => (
-            <IdCardsSheetPage
+            <UniversalIdCardSheet
               key={idx}
-              students={chunk}
-              pageIndex={idx}
-              totalSheets={chunks.length}
-              selectedStyle={selectedStyle}
+              holders={chunk}
+              holderType="student"
+              template={template}
+              orientation={orientation}
+              accentColor={accentColor}
+              sideMode={sideMode}
               selectedIds={selectedIds}
               onToggleSelect={handleToggleSelect}
-              config={config}
+              institution={institution}
+              pageIndex={idx}
+              totalSheets={chunks.length}
             />
           ))}
         </div>

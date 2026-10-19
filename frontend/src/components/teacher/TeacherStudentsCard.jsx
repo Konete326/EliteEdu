@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react';
-import { Users, Search, Phone, ShieldCheck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users, Search, ArrowUpRight, Pencil } from 'lucide-react';
 
 const TeacherStudentsCard = ({ students = [], loading = false }) => {
   const [search, setSearch] = useState('');
+  const navigate = useNavigate();
 
   const filtered = useMemo(() => {
     if (!search.trim()) return students;
@@ -27,15 +29,25 @@ const TeacherStudentsCard = ({ students = [], loading = false }) => {
           </div>
         </div>
 
-        <div className="relative sm:w-64">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search student or GR..."
-            className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl bg-surface-secondary/50 dark:bg-[#16161d] border border-line dark:border-line-dark text-ink dark:text-ink-dark outline-none focus:border-primary"
-          />
+        <div className="flex items-center gap-2">
+          <div className="relative w-48 sm:w-56">
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search student or GR..."
+              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl bg-surface-secondary/50 dark:bg-[#16161d] border border-line dark:border-line-dark text-ink dark:text-ink-dark outline-none focus:border-primary"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/teacher/students')}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-primary text-white text-xs font-bold shadow-xs hover:bg-primary-hover transition-colors cursor-pointer shrink-0"
+          >
+            <span>Manage All</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 
@@ -57,7 +69,7 @@ const TeacherStudentsCard = ({ students = [], loading = false }) => {
                 <th className="py-2.5 px-3 font-semibold">Class & Sec</th>
                 <th className="py-2.5 px-3 font-semibold">GR No</th>
                 <th className="py-2.5 px-3 font-semibold">Contact</th>
-                <th className="py-2.5 px-3 font-semibold text-right">Status</th>
+                <th className="py-2.5 px-3 font-semibold text-right">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line dark:divide-line-dark">
@@ -82,9 +94,14 @@ const TeacherStudentsCard = ({ students = [], loading = false }) => {
                     {s.emergency_contact_no || s.contact_number || '—'}
                   </td>
                   <td className="py-2.5 px-3 text-right">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-good/10 text-good">
-                      {s.status || 'Active'}
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => navigate('/teacher/students')}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 hover:bg-amber-500/25 transition-colors cursor-pointer"
+                    >
+                      <Pencil className="w-2.5 h-2.5" />
+                      <span>Edit Full Profile</span>
+                    </button>
                   </td>
                 </tr>
               ))}

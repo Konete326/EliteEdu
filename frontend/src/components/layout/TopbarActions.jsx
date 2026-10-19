@@ -1,19 +1,20 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Building2, ChevronsUpDown, LayoutGrid, MessageCircle,
-  PhoneCall, Moon, Sun, Download, Play
+  Building2, LayoutGrid, ScanLine, Moon, Sun, Download, Play
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCampus } from '../../context/CampusContext';
 import { usePwaInstall } from '../../hooks/usePwaInstall';
-import { useComingSoon } from '../../context/ComingSoonContext';
 import TopbarNotifications from './TopbarNotifications';
+import TopbarMessages from './TopbarMessages';
+import UniversalScannerModal from './scanner/UniversalScannerModal';
 
 const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
   const { user } = useAuth();
   const { campuses, activeCampusId, setActiveCampusId } = useCampus();
-  const { openComingSoon } = useComingSoon();
   const { isInstalled, promptInstall } = usePwaInstall();
+  const [scannerOpen, setScannerOpen] = useState(false);
   const navigate = useNavigate();
 
   const getInitials = (name) => {
@@ -55,7 +56,7 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
 
       <button
         type="button"
-        onClick={() => openComingSoon({ title: 'Video Guides & Tutorials', description: 'Feature walkthroughs and tutorial videos will be accessible here.', badge: 'Tutorials' })}
+        onClick={() => window.open('https://www.youtube.com', '_blank', 'noopener,noreferrer')}
         className={`hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-colors ${
           isColored ? 'bg-white/15 border-white/20 text-white hover:bg-white/25' : 'border-line dark:border-line-dark hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark text-ink dark:text-ink-dark'
         }`}
@@ -64,19 +65,19 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
         <span>Watch Video</span>
       </button>
 
-      <button type="button" onClick={() => openComingSoon({ title: 'Quick Modules Launcher', description: 'Institutional app launcher is in development.', badge: 'Modules' })} className={btnClass} title="Modules">
+      <button type="button" onClick={() => navigate(user?.role === 'Teacher' ? '/teacher' : user?.role === 'Student' ? '/student/dashboard' : '/admin')} className={btnClass} title="Modules Dashboard">
         <LayoutGrid className="w-4 h-4" />
       </button>
 
-      <div className="relative">
-        <button type="button" onClick={() => openComingSoon({ title: 'Live Chat & Messaging', description: 'Internal staff messaging is coming soon.', badge: 'Chat' })} className={btnClass} title="Messages">
-          <MessageCircle className="w-4 h-4" />
-        </button>
-        <span className="absolute top-0 right-0 w-3.5 h-3.5 rounded-full bg-bad text-white text-[9px] font-bold flex items-center justify-center leading-none">2</span>
-      </div>
+      <TopbarMessages isColored={isColored} btnClass={btnClass} />
 
-      <button type="button" onClick={() => openComingSoon({ title: 'Helpdesk & Support Center', description: 'Support ticketing is coming soon.', badge: 'Support' })} className={btnClass} title="Support">
-        <PhoneCall className="w-4 h-4" />
+      <button
+        type="button"
+        onClick={() => setScannerOpen(true)}
+        className={btnClass}
+        title="Universal QR & Barcode Scanner"
+      >
+        <ScanLine className="w-4 h-4" />
       </button>
 
       <TopbarNotifications isColored={isColored} btnClass={btnClass} />
@@ -107,6 +108,8 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
       >
         {user?.photo_url ? <img src={user.photo_url} alt={user.name || 'User'} className="w-full h-full object-cover" /> : getInitials(user?.name)}
       </button>
+
+      <UniversalScannerModal isOpen={scannerOpen} onClose={() => setScannerOpen(false)} />
     </div>
   );
 };

@@ -35,13 +35,17 @@ const getClassSummary = async (req, res) => {
 const getStudentMonthlyMatrix = async (req, res) => {
   try {
     const { month, grade_id, section, campus_id, search } = req.query;
-    if (req.user.role === 'Teacher' && grade_id && grade_id !== 'all') {
+    let allowedGradeIds = null;
+    if (req.user.role === 'Teacher') {
       const allowed = await getTeacherAllowedGradeIds(req.user);
-      const isAllowed = allowed.some((g) => String(g._id) === String(grade_id));
-      if (!isAllowed) return res.status(403).json({ success: false, message: 'Unauthorized for this class' });
+      allowedGradeIds = allowed.map((g) => g._id);
+      if (grade_id && grade_id !== 'all') {
+        const isAllowed = allowedGradeIds.some((id) => String(id) === String(grade_id));
+        if (!isAllowed) return res.status(403).json({ success: false, message: 'Unauthorized for this class' });
+      }
     }
     const header = await getReportHeader(req.user.school_id, campus_id);
-    const data = await buildStudentMonthlyMatrix(req.user.school_id, campus_id, grade_id, section, month, search);
+    const data = await buildStudentMonthlyMatrix(req.user.school_id, campus_id, grade_id, section, month, search, allowedGradeIds);
     res.json({ success: true, header, month: month || new Date().toISOString().slice(0, 7), ...data });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

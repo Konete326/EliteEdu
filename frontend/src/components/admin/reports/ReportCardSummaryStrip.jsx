@@ -1,9 +1,11 @@
 import OfficialSignatureStampBlock from '../../common/OfficialSignatureStampBlock';
+import ReportCardBehaviorBlock from './ReportCardBehaviorBlock';
 
 const ReportCardSummaryStrip = ({
   academicSummary = {},
   attendance = {},
-  remarks = {}
+  remarks = {},
+  behaviorRecord = null
 }) => {
   return (
     <div className="space-y-4 pt-3 border-t border-line">
@@ -49,6 +51,8 @@ const ReportCardSummaryStrip = ({
           <p className="font-medium text-ink italic">&quot;{remarks.principal || 'Promoted to the next academic grade.'}&quot;</p>
         </div>
       </div>
+
+      <ReportCardBehaviorBlock behaviorRecord={behaviorRecord} />
 
       <div className="pt-2">
         <OfficialSignatureStampBlock

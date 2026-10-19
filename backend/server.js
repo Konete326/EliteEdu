@@ -2,35 +2,28 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const authRoutes = require('./routes/authRoutes');
-const schoolRoutes = require('./routes/schoolRoutes');
-const teacherRoutes = require('./routes/teacherRoutes');
-const dashboardRoutes = require('./routes/dashboardRoutes');
-const campusRoutes = require('./routes/campusRoutes');
-const subjectRoutes = require('./routes/subjectRoutes');
-const gradeRoutes = require('./routes/gradeRoutes');
-const studentRoutes = require('./routes/studentRoutes');
-const staffApplicantRoutes = require('./routes/staffApplicantRoutes');
-const gradingPolicyRoutes = require('./routes/gradingPolicyRoutes');
-const publicRoutes = require('./routes/publicRoutes');
-const teacherPortalRoutes = require('./routes/teacherPortalRoutes');
-const systemLogRoutes = require('./routes/systemLogRoutes');
-const userMgmtRoutes = require('./routes/userMgmtRoutes');
-const promotionRoutes = require('./routes/promotionRoutes');
-const signatureRoutes = require('./routes/signatureRoutes');
-const attendanceRoutes = require('./routes/attendanceRoutes');
-const staffAttendanceRoutes = require('./routes/staffAttendanceRoutes');
-const notificationRoutes = require('./routes/notificationRoutes');
-const examRoutes = require('./routes/examRoutes');
-const classTestRoutes = require('./routes/classTestRoutes');
-const feeRoutes = require('./routes/feeRoutes');
-const examSuiteRoutes = require('./routes/examSuiteRoutes');
-const questionPaperRoutes = require('./routes/questionPaperRoutes');
-const reportRoutes = require('./routes/reportRoutes');
-const certificateRoutes = require('./routes/certificateRoutes');
-const leaveRequestRoutes = require('./routes/leaveRequestRoutes');
-const attendanceReportRoutes = require('./routes/attendanceReportRoutes');
-const crmRoutes = require('./routes/crmRoutes');
+const authRoutes = require('./routes/authRoutes'); const schoolRoutes = require('./routes/schoolRoutes');
+const teacherRoutes = require('./routes/teacherRoutes'); const dashboardRoutes = require('./routes/dashboardRoutes');
+const campusRoutes = require('./routes/campusRoutes'); const subjectRoutes = require('./routes/subjectRoutes');
+const gradeRoutes = require('./routes/gradeRoutes'); const studentRoutes = require('./routes/studentRoutes');
+const staffApplicantRoutes = require('./routes/staffApplicantRoutes'); const gradingPolicyRoutes = require('./routes/gradingPolicyRoutes');
+const publicRoutes = require('./routes/publicRoutes'); const teacherPortalRoutes = require('./routes/teacherPortalRoutes');
+const systemLogRoutes = require('./routes/systemLogRoutes'); const userMgmtRoutes = require('./routes/userMgmtRoutes');
+const promotionRoutes = require('./routes/promotionRoutes'); const signatureRoutes = require('./routes/signatureRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes'); const staffAttendanceRoutes = require('./routes/staffAttendanceRoutes');
+const notificationRoutes = require('./routes/notificationRoutes'); const examRoutes = require('./routes/examRoutes');
+const classTestRoutes = require('./routes/classTestRoutes'); const feeRoutes = require('./routes/feeRoutes');
+const examSuiteRoutes = require('./routes/examSuiteRoutes'); const questionPaperRoutes = require('./routes/questionPaperRoutes');
+const reportRoutes = require('./routes/reportRoutes'); const certificateRoutes = require('./routes/certificateRoutes');
+const leaveRequestRoutes = require('./routes/leaveRequestRoutes'); const attendanceReportRoutes = require('./routes/attendanceReportRoutes');
+const crmRoutes = require('./routes/crmRoutes'); const accountsRoutes = require('./routes/accountsRoutes');
+const payrollRoutes = require('./routes/payrollRoutes'); const lmsRoutes = require('./routes/lmsRoutes');
+const timetableRoutes = require('./routes/timetableRoutes'); const storePosRoutes = require('./routes/storePosRoutes');
+const plannerEventRoutes = require('./routes/plannerEventRoutes'); const operationsRoutes = require('./routes/operationsRoutes');
+const behaviorRoutes = require('./routes/behaviorRoutes'); const bulkMigrationRoutes = require('./routes/bulkMigrationRoutes');
+const bulkImportRoutes = require('./routes/bulkImportRoutes'); const campusTransferRoutes = require('./routes/campusTransferRoutes');
+const transportRoutes = require('./routes/transportRoutes'); const studentPortalRoutes = require('./routes/studentPortalRoutes');
+const messengerRoutes = require('./routes/messengerRoutes'); const scannerRoutes = require('./routes/scannerRoutes');
 const auditLogger = require('./middlewares/auditLogger');
 const sanitizePayload = require('./utils/sanitizePayload');
 const seedSuperAdmin = require('./utils/seedSuperAdmin');
@@ -38,9 +31,6 @@ const seedSuperAdmin = require('./utils/seedSuperAdmin');
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/eliteedu';
-const allowedOrigins = process.env.FRONTEND_URL
-  ? process.env.FRONTEND_URL.split(',').map((origin) => origin.trim())
-  : ['http://localhost:5173', 'http://localhost:3000', 'https://elitedev-edu.vercel.app'];
 
 app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: true }));
 app.use(express.json({ limit: '25mb' }));
@@ -71,35 +61,31 @@ app.use(async (req, res, next) => {
 
 app.get('/api/health', (req, res) => res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() }));
 
-app.use(['/api/auth', '/auth'], authRoutes);
-app.use(['/api/schools', '/schools'], schoolRoutes);
-app.use(['/api/teachers', '/teachers'], teacherRoutes);
-app.use(['/api/dashboard', '/dashboard'], dashboardRoutes);
-app.use(['/api/campuses', '/campuses'], campusRoutes);
-app.use(['/api/subjects', '/subjects'], subjectRoutes);
-app.use(['/api/grades', '/grades'], gradeRoutes);
-app.use(['/api/students', '/students'], studentRoutes);
-app.use(['/api/staff-applicants', '/staff-applicants'], staffApplicantRoutes);
-app.use(['/api/grading-policies', '/grading-policies'], gradingPolicyRoutes);
-app.use(['/api/public', '/public'], publicRoutes);
-app.use(['/api/teacher-portal', '/teacher-portal'], teacherPortalRoutes);
-app.use(['/api/logs', '/logs'], systemLogRoutes);
-app.use(['/api/user-management', '/user-management'], userMgmtRoutes);
-app.use(['/api/promotions', '/promotions'], promotionRoutes);
-app.use(['/api/signatures', '/signatures'], signatureRoutes);
-app.use(['/api/attendance', '/attendance'], attendanceRoutes);
-app.use(['/api/staff-attendance', '/staff-attendance'], staffAttendanceRoutes);
-app.use(['/api/notifications', '/notifications'], notificationRoutes);
-app.use(['/api/exams', '/exams'], examRoutes);
-app.use(['/api/class-tests', '/class-tests'], classTestRoutes);
-app.use(['/api/fees', '/fees'], feeRoutes);
-app.use(['/api/exam-suite', '/exam-suite'], examSuiteRoutes);
-app.use(['/api/question-papers', '/question-papers'], questionPaperRoutes);
-app.use(['/api/reports', '/reports'], reportRoutes);
-app.use(['/api/certificates', '/certificates'], certificateRoutes);
-app.use(['/api/leaves', '/leaves'], leaveRequestRoutes);
-app.use(['/api/attendance-reports', '/attendance-reports'], attendanceReportRoutes);
-app.use(['/api/crm', '/crm'], crmRoutes);
+const routes = [
+  [['/api/auth', '/auth'], authRoutes], [['/api/schools', '/schools'], schoolRoutes],
+  [['/api/teachers', '/teachers'], teacherRoutes], [['/api/dashboard', '/dashboard'], dashboardRoutes],
+  [['/api/campuses', '/campuses'], campusRoutes], [['/api/subjects', '/subjects'], subjectRoutes],
+  [['/api/grades', '/grades'], gradeRoutes], [['/api/students', '/students'], studentRoutes],
+  [['/api/staff-applicants', '/staff-applicants'], staffApplicantRoutes], [['/api/grading-policies', '/grading-policies'], gradingPolicyRoutes],
+  [['/api/public', '/public'], publicRoutes], [['/api/teacher-portal', '/teacher-portal'], teacherPortalRoutes],
+  [['/api/logs', '/logs'], systemLogRoutes], [['/api/user-management', '/user-management'], userMgmtRoutes],
+  [['/api/promotions', '/promotions'], promotionRoutes], [['/api/signatures', '/signatures'], signatureRoutes],
+  [['/api/attendance', '/attendance'], attendanceRoutes], [['/api/staff-attendance', '/staff-attendance'], staffAttendanceRoutes],
+  [['/api/notifications', '/notifications'], notificationRoutes], [['/api/exams', '/exams'], examRoutes],
+  [['/api/class-tests', '/class-tests'], classTestRoutes], [['/api/fees', '/fees'], feeRoutes],
+  [['/api/exam-suite', '/exam-suite'], examSuiteRoutes], [['/api/question-papers', '/question-papers'], questionPaperRoutes],
+  [['/api/reports', '/reports'], reportRoutes], [['/api/certificates', '/certificates'], certificateRoutes],
+  [['/api/leaves', '/leaves'], leaveRequestRoutes], [['/api/attendance-reports', '/attendance-reports'], attendanceReportRoutes],
+  [['/api/crm', '/crm'], crmRoutes], [['/api/accounts', '/accounts'], accountsRoutes],
+  [['/api/payroll', '/payroll'], payrollRoutes], [['/api/lms', '/lms'], lmsRoutes],
+  [['/api/timetable', '/timetable'], timetableRoutes], [['/api/store', '/store'], storePosRoutes],
+  [['/api/operations', '/operations'], operationsRoutes], [['/api/planners', '/planners'], plannerEventRoutes],
+  [['/api/behavior', '/behavior'], behaviorRoutes], [['/api/bulk-migration', '/bulk-migration'], bulkMigrationRoutes],
+  [['/api/bulk-import', '/bulk-import'], bulkImportRoutes], [['/api/campus-transfers', '/campus-transfers'], campusTransferRoutes],
+  [['/api/transport', '/transport'], transportRoutes], [['/api/student-portal', '/student-portal'], studentPortalRoutes],
+  [['/api/messenger', '/messenger'], messengerRoutes], [['/api/scanner', '/scanner'], scannerRoutes]
+];
+routes.forEach(([paths, handler]) => app.use(paths, handler));
 
 app.use((err, req, res, next) => {
   console.error('Server error:', err);

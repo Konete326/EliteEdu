@@ -12,12 +12,10 @@ import PageLoader from '../../components/common/PageLoader';
 
 const SubjectsPage = () => {
   const {
-    subjects, campuses, selectedCampus, setSelectedCampus,
-    selectedClass, setSelectedClass, searchQuery, setSearchQuery,
-    loading, error, setError, currentPage, totalPages, totalItems,
-    modalState, setModalState, isSubmitting, subjectToDelete,
-    setSubjectToDelete, deleteLoading, toggleLoadingId, isSeeding,
-    handleToggle, handleAutoLoad, handleFormSubmit, handleDeleteConfirm,
+    subjects, campuses, grades, selectedCampus, setSelectedCampus, selectedClass, setSelectedClass,
+    searchQuery, setSearchQuery, loading, error, setError, currentPage, totalPages, totalItems,
+    modalState, setModalState, isSubmitting, subjectToDelete, setSubjectToDelete, deleteLoading,
+    toggleLoadingId, isSeeding, handleToggle, handleAutoLoad, handleFormSubmit, handleDeleteConfirm,
     fetchSubjects, setCurrentPage
   } = useSubjectsManager();
 
@@ -30,6 +28,7 @@ const SubjectsPage = () => {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         campuses={campuses}
+        grades={grades}
         selectedCampus={selectedCampus}
         onCampusChange={(val) => { setSelectedCampus(val); setCurrentPage(1); }}
         selectedClass={selectedClass}
@@ -69,7 +68,7 @@ const SubjectsPage = () => {
               currentPage={currentPage}
               totalPages={totalPages}
               totalItems={totalItems}
-              limit={50}
+              limit={10}
               onPageChange={(page) => fetchSubjects(page)}
             />
           </>
@@ -81,6 +80,7 @@ const SubjectsPage = () => {
         mode={modalState.mode}
         subject={modalState.subject}
         campuses={campuses}
+        grades={grades}
         onClose={() => setModalState({ isOpen: false, mode: 'add', subject: null })}
         onSubmit={handleFormSubmit}
         isSubmitting={isSubmitting}

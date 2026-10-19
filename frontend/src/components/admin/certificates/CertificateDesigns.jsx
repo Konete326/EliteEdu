@@ -1,55 +1,46 @@
-import React from 'react';
+export const STYLE_OPTIONS = [
+  {
+    id: 'academic_gold_hatch',
+    label: '1. Classic Gold & Hatch',
+    description: 'Classic Gothic Gold Title, Diagonal Hatch Frame & 3D Star Seal',
+    color: '#b59449'
+  },
+  {
+    id: 'floral_corner_filigree',
+    label: '2. Golden Corner Filigree',
+    description: 'Crisp White Canvas with 4 Ornate Golden Filigree Corner Flourishes',
+    color: '#f59e0b'
+  },
+  {
+    id: 'guilloche_rosette_burgundy',
+    label: '3. Burgundy Guilloche & Medal',
+    description: 'Burgundy Security Frame, Corner Rosettes & Embossed Gold Laurel Medal',
+    color: '#8c3b32'
+  },
+  {
+    id: 'navy_ribbon_halftone',
+    label: '4. Navy Ribbon & Champion',
+    description: 'Navy Swallowtail Header, Left Ribbon with Champion 3-Star Badge',
+    color: '#051937'
+  }
+];
 
-export const getDesignClasses = (style = 'royal_gold', accentColor = '#0d9488') => {
+export const normalizeDesignStyle = (style) => {
   switch (style) {
-    case 'emerald_modern':
-      return {
-        outerBorder: 'border-4 border-emerald-700 bg-white dark:bg-slate-900',
-        innerBorder: 'border border-emerald-600/40 m-2 p-5',
-        headerClass: 'text-emerald-800 dark:text-emerald-400 font-serif',
-        badgeClass: 'bg-emerald-700 text-white',
-        highlightColor: accentColor || '#059669'
-      };
-    case 'classic_academic':
-      return {
-        outerBorder: 'border-8 border-slate-900 bg-amber-50/20 dark:bg-slate-950',
-        innerBorder: 'border-2 border-dashed border-slate-700 m-2 p-5',
-        headerClass: 'text-slate-900 dark:text-slate-200 font-serif',
-        badgeClass: 'bg-slate-900 text-amber-200',
-        highlightColor: accentColor || '#334155'
-      };
-    case 'minimal_corporate':
-      return {
-        outerBorder: 'border-2 border-slate-800 bg-white dark:bg-slate-900',
-        innerBorder: 'border-l-4 border-slate-800 m-2 p-6',
-        headerClass: 'text-slate-900 dark:text-white font-sans font-black',
-        badgeClass: 'bg-slate-800 text-white',
-        highlightColor: accentColor || '#0f172a'
-      };
-    case 'ribbon_prestigious':
-      return {
-        outerBorder: 'border-4 border-purple-800 bg-purple-50/15 dark:bg-slate-900',
-        innerBorder: 'border-2 border-purple-600/40 m-2 p-5',
-        headerClass: 'text-purple-900 dark:text-purple-300 font-serif',
-        badgeClass: 'bg-gradient-to-r from-purple-700 to-pink-600 text-white',
-        highlightColor: accentColor || '#7c3aed'
-      };
+    case 'academic_gold_hatch':
     case 'royal_gold':
+    case 'classic_academic':
+      return 'academic_gold_hatch';
+    case 'floral_corner_filigree':
+    case 'emerald_modern':
+    case 'minimal_corporate':
+      return 'floral_corner_filigree';
+    case 'guilloche_rosette_burgundy':
+      return 'guilloche_rosette_burgundy';
+    case 'navy_ribbon_halftone':
+    case 'ribbon_prestigious':
+      return 'navy_ribbon_halftone';
     default:
-      return {
-        outerBorder: 'border-4 border-amber-600 bg-amber-50/30 dark:bg-slate-900',
-        innerBorder: 'border-2 border-double border-amber-500/60 m-2 p-5',
-        headerClass: 'text-amber-900 dark:text-amber-400 font-serif',
-        badgeClass: 'bg-amber-600 text-white',
-        highlightColor: accentColor || '#b45309'
-      };
+      return 'academic_gold_hatch';
   }
 };
-
-export const STYLE_OPTIONS = [
-  { id: 'royal_gold', label: 'Royal Gold', color: '#b45309' },
-  { id: 'emerald_modern', label: 'Emerald Executive', color: '#059669' },
-  { id: 'classic_academic', label: 'Classic Crest', color: '#334155' },
-  { id: 'minimal_corporate', label: 'Corporate Minimal', color: '#0f172a' },
-  { id: 'ribbon_prestigious', label: 'Ribbon Prestige', color: '#7c3aed' }
-];

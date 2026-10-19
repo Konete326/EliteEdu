@@ -6,7 +6,8 @@ const { createSystemNotification } = require('../utils/notificationDispatcher');
 
 const markBulkAttendance = async (req, res) => {
   try {
-    const { grade_id, section = 'A', date = new Date().toISOString().slice(0, 10), records = [] } = req.body;
+    const { grade_id, section = 'A', date = new Date().toISOString().slice(0, 10) } = req.body;
+    const records = req.body.records || req.body.attendances || [];
     if (!grade_id) return res.status(400).json({ success: false, message: 'grade_id is required' });
 
     const hasAccess = await verifyClassAccess(req.user, grade_id);
@@ -14,25 +15,28 @@ const markBulkAttendance = async (req, res) => {
 
     if (records.length === 0) return res.status(200).json({ success: true, count: 0 });
 
-    const ops = records.map((r) => ({
-      updateOne: {
-        filter: { school_id: req.user.school_id, student_id: r.student_id, date },
-        update: {
-          $set: {
-            school_id: req.user.school_id,
-            grade_id,
-            section,
-            student_id: r.student_id,
-            date,
-            status: r.status || 'P',
-            remarks: r.remarks || '',
-            marked_via: r.marked_via || 'Manual',
-            marked_by: req.user.id
-          }
-        },
-        upsert: true
-      }
-    }));
+    const ops = records.map((r) => {
+      const sId = r.student_id || r.student?._id || r.student?.id || r._id;
+      return {
+        updateOne: {
+          filter: { school_id: req.user.school_id, student_id: sId, date },
+          update: {
+            $set: {
+              school_id: req.user.school_id,
+              grade_id,
+              section,
+              student_id: sId,
+              date,
+              status: r.status || 'P',
+              remarks: r.remarks || '',
+              marked_via: r.marked_via || 'Manual',
+              marked_by: req.user.id
+            }
+          },
+          upsert: true
+        }
+      };
+    }).filter((op) => op.updateOne.filter.student_id);
 
     await StudentAttendance.bulkWrite(ops);
     createSystemNotification({

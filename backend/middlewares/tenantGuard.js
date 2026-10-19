@@ -69,4 +69,6 @@ const requireTeacherPermission = (permissionKey) => {
   };
 };
 
-module.exports = { enforceTenantScope, requireTeacherPermission };
+module.exports = enforceTenantScope;
+module.exports.enforceTenantScope = enforceTenantScope;
+module.exports.requireTeacherPermission = requireTeacherPermission;

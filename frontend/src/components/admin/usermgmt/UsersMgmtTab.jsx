@@ -43,7 +43,7 @@ const UsersMgmtTab = ({
     if (!token) return;
     if (!isSilent) setLoading(true);
     try {
-      const q = new URLSearchParams({ page: String(page), limit: '20', search, campus_id: selectedCampus, status: selectedStatus });
+      const q = new URLSearchParams({ page: String(page), limit: '10', search, campus_id: selectedCampus, status: selectedStatus });
       const res = await fetch(`${getApiBase()}/user-management/users?${q.toString()}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -163,7 +163,7 @@ const UsersMgmtTab = ({
       <UsersTable users={users} selectedUser={selectedUser} onSelectUser={onSelectUser} onEdit={handleEdit} onToggleStatus={handleToggleStatus} onResetPassword={handleReset} onAssignCampus={handleCampus} onDelete={handleDelete} />
 
       <div className="flex items-center justify-between text-xs text-ink-muted px-1">
-        <span>Showing {users.length > 0 ? (page - 1) * 20 + 1 : 0}–{Math.min(page * 20, total)} of {total} users</span>
+        <span>Showing {users.length > 0 ? (page - 1) * 10 + 1 : 0}–{Math.min(page * 10, total)} of {total} users</span>
         <div className="flex gap-2">
           <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="px-3 py-1.5 rounded-lg border border-line disabled:opacity-40 cursor-pointer">Previous</button>
           <button disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)} className="px-3 py-1.5 rounded-lg border border-line disabled:opacity-40 cursor-pointer">Next</button>

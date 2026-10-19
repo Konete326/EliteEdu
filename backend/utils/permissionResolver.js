@@ -5,17 +5,27 @@ const ALL_APP_KEYS = [
   'lost_and_found', 'resources', 'my_profile', 'update_picture',
   'student_promotion', 'class_tests', 'question_papers', 'certificates',
   'reports', 'student_reports', 'parent_reports', 'report_cards', 'attendance_reports', 'exam_reports', 'leave_requests',
-  'crm', 'crm_inquiries', 'crm_pipeline', 'crm_followups', 'crm_analytics'
+  'crm', 'crm_inquiries', 'crm_pipeline', 'crm_followups', 'crm_analytics', 'fees', 'accounts', 'payroll',
+  'lms', 'courses', 'syllabus', 'store_pos', 'pos_store', 'behavior', 'campus_transfer', 'operations', 'news_feed', 'consent',
+  'bulk_migration', 'bulk_import', 'transport', 'student_portal', 'messenger', 'circular', 'behavior_skills', 'van_management'
 ];
 
 const MODULE_KEY_MAP = {
-  attendance: ['attendance'], homework: ['homework'], examination: ['exams', 'examination'],
-  datesheet: ['exams', 'datesheet'], quizzes: ['exams', 'quizzes'], students: ['students'],
+  attendance: ['attendance'], homework: ['homework', 'lms'], examination: ['exams', 'examination'],
+  datesheet: ['exams', 'datesheet'], quizzes: ['exams', 'quizzes', 'lms'], students: ['students'],
   student_promotion: ['student_promotion', 'students'], class_tests: ['class_tests', 'exams'],
   question_papers: ['question_papers', 'exams'], certificates: ['certificates'], timetable: ['timetable'],
-  lectures: ['lectures'], online_classes: ['online_classes'], planner: ['planner'], salary: ['salary', 'fees'],
-  events: ['events'], complaints: ['complaints'], feedback: ['feedback'], counseling: ['counseling'],
-  lost_and_found: ['lost_and_found'], resources: ['resources', 'subjects'], my_profile: ['my_profile'],
+  lectures: ['lectures', 'lms'], online_classes: ['online_classes', 'lms'], planner: ['planner', 'operations'], salary: ['salary', 'fees', 'payroll'],
+  fees: ['fees', 'salary'], accounts: ['accounts', 'store_pos', 'pos_store'], payroll: ['payroll', 'salary'],
+  lms: ['lms', 'homework', 'lectures', 'quizzes', 'online_classes'], courses: ['lms', 'courses'], syllabus: ['lms', 'syllabus'],
+  store_pos: ['store_pos', 'pos_store', 'accounts'], pos_store: ['pos_store', 'store_pos', 'accounts'], behavior: ['behavior', 'students'], behavior_skills: ['behavior', 'students'],
+  campus_transfer: ['campus_transfer', 'campus', 'students'], operations: ['operations', 'events', 'complaints'],
+  news_feed: ['news_feed', 'operations'], consent: ['consent', 'operations'], bulk_migration: ['control_panel', 'bulk_migration'],
+  bulk_import: ['control_panel', 'bulk_migration'],
+  transport: ['transport', 'operations'], van_management: ['transport', 'operations'], student_portal: ['students', 'student_portal'],
+  messenger: ['messenger', 'operations'], circular: ['circular', 'operations'],
+  events: ['events', 'operations'], complaints: ['complaints', 'operations'], feedback: ['feedback', 'operations'], counseling: ['counseling', 'operations'],
+  lost_and_found: ['lost_and_found', 'operations'], resources: ['resources', 'subjects'], my_profile: ['my_profile'],
   update_picture: ['update_picture'], reports: ['reports'], student_reports: ['reports', 'students'],
   parent_reports: ['reports', 'students'], report_cards: ['reports', 'exams', 'students'],
   attendance_reports: ['reports', 'attendance', 'attendance_reports'], leave_requests: ['attendance', 'leave_requests'],

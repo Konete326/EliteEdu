@@ -14,27 +14,29 @@ const TeachersList = () => {
   const navigate = useNavigate();
   const [passwordTeacher, setPasswordTeacher] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const {
     teachers, campuses, loading, error, setError, designations,
-    selectedCampus, setSelectedCampus,
-    selectedDesignation, setSelectedDesignation,
-    searchQuery, setSearchQuery,
-    viewTeacher, setViewTeacher,
-    teacherToDelete, setTeacherToDelete,
-    deleteLoading, handleToggleStatus, handleDeleteConfirm
+    selectedCampus, setSelectedCampus, selectedDesignation, setSelectedDesignation,
+    searchQuery, setSearchQuery, viewTeacher, setViewTeacher,
+    teacherToDelete, setTeacherToDelete, deleteLoading, handleToggleStatus, handleDeleteConfirm
   } = useTeachersList();
+
+  const pageSize = 10;
+  const totalPages = Math.ceil(teachers.length / pageSize) || 1;
+  const paginatedTeachers = teachers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
     <div className="space-y-4">
       <TeacherTopBar
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
+        onSearchChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
         campuses={campuses}
         selectedCampus={selectedCampus}
-        onCampusChange={setSelectedCampus}
+        onCampusChange={(val) => { setSelectedCampus(val); setCurrentPage(1); }}
         designations={designations || DESIGNATIONS}
         selectedDesignation={selectedDesignation}
-        onDesignationChange={setSelectedDesignation}
+        onDesignationChange={(val) => { setSelectedDesignation(val); setCurrentPage(1); }}
       />
 
       {successMessage && (
@@ -75,7 +77,7 @@ const TeachersList = () => {
         ) : (
           <>
             <TeacherTable
-              teachers={teachers}
+              teachers={paginatedTeachers}
               onToggleStatus={handleToggleStatus}
               onEdit={(t) => navigate(`/admin/teachers/${t._id}/edit`)}
               onDelete={setTeacherToDelete}
@@ -83,11 +85,11 @@ const TeachersList = () => {
               onOpenPassword={setPasswordTeacher}
             />
             <SubjectPagination
-              currentPage={1}
-              totalPages={1}
+              currentPage={currentPage}
+              totalPages={totalPages}
               totalItems={teachers.length}
-              limit={teachers.length || 20}
-              onPageChange={() => {}}
+              limit={pageSize}
+              onPageChange={setCurrentPage}
             />
           </>
         )}

@@ -43,7 +43,7 @@ const SignaturesList = ({ signatures, onSetDefault, onDelete }) => {
           <p className="text-xs font-medium text-text-muted">No signatures or stamps found in this category</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           {filtered.map((item) => (
             <div
               key={item._id}

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Grade = require('../models/Grade');
 const Campus = require('../models/Campus');
+const { sortGradesInSequence } = require('../utils/gradeSortHelper');
 
 const getGrades = async (req, res) => {
   try {
@@ -17,10 +18,10 @@ const getGrades = async (req, res) => {
 
     const grades = await Grade.find(filter)
       .populate('class_teacher', 'name email designation')
-      .populate('campus_id', 'name')
-      .sort({ createdAt: -1 });
+      .populate('campus_id', 'name');
 
-    res.status(200).json({ success: true, grades });
+    const sortedGrades = sortGradesInSequence(grades);
+    res.status(200).json({ success: true, grades: sortedGrades });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch grades', error: error.message });
   }

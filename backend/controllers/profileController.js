@@ -1,48 +1,83 @@
 const User = require('../models/User');
 const School = require('../models/School');
+const { sanitizeProfileBody, verifyAndHashPassword } = require('../utils/profileUpdateHelper');
+
+const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id)
+      .select('-password')
+      .populate('campus_id', 'name code address contact_number')
+      .populate('assigned_campuses', 'name code')
+      .populate('grades', 'name sections')
+      .populate('subjects', 'name code')
+      .populate('custom_role_id');
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    let schoolMeta = null;
+    if (user.school_id) {
+      schoolMeta = await School.findById(user.school_id).select('name school_type theme_settings logo slogan').lean();
+    }
+
+    res.status(200).json({
+      success: true,
+      profile: user,
+      user,
+      school: schoolMeta
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Failed to fetch profile', error: error.message });
+  }
+};
 
 const updateProfile = async (req, res) => {
   try {
-    const { name, contact_number, photo_url } = req.body;
-    if (!name?.trim()) {
-      return res.status(400).json({ message: 'Full name is required' });
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    const updateFields = sanitizeProfileBody(req.body);
+    if (updateFields.name !== undefined && !updateFields.name) {
+      return res.status(400).json({ success: false, message: 'Full name is required' });
     }
 
-    const updateFields = { name: name.trim() };
-    if (contact_number !== undefined) updateFields.contact_number = contact_number.trim();
-    if (photo_url !== undefined) updateFields.photo_url = photo_url;
+    if (req.body.new_password) {
+      updateFields.password = await verifyAndHashPassword(user, req.body.current_password, req.body.new_password);
+    }
 
-    const user = await User.findByIdAndUpdate(req.user.id, updateFields, { new: true }).select('-password');
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (user.role === 'Teacher') {
+      delete updateFields.role;
+      delete updateFields.school_id;
+      delete updateFields.basic_salary;
+      delete updateFields.employee_code;
+    }
 
-    let school_type = req.user.school_type || null;
-    let school_name = req.user.school_name || null;
-    if (user.school_id && (!school_type || !school_name)) {
-      const school = await School.findById(user.school_id).select('name school_type');
-      if (school) {
-        school_type = school.school_type;
-        school_name = school.name;
-      }
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      { $set: updateFields },
+      { new: true, runValidators: true }
+    )
+      .select('-password')
+      .populate('campus_id', 'name code address contact_number')
+      .populate('assigned_campuses', 'name code')
+      .populate('grades', 'name sections')
+      .populate('subjects', 'name code')
+      .populate('custom_role_id');
+
+    let schoolMeta = null;
+    if (updatedUser.school_id) {
+      schoolMeta = await School.findById(updatedUser.school_id).select('name school_type theme_settings logo slogan').lean();
     }
 
     res.status(200).json({
       success: true,
       message: 'Profile updated successfully',
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        contact_number: user.contact_number || '',
-        photo_url: user.photo_url || '',
-        school_id: user.school_id,
-        school_type,
-        school_name
-      }
+      user: updatedUser,
+      profile: updatedUser,
+      school: schoolMeta
     });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to update profile', error: error.message });
+    const status = error.status || 500;
+    res.status(status).json({ success: false, message: error.message || 'Failed to update profile' });
   }
 };
 
-module.exports = { updateProfile };
+module.exports = { getProfile, updateProfile };

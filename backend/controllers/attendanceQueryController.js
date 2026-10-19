@@ -73,14 +73,26 @@ const getAttendanceSheet = async (req, res) => {
 
     const total = students.length;
     const unmarked = total - markedCount;
+    const summary = { total, present, absent, leave, late, halfDay, holiday, unmarked, markedCount };
+    const records = enriched.map((s) => ({
+      _id: s._id,
+      student: s,
+      status: s.status,
+      is_marked: s.is_marked,
+      marked_via: s.marked_via,
+      scan_time: s.scan_time,
+      remarks: s.remarks
+    }));
 
     res.status(200).json({
       success: true,
       date,
       grade_id,
       section,
+      records,
       students: enriched,
-      stats: { total, present, absent, leave, late, halfDay, holiday, unmarked, markedCount }
+      summary,
+      stats: summary
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

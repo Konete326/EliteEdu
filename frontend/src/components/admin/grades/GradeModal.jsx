@@ -4,12 +4,10 @@ import { isValidGradeName, isValidSections } from '../../../utils/validators';
 import GradeSectionsInput from './GradeSectionsInput';
 import GradeFormFields from './GradeFormFields';
 
-const GradeModal = ({ isOpen, onClose, onSave, grade, campuses = [], teachers = [] }) => {
+const GradeModal = ({ isOpen, onClose, onSave, grade }) => {
   const [name, setName] = useState('');
   const [sections, setSections] = useState(['A']);
   const [sectionInput, setSectionInput] = useState('');
-  const [campusId, setCampusId] = useState('');
-  const [classTeacher, setClassTeacher] = useState('');
   const [status, setStatus] = useState('Active');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -18,14 +16,10 @@ const GradeModal = ({ isOpen, onClose, onSave, grade, campuses = [], teachers = 
     if (grade) {
       setName(grade.name || '');
       setSections(Array.isArray(grade.sections) && grade.sections.length > 0 ? grade.sections : ['A']);
-      setCampusId(grade.campus_id?._id || grade.campus_id || '');
-      setClassTeacher(grade.class_teacher?._id || grade.class_teacher || '');
       setStatus(grade.status || 'Active');
     } else {
       setName('');
       setSections(['A']);
-      setCampusId('');
-      setClassTeacher('');
       setStatus('Active');
     }
     setError('');
@@ -34,7 +28,7 @@ const GradeModal = ({ isOpen, onClose, onSave, grade, campuses = [], teachers = 
   if (!isOpen) return null;
 
   const handleAddSection = () => {
-    const val = sectionInput.trim();
+    const val = sectionInput.trim().toUpperCase();
     if (!val) return;
     if (sections.includes(val)) return setError('Section already added');
     setSections([...sections, val]);
@@ -54,7 +48,13 @@ const GradeModal = ({ isOpen, onClose, onSave, grade, campuses = [], teachers = 
     try {
       setSubmitting(true);
       setError('');
-      await onSave({ name: name.trim(), sections, campus_id: campusId || null, class_teacher: classTeacher || null, status });
+      await onSave({
+        name: name.trim(),
+        sections,
+        status,
+        campus_id: grade?.campus_id?._id || grade?.campus_id || null,
+        class_teacher: grade?.class_teacher?._id || grade?.class_teacher || null
+      });
       onClose();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save grade');
@@ -68,7 +68,7 @@ const GradeModal = ({ isOpen, onClose, onSave, grade, campuses = [], teachers = 
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div className="relative w-full max-w-lg bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-6 shadow-2xl z-10">
         <div className="flex items-center justify-between pb-4 border-b border-line dark:border-line-dark">
-          <h2 className="text-lg font-bold text-ink dark:text-ink-dark">{grade ? 'Edit Grade' : 'Add New Grade'}</h2>
+          <h2 className="text-lg font-bold text-ink dark:text-ink-dark">{grade ? 'Edit Class & Sections' : 'Add New Class & Sections'}</h2>
           <button type="button" onClick={onClose} className="p-1 rounded-lg text-ink-muted hover:text-ink">
             <X className="w-5 h-5" />
           </button>
@@ -83,11 +83,10 @@ const GradeModal = ({ isOpen, onClose, onSave, grade, campuses = [], teachers = 
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <GradeFormFields
-            name={name} setName={setName}
-            campusId={campusId} setCampusId={setCampusId}
-            classTeacher={classTeacher} setClassTeacher={setClassTeacher}
-            status={status} setStatus={setStatus}
-            campuses={campuses} teachers={teachers}
+            name={name}
+            setName={setName}
+            status={status}
+            setStatus={setStatus}
           />
 
           <GradeSectionsInput
@@ -103,7 +102,7 @@ const GradeModal = ({ isOpen, onClose, onSave, grade, campuses = [], teachers = 
               Cancel
             </button>
             <button type="submit" disabled={submitting} className="px-5 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-sm disabled:opacity-50">
-              {submitting ? 'Saving...' : grade ? 'Update Grade' : 'Create Grade'}
+              {submitting ? 'Saving...' : grade ? 'Update Class' : 'Create Class'}
             </button>
           </div>
         </form>

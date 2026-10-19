@@ -1,56 +1,71 @@
+const FeeInvoice = require('../models/FeeInvoice');
 const FeePayment = require('../models/FeePayment');
 const Student = require('../models/Student');
 const { generateReceiptNo } = require('../utils/feeReceiptHelper');
 
-const collectFee = async (req, res) => {
+const collectInvoiceFee = async (req, res) => {
   try {
-    const { student_id, fee_month, base_fee, discount = 0, fine = 0, other_charges = 0, paid_amount, payment_method = 'Cash', reference_number = '', notes = '' } = req.body;
-    if (!student_id || !fee_month || paid_amount === undefined) {
-      return res.status(400).json({ success: false, message: 'Student, fee month, and paid amount are required' });
+    const { id } = req.params;
+    const { paid_amount, payment_method = 'Cash', transaction_ref = '', notes = '' } = req.body;
+    if (paid_amount === undefined || Number(paid_amount) <= 0) {
+      return res.status(400).json({ success: false, message: 'Valid payment amount is required' });
     }
 
-    const student = await Student.findOne({ _id: student_id, school_id: req.schoolId });
-    if (!student) {
-      return res.status(404).json({ success: false, message: 'Student not found in your institution' });
-    }
+    const invoice = await FeeInvoice.findOne({ _id: id, school_id: req.schoolId });
+    if (!invoice) return res.status(404).json({ success: false, message: 'Invoice not found' });
 
-    const numBase = Number(base_fee !== undefined ? base_fee : student.monthly_fee || 0);
-    const numDiscount = Number(discount);
-    const numFine = Number(fine);
-    const numOther = Number(other_charges);
     const numPaid = Number(paid_amount);
+    const totalPaidSoFar = Number(invoice.paid_amount || 0) + numPaid;
+    const newBalance = Math.max(0, Number(invoice.net_payable) - totalPaidSoFar);
+    const newStatus = newBalance === 0 ? 'Paid' : 'Partial';
 
-    const netPayable = Math.max(0, numBase - numDiscount + numFine + numOther);
-    const balanceDue = Math.max(0, netPayable - numPaid);
-    const status = balanceDue === 0 ? 'Paid' : numPaid > 0 ? 'Partial' : 'Unpaid';
+    invoice.paid_amount = totalPaidSoFar;
+    invoice.balance_due = newBalance;
+    invoice.status = newStatus;
+    invoice.payment_method = payment_method;
+    invoice.payment_date = new Date();
+    invoice.transaction_ref = transaction_ref;
+    invoice.collected_by = req.user?.id || null;
+    invoice.collector_name = req.user?.name || 'Cashier / Admin';
+    if (notes) invoice.notes = notes;
+    await invoice.save();
+
     const receiptNo = await generateReceiptNo(req.schoolId);
-
     const payment = await FeePayment.create({
       school_id: req.schoolId,
-      campus_id: student.campus_id || req.body.campus_id || null,
-      student_id: student._id,
+      campus_id: invoice.campus_id,
+      student_id: invoice.student_id,
       receipt_number: receiptNo,
-      fee_month: fee_month.trim(),
-      base_fee: numBase,
-      discount: numDiscount,
-      fine: numFine,
-      other_charges: numOther,
-      net_payable: netPayable,
+      challan_number: invoice.challan_no,
+      fee_month: invoice.billing_month,
+      payment_date: new Date(),
+      base_fee: invoice.gross_amount,
+      discount: invoice.discount_amount,
+      fine: invoice.late_fine || 0,
+      other_charges: invoice.arrears_amount || 0,
+      net_payable: invoice.net_payable,
       paid_amount: numPaid,
-      balance_due: balanceDue,
+      balance_due: newBalance,
       payment_method,
-      reference_number,
+      reference_number: transaction_ref,
       collected_by: req.user?.id || null,
-      collector_name: req.user?.name || 'Authorized Staff',
+      collector_name: req.user?.name || 'Cashier / Admin',
       notes,
-      status
+      status: newStatus
     });
 
-    const populated = await FeePayment.findById(payment._id)
+    const populatedInvoice = await FeeInvoice.findById(invoice._id)
       .populate('student_id', 'name gr_number current_section current_grade contact_number father_name')
+      .populate('grade_id', 'name code')
       .populate('campus_id', 'name code');
 
-    res.status(201).json({ success: true, message: 'Fee payment collected successfully', payment: populated });
+    res.status(200).json({
+      success: true,
+      message: 'Fee collected and recorded successfully',
+      invoice: populatedInvoice,
+      payment,
+      receipt_number: receiptNo
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -71,7 +86,7 @@ const getFeeHistory = async (req, res) => {
       const q = req.query.search.trim();
       const matchingStudents = await Student.find({
         school_id: req.schoolId,
-        $or: [{ name: { $regex: q, $options: 'i' } }, { gr_number: { $regex: q, $options: 'i' } }, { father_name: { $regex: q, $options: 'i' } }]
+        $or: [{ name: { $regex: q, $options: 'i' } }, { gr_number: { $regex: q, $options: 'i' } }]
       }).select('_id');
       query.$or = [{ receipt_number: { $regex: q, $options: 'i' } }, { student_id: { $in: matchingStudents.map((s) => s._id) } }];
     }
@@ -93,4 +108,4 @@ const getFeeHistory = async (req, res) => {
   }
 };
 
-module.exports = { collectFee, getFeeHistory };
+module.exports = { collectInvoiceFee, getFeeHistory };

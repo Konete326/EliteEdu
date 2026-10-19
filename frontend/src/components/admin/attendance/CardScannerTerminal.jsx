@@ -58,6 +58,14 @@ const CardScannerTerminal = ({ onScanCode, scanning, lastScanned, scanHistory = 
             <div className="flex items-center gap-2">
               <button
                 type="button"
+                onClick={() => setCode('GR-1001')}
+                className="px-3 py-2.5 rounded-xl text-xs font-bold border border-line hover:bg-surface-secondary text-ink-muted transition-all cursor-pointer hidden sm:flex items-center gap-1 shrink-0"
+                title="Fill sample GR # for desktop test"
+              >
+                <span>Demo GR</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => setIsCameraOpen(true)}
                 className="px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition-all cursor-pointer flex items-center gap-1.5 shrink-0 shadow-xs"
                 title="Open Camera Scanner"

@@ -5,6 +5,7 @@ const SubjectTopBar = ({
   searchQuery,
   onSearchChange,
   campuses,
+  grades = [],
   selectedCampus,
   onCampusChange,
   selectedClass,
@@ -13,8 +14,10 @@ const SubjectTopBar = ({
   onAddClick,
   isSeeding
 }) => {
+  const classList = grades.length > 0 ? grades.map((g) => g.name) : DEFAULT_CLASSES;
+
   return (
-    <div className="sticky top-[1px] z-20 mt-[1px] flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-sm transition-all">
+    <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8 mb-6 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-ink dark:text-ink-dark tracking-tight">Subjects</h1>
@@ -23,7 +26,7 @@ const SubjectTopBar = ({
           </p>
         </div>
 
-        <div className="relative flex-1 max-w-sm sm:ml-4">
+        <div className="relative flex-1 max-w-[636px] sm:ml-4">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted dark:text-ink-muted-dark" />
           <input
             type="text"
@@ -64,7 +67,7 @@ const SubjectTopBar = ({
           className="px-3.5 py-2 rounded-xl text-xs sm:text-sm bg-surface-secondary/50 dark:bg-[#141414] border border-line dark:border-white/10 text-ink dark:text-ink-dark outline-none focus:border-primary transition-all shadow-sm font-medium cursor-pointer"
         >
           <option value="all">All Classes</option>
-          {DEFAULT_CLASSES.map((cls) => (
+          {classList.map((cls) => (
             <option key={cls} value={cls}>
               {cls}
             </option>

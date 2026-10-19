@@ -1,29 +1,26 @@
 import { useNavigate } from 'react-router-dom';
 import { Eye, Plus, Pencil, Trash2, SlidersHorizontal, BarChart2, CheckCircle2 } from 'lucide-react';
-import { useComingSoon } from '../../context/ComingSoonContext';
 
 const ModulePermissionRow = ({ sub }) => {
   const navigate = useNavigate();
-  const { openComingSoon } = useComingSoon();
 
   const handleAction = (action) => {
-    if (action === 'View') {
-      navigate(sub.path);
-      return;
-    }
     if (action === 'Add') {
       if (sub.path === '/admin/students') { navigate('/admin/students/new'); return; }
       if (sub.path === '/admin/teachers') { navigate('/admin/teachers/new'); return; }
       if (sub.path === '/admin/staff-applicants') { navigate('/admin/staff-applicants/new'); return; }
-      if (sub.path === '/admin/campus') { navigate('/admin/campus'); return; }
-      if (sub.path === '/admin/grades') { navigate('/admin/grades'); return; }
-      if (sub.path === '/admin/subjects') { navigate('/admin/subjects'); return; }
+      if (sub.path === '/admin/datesheet') { navigate('/admin/datesheet/new'); return; }
+      if (sub.path === '/teacher/students') { navigate('/teacher/students'); return; }
+      navigate(sub.path);
+      return;
     }
-    openComingSoon({
-      title: `${action} - ${sub.name}`,
-      description: `Administrative ${action.toLowerCase()} capabilities for ${sub.name} are managed under custom role policies.`,
-      badge: `${action} Action`
-    });
+    if (action === 'Reports') {
+      if (sub.path?.includes('attendance')) { navigate('/admin/attendance/report'); return; }
+      if (sub.path?.includes('fee')) { navigate('/admin/fees'); return; }
+      navigate('/admin/reports');
+      return;
+    }
+    navigate(sub.path);
   };
 
   return (

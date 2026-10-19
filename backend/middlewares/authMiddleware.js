@@ -22,13 +22,16 @@ const authMiddleware = async (req, res, next) => {
     req.user = {
       id: decoded.id,
       _id: decoded.id,
+      student_id: decoded.student_id || (decoded.role === 'Student' ? decoded.id : null),
       name: decoded.name || 'User',
       role: decoded.role,
       custom_role_id: decoded.custom_role_id || null,
       school_id: decoded.school_id,
+      campus_id: decoded.campus_id || null,
       school_name: decoded.school_name || 'Global / System',
       session_id: decoded.session_id || null
     };
+    req.schoolId = decoded.school_id || null;
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Invalid or expired token' });

@@ -68,10 +68,12 @@ export default function ExamsListPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-5 w-full">
-      <div>
-        <h1 className="text-xl font-black text-text-primary dark:text-text-primary-dark">Examinations & Assessments</h1>
-        <p className="text-xs text-text-muted dark:text-text-muted-dark">Manage terms, datesheets, teacher assignments, and award lists</p>
+    <div className="w-full space-y-5">
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8 mb-6 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-black text-ink dark:text-ink-dark tracking-tight">Examinations &amp; Assessments</h1>
+          <p className="text-xs font-semibold text-ink-muted">Manage terms, datesheets, teacher assignments, and award lists</p>
+        </div>
       </div>
 
       <TeacherAssignedExamsBanner exams={exams} currentUserId={user?._id || user?.id} onOpenMarksModal={(ex, p) => { setSelectedExamForMarks(ex); setInitialPaperForMarks(p); }} />

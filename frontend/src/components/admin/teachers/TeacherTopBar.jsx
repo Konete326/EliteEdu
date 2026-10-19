@@ -1,4 +1,4 @@
-import { Plus, Search, X, CreditCard, CalendarCheck } from 'lucide-react';
+import { Plus, Search, X, CreditCard, CalendarCheck, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const TeacherTopBar = ({
@@ -12,13 +12,18 @@ const TeacherTopBar = ({
   onDesignationChange
 }) => {
   return (
-    <div className="sticky top-[1px] z-20 mt-[1px] flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-sm transition-all">
+    <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8 mb-6 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-1">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-ink dark:text-ink-dark tracking-tight">Staff Directory</h1>
-          <p className="text-xs text-ink-muted dark:text-ink-muted-dark mt-0.5">
-            Faculty members and institutional personnel records.
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">
+            <Users className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-xl font-black text-ink dark:text-ink-dark tracking-tight">Staff &amp; Faculty Directory</h1>
+            <p className="text-xs font-semibold text-ink-muted mt-0.5">
+              Faculty members, teacher designations and institutional personnel records
+            </p>
+          </div>
         </div>
 
         <div className="relative flex-1 max-w-sm sm:ml-4">

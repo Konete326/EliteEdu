@@ -6,10 +6,14 @@ const StudentPagination = ({ currentPage, totalPages, totalItems, pageSize, onPa
   const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const endItem = Math.min(currentPage * pageSize, totalItems);
 
-  const pages = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pages.push(i);
-  }
+  const getVisiblePages = () => {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    if (currentPage <= 4) return [1, 2, 3, 4, 5, '...', totalPages];
+    if (currentPage >= totalPages - 3) return [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+  };
+
+  const pages = getVisiblePages();
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-line dark:border-line-dark text-xs text-ink-muted">
@@ -35,20 +39,26 @@ const StudentPagination = ({ currentPage, totalPages, totalItems, pageSize, onPa
           <ChevronLeft className="w-3.5 h-3.5" />
         </button>
 
-        {pages.map((p) => (
-          <button
-            key={p}
-            type="button"
-            onClick={() => onPageChange(p)}
-            className={`w-7 h-7 rounded-lg text-xs font-bold transition-colors ${
-              p === currentPage
-                ? 'bg-primary text-white shadow-sm'
-                : 'border border-line dark:border-line-dark hover:bg-surface-secondary text-ink dark:text-ink-dark'
-            }`}
-          >
-            {p}
-          </button>
-        ))}
+        {pages.map((p, idx) =>
+          p === '...' ? (
+            <span key={`ellipsis-${idx}`} className="px-1 text-ink-muted select-none">
+              ...
+            </span>
+          ) : (
+            <button
+              key={p}
+              type="button"
+              onClick={() => onPageChange(p)}
+              className={`w-7 h-7 rounded-lg text-xs font-bold transition-colors ${
+                p === currentPage
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'border border-line dark:border-line-dark hover:bg-surface-secondary text-ink dark:text-ink-dark'
+              }`}
+            >
+              {p}
+            </button>
+          )
+        )}
 
         <button
           type="button"

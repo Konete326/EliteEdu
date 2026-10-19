@@ -39,7 +39,15 @@ const getStudents = async (req, res) => {
         .lean()
     ]);
 
-    res.status(200).json({ success: true, students, totalCount, totalPages: Math.ceil(totalCount / limitNum) || 1, currentPage: pageNum });
+    const totalPages = Math.ceil(totalCount / limitNum) || 1;
+    res.status(200).json({
+      success: true,
+      students,
+      totalCount,
+      totalPages,
+      currentPage: pageNum,
+      pagination: { total: totalCount, totalPages, page: pageNum, limit: limitNum }
+    });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch students', error: error.message });
   }

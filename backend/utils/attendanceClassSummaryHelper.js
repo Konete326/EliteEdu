@@ -1,11 +1,14 @@
+const mongoose = require('mongoose');
 const Grade = require('../models/Grade');
 const Student = require('../models/Student');
 const StudentAttendance = require('../models/StudentAttendance');
 
 const aggregateClassSummary = async (schoolId, campusId, targetDate, allowedGradeIds) => {
   const date = targetDate || new Date().toISOString().split('T')[0];
-  const gradeFilter = { school_id: schoolId };
-  if (campusId && campusId !== 'all') gradeFilter.campus_id = campusId;
+  const gradeFilter = { school_id: new mongoose.Types.ObjectId(schoolId) };
+  if (campusId && campusId !== 'all' && mongoose.Types.ObjectId.isValid(campusId)) {
+    gradeFilter.campus_id = { $in: [new mongoose.Types.ObjectId(campusId), null] };
+  }
   if (allowedGradeIds?.length) gradeFilter._id = { $in: allowedGradeIds };
 
   const grades = await Grade.find(gradeFilter).sort({ level: 1, name: 1 }).lean();
@@ -14,13 +17,15 @@ const aggregateClassSummary = async (schoolId, campusId, targetDate, allowedGrad
   for (const g of grades) {
     const sections = Array.isArray(g.sections) && g.sections.length ? g.sections : ['A'];
     for (const sec of sections) {
-      const studentFilter = { school_id: schoolId, current_grade: g._id, current_section: sec, status: { $ne: 'Inactive' } };
-      if (campusId && campusId !== 'all') studentFilter.campus_id = campusId;
+      const studentFilter = { school_id: new mongoose.Types.ObjectId(schoolId), current_grade: g._id, current_section: sec, status: { $ne: 'Inactive' } };
+      if (campusId && campusId !== 'all' && mongoose.Types.ObjectId.isValid(campusId)) {
+        studentFilter.campus_id = { $in: [new mongoose.Types.ObjectId(campusId), null] };
+      }
 
       const totalStudents = await Student.countDocuments(studentFilter);
       if (totalStudents === 0 && !allowedGradeIds) continue;
 
-      const records = await StudentAttendance.find({ school_id: schoolId, grade_id: g._id, section: sec, date }).lean();
+      const records = await StudentAttendance.find({ school_id: new mongoose.Types.ObjectId(schoolId), grade_id: g._id, section: sec, date }).lean();
       const statusMap = { P: 0, A: 0, L: 0, LT: 0, HD: 0, Hol: 0 };
       records.forEach((r) => { if (statusMap[r.status] !== undefined) statusMap[r.status]++; });
 

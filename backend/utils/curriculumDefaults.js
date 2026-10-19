@@ -1,4 +1,7 @@
 const DEFAULT_CLASSES = [
+  'Playgroup',
+  'Nursery',
+  'KG',
   'Class 1',
   'Class 2',
   'Class 3',

@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Student = require('../models/Student');
 const StudentAttendance = require('../models/StudentAttendance');
 const User = require('../models/User');
@@ -15,12 +16,18 @@ const getDaysInMonth = (monthStr) => {
   return { year, month, totalDays, days };
 };
 
-const buildStudentMonthlyMatrix = async (schoolId, campusId, gradeId, section, monthStr, search) => {
+const buildStudentMonthlyMatrix = async (schoolId, campusId, gradeId, section, monthStr, search, allowedGradeIds) => {
   const { days } = getDaysInMonth(monthStr);
-  const studentFilter = { school_id: schoolId, status: { $ne: 'Inactive' } };
-  if (gradeId && gradeId !== 'all') studentFilter.current_grade = gradeId;
+  const studentFilter = { school_id: new mongoose.Types.ObjectId(schoolId), status: { $ne: 'Inactive' } };
+  if (gradeId && gradeId !== 'all' && mongoose.Types.ObjectId.isValid(gradeId)) {
+    studentFilter.current_grade = new mongoose.Types.ObjectId(gradeId);
+  } else if (allowedGradeIds?.length) {
+    studentFilter.current_grade = { $in: allowedGradeIds };
+  }
   if (section && section !== 'all') studentFilter.current_section = section;
-  if (campusId && campusId !== 'all') studentFilter.campus_id = campusId;
+  if (campusId && campusId !== 'all' && mongoose.Types.ObjectId.isValid(campusId)) {
+    studentFilter.campus_id = { $in: [new mongoose.Types.ObjectId(campusId), null] };
+  }
   if (search) studentFilter.$or = [{ name: new RegExp(search, 'i') }, { gr_number: new RegExp(search, 'i') }];
 
   const students = await Student.find(studentFilter).select('_id name father_name gr_number current_grade current_section photo_url').sort({ gr_number: 1, name: 1 }).lean();
@@ -28,7 +35,7 @@ const buildStudentMonthlyMatrix = async (schoolId, campusId, gradeId, section, m
   const startMonth = days[0].date;
   const endMonth = days[days.length - 1].date;
 
-  const attendanceRecords = await StudentAttendance.find({ school_id: schoolId, student_id: { $in: studentIds }, date: { $gte: startMonth, $lte: endMonth } }).lean();
+  const attendanceRecords = await StudentAttendance.find({ school_id: new mongoose.Types.ObjectId(schoolId), student_id: { $in: studentIds }, date: { $gte: startMonth, $lte: endMonth } }).lean();
   const recordMap = {};
   attendanceRecords.forEach((r) => {
     const sId = String(r.student_id);
@@ -57,9 +64,11 @@ const buildStudentMonthlyMatrix = async (schoolId, campusId, gradeId, section, m
 
 const buildStaffMonthlyMatrix = async (schoolId, campusId, monthStr, designation, search, staffIdLimit) => {
   const { days } = getDaysInMonth(monthStr);
-  const staffFilter = { school_id: schoolId, role: { $in: ['Teacher', 'Staff'] }, status: { $ne: 'Inactive' } };
-  if (staffIdLimit) staffFilter._id = staffIdLimit;
-  if (campusId && campusId !== 'all') staffFilter.campus_id = campusId;
+  const staffFilter = { school_id: new mongoose.Types.ObjectId(schoolId), role: { $in: ['Teacher', 'Staff'] }, status: { $ne: 'Inactive' } };
+  if (staffIdLimit && mongoose.Types.ObjectId.isValid(staffIdLimit)) staffFilter._id = new mongoose.Types.ObjectId(staffIdLimit);
+  if (campusId && campusId !== 'all' && mongoose.Types.ObjectId.isValid(campusId)) {
+    staffFilter.campus_id = { $in: [new mongoose.Types.ObjectId(campusId), null] };
+  }
   if (designation && designation !== 'all') staffFilter.designation = designation;
   if (search) staffFilter.$or = [{ name: new RegExp(search, 'i') }, { employee_code: new RegExp(search, 'i') }, { email: new RegExp(search, 'i') }];
 
@@ -68,7 +77,7 @@ const buildStaffMonthlyMatrix = async (schoolId, campusId, monthStr, designation
   const startMonth = days[0].date;
   const endMonth = days[days.length - 1].date;
 
-  const attendanceRecords = await StaffAttendance.find({ school_id: schoolId, staff_id: { $in: staffIds }, date: { $gte: startMonth, $lte: endMonth } }).lean();
+  const attendanceRecords = await StaffAttendance.find({ school_id: new mongoose.Types.ObjectId(schoolId), staff_id: { $in: staffIds }, date: { $gte: startMonth, $lte: endMonth } }).lean();
   const recordMap = {};
   attendanceRecords.forEach((r) => {
     const sId = String(r.staff_id);

@@ -58,6 +58,14 @@ const StaffCardScannerTerminal = ({ onScanCode, scanning, lastScanned, scanHisto
             <div className="flex items-center gap-2">
               <button
                 type="button"
+                onClick={() => setCode('EMP-001')}
+                className="px-3 py-2.5 rounded-xl text-xs font-bold border border-line hover:bg-surface-secondary text-ink-muted transition-all cursor-pointer hidden sm:flex items-center gap-1 shrink-0"
+                title="Fill sample EMP code for desktop test"
+              >
+                <span>Demo EMP</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => setIsCameraOpen(true)}
                 className="px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition-all cursor-pointer flex items-center gap-1.5 shrink-0 shadow-xs"
                 title="Open Camera Scanner"
@@ -87,11 +95,7 @@ const StaffCardScannerTerminal = ({ onScanCode, scanning, lastScanned, scanHisto
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <div className="lg:col-span-7">
-          <StaffLastScannedSpotlight
-            staff={lastScanned?.staff}
-            scanTime={lastScanned?.time}
-            attendance={lastScanned?.attendance}
-          />
+          <StaffLastScannedSpotlight staff={lastScanned?.staff} scanTime={lastScanned?.time} attendance={lastScanned?.attendance} />
         </div>
         <div className="lg:col-span-5">
           <StaffRecentScansFeed scans={scanHistory} onOverrideStatus={onOverrideStatus} />

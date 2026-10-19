@@ -13,6 +13,7 @@ const DEFAULT_MODULES = [
   { module_key: 'attendance_reports', module_name: 'Attendance Reports & Register', category: 'Operations' },
   { module_key: 'fees', module_name: 'Fee Management', category: 'Finance' },
   { module_key: 'accounts', module_name: 'Accounts & Expenses', category: 'Finance' },
+  { module_key: 'pos_store', module_name: 'Bookstore & POS Terminal', category: 'Finance' },
   { module_key: 'exams', module_name: 'Examinations & Grading', category: 'Examination' },
   { module_key: 'class_tests', module_name: 'Class Tests & Test Reports', category: 'Examination' },
   { module_key: 'question_papers', module_name: 'Question Papers Studio', category: 'Examination' },

@@ -17,7 +17,7 @@ export default function ManageClassTestsPage() {
   const [formData, setFormData, clearDraft] = usePersistentFormDraft(`class_test_draft_${user?.school_id || 'default'}`, INITIAL);
   const [editingTest, setEditingTest] = useState(null);
   const [testState, setTestState] = useState({ tests: [], total: 0, totalPages: 1 });
-  const [filters, setFilters] = useState({ page: 1, limit: 15, grade_id: '', section: 'All', subject_id: '', status: 'All', search: '' });
+  const [filters, setFilters] = useState({ page: 1, limit: 10, grade_id: '', section: 'All', subject_id: '', status: 'All', search: '' });
   const [prereqs, setPrereqs] = useState({ campuses: [], grades: [], subjects: [], teachers: [] });
   const [activeView, setActiveView] = useState('list');
   const [activeTest, setActiveTest] = useState(null);
@@ -104,7 +104,7 @@ export default function ManageClassTestsPage() {
           <ClassTestFormCard formData={formData} setFormData={setFormData} onSave={handleSaveForm} onReset={() => { clearDraft(); setFormData(INITIAL); setEditingTest(null); }} isSaving={loadingState.isSavingForm} editingTest={editingTest} onCancelEdit={() => { setEditingTest(null); setFormData(INITIAL); }} prereqs={prereqs} onRefreshPrereqs={fetchPrereqs} isPrereqLoading={loadingState.isPrereq} />
         </div>
         <div className="lg:col-span-8">
-          <ClassTestListAndSheet tests={testState.tests} page={filters.page} total={testState.total} totalPages={testState.totalPages} onPageChange={(p) => setFilters((f) => ({ ...f, page: p }))} filters={filters} setFilters={setFilters} onResetFilters={() => setFilters({ page: 1, limit: 15, grade_id: '', section: 'All', subject_id: '', status: 'All', search: '' })} prereqs={prereqs} activeView={activeView} setActiveView={setActiveView} activeTest={activeTest} onSelectTest={handleSelectTest} onEditTest={(t) => { setEditingTest(t); setFormData(t); }} onDeleteTest={(t) => setModals((m) => ({ ...m, testToDelete: t }))} onPrintTest={(t) => { setModals((m) => ({ ...m, testToPrint: t })); handleSelectTest(t); }} sheetRows={sheetRows} setSheetRows={setSheetRows} onSaveMarks={handleSaveMarks} isSavingMarks={loadingState.isSavingMarks} onBackToList={() => setActiveView('list')} />
+          <ClassTestListAndSheet tests={testState.tests} page={filters.page} total={testState.total} totalPages={testState.totalPages} onPageChange={(p) => setFilters((f) => ({ ...f, page: p }))} filters={filters} setFilters={setFilters} onResetFilters={() => setFilters({ page: 1, limit: 10, grade_id: '', section: 'All', subject_id: '', status: 'All', search: '' })} prereqs={prereqs} activeView={activeView} setActiveView={setActiveView} activeTest={activeTest} onSelectTest={handleSelectTest} onEditTest={(t) => { setEditingTest(t); setFormData(t); }} onDeleteTest={(t) => setModals((m) => ({ ...m, testToDelete: t }))} onPrintTest={(t) => { setModals((m) => ({ ...m, testToPrint: t })); handleSelectTest(t); }} sheetRows={sheetRows} setSheetRows={setSheetRows} onSaveMarks={handleSaveMarks} isSavingMarks={loadingState.isSavingMarks} onBackToList={() => setActiveView('list')} />
         </div>
       </div>
       <ClassTestAwardSheetPrintModal isOpen={Boolean(modals.testToPrint)} onClose={() => setModals((m) => ({ ...m, testToPrint: null }))} test={modals.testToPrint} rows={sheetRows} />

@@ -19,7 +19,7 @@ const getTemplates = async (req, res) => {
 
 const createTemplate = async (req, res) => {
   try {
-    const { name, recipient_type, heading, sub_heading, body_template, design_style, accent_color } = req.body;
+    const { name, recipient_type, heading, sub_heading, body_template, design_style, orientation, accent_color } = req.body;
     if (!name || !heading || !body_template) {
       return res.status(400).json({ success: false, message: 'Template name, heading, and body are required' });
     }
@@ -30,8 +30,9 @@ const createTemplate = async (req, res) => {
       heading: heading.trim(),
       sub_heading: sub_heading ? sub_heading.trim() : 'THIS IS TO CERTIFY THAT',
       body_template: body_template.trim(),
-      design_style: design_style || 'royal_gold',
-      accent_color: accent_color || '#0d9488'
+      design_style: design_style || 'academic_gold_hatch',
+      orientation: orientation || 'landscape',
+      accent_color: accent_color || '#b59449'
     });
     res.status(201).json({ success: true, template });
   } catch (err) {

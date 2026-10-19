@@ -24,27 +24,31 @@ const markBulkStaff = async (req, res) => {
   try {
     const school_id = req.user.school_id;
     const marked_by = req.user.id || req.user._id;
-    const { date, attendances = [] } = req.body;
+    const date = req.body.date || new Date().toISOString().slice(0, 10);
+    const attendances = req.body.attendances || req.body.records || [];
     if (!date || !Array.isArray(attendances)) return res.status(400).json({ message: 'Date and attendances required' });
 
-    const operations = attendances.map((item) => ({
-      updateOne: {
-        filter: { school_id, staff_id: item.staff_id, date },
-        update: {
-          $set: {
-            campus_id: item.campus_id || null,
-            status: item.status || 'P',
-            check_in_time: item.check_in_time || '',
-            check_out_time: item.check_out_time || '',
-            marked_via: item.marked_via || 'Manual',
-            remarks: item.remarks || '',
-            marked_by,
-            scan_time: new Date()
-          }
-        },
-        upsert: true
-      }
-    }));
+    const operations = attendances.map((item) => {
+      const sId = item.staff_id || item.staff?._id || item.staff?.id || item._id;
+      return {
+        updateOne: {
+          filter: { school_id, staff_id: sId, date },
+          update: {
+            $set: {
+              campus_id: item.campus_id || null,
+              status: item.status || 'P',
+              check_in_time: item.check_in_time || '',
+              check_out_time: item.check_out_time || '',
+              marked_via: item.marked_via || 'Manual',
+              remarks: item.remarks || '',
+              marked_by,
+              scan_time: new Date()
+            }
+          },
+          upsert: true
+        }
+      };
+    }).filter((op) => op.updateOne.filter.staff_id);
 
     if (operations.length > 0) await StaffAttendance.bulkWrite(operations, { ordered: false });
     res.json({ success: true, message: `Updated attendance for ${operations.length} staff members` });

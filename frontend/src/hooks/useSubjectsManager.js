@@ -4,6 +4,7 @@ import api from '../services/api';
 export const useSubjectsManager = () => {
   const [subjects, setSubjects] = useState([]);
   const [campuses, setCampuses] = useState([]);
+  const [grades, setGrades] = useState([]);
   const [selectedCampus, setSelectedCampus] = useState('all');
   const [selectedClass, setSelectedClass] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,10 +20,14 @@ export const useSubjectsManager = () => {
   const [toggleLoadingId, setToggleLoadingId] = useState(null);
   const [isSeeding, setIsSeeding] = useState(false);
 
-  const fetchCampuses = async () => {
+  const fetchCampusesAndGrades = async () => {
     try {
-      const res = await api.get('/campuses');
-      setCampuses(res.data.campuses || []);
+      const [cRes, gRes] = await Promise.all([
+        api.get('/campuses').catch(() => ({ data: { campuses: [] } })),
+        api.get('/grades').catch(() => ({ data: { grades: [] } }))
+      ]);
+      setCampuses(cRes.data?.campuses || []);
+      setGrades(gRes.data?.grades || []);
     } catch (err) {
       console.error(err);
     }
@@ -34,7 +39,7 @@ export const useSubjectsManager = () => {
       setError('');
       const params = {
         page,
-        limit: 50,
+        limit: 10,
         campus_id: selectedCampus,
         search: searchQuery,
         class_name: selectedClass !== 'all' ? selectedClass : undefined
@@ -51,7 +56,7 @@ export const useSubjectsManager = () => {
     }
   }, [selectedCampus, selectedClass, searchQuery]);
 
-  useEffect(() => { fetchCampuses(); }, []);
+  useEffect(() => { fetchCampusesAndGrades(); }, []);
 
   useEffect(() => {
     if (!searchQuery) {
@@ -125,7 +130,7 @@ export const useSubjectsManager = () => {
   };
 
   return {
-    subjects, campuses, selectedCampus, setSelectedCampus,
+    subjects, campuses, grades, selectedCampus, setSelectedCampus,
     selectedClass, setSelectedClass,
     searchQuery, setSearchQuery, loading, error, setError,
     currentPage, totalPages, totalItems, modalState, setModalState,

@@ -36,7 +36,7 @@ const getIssuedCertificates = async (req, res) => {
 
 const generateCertificate = async (req, res) => {
   try {
-    const { template_id, recipient_type, recipient_id, custom_text = '', design_style, accent_color, issue_date } = req.body;
+    const { template_id, recipient_type, recipient_id, custom_text = '', design_style, orientation, accent_color, issue_date } = req.body;
     const schoolId = req.user.school_id;
     const [template, school] = await Promise.all([
       CertificateTemplate.findById(template_id),
@@ -57,8 +57,9 @@ const generateCertificate = async (req, res) => {
       template_id: template._id,
       template_name: template.name,
       heading: template.heading,
-      design_style: design_style || template.design_style,
-      accent_color: accent_color || template.accent_color,
+      design_style: design_style || template.design_style || 'academic_gold_hatch',
+      orientation: orientation || template.orientation || 'landscape',
+      accent_color: accent_color || template.accent_color || '#b59449',
       recipient_type,
       student_id: recipient_type === 'Student' ? rec.entity._id : null,
       staff_id: recipient_type === 'Staff' ? rec.entity._id : null,
