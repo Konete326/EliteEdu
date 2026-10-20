@@ -100,4 +100,16 @@ const scanStaffCard = async (req, res) => {
   }
 };
 
-module.exports = { markBulkStaff, scanStaffCard };
+const resetStaffAttendance = async (req, res) => {
+  try {
+    const school_id = req.user.school_id;
+    const { date } = req.body;
+    if (!date) return res.status(400).json({ message: 'Date is required' });
+    await StaffAttendance.deleteMany({ school_id, date });
+    res.json({ success: true, message: 'Attendance reset for selected date' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to reset attendance', error: err.message });
+  }
+};
+
+module.exports = { markBulkStaff, scanStaffCard, resetStaffAttendance };

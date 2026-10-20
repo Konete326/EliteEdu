@@ -1,4 +1,4 @@
-import { Building2 } from 'lucide-react';
+import { Building2, User } from 'lucide-react';
 
 const AdmissionFormHeader = ({ student }) => {
   const campus = student?.campus_id || {};
@@ -13,15 +13,15 @@ const AdmissionFormHeader = ({ student }) => {
   const initials = student?.name ? student.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() : 'ST';
 
   return (
-    <div className="relative pb-4 border-b-2 border-ink dark:border-white/20">
+    <div className="relative pb-3 border-b-2 border-ink dark:border-white/20">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#141414] border border-line dark:border-white/10 flex items-center justify-center font-bold text-lg shadow-sm print:border print:border-black shrink-0 overflow-hidden p-1">
+          <div className="w-13 h-13 rounded-xl bg-white dark:bg-[#141414] border border-line dark:border-white/10 flex items-center justify-center font-bold text-lg shadow-sm print:border print:border-black shrink-0 overflow-hidden p-1">
             {logoUrl ? (
               <img src={logoUrl} alt={schoolName} className="w-full h-full object-contain" />
             ) : (
-              <div className="w-full h-full rounded-xl bg-primary text-white flex items-center justify-center">
-                <Building2 className="w-6 h-6" />
+              <div className="w-full h-full rounded-lg bg-primary text-white flex items-center justify-center">
+                <Building2 className="w-5 h-5" />
               </div>
             )}
           </div>
@@ -42,22 +42,22 @@ const AdmissionFormHeader = ({ student }) => {
           </div>
         </div>
 
-        <div className="w-24 h-28 rounded-xl border-2 border-dashed border-line dark:border-white/20 bg-surface-secondary/40 dark:bg-[#16161d] flex flex-col items-center justify-center overflow-hidden shrink-0 print:border-solid print:border-black">
+        <div className="w-20 h-24 rounded-xl border border-line dark:border-white/20 bg-surface-secondary/40 dark:bg-[#16161d] flex flex-col items-center justify-center overflow-hidden shrink-0 shadow-xs print:border print:border-black">
           {student?.photo_url ? (
             <img src={student.photo_url} alt={student.name} className="w-full h-full object-cover" />
           ) : (
-            <div className="text-center p-1">
-              <span className="text-xl font-bold text-ink-muted">{initials}</span>
-              <span className="block text-[8px] uppercase font-bold text-ink-muted mt-1 leading-tight">
-                Passport Photo
-              </span>
+            <div className="w-full h-full flex flex-col items-center justify-center bg-primary-soft/30 dark:bg-primary/10">
+              <div className="w-9 h-9 rounded-full bg-primary/15 text-primary flex items-center justify-center mb-0.5 font-bold text-xs">
+                {initials}
+              </div>
+              <span className="text-[7.5px] uppercase font-bold text-ink-muted tracking-tight">Photo</span>
             </div>
           )}
         </div>
       </div>
 
-      <div className="mt-3 text-center">
-        <span className="inline-block px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-primary text-white print:bg-black print:text-white">
+      <div className="mt-2 text-center">
+        <span className="inline-block px-3.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-primary text-white print:bg-black print:text-white">
           Admission Letter & Student Record
         </span>
       </div>

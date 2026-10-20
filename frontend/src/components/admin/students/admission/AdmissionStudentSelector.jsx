@@ -60,8 +60,8 @@ const AdmissionStudentSelector = ({
         </select>
       </div>
 
-      <div className="space-y-1.5 max-h-[520px] overflow-y-auto pr-1">
-        {loading ? (
+      <div className={`space-y-1.5 max-h-[520px] overflow-y-auto pr-1 transition-opacity ${loading ? 'opacity-70 pointer-events-none' : 'opacity-100'}`}>
+        {loading && students.length === 0 ? (
           <p className="text-xs text-center text-ink-muted py-8">Loading student records...</p>
         ) : students.length === 0 ? (
           <p className="text-xs text-center text-ink-muted py-8">No students found.</p>

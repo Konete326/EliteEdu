@@ -24,7 +24,7 @@ const markBulkAttendance = async (req, res) => {
             $set: {
               school_id: req.user.school_id,
               grade_id,
-              section,
+              section: r.section || r.student?.current_section || (section && section !== 'ALL' ? section : 'A'),
               student_id: sId,
               date,
               status: r.status || 'P',

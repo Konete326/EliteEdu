@@ -2,16 +2,22 @@ import axios from 'axios';
 import { reportNetworkError, getLastClickedElement } from '../utils/telemetryAgent';
 import { emitToastError } from '../utils/toastEvents';
 
-const rawUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-const baseURL = rawUrl.endsWith('/api') || rawUrl.endsWith('/api/') ? rawUrl : `${rawUrl.replace(/\/+$/, '')}/api`;
+const getBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL;
+  if (envUrl) {
+    return envUrl.endsWith('/api') || envUrl.endsWith('/api/') ? envUrl : `${envUrl.replace(/\/+$/, '')}/api`;
+  }
+  return '/api';
+};
 
 const api = axios.create({
-  baseURL
+  baseURL: getBaseUrl(),
+  timeout: 15000
 });
 
 api.interceptors.request.use((config) => {
-  if (config.url) {
-    config.url = config.url.replace(/^(\/)?api(?:\/|$)/, '/');
+  if (config.url && config.url.startsWith('/api')) {
+    config.url = config.url.replace(/^\/api(\/|$)/, '/');
   }
   const token = localStorage.getItem('token');
   if (token) {

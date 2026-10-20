@@ -26,17 +26,33 @@ const getStudents = async (req, res) => {
     const limitNum = Math.max(1, parseInt(limit, 10));
     const skip = (pageNum - 1) * limitNum;
 
-    const [totalCount, students] = await Promise.all([
-      Student.countDocuments(filter),
-      Student.find(filter)
-        .populate('campus_id', 'name address contact_number email website logo')
+    const isMinimal = req.query.minimal === 'true';
+    const isCard = req.query.cardView === 'true';
+    const isFull = req.query.full === 'true';
+    const query = Student.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limitNum);
+
+    if (isMinimal) {
+      query.select('name gr_number father_name current_grade current_section photo_url campus_id createdAt')
+        .populate('current_grade', 'name sections')
+        .populate('campus_id', 'name');
+    } else if (isCard) {
+      query.select('name gr_number father_name current_grade current_section photo_url campus_id date_of_admission admission_date parent_phone contact_number status emergency_contact_no b_form parents_cnic blood_group createdAt')
+        .populate('current_grade', 'name')
+        .populate('campus_id', 'name');
+    } else if (isFull) {
+      query.populate('campus_id', 'name address contact_number email website logo')
         .populate('school_id', 'name school_type logo_url slogan contact_number address website affiliation_number')
         .populate('current_grade', 'name sections')
-        .populate('subjects', 'name code')
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limitNum)
-        .lean()
+        .populate('subjects', 'name code');
+    } else {
+      query.select('name father_name surname family_number gr_number admission_date current_grade current_section contact_number monthly_fee discount status photo_url campus_id gender dob b_form emergency_contact_no parents_cnic mother_guardian_name address createdAt')
+        .populate('campus_id', 'name address contact_number')
+        .populate('current_grade', 'name sections');
+    }
+
+    const [totalCount, students] = await Promise.all([
+      Student.countDocuments(filter),
+      query.lean()
     ]);
 
     const totalPages = Math.ceil(totalCount / limitNum) || 1;

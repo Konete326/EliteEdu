@@ -21,7 +21,7 @@ const getGrades = async (req, res) => {
       .populate('campus_id', 'name');
 
     const sortedGrades = sortGradesInSequence(grades);
-    res.status(200).json({ success: true, grades: sortedGrades });
+    res.status(200).json({ success: true, grades: sortedGrades, data: sortedGrades });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch grades', error: error.message });
   }

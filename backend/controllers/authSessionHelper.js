@@ -34,8 +34,8 @@ const createLoginSession = async (user, req) => {
 const verifySession = async (sessionId) => {
   if (!sessionId) return { valid: true };
   const session = await UserSession.findById(sessionId);
-  if (!session) return { valid: true };
-  if (session.status === 'Revoked') return { valid: false, reason: 'Session revoked' };
+  if (!session) return { valid: false, reason: 'Session expired or revoked' };
+  if (session.status !== 'Active') return { valid: false, reason: 'Session revoked' };
   if (session.expires_at && new Date() > session.expires_at) {
     return { valid: false, reason: 'Session expired' };
   }
@@ -44,6 +44,10 @@ const verifySession = async (sessionId) => {
 };
 
 const ensureActiveSession = async (user, req, currentSessionId) => {
+  const ipAddress = extractClientIp(req);
+  const blocked = await isIpBlocked(user.school_id, ipAddress);
+  if (blocked) return null;
+
   if (currentSessionId) {
     const existing = await UserSession.findById(currentSessionId);
     if (existing && existing.status === 'Active') {
@@ -51,7 +55,6 @@ const ensureActiveSession = async (user, req, currentSessionId) => {
       return existing;
     }
   }
-  const ipAddress = extractClientIp(req);
   const device = parseUserAgent(req.headers['user-agent']);
   return UserSession.findOneAndUpdate(
     { user_id: user._id, status: 'Active' },

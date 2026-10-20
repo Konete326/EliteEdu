@@ -42,6 +42,32 @@ const CertificateRecipientFields = ({ form = {}, isStudent = true, recipientsLis
       </div>
 
       <div>
+        <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1">
+          Certificate Title / Heading *
+        </label>
+        <input
+          type="text"
+          value={form.custom_heading || ''}
+          onChange={(e) => onChange('custom_heading', e.target.value)}
+          placeholder="e.g. SCHOOL LEAVING CERTIFICATE"
+          className="w-full px-3 py-2 rounded-xl border border-line bg-transparent font-bold"
+        />
+      </div>
+
+      <div>
+        <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1">
+          Certificate Statement / Body *
+        </label>
+        <textarea
+          rows={3}
+          value={form.custom_body || ''}
+          onChange={(e) => onChange('custom_body', e.target.value)}
+          placeholder="Certificate statement / description..."
+          className="w-full px-3 py-2 rounded-xl border border-line bg-transparent font-medium text-xs leading-relaxed resize-none"
+        />
+      </div>
+
+      <div>
         <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1">Custom Text / Reason</label>
         <input
           type="text"

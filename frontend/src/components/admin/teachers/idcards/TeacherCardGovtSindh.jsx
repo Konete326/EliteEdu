@@ -67,7 +67,7 @@ const TeacherCardGovtSindh = ({ teacher, config = {} }) => {
           </div>
 
           <div className="flex items-end justify-between pt-1 border-t border-gray-200">
-            <OfficialSignatureStampBlock compact={true} showStamp={true} signatureTitle="Authority" stampTitle="Seal" />
+            <OfficialSignatureStampBlock compact={true} showStamp={true} signatureTitle="Signature" stampTitle="Seal" />
             <div className="flex items-center gap-0.5 text-[6.5px] font-bold text-gray-400 select-none pb-0.5">
               <GraduationCap className="w-2.5 h-2.5 text-emerald-700" />
               <span>EliteEdu</span>

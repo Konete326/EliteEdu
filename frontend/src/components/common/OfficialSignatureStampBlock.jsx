@@ -1,44 +1,84 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 
+let cachedSignatures = null;
+let pendingRequest = null;
+
+const loadSignaturesData = () => {
+  if (cachedSignatures) return Promise.resolve(cachedSignatures);
+  if (!pendingRequest) {
+    pendingRequest = api.get('/signatures')
+      .then((res) => {
+        cachedSignatures = res.data?.data || [];
+        return cachedSignatures;
+      })
+      .catch((err) => {
+        pendingRequest = null;
+        throw err;
+      });
+  }
+  return pendingRequest;
+};
+
 const OfficialSignatureStampBlock = ({
   showStamp = true,
   showSignature = true,
-  signatureTitle = 'Authority Signature',
+  signatureTitle = 'Signature',
   stampTitle = 'Official Stamp',
   compact = false,
   hideControls = false
 }) => {
-  const [signatures, setSignatures] = useState([]);
-  const [stamps, setStamps] = useState([]);
-  const [selectedSigId, setSelectedSigId] = useState('');
-  const [selectedStampId, setSelectedStampId] = useState('');
+  const [signatures, setSignatures] = useState(() => {
+    if (!cachedSignatures) return [];
+    return cachedSignatures.filter((s) => !s.is_stamp);
+  });
+  const [stamps, setStamps] = useState(() => {
+    if (!cachedSignatures) return [];
+    return cachedSignatures.filter((s) => s.is_stamp && s.image_url);
+  });
+  const [selectedSigId, setSelectedSigId] = useState(() => {
+    if (!cachedSignatures) return '';
+    const sigs = cachedSignatures.filter((s) => !s.is_stamp);
+    const def = sigs.find((s) => s.is_default) || sigs[0];
+    return def ? def._id : '';
+  });
+  const [selectedStampId, setSelectedStampId] = useState(() => {
+    if (!cachedSignatures) return '';
+    const stps = cachedSignatures.filter((s) => s.is_stamp && s.image_url);
+    const def = stps.find((s) => s.is_default) || stps[0];
+    return def ? def._id : '';
+  });
 
   useEffect(() => {
     let mounted = true;
-    api.get('/signatures')
-      .then((res) => {
+    if (cachedSignatures && signatures.length > 0) return;
+    loadSignaturesData()
+      .then((list) => {
         if (!mounted) return;
-        const list = res.data?.data || [];
         const sigs = list.filter((s) => !s.is_stamp);
-        const stps = list.filter((s) => s.is_stamp);
+        const stps = list.filter((s) => s.is_stamp && s.image_url);
         setSignatures(sigs);
         setStamps(stps);
         const defSig = sigs.find((s) => s.is_default) || sigs[0];
         const defStp = stps.find((s) => s.is_default) || stps[0];
-        if (defSig) setSelectedSigId(defSig._id);
-        if (defStp) setSelectedStampId(defStp._id);
+        if (defSig) setSelectedSigId((prev) => prev || defSig._id);
+        if (defStp) setSelectedStampId((prev) => prev || defStp._id);
       })
       .catch(() => {});
     return () => { mounted = false; };
-  }, []);
+  }, [signatures.length]);
 
   const activeSig = signatures.find((s) => s._id === selectedSigId);
   const activeStamp = stamps.find((s) => s._id === selectedStampId);
+  const hasUploadedStamp = Boolean(activeStamp && activeStamp.image_url);
+
+  if (!showSignature && (!showStamp || !hasUploadedStamp)) {
+    return null;
+  }
 
   return (
     <div className={`w-full max-w-full overflow-hidden select-none ${compact ? 'text-[8px]' : 'text-xs'}`}>
-      {!hideControls && (signatures.length > 1 || stamps.length > 1) && (
+      {!hideControls && (signatures.length > 1 || (hasUploadedStamp && stamps.length > 1)) && (
         <div className="print:hidden flex flex-wrap items-center justify-center gap-1.5 p-1 rounded-lg bg-surface-secondary/70 border border-line text-[9px] mb-2">
           {showSignature && signatures.length > 0 && (
             <select
@@ -51,7 +91,7 @@ const OfficialSignatureStampBlock = ({
               ))}
             </select>
           )}
-          {showStamp && stamps.length > 0 && (
+          {showStamp && hasUploadedStamp && stamps.length > 1 && (
             <select
               value={selectedStampId}
               onChange={(e) => setSelectedStampId(e.target.value)}
@@ -77,13 +117,9 @@ const OfficialSignatureStampBlock = ({
           </div>
         )}
 
-        {showStamp && (
+        {showStamp && hasUploadedStamp && (
           <div className="w-full max-w-[140px] text-center flex flex-col items-center">
-            {activeStamp ? (
-              <img src={activeStamp.image_url} alt={activeStamp.label} className={`${compact ? 'h-9' : 'h-12'} max-w-full object-contain rotate-[-4deg] mb-0.5 drop-shadow-2xs`} />
-            ) : (
-              <div className={`${compact ? 'h-7 w-16' : 'h-9 w-20'} border border-dashed border-slate-400 rounded-full flex items-center justify-center text-[8px] font-bold text-slate-400 mb-0.5`}>SEAL</div>
-            )}
+            <img src={activeStamp.image_url} alt={activeStamp.label} className={`${compact ? 'h-9' : 'h-12'} max-w-full object-contain rotate-[-4deg] mb-0.5 drop-shadow-2xs`} />
             {stampTitle && <span className="font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 text-[9px] block leading-tight">{stampTitle}</span>}
           </div>
         )}

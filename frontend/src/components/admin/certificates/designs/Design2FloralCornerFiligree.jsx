@@ -11,6 +11,8 @@ const Design2FloralCornerFiligree = ({
   recipient = {},
   recipientType = 'Student',
   customText = '',
+  customHeading = '',
+  customBody = '',
   resolvedBody = '',
   issueDate = new Date().toISOString().split('T')[0],
   orientation = 'landscape'
@@ -37,7 +39,7 @@ const Design2FloralCornerFiligree = ({
             </div>
           </div>
           <h1 className="text-lg sm:text-2xl md:text-3xl font-black tracking-wider uppercase text-[#f5a623] pt-1">
-            {template.heading || 'CERTIFICATE OF EXPERIENCE'}
+            {customHeading || template.heading || 'CERTIFICATE OF EXPERIENCE'}
           </h1>
           <p className="text-[10px] sm:text-xs font-semibold text-slate-600 tracking-wide">
             {template.sub_heading || 'This certificate is presented to'}
@@ -50,7 +52,7 @@ const Design2FloralCornerFiligree = ({
           </h3>
           <div className="max-w-xl mx-auto px-2">
             <p className="text-[11px] sm:text-xs md:text-sm font-medium text-slate-700 leading-relaxed">
-              {resolvedBody || template.body_template || `For exemplary teaching experience and dedicated service during school year ${customText}.`}
+              {customBody || resolvedBody || template.body_template || `For exemplary teaching experience and dedicated service during school year ${customText}.`}
             </p>
           </div>
           <div className="text-[10px] sm:text-[11px] font-mono text-slate-600 space-y-0.5">

@@ -24,14 +24,20 @@ const getTeachers = async (req, res) => {
       ];
     }
 
-    const teachers = await User.find(filter)
+    const isCard = req.query.cardView === 'true';
+    let query = User.find(filter)
       .populate('campus_id', 'name logo area semis_code address')
-      .populate('school_id', 'name school_type logo_url slogan')
-      .populate('subjects', 'name code')
-      .populate('grades', 'name sections')
-      .select('-password')
-      .sort({ createdAt: -1 })
-      .lean();
+      .populate('school_id', 'name school_type logo_url slogan');
+
+    if (!isCard) {
+      query = query
+        .populate('subjects', 'name code')
+        .populate('grades', 'name sections');
+    } else {
+      query = query.select('name father_name spouse_name designation bps_grade employee_code personal_id cnic photo_url date_of_joining joining_date campus_id school_id status is_active');
+    }
+
+    const teachers = await query.select('-password').sort({ createdAt: -1 }).lean();
 
     res.status(200).json({ success: true, teachers });
   } catch (error) {

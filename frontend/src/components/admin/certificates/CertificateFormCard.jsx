@@ -25,7 +25,7 @@ const CertificateFormCard = ({
     const selectedT = templates.find((t) => t._id === tid);
     if (selectedT) {
       if (selectedT.design_style) onChange('design_style', selectedT.design_style);
-      if (selectedT.orientation) onChange('orientation', selectedT.orientation);
+      if (selectedT.heading) onChange('custom_heading', selectedT.heading);
     }
   };
 

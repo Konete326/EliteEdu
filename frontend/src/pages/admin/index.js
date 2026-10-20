@@ -64,4 +64,5 @@ export { default as PlannersAndEventsPage } from './PlannersAndEventsPage';
 export { default as BulkMigrationPage } from './BulkMigrationPage';
 export { default as BulkDataImportPage } from './BulkDataImportPage';
 export { default as TransportManagementPage } from './TransportManagementPage';
+export { default as MessagingStudioPage } from './MessagingStudioPage';
 export { default as ComingSoonPage } from './ComingSoonPage';

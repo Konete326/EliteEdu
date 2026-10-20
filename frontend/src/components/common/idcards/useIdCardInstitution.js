@@ -1,42 +1,71 @@
 import { useState, useEffect } from 'react';
 import api from '../../../services/api';
 
+let cachedSchool = null;
+const campusCache = new Map();
+
+const getInitialSchool = () => {
+  if (cachedSchool) return cachedSchool;
+  try {
+    const raw = localStorage.getItem('user');
+    if (raw) {
+      const u = JSON.parse(raw);
+      if (u) {
+        return {
+          name: u.school_name || '',
+          logo_url: u.school_logo || '',
+          slogan: u.school_slogan || '',
+          campus_id: u.campus_id || ''
+        };
+      }
+    }
+  } catch {}
+  return null;
+};
+
+const fetchSchoolOnce = async () => {
+  if (cachedSchool) return cachedSchool;
+  try {
+    const res = await api.get('/schools/general-settings');
+    if (res.data?.school) {
+      cachedSchool = res.data.school;
+      return cachedSchool;
+    }
+  } catch {}
+  cachedSchool = getInitialSchool() || {};
+  return cachedSchool;
+};
+
+const fetchCampusOnce = async (id) => {
+  if (!id) return null;
+  if (campusCache.has(id)) return campusCache.get(id);
+  try {
+    const res = await api.get('/campuses/' + id);
+    const data = res.data?.campus || res.data || null;
+    campusCache.set(id, data);
+    return data;
+  } catch {
+    return null;
+  }
+};
+
 const useIdCardInstitution = (campusIdProp) => {
-  const [school, setSchool] = useState(null);
-  const [campus, setCampus] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [school, setSchool] = useState(getInitialSchool);
+  const [campus, setCampus] = useState(() => (campusIdProp ? campusCache.get(campusIdProp) || null : null));
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
-    const fetchSchool = async () => {
-      let schoolData = null;
-      try {
-        const res = await api.get('/schools/active');
-        schoolData = res.data?.school || res.data || null;
-      } catch {
-        try {
-          const res2 = await api.get('/schools');
-          const list = res2.data?.schools || res2.data || [];
-          schoolData = Array.isArray(list) ? list[0] : list;
-        } catch {
-          schoolData = null;
-        }
-      }
+    fetchSchoolOnce().then((s) => {
       if (!mounted) return;
-      setSchool(schoolData);
-
-      const campusId = campusIdProp || schoolData?.campus_id || schoolData?.default_campus_id;
-      if (campusId) {
-        try {
-          const cRes = await api.get('/campuses/' + campusId);
-          if (mounted) setCampus(cRes.data?.campus || cRes.data || null);
-        } catch {
-          if (mounted) setCampus(null);
-        }
+      setSchool(s);
+      const targetCampusId = campusIdProp || s?.campus_id || s?.default_campus_id;
+      if (targetCampusId) {
+        fetchCampusOnce(targetCampusId).then((c) => {
+          if (mounted) setCampus(c);
+        });
       }
-      if (mounted) setLoading(false);
-    };
-    fetchSchool();
+    });
     return () => { mounted = false; };
   }, [campusIdProp]);
 

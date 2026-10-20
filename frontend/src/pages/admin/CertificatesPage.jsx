@@ -8,6 +8,7 @@ import CertificateFormCard from '../../components/admin/certificates/Certificate
 import CertificatePreviewCanvas from '../../components/admin/certificates/CertificatePreviewCanvas';
 import SavedCertificatesTable from '../../components/admin/certificates/SavedCertificatesTable';
 import CertificateTemplatesManager from '../../components/admin/certificates/CertificateTemplatesManager';
+import { resolvePlaceholders } from '../../utils/certificatePlaceholderResolver';
 
 const CertificatesPage = ({ defaultTab = 'generate' }) => {
   const [searchParams] = useSearchParams();
@@ -26,10 +27,15 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
   const [generating, setGenerating] = useState(false);
   const [schoolData, setSchoolData] = useState({});
   const [form, setForm] = useState({
-    template_id: '', recipient_type: initialStaffId ? 'Staff' : 'Student',
+    template_id: '',
+    recipient_type: initialStaffId ? 'Staff' : 'Student',
     recipient_id: initialStudentId || initialStaffId || '',
-    design_style: 'academic_gold_hatch', orientation: 'landscape',
-    custom_text: 'outstanding performance', issue_date: new Date().toISOString().split('T')[0]
+    design_style: 'academic_gold_hatch',
+    orientation: 'landscape',
+    custom_heading: '',
+    custom_body: '',
+    custom_text: 'outstanding performance',
+    issue_date: new Date().toISOString().split('T')[0]
   });
 
   const loadData = async () => {
@@ -46,7 +52,13 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
       setTeachers(fRes.data.teachers || []);
       if (scRes.data?.school) setSchoolData(scRes.data.school);
       if (tmps.length > 0 && !form.template_id) {
-        setForm((p) => ({ ...p, template_id: tmps[0]._id, design_style: tmps[0].design_style || 'academic_gold_hatch', orientation: tmps[0].orientation || 'landscape' }));
+        setForm((p) => ({
+          ...p,
+          template_id: tmps[0]._id,
+          design_style: tmps[0].design_style || 'academic_gold_hatch',
+          orientation: 'landscape',
+          custom_heading: tmps[0].heading || ''
+        }));
       }
     } catch {}
   };
@@ -62,12 +74,34 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
   useEffect(() => { loadIssued(); }, [page, search, recipientFilter]);
 
   const activeTemplate = templates.find((t) => t._id === form.template_id) || templates[0] || {};
-  const activeRecipient = form.recipient_type === 'Student' ? students.find((s) => s._id === form.recipient_id) || {} : teachers.find((t) => t._id === form.recipient_id) || {};
+  const activeRecipient = form.recipient_type === 'Student'
+    ? students.find((s) => s._id === form.recipient_id) || {}
+    : teachers.find((t) => t._id === form.recipient_id) || {};
+
+  const resolvedTemplateBody = resolvePlaceholders(
+    activeTemplate.body_template,
+    activeRecipient,
+    form.recipient_type,
+    form.custom_text,
+    schoolData.name || user?.school_name
+  );
+
+  const effectiveHeading = form.custom_heading !== undefined && form.custom_heading !== ''
+    ? form.custom_heading
+    : (activeTemplate.heading || '');
+
+  const effectiveBody = form.custom_body !== undefined && form.custom_body !== ''
+    ? form.custom_body
+    : resolvedTemplateBody;
 
   const handleGenerate = async () => {
     try {
       setGenerating(true);
-      await api.post('/certificates/generate', form);
+      await api.post('/certificates/generate', {
+        ...form,
+        custom_heading: effectiveHeading,
+        custom_body: effectiveBody
+      });
       loadIssued();
     } catch {} finally { setGenerating(false); }
   };
@@ -100,14 +134,66 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
         <div className="space-y-6">
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
             <div className="xl:col-span-5 print:hidden">
-              <CertificateFormCard templates={templates} students={students} teachers={teachers} form={form} onChange={(f, v) => setForm((p) => ({ ...p, [f]: v }))} onGenerate={handleGenerate} onPrint={() => window.print()} generating={generating} prereqs={prereqs} onRefreshPrereqs={loadData} />
+              <CertificateFormCard
+                templates={templates}
+                students={students}
+                teachers={teachers}
+                form={{
+                  ...form,
+                  custom_heading: effectiveHeading,
+                  custom_body: effectiveBody
+                }}
+                onChange={(f, v) => setForm((p) => ({ ...p, [f]: v }))}
+                onGenerate={handleGenerate}
+                onPrint={() => window.print()}
+                generating={generating}
+                prereqs={prereqs}
+                onRefreshPrereqs={loadData}
+              />
             </div>
             <div className="xl:col-span-7 flex justify-center">
-              <CertificatePreviewCanvas template={activeTemplate} style={form.design_style} orientation={form.orientation || activeTemplate.orientation || 'landscape'} accentColor={activeTemplate.accent_color} school={{ name: schoolData.name || user?.school_name || activeCampus?.name || 'Elite Educational System', slogan: schoolData.slogan || user?.school_slogan, logo_url: schoolData.logo_url || user?.school_logo || activeCampus?.logo, address: schoolData.address || activeCampus?.address }} campus={activeCampus || {}} recipient={activeRecipient} recipientType={form.recipient_type} customText={form.custom_text} issueDate={form.issue_date} />
+              <CertificatePreviewCanvas
+                template={activeTemplate}
+                style={form.design_style}
+                orientation={form.orientation || 'landscape'}
+                accentColor={activeTemplate.accent_color}
+                school={{ name: schoolData.name || user?.school_name || activeCampus?.name || 'Elite Educational System', slogan: schoolData.slogan || user?.school_slogan, logo_url: schoolData.logo_url || user?.school_logo || activeCampus?.logo, address: schoolData.address || activeCampus?.address }}
+                campus={activeCampus || {}}
+                recipient={activeRecipient}
+                recipientType={form.recipient_type}
+                customText={form.custom_text}
+                customHeading={effectiveHeading}
+                customBody={effectiveBody}
+                resolvedBody={resolvedTemplateBody}
+                issueDate={form.issue_date}
+              />
             </div>
           </div>
           <div className="print:hidden">
-            <SavedCertificatesTable certificates={issuedData.certificates} total={issuedData.total} page={page} pages={issuedData.pages} search={search} recipientType={recipientFilter} onSearchChange={setSearch} onRecipientTypeChange={setRecipientFilter} onPageChange={setPage} onPreview={(c) => setForm({ template_id: c.template_id, recipient_type: c.recipient_type, recipient_id: c.student_id?._id || c.staff_id?._id || '', design_style: c.design_style, orientation: c.orientation || 'landscape', custom_text: c.custom_text, issue_date: c.issue_date?.split('T')[0] })} onPrintRow={() => window.print()} onDelete={async (id) => { await api.delete(`/certificates/issued/${id}`); loadIssued(); }} />
+            <SavedCertificatesTable
+              certificates={issuedData.certificates}
+              total={issuedData.total}
+              page={page}
+              pages={issuedData.pages}
+              search={search}
+              recipientType={recipientFilter}
+              onSearchChange={setSearch}
+              onRecipientTypeChange={setRecipientFilter}
+              onPageChange={setPage}
+              onPreview={(c) => setForm({
+                template_id: c.template_id,
+                recipient_type: c.recipient_type,
+                recipient_id: c.student_id?._id || c.staff_id?._id || '',
+                design_style: c.design_style,
+                orientation: c.orientation || 'landscape',
+                custom_heading: c.heading || '',
+                custom_body: c.resolved_body || '',
+                custom_text: c.custom_text,
+                issue_date: c.issue_date?.split('T')[0]
+              })}
+              onPrintRow={() => window.print()}
+              onDelete={async (id) => { await api.delete(`/certificates/issued/${id}`); loadIssued(); }}
+            />
           </div>
         </div>
       )}

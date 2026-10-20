@@ -14,7 +14,14 @@ const generateQrPng = async (url) => {
 };
 
 export const exportTeacherCardsPdf = async (teachers, options = {}) => {
-  const { sideMode = 'both', style = 'GovtSindh' } = options;
+  const {
+    sideMode = 'both',
+    style = 'template_1_curve_blue',
+    orientation = 'vertical',
+    accentColor = '#003B73',
+    institution = {},
+  } = options;
+
   if (!teachers || teachers.length === 0) return false;
 
   const pdfDoc = await PDFDocument.create();
@@ -23,31 +30,65 @@ export const exportTeacherCardsPdf = async (teachers, options = {}) => {
   const mono = await pdfDoc.embedFont(StandardFonts.CourierBold);
   const fonts = { bold, regular, mono };
 
-  const chunks = chunkArray(teachers, 8);
+  const chunkSize = orientation === 'horizontal' ? 6 : 3;
+  const chunks = chunkArray(teachers, chunkSize);
 
   for (const chunk of chunks) {
     const qrImages = await Promise.all(
       chunk.map(async (t) => {
-        const verifyUrl = generateStaffVerifyUrl(t._id);
+        const verifyUrl = generateStaffVerifyUrl(t._id || t.employee_code);
         const dataUrl = await generateQrPng(verifyUrl);
         if (dataUrl) return await pdfDoc.embedPng(dataUrl);
         return null;
       })
     );
 
+    const photoImages = await Promise.all(
+      chunk.map(async (t) => {
+        if (!t?.photo_url) return null;
+        try {
+          const res = await fetch(t.photo_url);
+          if (!res.ok) return null;
+          const buf = await res.arrayBuffer();
+          const bytes = new Uint8Array(buf);
+          try {
+            return await pdfDoc.embedJpg(bytes);
+          } catch (e1) {
+            return await pdfDoc.embedPng(bytes);
+          }
+        } catch (e) {
+          return null;
+        }
+      })
+    );
+
     if (sideMode === 'both' || sideMode === 'front') {
       const frontPage = pdfDoc.addPage([A4_WIDTH, A4_HEIGHT]);
       chunk.forEach((teacher, idx) => {
-        const coords = getCardCoordinates(idx);
-        drawTeacherCardFront(frontPage, coords, teacher, fonts, style);
+        const coords = getCardCoordinates(idx, orientation);
+        drawTeacherCardFront(frontPage, coords, teacher, fonts, {
+          style,
+          orientation,
+          accentColor,
+          institution,
+          qrImage: qrImages[idx],
+          photoImage: photoImages[idx],
+        });
       });
     }
 
     if (sideMode === 'both' || sideMode === 'back') {
       const backPage = pdfDoc.addPage([A4_WIDTH, A4_HEIGHT]);
       chunk.forEach((teacher, idx) => {
-        const coords = sideMode === 'both' ? getMirroredBackCoordinates(idx) : getCardCoordinates(idx);
-        drawTeacherCardBack(backPage, coords, teacher, fonts, qrImages[idx], style);
+        const coords = sideMode === 'both'
+          ? getMirroredBackCoordinates(idx, orientation)
+          : getCardCoordinates(idx, orientation);
+        drawTeacherCardBack(backPage, coords, teacher, fonts, qrImages[idx], {
+          style,
+          orientation,
+          accentColor,
+          institution,
+        });
       });
     }
   }
@@ -57,7 +98,7 @@ export const exportTeacherCardsPdf = async (teachers, options = {}) => {
   const downloadUrl = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = downloadUrl;
-  a.download = `Staff_Service_Cards_A4_${Date.now()}.pdf`;
+  a.download = `Faculty_ID_Cards_${orientation}_${Date.now()}.pdf`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

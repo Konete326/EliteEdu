@@ -11,6 +11,8 @@ const Design4NavyRibbonHalftone = ({
   recipient = {},
   recipientType = 'Student',
   customText = '',
+  customHeading = '',
+  customBody = '',
   resolvedBody = '',
   issueDate = new Date().toISOString().split('T')[0],
   orientation = 'landscape'
@@ -47,7 +49,7 @@ const Design4NavyRibbonHalftone = ({
 
           <div className="mx-auto max-w-lg bg-[#051937] text-white py-1 px-6 shadow-md relative" style={{ clipPath: 'polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%)' }}>
             <h1 className="text-sm sm:text-lg md:text-xl font-black tracking-wider uppercase font-sans">
-              {template.heading || 'Teacher of the Year'}
+              {customHeading || template.heading || 'Teacher of the Year'}
             </h1>
           </div>
           <p className="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase tracking-widest">
@@ -65,7 +67,7 @@ const Design4NavyRibbonHalftone = ({
           </h3>
           <div className="max-w-xl mx-auto px-2">
             <p className="text-[10px] sm:text-xs text-slate-600 font-medium leading-relaxed">
-              {resolvedBody || template.body_template || `In recognition of their outstanding dedication, passion, and scholastic excellence in ${customText}.`}
+              {customBody || resolvedBody || template.body_template || `In recognition of their outstanding dedication, passion, and scholastic excellence in ${customText}.`}
             </p>
           </div>
           <div className="text-[9px] sm:text-[10px] font-mono text-slate-500">

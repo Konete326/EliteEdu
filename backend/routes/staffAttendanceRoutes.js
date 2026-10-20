@@ -26,5 +26,6 @@ router.get('/my-history', staffAttendance.getMyHistory);
 router.get('/sheet', checkStaffAttendanceManageAccess, staffAttendance.getStaffSheet);
 router.post('/mark-bulk', checkStaffAttendanceManageAccess, staffAttendance.markBulkStaff);
 router.post('/scan-card', checkStaffAttendanceManageAccess, staffAttendance.scanStaffCard);
+router.post('/reset', checkStaffAttendanceManageAccess, staffAttendance.resetStaffAttendance);
 
 module.exports = router;

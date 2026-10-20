@@ -12,18 +12,8 @@ const TeacherIdCardsPage = () => {
   const initialTeacherId = searchParams.get('teacherId');
 
   const {
-    campuses,
-    loading,
-    searchQuery,
-    setSearchQuery,
-    selectedCampus,
-    setSelectedCampus,
-    selectedIds,
-    filteredTeachers,
-    selectedTeachers,
-    handleToggleSelect,
-    handleToggleSelectAll,
-    updateTeacherInList
+    campuses, loading, searchQuery, setSearchQuery, selectedCampus, setSelectedCampus,
+    selectedIds, filteredTeachers, selectedTeachers, handleToggleSelect, handleToggleSelectAll, updateTeacherInList
   } = useTeacherIdCardsData(initialTeacherId);
 
   const institution = useIdCardInstitution(selectedCampus);
@@ -35,7 +25,7 @@ const TeacherIdCardsPage = () => {
   const [editingTeacher, setEditingTeacher] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
 
-  const chunkSize = orientation === 'horizontal' ? 6 : 8;
+  const chunkSize = orientation === 'horizontal' ? 6 : 3;
   const chunks = useMemo(() => {
     const list = [];
     for (let i = 0; i < selectedTeachers.length; i += chunkSize) {
@@ -47,7 +37,7 @@ const TeacherIdCardsPage = () => {
   const handleExportPdf = async () => {
     try {
       setIsExporting(true);
-      await exportTeacherCardsPdf(selectedTeachers, { sideMode, style: template });
+      await exportTeacherCardsPdf(selectedTeachers, { sideMode, style: template, orientation, accentColor, institution });
     } catch (e) {
       console.error(e);
     } finally {
@@ -58,24 +48,14 @@ const TeacherIdCardsPage = () => {
   return (
     <div className="space-y-6">
       <UniversalIdCardToolbar
-        template={template}
-        onTemplateChange={setTemplate}
-        orientation={orientation}
-        onOrientationChange={setOrientation}
-        accentColor={accentColor}
-        onAccentColorChange={setAccentColor}
-        sideMode={sideMode}
-        onSideModeChange={setSideMode}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        campuses={campuses}
-        selectedCampus={selectedCampus}
-        onCampusChange={setSelectedCampus}
-        selectedCount={selectedTeachers.length}
-        totalCount={filteredTeachers.length}
-        onToggleSelectAll={handleToggleSelectAll}
-        onExportPdf={handleExportPdf}
-        isExporting={isExporting}
+        template={template} onTemplateChange={setTemplate}
+        orientation={orientation} onOrientationChange={setOrientation}
+        accentColor={accentColor} onAccentColorChange={setAccentColor}
+        sideMode={sideMode} onSideModeChange={setSideMode}
+        searchQuery={searchQuery} onSearchChange={setSearchQuery}
+        campuses={campuses} selectedCampus={selectedCampus} onCampusChange={setSelectedCampus}
+        selectedCount={selectedTeachers.length} totalCount={filteredTeachers.length}
+        onToggleSelectAll={handleToggleSelectAll} onExportPdf={handleExportPdf} isExporting={isExporting}
       />
 
       <TeacherCardEditModal

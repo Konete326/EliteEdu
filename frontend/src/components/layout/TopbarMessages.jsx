@@ -45,7 +45,7 @@ const TopbarMessages = ({ isColored, btnClass }) => {
     return () => clearInterval(interval);
   }, [fetchUnread]);
 
-  const targetPath = user?.role === 'Teacher' ? '/teacher/chat' : '/admin/messaging/chat';
+  const targetPath = user?.role === 'Teacher' ? '/teacher/messages' : (user?.role === 'Student' ? '/student/messages' : '/admin/messaging/internal');
 
   return (
     <div className="relative">

@@ -16,6 +16,8 @@ const CertificatePreviewCanvas = ({
   recipient = {},
   recipientType = 'Student',
   customText = '',
+  customHeading = '',
+  customBody = '',
   resolvedBody = '',
   issueDate = new Date().toISOString().split('T')[0]
 }) => {
@@ -31,7 +33,9 @@ const CertificatePreviewCanvas = ({
       recipient,
       recipientType,
       customText,
-      resolvedBody,
+      customHeading,
+      customBody,
+      resolvedBody: customBody || resolvedBody,
       issueDate,
       orientation
     };
@@ -56,18 +60,31 @@ const CertificatePreviewCanvas = ({
             size: A4 ${isPortrait ? 'portrait' : 'landscape'};
             margin: 0;
           }
-          body {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            overflow: hidden !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
           #printable-certificate {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
             max-width: none !important;
+            max-height: none !important;
             border-radius: 0 !important;
+            border: none !important;
             box-shadow: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
             page-break-after: avoid;
             page-break-inside: avoid;
+            z-index: 99999;
           }
         }
       `}</style>

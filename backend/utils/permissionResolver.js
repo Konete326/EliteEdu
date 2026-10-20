@@ -7,7 +7,7 @@ const ALL_APP_KEYS = [
   'reports', 'student_reports', 'parent_reports', 'report_cards', 'attendance_reports', 'exam_reports', 'leave_requests',
   'crm', 'crm_inquiries', 'crm_pipeline', 'crm_followups', 'crm_analytics', 'fees', 'accounts', 'payroll',
   'lms', 'courses', 'syllabus', 'store_pos', 'pos_store', 'behavior', 'campus_transfer', 'operations', 'news_feed', 'consent',
-  'bulk_migration', 'bulk_import', 'transport', 'student_portal', 'messenger', 'circular', 'behavior_skills', 'van_management'
+  'bulk_migration', 'bulk_import', 'transport', 'student_portal', 'messenger', 'messaging', 'circular', 'behavior_skills', 'van_management'
 ];
 
 const MODULE_KEY_MAP = {
@@ -23,7 +23,7 @@ const MODULE_KEY_MAP = {
   news_feed: ['news_feed', 'operations'], consent: ['consent', 'operations'], bulk_migration: ['control_panel', 'bulk_migration'],
   bulk_import: ['control_panel', 'bulk_migration'],
   transport: ['transport', 'operations'], van_management: ['transport', 'operations'], student_portal: ['students', 'student_portal'],
-  messenger: ['messenger', 'operations'], circular: ['circular', 'operations'],
+  messenger: ['messenger', 'messaging', 'operations'], messaging: ['messaging', 'messenger', 'operations'], circular: ['circular', 'operations'],
   events: ['events', 'operations'], complaints: ['complaints', 'operations'], feedback: ['feedback', 'operations'], counseling: ['counseling', 'operations'],
   lost_and_found: ['lost_and_found', 'operations'], resources: ['resources', 'subjects'], my_profile: ['my_profile'],
   update_picture: ['update_picture'], reports: ['reports'], student_reports: ['reports', 'students'],

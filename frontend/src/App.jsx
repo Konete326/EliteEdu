@@ -41,7 +41,8 @@ import {
   CrmLeadsPage, CrmLeadFormPage, CrmPipelinePage, CrmFollowUpsPage, CrmAnalyticsPage,
   AccountsSuitePage, StaffPayrollPage, LmsSuitePage, TimetablePage,
   PosStorePage, StorePosPage, BehaviorSkillsPage, CampusTransferPage, CampusOperationsHubPage,
-  CampusOperationsPage, PlannersAndEventsPage, BulkMigrationPage, BulkDataImportPage, TransportManagementPage
+  CampusOperationsPage, PlannersAndEventsPage, BulkMigrationPage, BulkDataImportPage, TransportManagementPage,
+  MessagingStudioPage
 } from './pages/admin';
 import StudentPortalPage from './pages/student/StudentPortalPage';
 
@@ -170,7 +171,10 @@ function App() {
                     <Route path="/admin/settings/roles" element={<UserManagementPage defaultTab="roles" />} />
                     <Route path="/admin/notifications" element={<NotificationsPage />} />
                     <Route path="/admin/messaging/notifications" element={<NotificationsPage />} />
-                    <Route path="/admin/messaging" element={<InternalMessengerPage />} />
+                    <Route path="/admin/messaging" element={<MessagingStudioPage />} />
+                    <Route path="/admin/messaging/messages" element={<MessagingStudioPage />} />
+                    <Route path="/admin/messaging/internal" element={<MessagingStudioPage />} />
+                    <Route path="/admin/messages" element={<MessagingStudioPage />} />
                     <Route path="/admin/messaging/chat" element={<InternalMessengerPage defaultTab="chat" />} />
                     <Route path="/admin/messaging/sms" element={<InternalMessengerPage defaultTab="sms" />} />
                     <Route path="/admin/messaging/whatsapp" element={<InternalMessengerPage defaultTab="whatsapp" />} />
@@ -235,6 +239,7 @@ function App() {
                     <Route path="/teacher/lost-and-found" element={<CampusOperationsPage />} />
                     <Route path="/teacher/notifications" element={<NotificationsPage />} />
                     <Route path="/teacher/profile" element={<MyProfilePage />} />
+                    <Route path="/teacher/messages" element={<MessagingStudioPage />} />
                     <Route path="/teacher/chat" element={<InternalMessengerPage />} />
                     <Route path="/teacher/circular" element={<InternalMessengerPage defaultTab="circular" />} />
                     <Route path="/teacher/feedback" element={<CampusOperationsPage />} />
@@ -245,13 +250,14 @@ function App() {
                   <Route element={<ProtectedRoute allowedRoles={['Student', 'Admin', 'Teacher']} />}>
                     <Route path="/student" element={<StudentPortalPage />} />
                     <Route path="/student/dashboard" element={<StudentPortalPage />} />
+                    <Route path="/student/messages" element={<MessagingStudioPage />} />
                     <Route path="/student/*" element={<StudentPortalPage />} />
                   </Route>
                 </Route>
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </BrowserRouter>
-            {import.meta.env.DEV && <Agentation endpoint="http://localhost:4747" />}
+            {import.meta.env.DEV && <Agentation />}
             </ComingSoonProvider>
           </ToastProvider>
         </ThemeProvider>

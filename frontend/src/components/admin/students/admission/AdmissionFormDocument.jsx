@@ -51,7 +51,7 @@ const AdmissionFormDocument = ({ student, onQuickEditClick }) => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-[#0c0c0f] border border-line dark:border-white/10 rounded-2xl p-6 sm:p-8 shadow-sm space-y-4 print:p-2 print:border-none print:shadow-none print:bg-white print:text-black">
+      <div className="bg-white dark:bg-[#0c0c0f] border border-line dark:border-white/10 rounded-2xl p-5 sm:p-6 shadow-sm space-y-2.5 print:p-2 print:border-none print:shadow-none print:bg-white print:text-black">
         <AdmissionFormHeader student={student} />
         <AdmissionRegistrationStrip student={student} />
         <AdmissionParticularsTable student={student} />

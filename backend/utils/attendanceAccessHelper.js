@@ -1,10 +1,20 @@
 const Grade = require('../models/Grade');
 const User = require('../models/User');
+const School = require('../models/School');
+
+const resolveSchoolId = async (user) => {
+  if (user?.school_id) return user.school_id;
+  const s = await School.findOne().sort({ createdAt: 1 }).select('_id').lean();
+  return s?._id || null;
+};
 
 const getTeacherAllowedGradeIds = async (user) => {
-  if (!user || !user.school_id) return [];
+  if (!user) return [];
+  const schoolId = await resolveSchoolId(user);
+  if (!schoolId) return [];
+
   if (user.role === 'Admin' || user.role === 'SuperAdmin') {
-    return Grade.find({ school_id: user.school_id })
+    return Grade.find({ school_id: schoolId })
       .select('_id name sections campus_id class_teacher status')
       .populate('class_teacher', 'name email')
       .lean();
@@ -28,7 +38,7 @@ const getTeacherAllowedGradeIds = async (user) => {
   }
 
   return Grade.find({
-    school_id: user.school_id,
+    school_id: schoolId,
     $or: orConditions
   })
     .select('_id name sections campus_id class_teacher status')
@@ -38,9 +48,10 @@ const getTeacherAllowedGradeIds = async (user) => {
 
 const verifyClassAccess = async (user, gradeId) => {
   if (!user || !gradeId) return false;
+  const schoolId = await resolveSchoolId(user);
   if (user.role === 'Admin' || user.role === 'SuperAdmin') {
     const grade = await Grade.findOne({
-      school_id: user.school_id,
+      ...(schoolId ? { school_id: schoolId } : {}),
       $or: [{ _id: gradeId }, { name: gradeId }]
     }).lean();
     return Boolean(grade);

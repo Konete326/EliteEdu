@@ -2,15 +2,18 @@ let lastClickedElement = 'Page Load / None';
 const recentLogs = new Map();
 
 const getApiBase = () => {
-  const raw = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-  return raw.endsWith('/api') || raw.endsWith('/api/') ? raw.replace(/\/+$/, '') : `${raw.replace(/\/+$/, '')}/api`;
+  const raw = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL;
+  if (raw) {
+    return raw.endsWith('/api') || raw.endsWith('/api/') ? raw.replace(/\/+$/, '') : `${raw.replace(/\/+$/, '')}/api`;
+  }
+  return '/api';
 };
 
 export const getLastClickedElement = () => lastClickedElement;
 
 export const reportTelemetry = async (payload) => {
   const msg = String(payload.message || '').trim();
-  if (!msg || msg.includes('/logs') || payload.endpoint?.includes('/logs')) return;
+  if (!msg || msg.includes('/logs') || payload.endpoint?.includes('/logs') || msg.includes('4747') || msg.includes('Agentation') || msg.includes('react-devtools')) return;
 
   const dedupeKey = `${payload.category}_${msg.slice(0, 80)}`;
   const now = Date.now();
@@ -96,7 +99,7 @@ export const initTelemetry = () => {
     try {
       const first = args[0];
       const msg = typeof first === 'string' ? first : (first?.message || JSON.stringify(first));
-      if (msg && !msg.includes('/logs') && !msg.includes('telemetry') && !msg.includes('Agentation')) {
+      if (msg && !msg.includes('/logs') && !msg.includes('telemetry') && !msg.includes('Agentation') && !msg.includes('4747') && !msg.includes('react-devtools')) {
         reportTelemetry({
           category: 'CONSOLE_ERROR',
           severity: 'ERROR',

@@ -25,16 +25,28 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
 
   const stopScanner = useCallback(async () => {
     const scanner = scannerRef.current;
-    if (!scanner) return;
+    if (scanner) {
+      try {
+        if (scanner.isScanning) {
+          await scanner.stop();
+        }
+        scanner.clear();
+      } catch (_) {}
+    }
     try {
-      if (scanner.isScanning) {
-        await scanner.stop();
-      }
-      scanner.clear();
+      const container = containerId ? document.getElementById(containerId) : null;
+      const videos = container ? container.querySelectorAll('video') : document.querySelectorAll('video');
+      videos.forEach((v) => {
+        if (v.srcObject && typeof v.srcObject.getTracks === 'function') {
+          v.srcObject.getTracks().forEach((track) => track.stop());
+          v.srcObject = null;
+        }
+      });
     } catch (_) {}
     setIsReady(false);
     setIsTorchOn(false);
-  }, []);
+    scannerRef.current = null;
+  }, [containerId]);
 
   const handleDecoded = useCallback(async (decodedText) => {
     const trimmed = String(decodedText || '').trim();

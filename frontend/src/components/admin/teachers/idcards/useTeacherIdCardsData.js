@@ -13,7 +13,7 @@ export const useTeacherIdCardsData = (initialTeacherId) => {
   useEffect(() => {
     let isMounted = true;
     Promise.all([
-      api.get('/teachers?limit=200'),
+      api.get('/teachers?cardView=true'),
       api.get('/campuses')
     ])
       .then(([tRes, cRes]) => {

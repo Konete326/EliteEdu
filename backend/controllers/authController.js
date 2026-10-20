@@ -36,31 +36,46 @@ const buildUserPayload = (user, meta) => {
 const login = async (req, res) => {
   const { email, password, role } = req.body;
   const identifier = email || req.body.identifier;
-  if (!identifier || !password) return res.status(400).json({ message: 'Email and password are required' });
+  if (!identifier || !password) return res.status(400).json({ message: 'Identifier and password are required' });
 
   try {
+    const cleanId = String(identifier).trim();
     if (role === 'Student') {
-      const studentHandled = await handleStudentLogin(identifier, password, res);
+      const studentHandled = await handleStudentLogin(cleanId, password, res);
       if (studentHandled) return;
       return res.status(401).json({ message: 'Invalid student credentials or password' });
     }
 
-    const user = await User.findOne({ email: identifier.toLowerCase().trim() }).populate('custom_role_id');
-    if (!user || !user.is_active || user.status === 'Inactive') {
-      const fallbackHandled = await handleStudentLogin(identifier, password, res);
+    const user = await User.findOne({
+      $or: [
+        { email: cleanId.toLowerCase() },
+        { employee_code: cleanId.toUpperCase() },
+        { employee_code: cleanId },
+        { contact_number: cleanId },
+        { phone: cleanId }
+      ]
+    }).populate('custom_role_id');
+
+    if (!user || user.is_active === false || user.status === 'Inactive') {
+      const fallbackHandled = await handleStudentLogin(cleanId, password, res);
       if (fallbackHandled) return;
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
     const clientIp = extractClientIp(req);
-    const blocked = await isIpBlocked(user.school_id, clientIp);
-    if (blocked) return res.status(403).json({ message: 'Access from this IP address has been blocked' });
+    const [blocked, isMatch] = await Promise.all([
+      isIpBlocked(user.school_id, clientIp),
+      bcrypt.compare(password, user.password)
+    ]);
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    if (blocked) return res.status(403).json({ message: 'Access from this IP address has been blocked' });
     if (!isMatch) return res.status(401).json({ message: 'Invalid email or password' });
 
-    const { sessionId, tokenId } = await createLoginSession(user, req);
-    const meta = await getSchoolMeta(user.school_id);
+    const [{ sessionId, tokenId }, meta] = await Promise.all([
+      createLoginSession(user, req),
+      getSchoolMeta(user.school_id)
+    ]);
+
     const token = jwt.sign(
       {
         id: user._id, name: user.name, role: user.role,
@@ -84,9 +99,11 @@ const getMe = async (req, res) => {
       return handleStudentGetMe(req.user.student_id || req.user.id, res);
     }
     const user = await User.findById(req.user.id).select('-password').populate('custom_role_id');
-    if (!user || !user.is_active || user.status === 'Inactive') return res.status(404).json({ message: 'User not found' });
-    await ensureActiveSession(user, req, req.user?.session_id);
-    const meta = await getSchoolMeta(user.school_id);
+    if (!user || user.is_active === false || user.status === 'Inactive') return res.status(404).json({ message: 'User not found' });
+    const [, meta] = await Promise.all([
+      ensureActiveSession(user, req, req.user?.session_id),
+      getSchoolMeta(user.school_id)
+    ]);
     res.status(200).json({ user: buildUserPayload(user, meta) });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });

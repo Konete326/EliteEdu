@@ -32,32 +32,42 @@ const Template4ApwaClassic = ({ holder = {}, holderType = 'student', orientation
 
   if (orientation === 'horizontal') {
     return (
-      <div onClick={onToggleSelect} className={`relative flex rounded-xl overflow-hidden shadow-md cursor-pointer w-[390px] min-h-[245px] bg-[#F8FAFC] ${isSelected ? 'ring-2 ring-blue-500' : ''}`}>
+      <div onClick={onToggleSelect} className={`relative flex flex-col rounded-xl overflow-hidden shadow-md cursor-pointer w-[380px] h-[235px] shrink-0 bg-[#F8FAFC] select-none ${isSelected ? 'ring-2 ring-blue-500' : ''}`}>
         <AcademicWatermark />
-        <div className="relative flex flex-col items-center justify-center w-[120px] shrink-0 border-r border-slate-200 gap-2 py-4">
-          <div className="bg-white rounded-xl shadow-sm p-1 flex items-center justify-center h-12 w-12">
-            {institution.logoUrl ? <img src={institution.logoUrl} className="h-10 w-10 object-contain" alt="logo" /> : <span className="text-xl">🎓</span>}
-          </div>
-          <IdCardPhotoAvatar photoUrl={holder.photo_url} name={holder.name} size={64} ringColor={accentColor} ringWidth={3} />
-          <span className="text-[6.5px] font-bold uppercase underline" style={{ color: accentColor }}>{isStudent ? 'STUDENT' : 'STAFF'}</span>
+        <div className="relative px-2.5 py-1 flex items-center justify-between shrink-0 border-b border-slate-200 bg-white" style={{ borderTop: `3px solid ${accentColor}` }}>
+          <IdCardInstHeader {...institution} textColor="#1e293b" compact={true} bgColor="transparent" />
+          <span className="text-[7px] font-bold uppercase underline shrink-0" style={{ color: accentColor }}>{isStudent ? 'STUDENT' : 'STAFF'}</span>
         </div>
-        <div className="flex flex-col flex-1 p-3 gap-1.5 relative">
-          <span className="font-extrabold text-[9px] uppercase text-center" style={{ color: accentColor }}>{institution.institutionName}</span>
-          <span className="font-extrabold text-[9px] uppercase" style={{ color: accentColor }}>{holder.name}</span>
-          <IdCardDataRows rows={rows} textColorClass="text-slate-700" labelColorClass="text-slate-500" />
-          <div className="bg-white rounded-full px-2 py-0.5 mt-auto shadow-sm flex justify-center" style={{ color: accentColor }}>{renderSvgBarcode(codeVal, 180, 18)}</div>
-          <div className="flex items-end justify-between mt-1">
-            <OfficialSignatureStampBlock compact={true} />
-            <div className="bg-white rounded-lg shadow-sm p-0.5">{renderSvgQrCode(verifyUrl, 36)}</div>
+        <div className="flex flex-1 px-3 py-1.5 gap-3 items-center z-10">
+          <div className="flex flex-col items-center justify-center shrink-0">
+            <IdCardPhotoAvatar photoUrl={holder.photo_url} name={holder.name} size={64} ringColor={accentColor} ringWidth={2.5} />
+          </div>
+          <div className="flex flex-col flex-1 min-w-0 gap-1">
+            <span className="font-extrabold text-[10px] uppercase tracking-wide truncate" style={{ color: accentColor }}>{holder.name}</span>
+            <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[7px] text-slate-700">
+              {rows.map((r, i) => (
+                <div key={i} className="flex justify-between border-b border-slate-200/60 pb-0.5">
+                  <span className="font-semibold text-slate-500">{r.label}:</span>
+                  <span className="font-medium truncate ml-1">{r.value}</span>
+                </div>
+              ))}
+            </div>
+            <div className="w-full flex justify-center py-0.5" style={{ color: accentColor }}>
+              {renderSvgBarcode(codeVal, 140, 15)}
+            </div>
           </div>
         </div>
-        <span className="absolute bottom-1 right-1 text-[7px] font-bold tracking-widest opacity-30">EliteEdu</span>
+        <div className="flex items-center justify-between px-3 py-1 border-t border-slate-200 mt-auto bg-white/80 z-10">
+          <OfficialSignatureStampBlock compact={true} />
+          <div className="shrink-0 rounded p-0.5 bg-white shadow-xs">{renderSvgQrCode(verifyUrl, 32)}</div>
+        </div>
+        <span className="absolute bottom-0.5 right-1 text-[6.5px] font-bold tracking-widest opacity-25">EliteEdu</span>
       </div>
     );
   }
 
   return (
-    <div onClick={onToggleSelect} className={`relative flex flex-col rounded-xl overflow-hidden shadow-md cursor-pointer w-[248px] min-h-[390px] bg-[#F8FAFC] ${isSelected ? 'ring-2 ring-blue-500' : ''}`}>
+    <div onClick={onToggleSelect} className={`relative flex flex-col rounded-xl overflow-hidden shadow-md cursor-pointer w-[248px] min-h-[390px] bg-[#F8FAFC] select-none ${isSelected ? 'ring-2 ring-blue-500' : ''}`}>
       <AcademicWatermark />
       <div className="flex flex-col items-center pt-3 pb-1 px-3 gap-1 relative z-10">
         <div className="bg-white rounded-xl shadow-sm flex items-center justify-center h-12 w-12">

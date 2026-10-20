@@ -15,7 +15,7 @@ const fmtDate = (d) => {
 };
 
 const DotPattern = () => (
-  <svg className="absolute inset-0 w-full h-full opacity-20" xmlns="http://www.w3.org/2000/svg">
+  <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <pattern id="dots" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
         <circle cx="2" cy="2" r="1" fill={GOLD} />
@@ -25,7 +25,7 @@ const DotPattern = () => (
   </svg>
 );
 
-const Template2GoldBlueFrame = ({ holder = {}, holderType = 'student', orientation = 'vertical', institution = {}, isSelected, onToggleSelect }) => {
+const Template2GoldBlueFrame = ({ holder = {}, holderType = 'student', orientation = 'vertical', accentColor = ROYAL, institution = {}, isSelected, onToggleSelect }) => {
   const isStudent = holderType === 'student';
   const codeVal = isStudent ? holder.gr_number : holder.employee_code;
   const verifyUrl = isStudent ? generateStudentVerifyUrl(holder) : generateStaffVerifyUrl(holder);
@@ -44,37 +44,45 @@ const Template2GoldBlueFrame = ({ holder = {}, holderType = 'student', orientati
       ];
   const badge = isStudent ? '🎓 STUDENT' : holder.designation || 'STAFF';
 
-  const cardCls = `relative flex bg-white rounded-xl overflow-hidden shadow-lg cursor-pointer ${isSelected ? 'ring-2 ring-blue-500' : ''}`;
-
   if (orientation === 'horizontal') {
     return (
-      <div onClick={onToggleSelect} className={`${cardCls} w-[390px] min-h-[245px]`} style={{ border: `3px solid ${GOLD}` }}>
-        <div className="relative flex flex-col items-center justify-center w-[120px] shrink-0 overflow-hidden" style={{ background: ROYAL }}>
+      <div onClick={onToggleSelect} className={`relative flex flex-col rounded-xl overflow-hidden shadow-lg cursor-pointer w-[380px] h-[235px] shrink-0 bg-white select-none ${isSelected ? 'ring-2 ring-blue-500' : ''}`} style={{ border: `2.5px solid ${GOLD}` }}>
+        <div className="relative px-2.5 py-1 flex items-center justify-between shrink-0 overflow-hidden" style={{ background: accentColor }}>
           <DotPattern />
-          <div className="z-10"><IdCardPhotoAvatar photoUrl={holder.photo_url} name={holder.name} size={64} ringColor={GOLD} ringWidth={3} /></div>
-          <span className="z-10 mt-1 text-[6.5px] font-bold px-2 py-0.5 rounded-full text-slate-900 tracking-wider" style={{ background: GOLD }}>{badge}</span>
+          <IdCardInstHeader {...institution} textColor="white" compact={true} bgColor="transparent" />
+          <span className="z-10 text-[7px] font-bold px-2 py-0.5 rounded-full text-slate-900 tracking-wider shrink-0" style={{ background: GOLD }}>{badge}</span>
         </div>
-        <div className="flex flex-col flex-1 p-2 gap-1.5">
-          <div className="relative overflow-hidden rounded-t-lg -mx-2 -mt-2 px-2 py-1" style={{ background: ROYAL }}>
-            <DotPattern />
-            <IdCardInstHeader {...institution} textColor="white" compact bgColor="transparent" />
+        <div className="flex flex-1 px-3 py-1.5 gap-3 items-center">
+          <div className="flex flex-col items-center justify-center shrink-0">
+            <IdCardPhotoAvatar photoUrl={holder.photo_url} name={holder.name} size={64} ringColor={GOLD} ringWidth={2.5} />
           </div>
-          <span className="font-extrabold text-[9px] uppercase tracking-wide" style={{ color: NAVY }}>{holder.name}</span>
-          <IdCardDataRows rows={rows} textColorClass="text-slate-700" labelColorClass="text-slate-500" />
-          <div className="mt-auto flex items-center justify-between pt-1">
-            <div style={{ color: NAVY }}>{renderSvgBarcode(codeVal, 110, 18)}</div>
-            <div className="rounded-lg p-0.5 shadow-sm border border-amber-200">{renderSvgQrCode(verifyUrl, 36)}</div>
+          <div className="flex flex-col flex-1 min-w-0 gap-1">
+            <span className="font-extrabold text-[10px] uppercase tracking-wide truncate" style={{ color: NAVY }}>{holder.name}</span>
+            <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[7px] text-slate-700">
+              {rows.map((r, i) => (
+                <div key={i} className="flex justify-between border-b border-amber-100 pb-0.5">
+                  <span className="font-semibold text-slate-500">{r.label}:</span>
+                  <span className="font-medium truncate ml-1">{r.value}</span>
+                </div>
+              ))}
+            </div>
+            <div className="w-full flex justify-center py-0.5" style={{ color: NAVY }}>
+              {renderSvgBarcode(codeVal, 140, 15)}
+            </div>
           </div>
+        </div>
+        <div className="flex items-center justify-between px-3 py-1 border-t border-amber-200 mt-auto bg-amber-50/40">
           <OfficialSignatureStampBlock compact={true} />
+          <div className="shrink-0 rounded p-0.5 bg-white border border-amber-200">{renderSvgQrCode(verifyUrl, 32)}</div>
         </div>
-        <span className="absolute bottom-1 right-1 text-[7px] font-bold tracking-widest opacity-30">EliteEdu</span>
+        <span className="absolute bottom-0.5 right-1 text-[6.5px] font-bold tracking-widest opacity-25">EliteEdu</span>
       </div>
     );
   }
 
   return (
-    <div onClick={onToggleSelect} className={`${cardCls} flex-col w-[248px] min-h-[390px]`} style={{ border: `3px solid ${GOLD}` }}>
-      <div className="relative overflow-hidden shrink-0" style={{ background: ROYAL }}>
+    <div onClick={onToggleSelect} className={`relative flex flex-col bg-white rounded-xl overflow-hidden shadow-lg cursor-pointer w-[248px] min-h-[390px] select-none ${isSelected ? 'ring-2 ring-blue-500' : ''}`} style={{ border: `3px solid ${GOLD}` }}>
+      <div className="relative overflow-hidden shrink-0" style={{ background: accentColor }}>
         <DotPattern />
         <IdCardInstHeader {...institution} textColor="white" bgColor="transparent" />
       </div>

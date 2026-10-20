@@ -31,24 +31,35 @@ const Template1CurveBlue = ({ holder = {}, holderType = 'student', orientation =
 
   if (orientation === 'horizontal') {
     return (
-      <div onClick={onToggleSelect} className={`relative flex rounded-xl overflow-hidden shadow-md cursor-pointer w-[390px] min-h-[245px] bg-white ${isSelected ? 'ring-2 ring-blue-500' : ''}`}>
-        <div className="relative flex flex-col items-center justify-center w-[130px] shrink-0" style={{ background: accentColor }}>
-          <svg className="absolute top-0 left-0 w-full h-full" viewBox="0 0 130 245" preserveAspectRatio="none">
-            <path d="M0,0 Q65,40 130,0 L130,245 L0,245 Z" fill="rgba(0,0,0,0.15)" />
-          </svg>
-          <div className="z-10 mt-4"><IdCardPhotoAvatar photoUrl={holder.photo_url} name={holder.name} size={60} ringColor="white" ringWidth={2} /></div>
-          <span className="z-10 mt-1 text-[6.5px] font-bold text-white px-2 py-0.5 rounded-full bg-white/20 tracking-wider">{badge}</span>
+      <div onClick={onToggleSelect} className={`relative flex flex-col rounded-xl overflow-hidden shadow-md cursor-pointer w-[380px] h-[235px] shrink-0 bg-white select-none ${isSelected ? 'ring-2 ring-blue-500' : ''}`}>
+        <div className="relative px-2.5 py-1 flex items-center justify-between shrink-0" style={{ background: accentColor }}>
+          <IdCardInstHeader {...institution} textColor="white" compact={true} bgColor="transparent" />
+          <span className="text-[7px] font-bold text-white px-2 py-0.5 rounded-full bg-white/20 tracking-wider shrink-0">{badge}</span>
         </div>
-        <div className="flex flex-col flex-1 p-2 gap-1">
-          <span className="font-extrabold text-[9px] uppercase tracking-wide" style={{ color: accentColor }}>{holder.name}</span>
-          <IdCardDataRows rows={rows} textColorClass="text-slate-700" labelColorClass="text-slate-500" />
-          <div className="mt-auto pt-1 flex items-center justify-between">
-            <div style={{ color: accentColor }}>{renderSvgBarcode(codeVal, 110, 18)}</div>
-            <div className="bg-white rounded p-0.5 shadow-sm">{renderSvgQrCode(verifyUrl, 36)}</div>
+        <div className="flex flex-1 px-3 py-1.5 gap-3 items-center">
+          <div className="flex flex-col items-center justify-center shrink-0">
+            <IdCardPhotoAvatar photoUrl={holder.photo_url} name={holder.name} size={64} ringColor={accentColor} ringWidth={2} />
           </div>
-          <OfficialSignatureStampBlock compact={true} />
+          <div className="flex flex-col flex-1 min-w-0 gap-1">
+            <span className="font-extrabold text-[10px] uppercase tracking-wide truncate" style={{ color: accentColor }}>{holder.name}</span>
+            <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[7px] text-slate-700">
+              {rows.map((r, i) => (
+                <div key={i} className="flex justify-between border-b border-slate-100 pb-0.5">
+                  <span className="font-semibold text-slate-500">{r.label}:</span>
+                  <span className="font-medium truncate ml-1">{r.value}</span>
+                </div>
+              ))}
+            </div>
+            <div className="w-full flex justify-center py-0.5" style={{ color: accentColor }}>
+              {renderSvgBarcode(codeVal, 140, 15)}
+            </div>
+          </div>
         </div>
-        <span className="absolute bottom-1 right-1 text-[7px] font-bold tracking-widest opacity-30">EliteEdu</span>
+        <div className="flex items-center justify-between px-3 py-1 border-t border-slate-200 mt-auto bg-slate-50/70">
+          <OfficialSignatureStampBlock compact={true} />
+          <div className="shrink-0">{renderSvgQrCode(verifyUrl, 32)}</div>
+        </div>
+        <span className="absolute bottom-0.5 right-1 text-[6.5px] font-bold tracking-widest opacity-25">EliteEdu</span>
       </div>
     );
   }
@@ -69,9 +80,8 @@ const Template1CurveBlue = ({ holder = {}, holderType = 'student', orientation =
         <div className="w-full mt-1"><IdCardDataRows rows={rows} /></div>
         <div className="mt-1 w-full flex justify-center" style={{ color: accentColor }}>{renderSvgBarcode(codeVal, 200, 20)}</div>
       </div>
-      <div className="flex items-center justify-between px-2 py-1.5" style={{ background: accentColor }}>
-        <div className="flex-1"><IdCardInstHeader {...institution} textColor="white" compact={true} /></div>
-        <div className="bg-white rounded-full p-1 shadow">{renderSvgQrCode(verifyUrl, 36)}</div>
+      <div className="px-2 py-1.5" style={{ background: accentColor }}>
+        <IdCardInstHeader {...institution} textColor="white" compact={true} />
       </div>
       <div className="px-2 pb-1"><OfficialSignatureStampBlock compact={true} /></div>
       <span className="absolute bottom-1 right-1 text-[7px] font-bold tracking-widest opacity-30">EliteEdu</span>

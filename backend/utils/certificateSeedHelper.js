@@ -8,7 +8,7 @@ const DEFAULT_TEMPLATES = [
     sub_heading: 'THIS CERTIFICATE IS PRESENTED TO',
     body_template: 'for successfully completing the specialized professional development course in {{custom_text}} (120 hrs / 6 Months). S/D/W of {{father_name}}, bearing Employee Code {{employee_code}}, serving with distinction at {{school_name}}.',
     design_style: 'academic_gold_hatch',
-    orientation: 'portrait',
+    orientation: 'landscape',
     accent_color: '#b59449',
     is_default: true
   },
@@ -52,7 +52,7 @@ const DEFAULT_TEMPLATES = [
     sub_heading: 'THIS IS TO CERTIFY THAT',
     body_template: '{{name}} S/D of {{father_name}}, bearing General Register (G.R) No. {{gr_number}}, was a bonafide student of this institution in Class {{class_name}} (Section {{section}}). According to school records, their date of birth is {{dob}}. Their conduct during their period of study was satisfactory. Reason for leaving: {{custom_text}}.',
     design_style: 'academic_gold_hatch',
-    orientation: 'portrait',
+    orientation: 'landscape',
     accent_color: '#b59449',
     is_default: false
   },

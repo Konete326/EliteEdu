@@ -10,20 +10,13 @@ const buildFinancialOverview = (campusList, students, payments = [], expenses = 
   const sumPaid = (list) => list.reduce((acc, p) => acc + Number(p.paid_amount || 0), 0);
   const sumExp = (list) => list.reduce((acc, e) => acc + Number(e.amount || 0), 0);
 
-  const todayPayments = payments.filter((p) => p.payment_date && new Date(p.payment_date) >= startOfToday);
-  const mtdPayments = payments.filter((p) => p.payment_date && new Date(p.payment_date) >= startOfMonth);
-  const ytdPayments = payments.filter((p) => p.payment_date && new Date(p.payment_date) >= startOfYear);
+  const todayCollection = sumPaid(payments.filter((p) => p.payment_date && new Date(p.payment_date) >= startOfToday));
+  const mtdCollection = sumPaid(payments.filter((p) => p.payment_date && new Date(p.payment_date) >= startOfMonth));
+  const ytdCollection = sumPaid(payments.filter((p) => p.payment_date && new Date(p.payment_date) >= startOfYear));
 
-  const todayExpenses = expenses.filter((e) => e.transaction_date && new Date(e.transaction_date) >= startOfToday);
-  const mtdExpenses = expenses.filter((e) => e.transaction_date && new Date(e.transaction_date) >= startOfMonth);
-  const ytdExpenses = expenses.filter((e) => e.transaction_date && new Date(e.transaction_date) >= startOfYear);
-
-  const todayCollection = sumPaid(todayPayments);
-  const mtdCollection = sumPaid(mtdPayments);
-  const ytdCollection = sumPaid(ytdPayments);
-  const todayExp = sumExp(todayExpenses);
-  const mtdExp = sumExp(mtdExpenses);
-  const ytdExp = sumExp(ytdExpenses);
+  const todayExp = sumExp(expenses.filter((e) => e.transaction_date && new Date(e.transaction_date) >= startOfToday));
+  const mtdExp = sumExp(expenses.filter((e) => e.transaction_date && new Date(e.transaction_date) >= startOfMonth));
+  const ytdExp = sumExp(expenses.filter((e) => e.transaction_date && new Date(e.transaction_date) >= startOfYear));
 
   const outstanding = Math.max(0, totalMonthlyFee - mtdCollection);
   const netMonthlyProfit = mtdCollection - mtdExp;
@@ -46,12 +39,9 @@ const buildFinancialOverview = (campusList, students, payments = [], expenses = 
       const cMtd = sumPaid(cPayments.filter((p) => p.payment_date && new Date(p.payment_date) >= startOfMonth));
       const cYtd = sumPaid(cPayments.filter((p) => p.payment_date && new Date(p.payment_date) >= startOfYear));
       return {
-        name: c.name,
-        sub: c.sub,
-        today: `Rs. ${cToday.toLocaleString()}`,
-        mtd: `Rs. ${cMtd.toLocaleString()}`,
-        ytd: `Rs. ${cYtd.toLocaleString()}`,
-        estMonthly: `Rs. ${cEst.toLocaleString()}`,
+        name: c.name, sub: c.sub,
+        today: `Rs. ${cToday.toLocaleString()}`, mtd: `Rs. ${cMtd.toLocaleString()}`,
+        ytd: `Rs. ${cYtd.toLocaleString()}`, estMonthly: `Rs. ${cEst.toLocaleString()}`,
         outstanding: `Rs. ${Math.max(0, cEst - cMtd).toLocaleString()}`
       };
     })
@@ -59,14 +49,11 @@ const buildFinancialOverview = (campusList, students, payments = [], expenses = 
 };
 
 const countStatuses = (list) => {
+  const map = { P: 'p', A: 'a', L: 'l', LT: 'late', HD: 'hd', Hol: 'hol' };
   const counts = { p: 0, a: 0, l: 0, late: 0, hd: 0, hol: 0 };
   list.forEach((rec) => {
-    if (rec.status === 'P') counts.p++;
-    else if (rec.status === 'A') counts.a++;
-    else if (rec.status === 'L') counts.l++;
-    else if (rec.status === 'LT') counts.late++;
-    else if (rec.status === 'HD') counts.hd++;
-    else if (rec.status === 'Hol') counts.hol++;
+    const k = map[rec.status];
+    if (k) counts[k]++;
   });
   return { ...counts, marked: counts.p + counts.a + counts.l + counts.late + counts.hd + counts.hol };
 };
@@ -87,8 +74,7 @@ const buildAttendanceSummary = (campusList, students, teachers, todayAttendance 
       const cStAtt = countStatuses(todayAttendance.filter((rec) => String(rec.campus_id) === String(c.id)));
       const cStaffAtt = countStatuses(todayStaffAttendance.filter((rec) => String(rec.campus_id) === String(c.id)));
       return {
-        name: c.name,
-        sub: c.sub,
+        name: c.name, sub: c.sub,
         students: { total: cStudents, ...cStAtt, um: Math.max(0, cStudents - cStAtt.marked) },
         staff: { total: cTeachers, ...cStaffAtt, um: Math.max(0, cTeachers - cStaffAtt.marked) }
       };
@@ -96,26 +82,7 @@ const buildAttendanceSummary = (campusList, students, teachers, todayAttendance 
   };
 };
 
-const buildHomeworkSummary = (campusList, homeworkList = []) => {
-  const total = homeworkList.length;
-  const published = homeworkList.filter((h) => h.is_published).length;
-  return {
-    total,
-    published,
-    pending: total - published,
-    campusBreakdown: campusList.map((c) => {
-      const cTotal = homeworkList.filter((h) => String(h.campus_id) === String(c.id)).length;
-      const cPublished = homeworkList.filter((h) => String(h.campus_id) === String(c.id) && h.is_published).length;
-      return {
-        name: c.name,
-        sub: c.sub,
-        total: cTotal,
-        published: cPublished,
-        pending: cTotal - cPublished
-      };
-    })
-  };
-};
+const { buildHomeworkSummary } = require('./dashboardHomeworkBuilder');
 
 module.exports = {
   buildFinancialOverview,

@@ -1,37 +1,65 @@
 import { useState, useEffect, useMemo } from 'react';
 import api from '../../../../services/api';
 
+let cachedCampuses = null;
+let cachedGrades = null;
+
 export const useIdCardsData = (initialStudentId) => {
   const [students, setStudents] = useState([]);
-  const [campuses, setCampuses] = useState([]);
-  const [grades, setGrades] = useState([]);
+  const [campuses, setCampuses] = useState(cachedCampuses || []);
+  const [grades, setGrades] = useState(cachedGrades || []);
   const [loading, setLoading] = useState(true);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCampus, setSelectedCampus] = useState('');
   const [selectedGrade, setSelectedGrade] = useState('');
-  const [selectedIds, setSelectedIds] = useState([]);
+  const [selectedIds, setSelectedIds] = useState(initialStudentId ? [initialStudentId] : []);
 
   useEffect(() => {
     let isMounted = true;
+
+    if (initialStudentId) {
+      api.get(`/students/${initialStudentId}`).then((res) => {
+        if (!isMounted) return;
+        const student = res.data?.student || res.data;
+        if (student) {
+          setStudents((prev) => {
+            if (prev.some((s) => s._id === student._id)) return prev;
+            return [student, ...prev];
+          });
+          setSelectedIds([student._id]);
+          setLoading(false);
+        }
+      }).catch(() => {});
+    }
+
     Promise.all([
-      api.get('/students?limit=200'),
-      api.get('/campuses'),
-      api.get('/grades')
+      api.get('/students?cardView=true&limit=200'),
+      cachedCampuses ? Promise.resolve({ data: { campuses: cachedCampuses } }) : api.get('/campuses'),
+      cachedGrades ? Promise.resolve({ data: { grades: cachedGrades } }) : api.get('/grades'),
     ]).then(([sRes, cRes, gRes]) => {
       if (!isMounted) return;
-      const list = sRes.data.students || sRes.data || [];
-      setStudents(list);
-      setCampuses(cRes.data.campuses || cRes.data || []);
-      setGrades(gRes.data.grades || gRes.data || []);
-      if (initialStudentId) {
-        setSelectedIds([initialStudentId]);
-      } else {
+      const list = sRes.data?.students || sRes.data || [];
+      cachedCampuses = cRes.data?.campuses || cRes.data || [];
+      cachedGrades = gRes.data?.grades || gRes.data || [];
+
+      setCampuses(cachedCampuses);
+      setGrades(cachedGrades);
+
+      setStudents((prev) => {
+        if (!prev.length) return list;
+        const existingIds = new Set(list.map((item) => item._id));
+        const prepended = prev.filter((p) => !existingIds.has(p._id));
+        return [...prepended, ...list];
+      });
+
+      if (!initialStudentId) {
         setSelectedIds(list.map((s) => s._id));
       }
     }).finally(() => {
       if (isMounted) setLoading(false);
     });
+
     return () => { isMounted = false; };
   }, [initialStudentId]);
 
@@ -52,14 +80,6 @@ export const useIdCardsData = (initialStudentId) => {
   const selectedStudents = useMemo(() => {
     return filteredStudents.filter((s) => selectedIds.includes(s._id));
   }, [filteredStudents, selectedIds]);
-
-  const chunks = useMemo(() => {
-    const res = [];
-    for (let i = 0; i < selectedStudents.length; i += 8) {
-      res.push(selectedStudents.slice(i, i + 8));
-    }
-    return res;
-  }, [selectedStudents]);
 
   const handleToggleSelect = (id) => {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
@@ -86,8 +106,7 @@ export const useIdCardsData = (initialStudentId) => {
     selectedIds,
     filteredStudents,
     selectedStudents,
-    chunks,
     handleToggleSelect,
-    handleToggleSelectAll
+    handleToggleSelectAll,
   };
 };

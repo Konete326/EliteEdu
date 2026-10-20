@@ -45,7 +45,7 @@ const ThreeCopyBankChallanModal = ({ isOpen, onClose, invoices = [], bankSetting
         <div ref={printRef} className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-100 dark:bg-slate-950 print:p-0 print:space-y-0 print:bg-white">
           <style>{`
             @media print {
-              @page { size: landscape; margin: 4mm; }
+              @page { size: landscape; margin: 0; }
               body { background: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
               .challan-page { page-break-after: always; break-after: page; height: 100vh; }
             }

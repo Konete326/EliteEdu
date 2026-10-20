@@ -1,14 +1,6 @@
 const AccountTransaction = require('../models/AccountTransaction');
 const AccountHead = require('../models/AccountHead');
-const Notification = require('../models/Notification');
-
-const generateVoucherNo = async (schoolId, type) => {
-  const d = new Date();
-  const ym = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}`;
-  const prefix = type === 'Income' ? 'RV' : type === 'Expense' ? 'PV' : 'JV';
-  const count = await AccountTransaction.countDocuments({ school_id: schoolId });
-  return `${prefix}-${ym}-${String(count + 1).padStart(4, '0')}`;
-};
+const { generateVoucherNo, filterEditableTransactionFields } = require('../utils/accountVoucherHelper');
 
 const getTransactions = async (req, res) => {
   try {
@@ -23,17 +15,14 @@ const getTransactions = async (req, res) => {
     if (from_date || to_date) {
       query.transaction_date = {};
       if (from_date) query.transaction_date.$gte = new Date(from_date);
-      if (to_date) {
-        const end = new Date(to_date);
-        end.setHours(23, 59, 59, 999);
-        query.transaction_date.$lte = end;
-      }
+      if (to_date) query.transaction_date.$lte = new Date(new Date(to_date).setHours(23, 59, 59, 999));
     }
     if (search) {
+      const cleanSearch = String(search).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { voucher_no: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } }
+        { title: { $regex: cleanSearch, $options: 'i' } },
+        { voucher_no: { $regex: cleanSearch, $options: 'i' } },
+        { description: { $regex: cleanSearch, $options: 'i' } }
       ];
     }
 
@@ -59,19 +48,11 @@ const createTransaction = async (req, res) => {
     const voucher_no = req.body.voucher_no || await generateVoucherNo(schoolId, voucher_type);
 
     const tx = await AccountTransaction.create({
-      school_id: schoolId,
-      campus_id: campus_id || null,
-      voucher_no,
-      voucher_type,
-      account_head_id,
-      account_head_name: head.name,
-      title: String(title).trim(),
-      amount: Number(amount) || 0,
-      payment_mode: payment_mode || 'Cash',
-      cost_center: cost_center || 'Main Campus',
-      description: description || '',
-      reference_no: reference_no || '',
-      attachment_url: attachment_url || '',
+      school_id: schoolId, campus_id: campus_id || null, voucher_no, voucher_type,
+      account_head_id, account_head_name: head.name, title: String(title).trim(),
+      amount: Number(amount) || 0, payment_mode: payment_mode || 'Cash',
+      cost_center: cost_center || 'Main Campus', description: description || '',
+      reference_no: reference_no || '', attachment_url: attachment_url || '',
       approval_status: req.body.approval_status || 'Approved',
       transaction_date: transaction_date ? new Date(transaction_date) : new Date(),
       created_by: req.user?._id
@@ -86,9 +67,10 @@ const createTransaction = async (req, res) => {
 const updateTransaction = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
+    const sanitizedFields = filterEditableTransactionFields(req.body);
     const tx = await AccountTransaction.findOneAndUpdate(
       { _id: req.params.id, school_id: schoolId },
-      { $set: req.body },
+      { $set: sanitizedFields },
       { new: true }
     );
     if (!tx) return res.status(404).json({ message: 'Transaction not found' });

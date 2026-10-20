@@ -35,7 +35,7 @@ const StudentIdCardsPage = () => {
   const [sideMode, setSideMode] = useState('front');
   const [isExporting, setIsExporting] = useState(false);
 
-  const chunkSize = orientation === 'horizontal' ? 6 : 8;
+  const chunkSize = orientation === 'horizontal' ? 6 : 3;
   const chunks = useMemo(() => {
     const list = [];
     for (let i = 0; i < selectedStudents.length; i += chunkSize) {
@@ -47,7 +47,13 @@ const StudentIdCardsPage = () => {
   const handleExportPdf = async () => {
     try {
       setIsExporting(true);
-      await exportStudentCardsPdf(selectedStudents);
+      await exportStudentCardsPdf(selectedStudents, {
+        sideMode,
+        style: template,
+        orientation,
+        accentColor,
+        institution,
+      });
     } catch (e) {
       console.error(e);
     } finally {

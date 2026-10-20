@@ -43,7 +43,7 @@ const StaffManualAttendanceSheet = ({
             <button
               type="button"
               onClick={() => onMarkAll('Hol')}
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all cursor-pointer"
             >
               <Calendar className="w-3.5 h-3.5" />
               <span>Mark Holiday</span>

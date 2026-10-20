@@ -77,15 +77,22 @@ const updateAccountHead = async (req, res) => {
   }
 };
 
+const FeeStructure = require('../models/FeeStructure');
+
 const deleteAccountHead = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
-    const inUse = await AccountTransaction.countDocuments({ school_id: schoolId, account_head_id: req.params.id });
-    if (inUse > 0) {
-      return res.status(400).json({ message: 'Cannot delete account head with associated transactions' });
-    }
-    const head = await AccountHead.findOneAndDelete({ _id: req.params.id, school_id: schoolId });
+    const head = await AccountHead.findOne({ _id: req.params.id, school_id: schoolId });
     if (!head) return res.status(404).json({ message: 'Account head not found' });
+
+    const [inUse, feeInUse] = await Promise.all([
+      AccountTransaction.countDocuments({ school_id: schoolId, account_head_id: req.params.id }),
+      FeeStructure.countDocuments({ school_id: schoolId, 'custom_heads.title': head.name })
+    ]);
+    if (inUse > 0 || feeInUse > 0) {
+      return res.status(400).json({ message: 'Cannot delete account head associated with transactions or fee structures' });
+    }
+    await AccountHead.deleteOne({ _id: req.params.id, school_id: schoolId });
     res.status(200).json({ success: true, message: 'Account head deleted' });
   } catch (error) {
     res.status(500).json({ message: error.message });

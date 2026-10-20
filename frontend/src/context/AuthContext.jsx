@@ -7,11 +7,16 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem('token') || null);
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem('user');
-    return savedUser ? JSON.parse(savedUser) : null;
+    try {
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch {
+      return null;
+    }
   });
 
   useEffect(() => {
-    if (token) {
+    const savedToken = localStorage.getItem('token');
+    if (savedToken) {
       api.get('/auth/me')
         .then((res) => {
           if (res.data?.user) {
@@ -21,7 +26,7 @@ export const AuthProvider = ({ children }) => {
         })
         .catch(() => {});
     }
-  }, [token]);
+  }, []);
 
   const login = (userData, receivedToken) => {
     localStorage.setItem('token', receivedToken);

@@ -23,7 +23,7 @@ const plannerEventRoutes = require('./routes/plannerEventRoutes'); const operati
 const behaviorRoutes = require('./routes/behaviorRoutes'); const bulkMigrationRoutes = require('./routes/bulkMigrationRoutes');
 const bulkImportRoutes = require('./routes/bulkImportRoutes'); const campusTransferRoutes = require('./routes/campusTransferRoutes');
 const transportRoutes = require('./routes/transportRoutes'); const studentPortalRoutes = require('./routes/studentPortalRoutes');
-const messengerRoutes = require('./routes/messengerRoutes'); const scannerRoutes = require('./routes/scannerRoutes');
+const messengerRoutes = require('./routes/messengerRoutes'); const scannerRoutes = require('./routes/scannerRoutes'); const messagingRoutes = require('./routes/messagingRoutes');
 const auditLogger = require('./middlewares/auditLogger');
 const sanitizePayload = require('./utils/sanitizePayload');
 const seedSuperAdmin = require('./utils/seedSuperAdmin');
@@ -83,7 +83,8 @@ const routes = [
   [['/api/behavior', '/behavior'], behaviorRoutes], [['/api/bulk-migration', '/bulk-migration'], bulkMigrationRoutes],
   [['/api/bulk-import', '/bulk-import'], bulkImportRoutes], [['/api/campus-transfers', '/campus-transfers'], campusTransferRoutes],
   [['/api/transport', '/transport'], transportRoutes], [['/api/student-portal', '/student-portal'], studentPortalRoutes],
-  [['/api/messenger', '/messenger'], messengerRoutes], [['/api/scanner', '/scanner'], scannerRoutes]
+  [['/api/messenger', '/messenger'], messengerRoutes], [['/api/scanner', '/scanner'], scannerRoutes],
+  [['/api/messaging', '/messaging'], messagingRoutes]
 ];
 routes.forEach(([paths, handler]) => app.use(paths, handler));
 
@@ -94,7 +95,7 @@ app.use((err, req, res, next) => {
 
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   connectDB().then(() => {
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
   }).catch((err) => console.error('Database connection failed:', err));
 }
 

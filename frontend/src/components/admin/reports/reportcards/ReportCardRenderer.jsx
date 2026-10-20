@@ -57,7 +57,7 @@ const ReportCardRenderer = ({
         @media print {
           @page {
             size: A4 ${orientation};
-            margin: 6mm;
+            margin: 0;
           }
           body {
             -webkit-print-color-adjust: exact;

@@ -61,11 +61,30 @@ const resolveRecipient = async (schoolId, recipientType, recipientId) => {
 const getNextCertificateNumber = async (schoolId) => {
   const year = new Date().getFullYear();
   const prefix = `CERT-${year}-`;
-  const count = await IssuedCertificate.countDocuments({
+  const latest = await IssuedCertificate.findOne({
     school_id: schoolId,
-    certificate_no: new RegExp(`^${prefix}`)
-  });
-  return `${prefix}${String(count + 1).padStart(4, '0')}`;
+    certificate_no: { $regex: `^${prefix}` }
+  })
+    .sort({ createdAt: -1, _id: -1 })
+    .lean();
+
+  let nextSeq = 1;
+  if (latest?.certificate_no) {
+    const parts = latest.certificate_no.split('-');
+    const lastNum = parseInt(parts[parts.length - 1], 10);
+    if (!Number.isNaN(lastNum)) {
+      nextSeq = lastNum + 1;
+    }
+  }
+
+  const seq = String(nextSeq).padStart(4, '0');
+  const candidate = `${prefix}${seq}`;
+  const exists = await IssuedCertificate.exists({ school_id: schoolId, certificate_no: candidate });
+  if (exists) {
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    return `${prefix}${randomSuffix}`;
+  }
+  return candidate;
 };
 
 module.exports = {

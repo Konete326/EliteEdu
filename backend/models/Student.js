@@ -88,5 +88,9 @@ studentSchema.pre('validate', async function () {
 
 studentSchema.index({ school_id: 1, gr_number: 1 });
 studentSchema.index({ school_id: 1, current_grade: 1, campus_id: 1 });
+studentSchema.index({ school_id: 1, campus_id: 1, createdAt: -1 });
+studentSchema.index({ school_id: 1, current_grade: 1, createdAt: -1 });
+studentSchema.index({ school_id: 1, status: 1, createdAt: -1 });
+studentSchema.index({ school_id: 1, createdAt: -1 });
 
 module.exports = mongoose.model('Student', studentSchema);

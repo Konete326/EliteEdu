@@ -2,6 +2,20 @@ import Template1CurveBlue from './templates/Template1CurveBlue';
 import Template2GoldBlueFrame from './templates/Template2GoldBlueFrame';
 import Template3WaveRibbon from './templates/Template3WaveRibbon';
 import Template4ApwaClassic from './templates/Template4ApwaClassic';
+import UniversalIdCardBack from './UniversalIdCardBack';
+
+const renderFrontCard = (template, props) => {
+  if (template === 'template_2_gold_blue') {
+    return <Template2GoldBlueFrame {...props} />;
+  }
+  if (template === 'template_3_wave_ribbon') {
+    return <Template3WaveRibbon {...props} sideMode="front" />;
+  }
+  if (template === 'template_4_apwa_classic') {
+    return <Template4ApwaClassic {...props} />;
+  }
+  return <Template1CurveBlue {...props} />;
+};
 
 const UniversalIdCard = ({
   holder,
@@ -24,19 +38,34 @@ const UniversalIdCard = ({
     onToggleSelect,
   };
 
-  if (template === 'template_2_gold_blue') {
-    return <Template2GoldBlueFrame {...commonProps} />;
-  }
+  const renderContent = () => {
+    if (sideMode === 'back') {
+      if (template === 'template_3_wave_ribbon') {
+        return <Template3WaveRibbon {...commonProps} sideMode="back" />;
+      }
+      return <UniversalIdCardBack {...commonProps} />;
+    }
 
-  if (template === 'template_3_wave_ribbon') {
-    return <Template3WaveRibbon {...commonProps} sideMode={sideMode} />;
-  }
+    if (sideMode === 'both') {
+      if (template === 'template_3_wave_ribbon') {
+        return <Template3WaveRibbon {...commonProps} sideMode="both" />;
+      }
+      return (
+        <div className={`flex flex-col ${orientation === 'horizontal' ? 'xl:flex-row' : 'sm:flex-row'} gap-3 items-center justify-center print:flex-row print:gap-3`}>
+          {renderFrontCard(template, commonProps)}
+          <UniversalIdCardBack {...commonProps} />
+        </div>
+      );
+    }
 
-  if (template === 'template_4_apwa_classic') {
-    return <Template4ApwaClassic {...commonProps} />;
-  }
+    return renderFrontCard(template, commonProps);
+  };
 
-  return <Template1CurveBlue {...commonProps} />;
+  return (
+    <div className="print:break-inside-avoid">
+      {renderContent()}
+    </div>
+  );
 };
 
 export default UniversalIdCard;

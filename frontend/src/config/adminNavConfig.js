@@ -33,10 +33,7 @@ export const getAdminNavItems = (schoolType) => [
     title: 'Attendance',
     icon: CalendarCheck,
     subItems: [
-      { name: 'Student Attendance', path: '/admin/attendance/students' },
-      { name: 'Staff Attendance', path: '/admin/attendance/staff' },
-      { name: 'Leave Request', path: '/admin/attendance/leave-request' },
-      { name: 'Attendance Report', path: '/admin/attendance/report' }
+      { name: 'Attendance', path: '/admin/attendance/students' }
     ]
   },
   ...(schoolType === 'Private' ? [
@@ -91,8 +88,8 @@ export const getAdminNavItems = (schoolType) => [
     title: 'Messaging',
     icon: MessageSquare,
     subItems: [
-      { name: 'Notification Center', path: '/admin/notifications' },
-      { name: 'Internal Messenger & Chat', path: '/admin/messaging/chat' }
+      { name: 'Internal Messaging', path: '/admin/messaging/internal' },
+      { name: 'Notification Center', path: '/admin/notifications' }
     ]
   },
   {
@@ -245,10 +242,7 @@ export const getNavCategories = (user) => {
         title: 'Attendance',
         icon: CalendarCheck,
         subItems: [
-          { name: 'Student Attendance', path: '/admin/attendance/students' },
-          { name: 'Staff Attendance', path: '/admin/attendance/staff' },
-          { name: 'Employees Attendance', path: '/admin/attendance/employees' },
-          { name: 'Attendance Report', path: '/admin/attendance/report' }
+          { name: 'Attendance', path: '/admin/attendance/students' }
         ]
       });
     }
@@ -288,6 +282,18 @@ export const getNavCategories = (user) => {
         title: 'Reports',
         icon: BarChart3,
         subItems: repSubs
+      });
+    }
+
+    if (allowed.has('messaging') || allowed.has('messenger') || allowed.has('operations')) {
+      groups.push({
+        type: 'group',
+        title: 'Messaging',
+        icon: MessageSquare,
+        subItems: [
+          { name: 'Internal Messaging', path: '/admin/messaging/internal' },
+          { name: 'Notification Center', path: '/admin/notifications' }
+        ]
       });
     }
 
@@ -347,6 +353,7 @@ export const getNavCategories = (user) => {
     if (has('counseling')) subItems.push({ name: 'Counseling', path: '/teacher/counseling' });
     if (has('planner')) subItems.push({ name: 'Academic Planner', path: '/teacher/planner' });
     if (has('lost_and_found')) subItems.push({ name: 'Lost & Found', path: '/teacher/lost-and-found' });
+    subItems.push({ name: 'Messages', path: '/teacher/messages' });
 
     return [{
       type: 'group',
@@ -394,7 +401,7 @@ export const getAllAdminRoutes = () => {
     '/admin/control-panel/bulk-import', '/admin/bulk-import', '/admin/data-migration', '/admin/transport', '/admin/general-settings/transport',
     '/admin/van-management', '/admin/van-management/routes', '/admin/van-management/allocation',
     '/admin/student-portal-preview', '/admin/van/routes', '/admin/van/vehicles', '/admin/van/drivers', '/admin/van/allocation',
-    '/admin/messaging', '/admin/messaging/chat', '/admin/messaging/sms', '/admin/messaging/whatsapp', '/admin/messaging/email',
+    '/admin/messaging', '/admin/messaging/messages', '/admin/messaging/internal', '/admin/messages', '/teacher/messages', '/student/messages', '/admin/messaging/chat', '/admin/messaging/sms', '/admin/messaging/whatsapp', '/admin/messaging/email',
     '/admin/planners', '/admin/planners/academic-calendar', '/admin/planners/lesson-plans', '/admin/planners/activity-planner',
     '/admin/operations', '/admin/counseling',
     '/admin/settings/backup', '/admin/online-classes',
@@ -413,6 +420,7 @@ export const getAllAdminRoutes = () => {
 };
 
 export const getRouteTitle = (pathname) => {
+  if (pathname === '/admin/messaging/messages' || pathname === '/admin/messaging/internal' || pathname === '/admin/messages' || pathname === '/teacher/messages' || pathname === '/student/messages') return 'Internal Messaging Studio';
   if (pathname === '/admin') return 'Dashboard';
   if (pathname === '/admin/campus') return 'Campus Management';
   if (pathname === '/admin/subjects') return 'Subjects';

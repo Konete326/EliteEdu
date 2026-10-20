@@ -36,7 +36,7 @@ const getIssuedCertificates = async (req, res) => {
 
 const generateCertificate = async (req, res) => {
   try {
-    const { template_id, recipient_type, recipient_id, custom_text = '', design_style, orientation, accent_color, issue_date } = req.body;
+    const { template_id, recipient_type, recipient_id, custom_text = '', custom_heading = '', custom_body = '', design_style, orientation, accent_color, issue_date } = req.body;
     const schoolId = req.user.school_id;
     const [template, school] = await Promise.all([
       CertificateTemplate.findById(template_id),
@@ -47,7 +47,10 @@ const generateCertificate = async (req, res) => {
     const rec = await resolveRecipient(schoolId, recipient_type, recipient_id);
     if (!rec) return res.status(404).json({ success: false, message: `${recipient_type} not found` });
 
-    const resolvedBody = resolvePlaceholders(template.body_template, rec.entity, recipient_type, custom_text, school?.name);
+    const resolvedBody = custom_body && custom_body.trim()
+      ? custom_body.trim()
+      : resolvePlaceholders(template.body_template, rec.entity, recipient_type, custom_text, school?.name);
+    const heading = custom_heading && custom_heading.trim() ? custom_heading.trim() : template.heading;
     const certNo = await getNextCertificateNumber(schoolId);
 
     const certificate = await IssuedCertificate.create({
@@ -56,7 +59,7 @@ const generateCertificate = async (req, res) => {
       certificate_no: certNo,
       template_id: template._id,
       template_name: template.name,
-      heading: template.heading,
+      heading,
       design_style: design_style || template.design_style || 'academic_gold_hatch',
       orientation: orientation || template.orientation || 'landscape',
       accent_color: accent_color || template.accent_color || '#b59449',

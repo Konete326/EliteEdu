@@ -1,6 +1,5 @@
 import React from 'react';
 import OfficialSignatureStampBlock from '../../../common/OfficialSignatureStampBlock';
-import { renderSvgQrCode } from '../../../../utils/idCardCodeGenerator';
 
 const Design1AcademicGoldHatch = ({
   certificateNo = 'CERT-2026-0001',
@@ -10,15 +9,16 @@ const Design1AcademicGoldHatch = ({
   recipient = {},
   recipientType = 'Student',
   customText = '',
+  customHeading = '',
+  customBody = '',
   resolvedBody = '',
   issueDate = new Date().toISOString().split('T')[0],
-  orientation = 'portrait'
+  orientation = 'landscape'
 }) => {
   const isPortrait = orientation === 'portrait';
   const schoolName = (school.name || campus.name || 'ELITE EDUCATIONAL SYSTEM').toUpperCase();
   const campusSub = campus.name ? `${campus.name} ${school.slogan ? `• ${school.slogan}` : ''}` : (school.slogan || 'Excellence in Education');
   const logo = school.logo_url || campus.logo || '/logo.png';
-  const verifyUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/verify/certificate/${certificateNo}`;
   const recipientName = recipient.name || 'Recipient Full Name';
 
   return (
@@ -50,13 +50,13 @@ const Design1AcademicGoldHatch = ({
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-serif italic text-slate-800 tracking-wide underline decoration-[#b59449]/40 underline-offset-4">
             {recipientName}
           </h3>
-          <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium italic">for successfully completing / distinguished excellence</p>
+          <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium italic">in recognition of honorable merit, exemplary conduct, and institutional standing</p>
           <div className="max-w-xl mx-auto px-4">
             <h4 className="text-sm sm:text-base font-bold text-[#7c4d25] uppercase tracking-wide">
-              {template.heading || 'Pre & Primary Educational Training'}
+              {customHeading || template.heading || 'SCHOOL LEAVING CERTIFICATE'}
             </h4>
             <p className="text-[10px] sm:text-xs text-slate-700 font-medium leading-relaxed mt-1 line-clamp-3">
-              {resolvedBody || template.body_template || `Recognized for meritorious dedication and exemplary scholastic achievement in ${customText}.`}
+              {customBody || resolvedBody || template.body_template || `Recognized for meritorious dedication and exemplary scholastic achievement in ${customText}.`}
             </p>
           </div>
         </div>
@@ -76,10 +76,7 @@ const Design1AcademicGoldHatch = ({
           </div>
           <div className="flex items-center justify-between text-[8px] text-slate-500 px-1 border-t border-slate-200 pt-1 font-mono">
             <span>Validation: <strong className="text-slate-700">{certificateNo}</strong></span>
-            <div className="flex items-center gap-1.5">
-              <div className="w-5 h-5 bg-white p-0.5 border border-slate-300 rounded">{renderSvgQrCode(verifyUrl, 18)}</div>
-              <span className="font-sans font-bold text-slate-400">Powered by EliteEdu</span>
-            </div>
+            <span className="font-sans font-bold text-slate-400">Powered by EliteEdu</span>
           </div>
         </div>
       </div>

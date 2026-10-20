@@ -5,7 +5,7 @@ const { getTeacherAllowedGradeIds, verifyClassAccess } = require('../utils/atten
 const getAllowedClasses = async (req, res) => {
   try {
     const classes = await getTeacherAllowedGradeIds(req.user);
-    res.status(200).json({ success: true, classes });
+    res.status(200).json({ success: true, classes, grades: classes, data: classes });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -20,20 +20,20 @@ const getAttendanceSheet = async (req, res) => {
     if (!hasAccess) return res.status(403).json({ success: false, message: 'Access denied to this class' });
 
     const studentFilter = { school_id: req.user.school_id, current_grade: grade_id, status: 'Active' };
-    if (section) studentFilter.current_section = section;
+    if (section && section !== 'ALL') {
+      studentFilter.current_section = new RegExp(`^${String(section).trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+    }
     if (campus_id) studentFilter.campus_id = campus_id;
+
+    const attFilter = { school_id: req.user.school_id, grade_id, date };
+    if (section && section !== 'ALL') attFilter.section = section;
 
     const [students, attendanceRecords] = await Promise.all([
       Student.find(studentFilter)
         .select('name father_name gr_number serial_no photo_url current_grade current_section campus_id')
         .sort({ name: 1 })
         .lean(),
-      StudentAttendance.find({
-        school_id: req.user.school_id,
-        grade_id,
-        section,
-        date
-      }).lean()
+      StudentAttendance.find(attFilter).lean()
     ]);
 
     const recordMap = new Map(attendanceRecords.map((r) => [String(r.student_id), r]));

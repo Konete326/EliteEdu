@@ -15,6 +15,15 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+let originalPrintTitle = '';
+window.addEventListener('beforeprint', () => {
+  originalPrintTitle = document.title;
+  document.title = '';
+});
+window.addEventListener('afterprint', () => {
+  document.title = originalPrintTitle;
+});
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />

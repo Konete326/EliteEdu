@@ -52,11 +52,47 @@ const CameraScannerModal = ({
     }
   }, [feedback]);
 
+  const handleClose = () => {
+    try {
+      const videos = document.querySelectorAll('video');
+      videos.forEach((v) => {
+        if (v.srcObject && typeof v.srcObject.getTracks === 'function') {
+          v.srcObject.getTracks().forEach((t) => t.stop());
+          v.srcObject = null;
+        }
+      });
+    } catch (_) {}
+    onClose();
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen) handleClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
+  useEffect(() => {
+    return () => {
+      try {
+        const videos = document.querySelectorAll('video');
+        videos.forEach((v) => {
+          if (v.srcObject && typeof v.srcObject.getTracks === 'function') {
+            v.srcObject.getTracks().forEach((t) => t.stop());
+            v.srcObject = null;
+          }
+        });
+      } catch (_) {}
+    };
+  }, []);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div className="fixed inset-0" onClick={handleClose} />
+      <div className="relative w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto z-10">
         <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-primary/10 text-primary">
@@ -67,7 +103,7 @@ const CameraScannerModal = ({
               <p className="text-[11px] text-slate-500">{subtitle}</p>
             </div>
           </div>
-          <button type="button" onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white">
+          <button type="button" onClick={handleClose} className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>

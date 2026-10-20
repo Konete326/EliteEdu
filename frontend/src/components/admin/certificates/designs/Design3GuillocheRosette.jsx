@@ -10,6 +10,8 @@ const Design3GuillocheRosette = ({
   recipient = {},
   recipientType = 'Student',
   customText = '',
+  customHeading = '',
+  customBody = '',
   resolvedBody = '',
   issueDate = new Date().toISOString().split('T')[0],
   orientation = 'landscape'
@@ -34,7 +36,7 @@ const Design3GuillocheRosette = ({
             </div>
           </div>
           <h1 className="text-lg sm:text-2xl md:text-3xl font-extrabold tracking-widest uppercase text-slate-900 font-sans">
-            {template.heading || 'TEACHER OF THE YEAR CERTIFICATE'}
+            {customHeading || template.heading || 'TEACHER OF THE YEAR CERTIFICATE'}
           </h1>
           <p className="text-[10px] sm:text-xs font-semibold tracking-wide text-slate-600">
             {template.sub_heading || 'This certificate is proudly presented to'}
@@ -47,7 +49,7 @@ const Design3GuillocheRosette = ({
           </h2>
           <div className="max-w-2xl mx-auto px-4">
             <p className="text-[11px] sm:text-xs md:text-sm text-slate-700 leading-relaxed font-normal">
-              {resolvedBody || template.body_template || `Awarded for exceptional leadership in educational reform, pedagogy, and outstanding contributions in ${customText}.`}
+              {customBody || resolvedBody || template.body_template || `Awarded for exceptional leadership in educational reform, pedagogy, and outstanding contributions in ${customText}.`}
             </p>
           </div>
           <div className="text-[10px] sm:text-[11px] font-mono text-slate-600 space-y-0.5">

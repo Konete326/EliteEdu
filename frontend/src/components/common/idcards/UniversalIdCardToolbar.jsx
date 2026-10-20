@@ -7,7 +7,7 @@ const TEMPLATES = [
   { id: 'template_4_apwa_classic', label: 'T4: APWA Classic' },
 ];
 
-const COLORS = ['#0284C7', '#E11D48', '#EA580C', '#0D9488'];
+const COLORS = ['#003B73', '#0284C7', '#059669', '#E11D48', '#EA580C', '#7C3AED'];
 
 const UniversalIdCardToolbar = ({
   template = 'template_1_curve_blue',
@@ -47,7 +47,7 @@ const UniversalIdCardToolbar = ({
                 orientation === 'vertical' ? 'bg-surface dark:bg-[#1e1e24] text-ink font-bold shadow-sm' : 'text-ink-muted'
               }`}
             >
-              Vertical (8/A4)
+              Vertical (3/A4)
             </button>
             <button
               onClick={() => onOrientationChange('horizontal')}
@@ -59,33 +59,42 @@ const UniversalIdCardToolbar = ({
             </button>
           </div>
 
-          {template === 'template_3_wave_ribbon' && (
-            <div className="flex items-center gap-1.5 pl-2 border-l border-line">
-              {COLORS.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => onAccentColorChange(c)}
-                  style={{ backgroundColor: c }}
-                  className={`w-5 h-5 rounded-full transition-transform ${
-                    accentColor === c ? 'scale-125 ring-2 ring-offset-1 ring-blue-500' : 'opacity-80 hover:opacity-100'
-                  }`}
-                />
-              ))}
-              <div className="flex items-center bg-surface-secondary p-0.5 rounded-md text-[10px] ml-1">
-                {['front', 'back', 'both'].map((m) => (
-                  <button
-                    key={m}
-                    onClick={() => onSideModeChange(m)}
-                    className={`px-1.5 py-0.5 capitalize rounded ${
-                      sideMode === m ? 'bg-surface dark:bg-[#1e1e24] font-bold text-ink' : 'text-ink-muted'
-                    }`}
-                  >
-                    {m}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          <div className="flex items-center bg-surface-secondary p-1 rounded-lg text-xs font-medium">
+            {['front', 'back', 'both'].map((m) => (
+              <button
+                key={m}
+                onClick={() => onSideModeChange(m)}
+                className={`px-2.5 py-1 capitalize rounded-md transition-all ${
+                  sideMode === m ? 'bg-surface dark:bg-[#1e1e24] font-bold text-ink shadow-sm' : 'text-ink-muted'
+                }`}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-1.5 pl-2 border-l border-line">
+            {COLORS.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => onAccentColorChange(c)}
+                style={{ backgroundColor: c }}
+                className={`w-5 h-5 rounded-full transition-transform ${
+                  accentColor === c ? 'scale-125 ring-2 ring-offset-1 ring-blue-500' : 'opacity-80 hover:opacity-100'
+                }`}
+              />
+            ))}
+            <label className="relative flex items-center justify-center w-5 h-5 rounded-full cursor-pointer overflow-hidden border border-line shadow-2xs hover:scale-110 transition-transform" title="Custom Color">
+              <input
+                type="color"
+                value={accentColor || '#003B73'}
+                onChange={(e) => onAccentColorChange(e.target.value)}
+                className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
+              />
+              <span className="w-full h-full" style={{ backgroundColor: accentColor }} />
+            </label>
+          </div>
         </div>
       </div>
 

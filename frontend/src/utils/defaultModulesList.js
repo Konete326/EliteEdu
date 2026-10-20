@@ -43,7 +43,8 @@ export const DEFAULT_MODULES = [
   { module_key: 'transport', module_name: 'Transport & Fleet Management', category: 'Operations' },
   { module_key: 'van_management', module_name: 'Van & Transport Management', category: 'Operations' },
   { module_key: 'student_portal', module_name: 'Student & Parent Portal', category: 'Academics' },
-  { module_key: 'messenger', module_name: 'Internal Staff Messenger', category: 'Communications' }
+  { module_key: 'messenger', module_name: 'Internal Staff Messenger', category: 'Communications' },
+  { module_key: 'messaging', module_name: 'Messaging & Group Studio', category: 'Communications' }
 ];
 
 export const getInitialPermissions = (rolePermissions = []) => {
