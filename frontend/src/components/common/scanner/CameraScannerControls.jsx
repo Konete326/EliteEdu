@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Flashlight, FlashlightOff, Image, SwitchCamera, CheckSquare, Square, Zap } from 'lucide-react';
+import { Flashlight, FlashlightOff, Image, SwitchCamera, CheckSquare, Square } from 'lucide-react';
 
 const CameraScannerControls = ({
   cameras = [],
@@ -10,8 +10,7 @@ const CameraScannerControls = ({
   onToggleTorch,
   onScanFile,
   continuous,
-  onToggleContinuous,
-  onSimulateScan
+  onToggleContinuous
 }) => {
   const fileInputRef = useRef(null);
 
@@ -69,18 +68,6 @@ const CameraScannerControls = ({
             <Image className="w-3.5 h-3.5 text-primary" />
             <span>Image</span>
           </button>
-
-          {onSimulateScan && (
-            <button
-              type="button"
-              onClick={onSimulateScan}
-              className="px-2.5 py-1.5 rounded-xl border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 text-xs font-bold flex items-center gap-1 cursor-pointer"
-              title="Simulate instant scan for desktop testing without physical card"
-            >
-              <Zap className="w-3.5 h-3.5 text-primary" />
-              <span>Test Scan</span>
-            </button>
-          )}
         </div>
       </div>
 

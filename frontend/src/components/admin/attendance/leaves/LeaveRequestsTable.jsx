@@ -5,7 +5,7 @@ import LeaveRequestRow from './LeaveRequestRow';
 const LeaveRequestsTable = ({
   leaves = [], pagination = {}, search = '', onSearchChange,
   statusFilter = 'all', onStatusChange, applicantFilter = 'all', onApplicantChange,
-  onApprove, onReject, onPrint, onDelete, isProcessing, onPageChange
+  onApprove, onReject, onPrint, onDelete, onWhatsApp, isProcessing, onPageChange
 }) => {
   return (
     <div className="rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs overflow-hidden flex flex-col flex-1 min-h-0">
@@ -75,6 +75,7 @@ const LeaveRequestsTable = ({
                   onReject={onReject}
                   onPrint={onPrint}
                   onDelete={onDelete}
+                  onWhatsApp={onWhatsApp}
                   isProcessing={isProcessing}
                 />
               ))

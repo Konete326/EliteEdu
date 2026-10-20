@@ -4,6 +4,8 @@ import { ChevronDown, ArrowRightLeft, Calendar, FileSpreadsheet, Sun, Trash2, Ar
 const StaffAttendanceFilterBar = ({
   department,
   onDepartmentChange,
+  departmentCounts = {},
+  departmentList = [],
   date,
   onDateChange,
   search,
@@ -21,31 +23,41 @@ const StaffAttendanceFilterBar = ({
   loaded
 }) => {
   return (
-    <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-4 shadow-xs space-y-3">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
-        <div className="lg:col-span-4">
-          <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1.5">
+    <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-3 sm:p-4 shadow-xs space-y-2.5 sm:space-y-3">
+      <div className="grid grid-cols-2 lg:grid-cols-12 gap-2.5 sm:gap-3 items-end">
+        <div className="col-span-1 lg:col-span-4">
+          <label className="block text-[11px] sm:text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
             Department
           </label>
           <div className="relative">
             <select
               value={department}
               onChange={(e) => onDepartmentChange(e.target.value)}
-              className="w-full appearance-none bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-3.5 py-2 text-xs font-medium text-ink dark:text-ink-dark outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer"
+              className="w-full appearance-none bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-3 sm:px-3.5 py-2 text-xs font-medium text-ink dark:text-ink-dark outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer"
             >
-              <option value="ALL">All Departments</option>
-              <option value="Academic">Academic</option>
-              <option value="Administration">Administration</option>
-              <option value="Accounts">Accounts & Finance</option>
-              <option value="Transport">Transport</option>
-              <option value="Support Staff">Support Staff</option>
+              <option value="ALL">All Departments ({departmentCounts.ALL || 0})</option>
+              {departmentList.length > 0 ? (
+                departmentList.map((dept) => (
+                  <option key={dept} value={dept}>
+                    {dept} ({departmentCounts[dept] || 0})
+                  </option>
+                ))
+              ) : (
+                <>
+                  <option value="Academic">Academic ({departmentCounts.Academic || 0})</option>
+                  <option value="Administration">Administration ({departmentCounts.Administration || 0})</option>
+                  <option value="Accounts">Accounts & Finance ({departmentCounts.Accounts || 0})</option>
+                  <option value="Transport">Transport ({departmentCounts.Transport || 0})</option>
+                  <option value="Support Staff">Support Staff ({departmentCounts['Support Staff'] || 0})</option>
+                </>
+              )}
             </select>
             <ChevronDown className="w-4 h-4 text-ink-muted absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
 
-        <div className="lg:col-span-2">
-          <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1.5">
+        <div className="col-span-1 lg:col-span-2">
+          <label className="block text-[11px] sm:text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
             Date
           </label>
           <input
@@ -53,11 +65,11 @@ const StaffAttendanceFilterBar = ({
             value={date}
             onClick={(e) => e.target.showPicker && e.target.showPicker()}
             onChange={(e) => onDateChange(e.target.value)}
-            className="w-full bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-3.5 py-2 text-xs font-medium text-ink dark:text-ink-dark outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer"
+            className="w-full bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-3 sm:px-3.5 py-2 text-xs font-medium text-ink dark:text-ink-dark outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer"
           />
         </div>
 
-        <div className="lg:col-span-6 flex items-center justify-end gap-2 flex-wrap">
+        <div className="col-span-2 lg:col-span-6 flex items-center justify-end gap-1.5 sm:gap-2 flex-wrap">
           <button
             type="button"
             onClick={onShow}

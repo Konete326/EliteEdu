@@ -11,7 +11,11 @@ export const ThemeProvider = ({ children }) => {
   const [settings, setSettings] = useState(() => {
     try {
       const c = localStorage.getItem('elite_theme_settings');
-      return c ? { ...DEFAULT_THEME, ...JSON.parse(c) } : DEFAULT_THEME;
+      const parsed = c ? { ...DEFAULT_THEME, ...JSON.parse(c) } : DEFAULT_THEME;
+      if (parsed.activeColor === '#4f46e5') {
+        parsed.activeColor = DEFAULT_THEME.activeColor;
+      }
+      return parsed;
     } catch {
       return DEFAULT_THEME;
     }
@@ -85,8 +89,6 @@ export const ThemeProvider = ({ children }) => {
         const next = { ...prev, [key]: value };
         if (key === 'headerBg') {
           next.sidebarBg = value;
-          const match = HEADER_BG_PRESETS.find((p) => p.id === value);
-          if (match?.activeColor) next.activeColor = match.activeColor;
         }
         localStorage.setItem('elite_theme_settings', JSON.stringify(next));
         if (key === 'mode') localStorage.setItem('theme', value);

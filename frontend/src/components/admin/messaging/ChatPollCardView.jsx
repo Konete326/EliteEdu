@@ -1,56 +1,74 @@
 import React, { useState } from 'react';
-import { Check, Vote } from 'lucide-react';
+import { Check, BarChart3 } from 'lucide-react';
 
 const ChatPollCardView = ({ message, card, currentUserId, onFormSubmit }) => {
   const [submitting, setSubmitting] = useState(false);
-  const myVote = card.submissions?.find((s) => String(s.user_id) === String(currentUserId));
-  const hasVoted = Boolean(myVote);
-  const totalVotes = card.total_votes || 0;
+  const serverVote = card.submissions?.find((s) => String(s.user_id) === String(currentUserId))?.option_key;
+  const [optimisticVote, setOptimisticVote] = useState(null);
+
+  const activeVoteKey = optimisticVote !== null ? optimisticVote : serverVote;
+  const hasVoted = Boolean(activeVoteKey);
+
+  let totalVotes = card.total_votes || 0;
+  if (optimisticVote !== null && !serverVote) totalVotes += 1;
 
   const handleVote = async (key) => {
-    if (submitting || card.is_closed) return;
+    if (submitting || card.is_closed || key === activeVoteKey) return;
+    setOptimisticVote(key);
     setSubmitting(true);
     try {
       await onFormSubmit(message._id, { option_key: key });
+    } catch {
+      setOptimisticVote(serverVote || null);
     } finally {
       setSubmitting(false);
     }
   };
 
+  const getOptionCount = (opt) => {
+    let count = opt.vote_count || 0;
+    if (optimisticVote !== null && optimisticVote !== serverVote) {
+      if (opt.key === optimisticVote) count += 1;
+      if (opt.key === serverVote && count > 0) count -= 1;
+    }
+    return count;
+  };
+
   return (
     <div className="space-y-2 mt-2">
       {card.poll_options?.map((opt) => {
-        const isMyChoice = myVote?.option_key === opt.key;
-        const pct = totalVotes > 0 ? Math.round(((opt.vote_count || 0) / totalVotes) * 100) : 0;
+        const isMyChoice = activeVoteKey === opt.key;
+        const optCount = getOptionCount(opt);
+        const pct = totalVotes > 0 ? Math.round((optCount / totalVotes) * 100) : 0;
 
         return (
           <button
             key={opt.key}
             type="button"
-            disabled={submitting || card.is_closed}
+            disabled={card.is_closed}
             onClick={() => handleVote(opt.key)}
             className={`relative w-full text-left p-2.5 rounded-xl border transition-all overflow-hidden ${
               isMyChoice
-                ? 'border-indigo-500 bg-indigo-50/70 dark:bg-indigo-950/60 font-semibold'
-                : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-800'
+                ? 'border-primary bg-primary/10 font-semibold'
+                : 'border-line dark:border-line-dark hover:border-line-secondary bg-surface dark:bg-surface-secondary-dark'
             }`}
           >
             {hasVoted && (
               <div
-                className={`absolute inset-y-0 left-0 opacity-20 pointer-events-none transition-all duration-500 ${
-                  isMyChoice ? 'bg-indigo-600 dark:bg-indigo-400' : 'bg-slate-400 dark:bg-slate-500'
+                className={`absolute inset-y-0 left-0 opacity-20 pointer-events-none transition-all duration-300 ${
+                  isMyChoice ? 'bg-primary' : 'bg-line-secondary dark:bg-line-dark'
                 }`}
                 style={{ width: `${pct}%` }}
               />
             )}
             <div className="relative z-10 flex items-center justify-between text-xs gap-2">
               <div className="flex items-center gap-1.5 min-w-0">
-                {isMyChoice && <Check className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />}
-                <span className="truncate text-slate-800 dark:text-slate-100">{opt.text}</span>
+                {isMyChoice && <Check className="w-3.5 h-3.5 text-primary shrink-0" />}
+                <span className="truncate text-ink dark:text-ink-dark">{opt.text}</span>
               </div>
               {hasVoted && (
-                <span className="text-[11px] font-bold text-slate-500 shrink-0">
-                  {pct}% ({opt.vote_count || 0})
+                <span className="text-[11px] font-bold text-ink-muted shrink-0">
+                  {pct}% ({optCount})
                 </span>
               )}
             </div>
@@ -58,9 +76,9 @@ const ChatPollCardView = ({ message, card, currentUserId, onFormSubmit }) => {
         );
       })}
 
-      <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 px-1">
+      <div className="flex items-center justify-between text-[10px] text-ink-muted pt-1 px-1">
         <span className="flex items-center gap-1">
-          <Vote className="w-3 h-3" />
+          <BarChart3 className="w-3 h-3 text-primary" />
           {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'} total
         </span>
         {hasVoted ? (

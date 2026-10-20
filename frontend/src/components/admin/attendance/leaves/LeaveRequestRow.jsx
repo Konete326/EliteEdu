@@ -1,7 +1,15 @@
 import React from 'react';
-import { Check, X, Printer, Trash2, Calendar, User, GraduationCap } from 'lucide-react';
+import { Check, X, Printer, Trash2, User, GraduationCap, MessageCircle } from 'lucide-react';
 
-const LeaveRequestRow = ({ leave, onApprove, onReject, onPrint, onDelete, isProcessing }) => {
+const LeaveRequestRow = ({
+  leave,
+  onApprove,
+  onReject,
+  onPrint,
+  onDelete,
+  onWhatsApp,
+  isProcessing
+}) => {
   const isStudent = leave.applicant_type === 'Student';
   const name = isStudent ? leave.student_id?.name : leave.staff_id?.name;
   const photo = isStudent ? leave.student_id?.photo_url : leave.staff_id?.photo_url;
@@ -11,6 +19,21 @@ const LeaveRequestRow = ({ leave, onApprove, onReject, onPrint, onDelete, isProc
     Pending: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
     Approved: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
     Rejected: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
+  };
+
+  const handleWhatsAppClick = () => {
+    if (onWhatsApp) {
+      onWhatsApp(leave);
+      return;
+    }
+    const rawPhone = isStudent
+      ? (leave.student_id?.contact_number || leave.student_id?.emergency_contact_no || '')
+      : (leave.staff_id?.phone || leave.staff_id?.contact_number || '');
+    let cleanPhone = String(rawPhone).replace(/[^0-9]/g, '');
+    if (!cleanPhone) return;
+    if (cleanPhone.startsWith('0')) cleanPhone = '92' + cleanPhone.slice(1);
+    const text = `Assalam-o-Alaikum ${name || 'Applicant'},\n\nYour Leave Application (${leave.leave_type}) from ${leave.from_date} to ${leave.to_date} (${leave.total_days} Day(s)) is: ${leave.status.toUpperCase()}.\nReason: ${leave.reason}\n\nElite Educational Institution`;
+    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -51,18 +74,48 @@ const LeaveRequestRow = ({ leave, onApprove, onReject, onPrint, onDelete, isProc
         <div className="flex items-center justify-end gap-1">
           {leave.status === 'Pending' && (
             <>
-              <button disabled={isProcessing} onClick={() => onApprove(leave)} className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white transition-colors cursor-pointer" title="Approve & Sync Attendance">
+              <button
+                type="button"
+                disabled={isProcessing}
+                onClick={() => onApprove(leave)}
+                className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white transition-colors cursor-pointer"
+                title="Approve & Sync Attendance"
+              >
                 <Check size={13} />
               </button>
-              <button disabled={isProcessing} onClick={() => onReject(leave)} className="p-1.5 rounded-lg bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white transition-colors cursor-pointer" title="Reject Application">
+              <button
+                type="button"
+                disabled={isProcessing}
+                onClick={() => onReject(leave)}
+                className="p-1.5 rounded-lg bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white transition-colors cursor-pointer"
+                title="Reject Application"
+              >
                 <X size={13} />
               </button>
             </>
           )}
-          <button onClick={() => onPrint(leave)} className="p-1.5 rounded-lg border border-line hover:bg-surface-secondary text-ink-muted cursor-pointer" title="Print Leave Slip">
+          <button
+            type="button"
+            onClick={handleWhatsAppClick}
+            className="p-1.5 rounded-lg border border-line hover:bg-emerald-500/10 hover:text-emerald-600 text-ink-muted transition-colors cursor-pointer"
+            title="Notify via WhatsApp"
+          >
+            <MessageCircle size={13} />
+          </button>
+          <button
+            type="button"
+            onClick={() => onPrint(leave)}
+            className="p-1.5 rounded-lg border border-line hover:bg-surface-secondary text-ink-muted cursor-pointer"
+            title="Print Leave Slip"
+          >
             <Printer size={13} />
           </button>
-          <button onClick={() => onDelete(leave)} className="p-1.5 rounded-lg border border-line hover:bg-rose-50 hover:text-rose-600 text-ink-muted cursor-pointer" title="Delete">
+          <button
+            type="button"
+            onClick={() => onDelete(leave)}
+            className="p-1.5 rounded-lg border border-line hover:bg-rose-50 hover:text-rose-600 text-ink-muted cursor-pointer"
+            title="Delete"
+          >
             <Trash2 size={13} />
           </button>
         </div>

@@ -14,7 +14,7 @@ const getLeaveRequests = async (req, res) => {
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit)
-        .populate('student_id', 'name father_name gr_number current_grade current_section photo_url')
+        .populate('student_id', 'name father_name gr_number current_grade current_section photo_url contact_number emergency_contact_no')
         .populate('staff_id', 'name designation bps_grade employee_code photo_url phone email')
         .populate('grade_id', 'name')
         .populate('reviewed_by', 'name')

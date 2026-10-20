@@ -16,47 +16,47 @@ const ConversationItem = ({ conversation, isActive, onSelect, onToggleFavorite }
   return (
     <div
       onClick={() => onSelect(conversation._id)}
-      className={`group px-3.5 py-3 flex items-start gap-3 cursor-pointer transition-all border-b border-slate-100 dark:border-slate-800/60 ${
+      className={`group px-3.5 py-3 flex items-start gap-3 cursor-pointer transition-all border-b border-line dark:border-line-dark ${
         isActive
-          ? 'bg-slate-100/90 dark:bg-slate-800/90 border-l-4 border-l-[#1e1b4b]'
-          : 'hover:bg-slate-50 dark:hover:bg-slate-800/40'
+          ? 'bg-primary/10 border-l-4 border-l-primary'
+          : 'hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark/60'
       }`}
     >
       <div className="relative shrink-0">
-        {conversation.is_group ? (
-          <div className="w-11 h-11 rounded-full bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">
-            <Users className="w-5 h-5" />
-          </div>
-        ) : conversation.avatar_url ? (
+        {conversation.avatar_url ? (
           <img
             src={conversation.avatar_url}
             alt={conversation.title}
-            className="w-11 h-11 rounded-full object-cover border border-slate-200 dark:border-slate-700"
+            className="w-11 h-11 rounded-full object-cover border border-line dark:border-line-dark"
           />
+        ) : conversation.is_group ? (
+          <div className="w-11 h-11 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold">
+            <Users className="w-5 h-5" />
+          </div>
         ) : (
-          <div className="w-11 h-11 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center font-bold text-slate-700 dark:text-slate-200 text-sm">
+          <div className="w-11 h-11 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-bold text-sm">
             {conversation.title ? conversation.title.slice(0, 2).toUpperCase() : 'U'}
           </div>
         )}
         {!conversation.is_group && (
-          <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-slate-800 ${conversation.is_online ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+          <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-surface dark:border-surface-dark ${conversation.is_online ? 'bg-emerald-500' : 'bg-rose-500'}`} />
         )}
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-1 mb-0.5">
-          <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+          <h4 className="text-xs font-bold text-ink dark:text-ink-dark truncate">
             {conversation.title}
           </h4>
-          <span className="text-[10px] text-slate-400 font-medium shrink-0">
+          <span className="text-[10px] text-ink-muted dark:text-ink-muted-dark font-medium shrink-0">
             {formatTime(conversation.last_message_at)}
           </span>
         </div>
 
         <div className="flex items-center justify-between gap-2">
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate flex-1">
+          <p className="text-[11px] text-ink-sub dark:text-ink-sub-dark truncate flex-1">
             {conversation.last_message_text || (
-              <span className="italic text-slate-400">No messages yet</span>
+              <span className="italic text-ink-muted">No messages yet</span>
             )}
           </p>
 
@@ -75,7 +75,7 @@ const ConversationItem = ({ conversation, isActive, onSelect, onToggleFavorite }
               className={`p-1 rounded-md transition-colors ${
                 conversation.is_favorite
                   ? 'text-amber-400 hover:text-amber-500'
-                  : 'text-slate-300 dark:text-slate-600 hover:text-slate-400'
+                  : 'text-ink-muted/50 hover:text-ink-muted'
               }`}
               title={conversation.is_favorite ? 'Favorited' : 'Favorite'}
             >

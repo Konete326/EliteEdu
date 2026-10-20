@@ -14,7 +14,7 @@ const ComposerCannedStrip = ({ onSelect }) => (
         key={pill}
         type="button"
         onClick={() => onSelect(pill)}
-        className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 whitespace-nowrap transition-colors"
+        className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-surface-secondary hover:bg-surface-secondary/80 dark:bg-surface-secondary-dark border border-line dark:border-line-dark text-ink-sub dark:text-ink-sub-dark whitespace-nowrap transition-colors"
       >
         {pill}
       </button>

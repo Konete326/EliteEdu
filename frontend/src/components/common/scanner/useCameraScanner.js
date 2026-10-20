@@ -22,6 +22,7 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
 
   const scannerRef = useRef(null);
   const isCooldownRef = useRef(false);
+  const isStartingRef = useRef(false);
 
   const stopScanner = useCallback(async () => {
     const scanner = scannerRef.current;
@@ -46,6 +47,7 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
     setIsReady(false);
     setIsTorchOn(false);
     scannerRef.current = null;
+    isStartingRef.current = false;
   }, [containerId]);
 
   const handleDecoded = useCallback(async (decodedText) => {
@@ -65,9 +67,23 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
   }, [onScan, continuous, cooldownMs]);
 
   const startScanner = useCallback(async () => {
-    if (!isActive || !containerId) return;
+    if (!isActive || !containerId || isStartingRef.current) return;
+    isStartingRef.current = true;
     setCameraError('');
     await stopScanner();
+
+    if (typeof navigator !== 'undefined' && (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)) {
+      setCameraError('Camera access requires a secure HTTPS connection or localhost permissions.');
+      isStartingRef.current = false;
+      return;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 80));
+    const containerEl = document.getElementById(containerId);
+    if (!containerEl) {
+      isStartingRef.current = false;
+      return;
+    }
 
     try {
       const scanner = new Html5Qrcode(containerId, {
@@ -76,27 +92,33 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
       });
       scannerRef.current = scanner;
 
-      const devices = await Html5Qrcode.getCameras().catch(() => []);
-      setCameras(devices);
-
-      const targetCamera = selectedCameraId || (devices.length > 0 ? devices[0].id : { facingMode: 'environment' });
+      const cameraConfig = selectedCameraId
+        ? { deviceId: { exact: selectedCameraId } }
+        : { facingMode: 'environment' };
 
       await scanner.start(
-        targetCamera,
+        cameraConfig,
         {
-          fps: 15,
+          fps: 12,
           qrbox: (w, h) => {
-            const min = Math.min(w, h);
-            const size = Math.floor(min * 0.75);
-            return { width: size, height: Math.floor(size * 0.7) };
-          },
-          aspectRatio: 1.0
+            const edge = Math.min(w, h);
+            const size = Math.max(160, Math.min(Math.floor(edge * 0.75), 260));
+            return { width: size, height: size };
+          }
         },
         handleDecoded,
         () => {}
       );
 
       setIsReady(true);
+
+      Html5Qrcode.getCameras()
+        .then((devices) => {
+          if (Array.isArray(devices) && devices.length > 0) {
+            setCameras(devices);
+          }
+        })
+        .catch(() => {});
 
       try {
         const capabilities = scanner.getRunningTrackCameraCapabilities?.();
@@ -105,8 +127,10 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
         setHasTorch(false);
       }
     } catch (err) {
-      setCameraError(err?.message || 'Unable to access camera. Please allow camera permissions.');
+      setCameraError(err?.message || 'Unable to access camera. Please verify permissions in browser.');
       setIsReady(false);
+    } finally {
+      isStartingRef.current = false;
     }
   }, [isActive, containerId, selectedCameraId, handleDecoded, stopScanner]);
 

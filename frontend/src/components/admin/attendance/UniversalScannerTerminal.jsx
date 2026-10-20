@@ -7,8 +7,6 @@ const UniversalScannerTerminal = ({
   title = 'Card Scanner Terminal',
   subtitle = 'Scan Barcode / QR Code or enter ID and press Enter',
   placeholder = 'Scan ID card QR code / Barcode or enter code...',
-  demoCode = '',
-  demoLabel = 'Demo Code',
   cameraTitle = 'Attendance Camera Scanner',
   cameraSubtitle = 'Align ID card QR code or Barcode within the frame',
   onScanCode,
@@ -69,16 +67,6 @@ const UniversalScannerTerminal = ({
               />
             </div>
             <div className="flex items-center gap-2">
-              {demoCode && (
-                <button
-                  type="button"
-                  onClick={() => setCode(demoCode)}
-                  className="px-3 py-2.5 rounded-xl text-xs font-bold border border-line hover:bg-surface-secondary text-ink-muted transition-all cursor-pointer hidden sm:flex items-center gap-1 shrink-0"
-                  title={`Fill sample ${demoCode} for test`}
-                >
-                  <span>{demoLabel}</span>
-                </button>
-              )}
               <button
                 type="button"
                 onClick={() => setIsCameraOpen(true)}
@@ -108,11 +96,11 @@ const UniversalScannerTerminal = ({
         )}
       </div>
 
-      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-4 overflow-hidden">
-        <div className="lg:col-span-7 overflow-y-auto">
+      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch overflow-hidden">
+        <div className="lg:col-span-7 flex flex-col min-h-0 h-full overflow-hidden">
           {renderSpotlight ? renderSpotlight(lastScanned) : null}
         </div>
-        <div className="lg:col-span-5 flex flex-col min-h-0 overflow-hidden">
+        <div className="lg:col-span-5 flex flex-col min-h-0 h-full overflow-hidden">
           {renderFeed ? renderFeed(scanHistory, onOverrideStatus) : null}
         </div>
       </div>

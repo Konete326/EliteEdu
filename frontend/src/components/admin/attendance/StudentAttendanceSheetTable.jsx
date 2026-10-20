@@ -12,7 +12,7 @@ const STATUS_BUTTONS = [
 const StudentAttendanceSheetTable = ({ records = [], onStatusChange, onRemarksChange }) => {
   return (
     <div className="overflow-x-auto overflow-y-auto flex-1 min-h-0 h-full">
-      <table className="w-full text-left text-xs border-collapse">
+      <table className="hidden sm:table w-full text-left text-xs border-collapse">
         <thead className="sticky top-0 z-10 bg-surface dark:bg-surface-dark shadow-2xs text-ink-muted border-b border-line dark:border-line-dark uppercase tracking-wider text-[10px] font-semibold">
           <tr>
             <th className="py-3 px-4 w-28 bg-surface dark:bg-surface-dark">Roll / GR</th>
@@ -102,6 +102,74 @@ const StudentAttendanceSheetTable = ({ records = [], onStatusChange, onRemarksCh
           })}
         </tbody>
       </table>
+
+      <div className="block sm:hidden p-2 space-y-2">
+        {records.map((r, idx) => {
+          const student = r.student || {};
+          const fullName = (student.name || `${student.first_name || ''} ${student.last_name || ''}`).trim() || 'Student';
+          const rollDisplay = student.roll_number || student.gr_number || `S-${idx + 1}`;
+          const photo = student.photo_url || student.avatar_url || student.image || student.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0d9488&color=fff&size=64&bold=true`;
+
+          return (
+            <div
+              key={student._id || r._id}
+              className="p-2.5 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xs space-y-2"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden border border-line dark:border-line-dark shadow-2xs">
+                    {photo ? (
+                      <img
+                        src={photo}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <User className="w-4 h-4" />
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1">
+                      <span className="font-mono text-[10px] font-bold text-ink-muted shrink-0">#{rollDisplay}</span>
+                      <h4 className="font-bold text-xs text-ink dark:text-ink-dark truncate">{fullName}</h4>
+                    </div>
+                    {student.father_name && (
+                      <p className="text-[10px] text-ink-muted truncate">S/O {student.father_name}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-0.5 bg-surface-secondary dark:bg-surface-secondary-dark p-0.5 rounded-lg border border-line dark:border-line-dark shrink-0">
+                  {STATUS_BUTTONS.map((opt) => (
+                    <button
+                      key={opt.code}
+                      type="button"
+                      title={opt.title}
+                      onClick={() => onStatusChange(student._id || r._id, opt.code)}
+                      className={`w-7 h-7 rounded-md text-[11px] font-black transition-all cursor-pointer ${
+                        r.status === opt.code
+                          ? opt.activeClass
+                          : 'text-ink-muted hover:text-ink dark:hover:text-ink-dark'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {r.remarks && (
+                <div className="text-[10px] text-ink-muted bg-surface-secondary/40 dark:bg-surface-secondary-dark/40 px-2 py-1 rounded-md border border-line/40">
+                  Remarks: {r.remarks}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

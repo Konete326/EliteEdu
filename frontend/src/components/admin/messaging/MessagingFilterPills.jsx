@@ -9,7 +9,7 @@ const MessagingFilterPills = ({ activeFilter, onFilterChange, unreadTotal = 0 })
   ];
 
   return (
-    <div className="px-4 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-b border-slate-150">
+    <div className="px-4 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-b border-line dark:border-line-dark">
       {pills.map((p) => {
         const isActive = activeFilter === p.id;
         return (
@@ -19,8 +19,8 @@ const MessagingFilterPills = ({ activeFilter, onFilterChange, unreadTotal = 0 })
             onClick={() => onFilterChange(p.id)}
             className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
               isActive
-                ? 'bg-[#1e1b4b] text-white shadow-xs'
-                : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300'
+                ? 'bg-primary text-white shadow-xs'
+                : 'bg-surface-secondary hover:bg-surface-secondary/80 dark:bg-surface-secondary-dark text-ink-sub dark:text-ink-sub-dark border border-line dark:border-line-dark'
             }`}
           >
             <span>{p.label}</span>

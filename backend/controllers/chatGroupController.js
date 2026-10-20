@@ -7,7 +7,7 @@ const createGroup = async (req, res) => {
   try {
     const schoolId = req.user.school_id;
     const campusId = req.user.campus_id;
-    const { group_name, group_type = 'Custom_Group', grade_id, section = '', members = [] } = req.body;
+    const { group_name, group_type = 'Custom_Group', grade_id, section = '', members = [], avatar_url = '' } = req.body;
 
     const participants = [
       {
@@ -93,6 +93,7 @@ const createGroup = async (req, res) => {
       campus_id: campusId,
       is_group: true,
       group_name: finalName || 'Untitled Group',
+      avatar_url: avatar_url || '',
       group_type,
       grade_id: grade_id || null,
       section: section || '',

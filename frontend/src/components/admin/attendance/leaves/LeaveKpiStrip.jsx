@@ -10,7 +10,7 @@ const LeaveKpiStrip = ({ kpis = {}, activeStatus = 'all', onSelectStatus }) => {
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 w-full">
+    <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
       {cards.map((c) => {
         const Icon = c.icon;
         const isActive = activeStatus === c.key;

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Users, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import api from '../../../../services/api';
 import ReportExportToolbar from '../../reports/ReportExportToolbar';
 import OfficialSignatureStampBlock from '../../../common/OfficialSignatureStampBlock';
+import MobileScrollSlider from '../../../common/MobileScrollSlider';
 
 const ClassWiseSummaryTab = ({ activeCampusId }) => {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -40,14 +41,16 @@ const ClassWiseSummaryTab = ({ activeCampusId }) => {
           <button onClick={loadData} className="px-3.5 py-1.5 rounded-xl bg-surface-secondary text-xs font-bold hover:bg-line text-ink cursor-pointer">Refresh</button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 print:hidden">
-          <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark"><span className="text-[10px] text-ink-muted font-bold block">TOTAL ENROLLED</span><span className="text-lg font-bold font-mono">{data.kpis?.totalStudents || 0}</span></div>
-          <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark"><span className="text-[10px] text-emerald-600 font-bold block">PRESENT</span><span className="text-lg font-bold text-emerald-600 font-mono">{data.kpis?.present || 0}</span></div>
-          <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark"><span className="text-[10px] text-rose-600 font-bold block">ABSENT</span><span className="text-lg font-bold text-rose-600 font-mono">{data.kpis?.absent || 0}</span></div>
-          <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark"><span className="text-[10px] text-amber-600 font-bold block">ON LEAVE</span><span className="text-lg font-bold text-amber-600 font-mono">{data.kpis?.leave || 0}</span></div>
-          <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark"><span className="text-[10px] text-blue-600 font-bold block">LATE ARRIVALS</span><span className="text-lg font-bold text-blue-600 font-mono">{data.kpis?.late || 0}</span></div>
-          <div className="p-3 rounded-xl border border-primary/30 bg-primary/5"><span className="text-[10px] text-primary font-bold block">ATTENDANCE RATE</span><span className="text-lg font-bold text-primary font-mono">{data.kpis?.rate || 0}%</span></div>
-        </div>
+        <MobileScrollSlider containerClassName="print:hidden">
+          <div className="flex gap-2 pb-1 sm:grid sm:grid-cols-3 lg:grid-cols-6 sm:gap-2.5">
+            <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark shrink-0 min-w-[130px] sm:min-w-0"><span className="text-[10px] text-ink-muted font-bold block">TOTAL ENROLLED</span><span className="text-lg font-bold font-mono">{data.kpis?.totalStudents || 0}</span></div>
+            <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark shrink-0 min-w-[130px] sm:min-w-0"><span className="text-[10px] text-emerald-600 font-bold block">PRESENT</span><span className="text-lg font-bold text-emerald-600 font-mono">{data.kpis?.present || 0}</span></div>
+            <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark shrink-0 min-w-[130px] sm:min-w-0"><span className="text-[10px] text-rose-600 font-bold block">ABSENT</span><span className="text-lg font-bold text-rose-600 font-mono">{data.kpis?.absent || 0}</span></div>
+            <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark shrink-0 min-w-[130px] sm:min-w-0"><span className="text-[10px] text-amber-600 font-bold block">ON LEAVE</span><span className="text-lg font-bold text-amber-600 font-mono">{data.kpis?.leave || 0}</span></div>
+            <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark shrink-0 min-w-[130px] sm:min-w-0"><span className="text-[10px] text-blue-600 font-bold block">LATE ARRIVALS</span><span className="text-lg font-bold text-blue-600 font-mono">{data.kpis?.late || 0}</span></div>
+            <div className="p-3 rounded-xl border border-primary/30 bg-primary/5 shrink-0 min-w-[130px] sm:min-w-0"><span className="text-[10px] text-primary font-bold block">ATTENDANCE RATE</span><span className="text-lg font-bold text-primary font-mono">{data.kpis?.rate || 0}%</span></div>
+          </div>
+        </MobileScrollSlider>
 
         <ReportExportToolbar columns={exportCols} rows={filteredRows} filename={`class-attendance-${date}`} searchTerm={search} onSearchChange={setSearch} />
       </div>

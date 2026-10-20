@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Clock, Users, Loader2, Calendar } from 'lucide-react';
+import { Clock, Users, Loader2, Calendar, RotateCcw } from 'lucide-react';
 import { normalizeTimeString } from '../../../../utils/timeFormatters';
 import TimePickerPopover from '../../../common/TimePickerPopover';
 import StaffAttendanceCalendarModal from './StaffAttendanceCalendarModal';
@@ -20,11 +20,31 @@ const StaffAttendanceTableCard = ({
   records = [],
   loading = false,
   onStatusChange,
-  onTimeChange
+  onTimeChange,
+  onResetFilters,
+  hasActiveFilters = false
 }) => {
   const [activeTimePicker, setActiveTimePicker] = useState(null);
   const [selectedStaffCalendar, setSelectedStaffCalendar] = useState(null);
   const [settingsVersion, setSettingsVersion] = useState(0);
+
+  useEffect(() => {
+    return () => {
+      setActiveTimePicker(null);
+      setSelectedStaffCalendar(null);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!activeTimePicker) return;
+    const handleDismiss = () => setActiveTimePicker(null);
+    window.addEventListener('scroll', handleDismiss, true);
+    window.addEventListener('resize', handleDismiss);
+    return () => {
+      window.removeEventListener('scroll', handleDismiss, true);
+      window.removeEventListener('resize', handleDismiss);
+    };
+  }, [activeTimePicker]);
 
   useEffect(() => {
     const handleSettingsUpdate = () => setSettingsVersion((v) => v + 1);
@@ -75,7 +95,7 @@ const StaffAttendanceTableCard = ({
   return (
     <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl shadow-xs overflow-hidden flex flex-col flex-1 min-h-0">
       <div className="overflow-x-auto overflow-y-auto flex-1 min-h-0 h-full">
-        <table className="w-full text-left border-collapse min-w-[820px]">
+        <table className="hidden md:table w-full text-left border-collapse min-w-[820px]">
           <thead className="sticky top-0 z-10 bg-surface dark:bg-surface-dark shadow-2xs border-b border-line dark:border-line-dark text-[11px] font-bold uppercase tracking-wider text-ink-muted">
             <tr className="border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark">
               <th className="py-3 px-3 text-center w-14 bg-surface dark:bg-surface-dark">S.NO</th>
@@ -103,6 +123,16 @@ const StaffAttendanceTableCard = ({
                     <Users className="w-8 h-8 stroke-[1.5]" />
                     <span className="text-sm font-semibold text-ink dark:text-ink-dark">No Staff Records Found</span>
                     <span className="text-xs">Adjust your search or department filter, or click Show to refresh.</span>
+                    {hasActiveFilters && onResetFilters && (
+                      <button
+                        type="button"
+                        onClick={onResetFilters}
+                        className="mt-2 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all cursor-pointer shadow-xs"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>Reset Filters</span>
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>
@@ -213,6 +243,95 @@ const StaffAttendanceTableCard = ({
             )}
           </tbody>
         </table>
+
+        <div className="block md:hidden p-2 space-y-2">
+          {loading ? (
+            <div className="py-12 text-center text-ink-muted">
+              <div className="flex flex-col items-center justify-center gap-2">
+                <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                <span>Loading staff members...</span>
+              </div>
+            </div>
+          ) : records.length === 0 ? (
+            <div className="py-12 text-center">
+              <div className="flex flex-col items-center justify-center gap-2 max-w-sm mx-auto text-ink-muted">
+                <Users className="w-8 h-8 stroke-[1.5]" />
+                <span className="text-sm font-semibold text-ink dark:text-ink-dark">No Staff Records Found</span>
+                <span className="text-xs">Adjust your search or department filter, or click Show to refresh.</span>
+                {hasActiveFilters && onResetFilters && (
+                  <button
+                    type="button"
+                    onClick={onResetFilters}
+                    className="mt-2 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all cursor-pointer shadow-xs"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset Filters</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : (
+            records.map((item, index) => {
+              const staff = item.staff || {};
+              const currentStatus = item.status || 'U';
+
+              return (
+                <div
+                  key={staff._id || index}
+                  className="p-3 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xs space-y-2.5"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono text-[10px] font-bold text-ink-muted">#{index + 1}</span>
+                        <h4 className="font-bold text-xs text-ink dark:text-ink-dark truncate">{staff.name || 'Unnamed Staff'}</h4>
+                      </div>
+                      <p className="text-[10px] text-ink-muted truncate">
+                        {staff.employee_code ? `EMP: ${staff.employee_code}` : (staff.designation || 'Staff')}
+                        {staff.department && ` • ${staff.department}`}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-1 shrink-0 text-[10px]">
+                      <button
+                        type="button"
+                        onClick={(e) => handleOpenTimePicker(e, staff._id || index, 'in', item.time_in, defaultInPlaceholder)}
+                        className="px-2 py-1 rounded-lg border border-line dark:border-line-dark bg-surface-secondary dark:bg-surface-secondary-dark font-mono font-bold text-ink dark:text-ink-dark hover:border-primary transition-all cursor-pointer"
+                      >
+                        In: {item.time_in || defaultInPlaceholder}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => handleOpenTimePicker(e, staff._id || index, 'out', item.time_out, defaultOutPlaceholder)}
+                        className="px-2 py-1 rounded-lg border border-line dark:border-line-dark bg-surface-secondary dark:bg-surface-secondary-dark font-mono font-bold text-ink dark:text-ink-dark hover:border-primary transition-all cursor-pointer"
+                      >
+                        Out: {item.time_out || defaultOutPlaceholder}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-0.5 bg-surface-secondary dark:bg-surface-secondary-dark p-0.5 rounded-lg border border-line dark:border-line-dark overflow-x-auto">
+                    {STATUS_BUTTONS.map((btn) => (
+                      <button
+                        key={btn.code}
+                        type="button"
+                        title={btn.code}
+                        onClick={() => onStatusChange(staff._id || index, btn.code)}
+                        className={`flex-1 py-1 px-1 rounded-md text-[10px] font-black transition-all cursor-pointer text-center ${
+                          currentStatus === btn.code
+                            ? btn.activeClass
+                            : 'text-ink-muted hover:text-ink dark:hover:text-ink-dark'
+                        }`}
+                      >
+                        {btn.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
 
       {activeTimePicker && (

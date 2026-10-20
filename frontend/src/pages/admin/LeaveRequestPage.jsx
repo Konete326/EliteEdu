@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
 import { useCampus } from '../../context/CampusContext';
 import { usePersistentFormDraft } from '../../hooks/usePersistentFormDraft';
 import { useLeaveRequestData } from '../../components/admin/attendance/leaves/useLeaveRequestData';
@@ -10,7 +9,9 @@ import LeaveKpiStrip from '../../components/admin/attendance/leaves/LeaveKpiStri
 import LeaveRequestsTable from '../../components/admin/attendance/leaves/LeaveRequestsTable';
 import LeaveApplicationModal from '../../components/admin/attendance/leaves/LeaveApplicationModal';
 import LeaveSlipModal from '../../components/admin/attendance/leaves/LeaveSlipModal';
+import LeaveRequestsPrintSheet from '../../components/admin/attendance/leaves/LeaveRequestsPrintSheet';
 import ConfirmModal from '../../components/common/ConfirmModal';
+import { emitToastSuccess, emitToastError, emitToastInfo, emitToastWarning } from '../../utils/toastEvents';
 
 const INITIAL = {
   applicant_type: 'Student', student_id: '', grade_id: '', section: 'A',
@@ -22,7 +23,12 @@ const INITIAL = {
 
 const LeaveRequestPage = () => {
   const { user } = useAuth();
-  const { showToast } = useToast();
+  const showToast = (message, type = 'info') => {
+    if (type === 'success') emitToastSuccess(message);
+    else if (type === 'error') emitToastError(message);
+    else if (type === 'warning') emitToastWarning(message);
+    else emitToastInfo(message);
+  };
   const { activeCampusId } = useCampus();
   const [form, setForm, clearDraft] = usePersistentFormDraft(`leave_req_draft_${user?.school_id || 'default'}`, INITIAL);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -37,6 +43,11 @@ const LeaveRequestPage = () => {
   const { data, grades, students, teachers, loading, loadLeaves } = useLeaveRequestData(
     activeCampusId, statusFilter, applicantFilter, search, page
   );
+
+  const handleReload = async () => {
+    await loadLeaves();
+    showToast('Leave applications refreshed', 'info');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,6 +71,24 @@ const LeaveRequestPage = () => {
     } catch (err) { showToast(err.response?.data?.message || 'Status update failed', 'error'); }
   };
 
+  const handleWhatsApp = (leave) => {
+    const isStudent = leave.applicant_type === 'Student';
+    const name = isStudent ? leave.student_id?.name : leave.staff_id?.name;
+    const rawPhone = isStudent
+      ? (leave.student_id?.contact_number || leave.student_id?.emergency_contact_no || '')
+      : (leave.staff_id?.phone || leave.staff_id?.contact_number || '');
+    const cleanPhone = String(rawPhone).replace(/[^0-9]/g, '');
+    if (!cleanPhone) {
+      showToast(`No contact number registered for ${name || 'applicant'}`, 'warning');
+      return;
+    }
+    let formattedPhone = cleanPhone;
+    if (formattedPhone.startsWith('0')) formattedPhone = '92' + formattedPhone.slice(1);
+    const applicantName = name || 'Applicant';
+    const text = `Assalam-o-Alaikum ${applicantName},\n\nRegarding your Leave Application (${leave.leave_type}) from ${leave.from_date} to ${leave.to_date} (${leave.total_days} Day(s)):\nCurrent Status: ${leave.status.toUpperCase()}\nReason: ${leave.reason}\n\nElite Educational Institution`;
+    window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+  };
+
   const handleDelete = async () => {
     if (!deleteTarget) return;
     try {
@@ -71,53 +100,62 @@ const LeaveRequestPage = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col min-h-0 gap-3">
-      <div className="shrink-0 space-y-3">
-        <LeaveHeader
-          totalLeaves={data.pagination?.total || data.leaves?.length || 0}
-          onNewLeave={() => setIsModalOpen(true)}
-          onReload={loadLeaves}
-          loading={loading}
+    <>
+      <div className="w-full h-full flex flex-col min-h-0 gap-3 print:hidden">
+        <div className="shrink-0 space-y-3">
+          <LeaveHeader
+            onNewLeave={() => setIsModalOpen(true)}
+            onReload={handleReload}
+            loading={loading}
+          />
+          <LeaveKpiStrip kpis={data.kpis} activeStatus={statusFilter} onSelectStatus={setStatusFilter} />
+        </div>
+
+        <div className="flex-1 min-h-0 flex flex-col">
+          <LeaveRequestsTable
+            leaves={data.leaves || []}
+            pagination={data.pagination || {}}
+            search={search}
+            onSearchChange={setSearch}
+            statusFilter={statusFilter}
+            onStatusChange={setStatusFilter}
+            applicantFilter={applicantFilter}
+            onApplicantChange={setApplicantFilter}
+            onApprove={(l) => handleUpdateStatus(l, 'Approved')}
+            onReject={(l) => handleUpdateStatus(l, 'Rejected')}
+            onPrint={setActiveSlip}
+            onDelete={setDeleteTarget}
+            onWhatsApp={handleWhatsApp}
+            isProcessing={loading}
+            onPageChange={setPage}
+          />
+        </div>
+
+        <LeaveApplicationModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          form={form}
+          setForm={setForm}
+          onSubmit={handleSubmit}
+          onReset={clearDraft}
+          isSubmitting={submitting}
+          grades={grades}
+          students={students}
+          teachers={teachers}
+          isAdmin={user?.role === 'Admin' || user?.role === 'SuperAdmin'}
         />
-        <LeaveKpiStrip kpis={data.kpis} activeStatus={statusFilter} onSelectStatus={setStatusFilter} />
+
+        <LeaveSlipModal leave={activeSlip} isOpen={Boolean(activeSlip)} onClose={() => setActiveSlip(null)} />
+        <ConfirmModal isOpen={Boolean(deleteTarget)} title="Delete Leave Application" message="Are you sure you want to permanently delete this leave application?" onConfirm={handleDelete} onClose={() => setDeleteTarget(null)} />
       </div>
 
-      <div className="flex-1 min-h-0 flex flex-col">
-        <LeaveRequestsTable
-          leaves={data.leaves || []}
-          pagination={data.pagination || {}}
-          search={search}
-          onSearchChange={setSearch}
-          statusFilter={statusFilter}
-          onStatusChange={setStatusFilter}
-          applicantFilter={applicantFilter}
-          onApplicantChange={setApplicantFilter}
-          onApprove={(l) => handleUpdateStatus(l, 'Approved')}
-          onReject={(l) => handleUpdateStatus(l, 'Rejected')}
-          onPrint={setActiveSlip}
-          onDelete={setDeleteTarget}
-          isProcessing={loading}
-          onPageChange={setPage}
-        />
-      </div>
-
-      <LeaveApplicationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        form={form}
-        setForm={setForm}
-        onSubmit={handleSubmit}
-        onReset={clearDraft}
-        isSubmitting={submitting}
-        grades={grades}
-        students={students}
-        teachers={teachers}
-        isAdmin={user?.role === 'Admin' || user?.role === 'SuperAdmin'}
+      <LeaveRequestsPrintSheet
+        leaves={data.leaves || []}
+        kpis={data.kpis || {}}
+        statusFilter={statusFilter}
+        applicantFilter={applicantFilter}
       />
-
-      <LeaveSlipModal leave={activeSlip} isOpen={Boolean(activeSlip)} onClose={() => setActiveSlip(null)} />
-      <ConfirmModal isOpen={Boolean(deleteTarget)} title="Delete Leave Application" message="Are you sure you want to permanently delete this leave application?" onConfirm={handleDelete} onClose={() => setDeleteTarget(null)} />
-    </div>
+    </>
   );
 };
 

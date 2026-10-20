@@ -27,6 +27,7 @@ export const useChatMessageFetcher = ({ activeId, setConversations }) => {
               : c
           )
         );
+        window.dispatchEvent(new CustomEvent('chat_unread_refresh'));
       }
     } catch {
       setLoadingMessages(false);

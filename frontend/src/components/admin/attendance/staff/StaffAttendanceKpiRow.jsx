@@ -1,4 +1,5 @@
 import React from 'react';
+import MobileScrollSlider from '../../../common/MobileScrollSlider';
 
 const StaffAttendanceKpiRow = ({ summary = {} }) => {
   const items = [
@@ -12,21 +13,23 @@ const StaffAttendanceKpiRow = ({ summary = {} }) => {
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
-      {items.map((item) => (
-        <div
-          key={item.label}
-          className={`p-3 rounded-2xl border ${item.cardClass} flex flex-col justify-between transition-all`}
-        >
-          <span className={`text-[10px] font-bold tracking-wider ${item.textClass}`}>
-            {item.label}
-          </span>
-          <span className={`text-2xl font-black mt-1 ${item.textClass}`}>
-            {item.count}
-          </span>
-        </div>
-      ))}
-    </div>
+    <MobileScrollSlider>
+      <div className="flex gap-2 pb-1 sm:grid sm:grid-cols-4 lg:grid-cols-7 sm:gap-2.5">
+        {items.map((item) => (
+          <div
+            key={item.label}
+            className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border ${item.cardClass} flex flex-col justify-between shrink-0 min-w-[105px] sm:min-w-0 transition-all`}
+          >
+            <span className={`text-[9px] sm:text-[10px] font-bold tracking-wider ${item.textClass}`}>
+              {item.label}
+            </span>
+            <span className={`text-lg sm:text-2xl font-black mt-0.5 sm:mt-1 ${item.textClass}`}>
+              {item.count}
+            </span>
+          </div>
+        ))}
+      </div>
+    </MobileScrollSlider>
   );
 };
 

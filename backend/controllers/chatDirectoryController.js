@@ -5,7 +5,7 @@ const { escapeRegex } = require('../utils/chatQueryHelper');
 const getDirectory = async (req, res) => {
   try {
     const schoolId = req.user.school_id;
-    const campusId = req.query.campus_id || req.user.campus_id;
+    const campusId = req.query.campus_id || (['Admin', 'SuperAdmin'].includes(req.user.role) ? null : req.user.campus_id);
     const search = String(req.query.search || '').trim();
 
     const userQuery = {
@@ -18,7 +18,7 @@ const getDirectory = async (req, res) => {
 
     const studentQuery = {
       school_id: schoolId,
-      status: 'Active'
+      status: { $in: ['Active', 'active', 'Registered', 'registered'] }
     };
     if (campusId) studentQuery.campus_id = campusId;
 
@@ -29,8 +29,8 @@ const getDirectory = async (req, res) => {
     }
 
     const [staffList, studentList] = await Promise.all([
-      User.find(userQuery).select('name role designation photo_url campus_id employee_code').limit(60),
-      Student.find(studentQuery).select('name current_grade current_section photo_url gr_number campus_id').populate('current_grade', 'name').limit(60)
+      User.find(userQuery).select('name role designation photo_url campus_id employee_code').sort({ name: 1 }).limit(300),
+      Student.find(studentQuery).select('name current_grade current_section photo_url gr_number campus_id').populate('current_grade', 'name').sort({ name: 1 }).limit(300)
     ]);
 
     const formattedStaff = staffList.map((u) => ({

@@ -88,7 +88,7 @@ export const getAdminNavItems = (schoolType) => [
     title: 'Messaging',
     icon: MessageSquare,
     subItems: [
-      { name: 'Msg', path: '/admin/messaging/internal' },
+      { name: 'Internal Messaging', path: '/admin/messaging/internal' },
       { name: 'Notification Center', path: '/admin/notifications' }
     ]
   },
@@ -292,7 +292,7 @@ export const getNavCategories = (user) => {
         title: 'Messaging',
         icon: MessageSquare,
         subItems: [
-          { name: 'Msg', path: '/admin/messaging/internal' },
+          { name: 'Internal Messaging', path: '/admin/messaging/internal' },
           { name: 'Notification Center', path: '/admin/notifications' }
         ]
       });

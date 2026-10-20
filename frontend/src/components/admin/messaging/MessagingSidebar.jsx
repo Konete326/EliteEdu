@@ -18,14 +18,16 @@ const MessagingSidebar = ({
   onToggleFavorite,
   onNewDirect,
   onNewGroup,
-  onRefresh
+  onRefresh,
+  onOpenProfile
 }) => (
-  <div className="w-full md:w-80 lg:w-96 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-white dark:bg-slate-900 shrink-0 h-full">
+  <div className="w-full md:w-80 lg:w-96 border-r border-line dark:border-line-dark flex flex-col bg-surface dark:bg-surface-dark shrink-0 h-full min-h-0">
     <MessagingSidebarHeader
       user={user}
       onNewDirect={onNewDirect}
       onNewGroup={onNewGroup}
       onRefresh={onRefresh}
+      onOpenProfile={onOpenProfile}
     />
 
     <MessagingSidebarSearch
@@ -39,7 +41,7 @@ const MessagingSidebar = ({
       unreadTotal={unreadTotal}
     />
 
-    <div className="flex-1 overflow-y-auto divide-y divide-slate-100/60 dark:divide-slate-800/40">
+    <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-line/60 dark:divide-line-dark/40">
       {conversations.length === 0 ? (
         <ConversationEmptyState
           onNewDirect={onNewDirect}

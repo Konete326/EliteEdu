@@ -25,22 +25,33 @@ const updateSettings = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
-    const { is_muted, disappearing_messages } = req.body;
+    const { is_muted, disappearing_messages, avatar_url, group_name } = req.body;
     const conv = await ChatConversation.findOne({ _id: id, school_id: req.user.school_id });
     if (!conv) return res.status(404).json({ success: false, message: 'Conversation not found' });
 
     const p = conv.participants.find((item) => String(item.user_id) === String(userId));
-    if (is_muted !== undefined && p) {
-      p.is_muted = Boolean(is_muted);
-    }
-    if (disappearing_messages !== undefined) {
-      conv.disappearing_messages = Boolean(disappearing_messages);
-    }
+    if (is_muted !== undefined && p) p.is_muted = Boolean(is_muted);
+    if (disappearing_messages !== undefined) conv.disappearing_messages = Boolean(disappearing_messages);
+    if (avatar_url !== undefined && conv.is_group) conv.avatar_url = avatar_url;
+    if (group_name !== undefined && conv.is_group) conv.group_name = String(group_name).trim();
     await conv.save();
+
+    const uids = conv.participants.map((item) => item.user_id);
+    emitChatEvent(req.user.school_id, uids, 'conversation_updated', {
+      conversation_id: id,
+      avatar_url: conv.avatar_url,
+      group_name: conv.group_name,
+      disappearing_messages: conv.disappearing_messages
+    });
 
     res.status(200).json({
       success: true,
-      data: { is_muted: Boolean(p?.is_muted), disappearing_messages: Boolean(conv.disappearing_messages) }
+      data: {
+        is_muted: Boolean(p?.is_muted),
+        disappearing_messages: Boolean(conv.disappearing_messages),
+        avatar_url: conv.avatar_url,
+        group_name: conv.group_name
+      }
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to update settings', error: error.message });

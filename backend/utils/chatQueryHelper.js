@@ -44,7 +44,7 @@ const mapConversationCard = (c, userId, onlineUserIds = new Set()) => {
     section: c.section,
     title: c.is_group ? c.group_name : otherPart.name || 'Direct Chat',
     subtitle: c.is_group ? `${c.participants.length} members` : otherPart.role_label || 'Staff',
-    avatar_url: c.is_group ? '' : otherPart.avatar_url || '',
+    avatar_url: c.is_group ? (c.avatar_url || '') : otherPart.avatar_url || '',
     other_user_id: c.is_group ? null : otherPart.user_id,
     is_online: isOnline,
     unread_count: myPart.unread_count || 0,

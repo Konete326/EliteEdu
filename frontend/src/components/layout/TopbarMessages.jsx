@@ -26,9 +26,14 @@ const TopbarMessages = ({ isColored, btnClass }) => {
 
         if (latest && latest._id) {
           if (!initialMountRef.current && lastMsgIdRef.current && lastMsgIdRef.current !== latest._id) {
-            const isChatPage = location.pathname.includes('/messaging/chat') || location.pathname.includes('/teacher/chat');
+            const isChatPage =
+              location.pathname.startsWith('/admin/messaging') ||
+              location.pathname.startsWith('/teacher/messages') ||
+              location.pathname.startsWith('/student/messages') ||
+              location.pathname.includes('/messaging/chat') ||
+              location.pathname.includes('/teacher/chat');
             if (!isChatPage) {
-              const preview = latest.content.length > 55 ? `${latest.content.slice(0, 52)}...` : latest.content;
+              const preview = (latest.content || '').length > 55 ? `${latest.content.slice(0, 52)}...` : (latest.content || 'New message');
               toast.info(`${latest.sender}: ${preview}`, 'Staff Messenger');
             }
           }
@@ -41,27 +46,37 @@ const TopbarMessages = ({ isColored, btnClass }) => {
 
   useEffect(() => {
     fetchUnread();
-    const interval = setInterval(fetchUnread, 15000);
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchUnread, 12000);
+    const handleRefresh = () => fetchUnread();
+    window.addEventListener('chat_unread_refresh', handleRefresh);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('chat_unread_refresh', handleRefresh);
+    };
   }, [fetchUnread]);
 
   const targetPath = user?.role === 'Teacher' ? '/teacher/messages' : (user?.role === 'Student' ? '/student/messages' : '/admin/messaging/internal');
+
+  const handleClick = async () => {
+    setUnreadCount(0);
+    try {
+      await api.put('/messenger/messages/read', {});
+    } catch {}
+    navigate(targetPath);
+  };
 
   return (
     <div className="relative">
       <button
         type="button"
-        onClick={() => {
-          setUnreadCount(0);
-          navigate(targetPath);
-        }}
+        onClick={handleClick}
         className={btnClass}
         title="Staff Messages"
       >
         <MessageCircle className="w-4 h-4" />
       </button>
       {unreadCount > 0 && (
-        <span className="absolute top-0 right-0 w-3.5 h-3.5 rounded-full bg-bad text-white text-[9px] font-bold flex items-center justify-center leading-none pointer-events-none animate-pulse">
+        <span className="absolute top-0 right-0 w-3.5 h-3.5 rounded-full bg-bad text-white text-[9px] font-bold flex items-center justify-center leading-none pointer-events-none">
           {unreadCount > 9 ? '9+' : unreadCount}
         </span>
       )}

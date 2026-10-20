@@ -6,6 +6,7 @@ import ClassWiseSummaryTab from '../../components/admin/attendance/reports/Class
 import StudentMonthlyRegisterTab from '../../components/admin/attendance/reports/StudentMonthlyRegisterTab';
 import StaffMonthlyRegisterTab from '../../components/admin/attendance/reports/StaffMonthlyRegisterTab';
 import LowAttendanceAlertTab from '../../components/admin/attendance/reports/LowAttendanceAlertTab';
+import MobileScrollSlider from '../../components/common/MobileScrollSlider';
 
 const TABS = [
   { id: 'class_summary', label: 'Class-wise Summary', icon: BarChart3 },
@@ -25,25 +26,27 @@ const AttendanceReportPage = () => {
       <div className="shrink-0 space-y-3">
         <AttendanceReportHeader activeCampusName={activeCampus?.name} />
 
-        <div className="flex rounded-2xl border border-line dark:border-line-dark p-1.5 bg-surface dark:bg-surface-dark shadow-xs gap-1.5 overflow-x-auto print:hidden">
-          {TABS.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
-                  isActive ? 'bg-primary text-white shadow-xs' : 'text-ink-muted hover:text-ink hover:bg-surface-secondary dark:hover:bg-white/5'
-                }`}
-              >
-                <Icon size={14} />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
+        <MobileScrollSlider containerClassName="print:hidden">
+          <div className="flex rounded-2xl border border-line dark:border-line-dark p-1.5 bg-surface dark:bg-surface-dark shadow-xs gap-1.5 w-fit min-w-full">
+            {TABS.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
+                    isActive ? 'bg-primary text-white shadow-xs' : 'text-ink-muted hover:text-ink hover:bg-surface-secondary dark:hover:bg-white/5'
+                  }`}
+                >
+                  <Icon size={14} />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </MobileScrollSlider>
       </div>
 
       <div className="flex-1 min-h-0 flex flex-col">

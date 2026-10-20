@@ -41,7 +41,6 @@ export const useStaffAttendance = () => {
       const params = { date };
       if (campusId !== 'ALL') params.campus_id = campusId;
       if (designation !== 'ALL') params.designation = designation;
-      if (department !== 'ALL') params.department = department;
       const res = await api.get('/staff-attendance/sheet', { params });
       setRecords(res.data.records || []);
     } catch (err) {
@@ -49,7 +48,7 @@ export const useStaffAttendance = () => {
     } finally {
       setLoading(false);
     }
-  }, [date, campusId, designation, department]);
+  }, [date, campusId, designation]);
 
   useEffect(() => {
     fetchSheet();
@@ -227,6 +226,17 @@ export const useStaffAttendance = () => {
     return list;
   }, [records, department, search, sortBy]);
 
+  const { departmentCounts, departmentList } = useMemo(() => {
+    const counts = { ALL: records.length };
+    const deptSet = new Set();
+    records.forEach((r) => {
+      const dep = r.staff?.department || 'Academic';
+      counts[dep] = (counts[dep] || 0) + 1;
+      deptSet.add(dep);
+    });
+    return { departmentCounts: counts, departmentList: Array.from(deptSet).sort() };
+  }, [records]);
+
   return {
     mode,
     setMode,
@@ -237,6 +247,8 @@ export const useStaffAttendance = () => {
     setCampusId,
     department,
     setDepartment,
+    departmentCounts,
+    departmentList,
     designation,
     setDesignation,
     records,

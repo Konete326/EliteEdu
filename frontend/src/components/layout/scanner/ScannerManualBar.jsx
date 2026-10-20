@@ -1,4 +1,4 @@
-import { ScanLine, Loader2, Zap } from 'lucide-react';
+import { ScanLine, Loader2 } from 'lucide-react';
 
 const ScannerManualBar = ({ code, setCode, onSubmit, loading }) => {
   return (
@@ -19,28 +19,6 @@ const ScannerManualBar = ({ code, setCode, onSubmit, loading }) => {
           {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ScanLine className="w-3.5 h-3.5" />}
           <span>Verify</span>
         </button>
-      </div>
-
-      <div className="flex items-center justify-between text-[11px] text-ink-muted">
-        <span>Desktop Simulation:</span>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setCode('GR-1001')}
-            className="px-2 py-0.5 rounded-lg border border-line dark:border-white/10 hover:bg-surface-secondary flex items-center gap-1"
-          >
-            <Zap className="w-3 h-3 text-amber-500" />
-            <span>GR-1001</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setCode('EMP-1001')}
-            className="px-2 py-0.5 rounded-lg border border-line dark:border-white/10 hover:bg-surface-secondary flex items-center gap-1"
-          >
-            <Zap className="w-3 h-3 text-purple-500" />
-            <span>EMP-1001</span>
-          </button>
-        </div>
       </div>
     </form>
   );

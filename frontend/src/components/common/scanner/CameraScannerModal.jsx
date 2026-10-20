@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useId } from 'react';
-import { X, Camera, CheckCircle2, AlertCircle, Zap } from 'lucide-react';
+import { X, Camera, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useCameraScanner } from './useCameraScanner';
 import CameraViewfinder from './CameraViewfinder';
 import CameraScannerControls from './CameraScannerControls';
@@ -15,8 +15,6 @@ const CameraScannerModal = ({
   const containerId = useId().replace(/:/g, '_') + '_scanner_viewport';
   const [continuous, setContinuous] = useState(true);
   const [feedback, setFeedback] = useState(null);
-  const [showTestBar, setShowTestBar] = useState(false);
-  const [testCode, setTestCode] = useState('GR-1001');
 
   const handleScanCode = async (code) => {
     try {
@@ -42,7 +40,7 @@ const CameraScannerModal = ({
   } = useCameraScanner({ containerId, onScan: handleScanCode, isActive: isOpen, continuous });
 
   useEffect(() => {
-    if (!isOpen) { setFeedback(null); setShowTestBar(false); }
+    if (!isOpen) { setFeedback(null); }
   }, [isOpen]);
 
   useEffect(() => {
@@ -115,23 +113,12 @@ const CameraScannerModal = ({
           </div>
         )}
 
-        {showTestBar && (
-          <form onSubmit={(e) => { e.preventDefault(); if (testCode.trim()) handleScanCode(testCode.trim()); }} className="flex gap-2 p-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
-            <input type="text" value={testCode} onChange={(e) => setTestCode(e.target.value)} placeholder="Type test GR # or EMP code..." className="flex-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none font-mono" />
-            <button type="submit" className="px-3 py-1.5 rounded-lg bg-primary text-white font-bold flex items-center gap-1">
-              <Zap className="w-3.5 h-3.5" />
-              <span>Simulate</span>
-            </button>
-          </form>
-        )}
-
         <CameraViewfinder containerId={containerId} isReady={isReady} error={cameraError} onRetry={restart} />
 
         <CameraScannerControls
           cameras={cameras} selectedCameraId={selectedCameraId} onSelectCamera={setSelectedCameraId}
           hasTorch={hasTorch} isTorchOn={isTorchOn} onToggleTorch={toggleTorch} onScanFile={scanFile}
           continuous={continuous} onToggleContinuous={setContinuous}
-          onSimulateScan={() => setShowTestBar((prev) => !prev)}
         />
       </div>
     </div>

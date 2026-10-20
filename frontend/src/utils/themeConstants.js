@@ -27,16 +27,14 @@ export const HEADER_BG_PRESETS = [
   {
     id: 'dark',
     label: 'Dark',
-    previewBg: '#0f172a',
-    activeColor: '#4f46e5',
-    headerClass: 'bg-[#0f172a] text-white border-b border-slate-800',
-    sidebarClass: 'bg-[#0f172a] text-white border-r border-slate-800'
+    previewBg: '#0c0c0f',
+    headerClass: 'bg-surface-dark text-white border-b border-line-dark',
+    sidebarClass: 'bg-surface-dark text-white border-r border-line-dark'
   },
   {
     id: 'red',
     label: 'Red',
     previewBg: '#dc2626',
-    activeColor: '#dc2626',
     headerClass: 'bg-[#dc2626] text-white border-b border-red-700/50',
     sidebarClass: 'bg-[#dc2626] text-white border-r border-red-700/50'
   },
@@ -44,7 +42,6 @@ export const HEADER_BG_PRESETS = [
     id: 'dark-green',
     label: 'Dark Green',
     previewBg: '#064e3b',
-    activeColor: '#15803d',
     headerClass: 'bg-[#064e3b] text-white border-b border-emerald-900/60',
     sidebarClass: 'bg-[#064e3b] text-white border-r border-emerald-900/60'
   },
@@ -52,7 +49,6 @@ export const HEADER_BG_PRESETS = [
     id: 'green',
     label: 'Green',
     previewBg: '#10b981',
-    activeColor: '#10b981',
     headerClass: 'bg-[#10b981] text-white border-b border-emerald-600/50',
     sidebarClass: 'bg-[#10b981] text-white border-r border-emerald-600/50'
   },
@@ -60,7 +56,6 @@ export const HEADER_BG_PRESETS = [
     id: 'blue',
     label: 'Blue',
     previewBg: '#2563eb',
-    activeColor: '#2563eb',
     headerClass: 'bg-[#2563eb] text-white border-b border-blue-600/50',
     sidebarClass: 'bg-[#2563eb] text-white border-r border-blue-600/50'
   },
@@ -68,7 +63,6 @@ export const HEADER_BG_PRESETS = [
     id: 'white',
     label: 'White',
     previewBg: '#ffffff',
-    activeColor: '#0d9488',
     headerClass: 'bg-surface dark:bg-surface-dark text-ink dark:text-ink-dark border-b border-line dark:border-line-dark',
     sidebarClass: 'bg-surface dark:bg-surface-dark text-ink dark:text-ink-dark border-r border-line dark:border-line-dark'
   }

@@ -26,8 +26,8 @@ export const CARD_TEMPLATES = [
   {
     id: 'Circular_Notice',
     label: 'Notice Memo',
-    color: '#4f46e5',
-    head: { title: 'Institutional Staff Circular', sub_title: 'Administrative Memorandum', status_badge: 'Notice', accent_color: '#4f46e5' },
+    color: 'var(--color-primary, #0d9488)',
+    head: { title: 'Institutional Staff Circular', sub_title: 'Administrative Memorandum', status_badge: 'Notice', accent_color: 'var(--color-primary, #0d9488)' },
     defaultFields: [{ key: 'Subject', value: 'Upcoming Parent-Teacher Meeting' }, { key: 'Date & Time', value: 'Saturday 10:00 AM' }],
     actions: [{ label: 'Acknowledge & Confirm', action_value: 'acknowledge', style: 'Primary' }]
   }

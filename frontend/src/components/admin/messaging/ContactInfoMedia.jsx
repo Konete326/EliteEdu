@@ -5,28 +5,28 @@ const ContactInfoMedia = ({ messages = [] }) => {
   const mediaList = messages.filter((m) => Boolean(m.attachment_url));
 
   return (
-    <div className="p-4 border-b border-slate-100 dark:border-slate-800">
+    <div className="p-4 border-b border-line dark:border-line-dark">
       <div className="flex items-center justify-between mb-3">
-        <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        <h4 className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
           Shared Media
         </h4>
-        <span className="text-xs font-semibold text-slate-500 flex items-center gap-1">
-          {mediaList.length} <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+        <span className="text-xs font-semibold text-ink-muted flex items-center gap-1">
+          {mediaList.length} <ChevronRight className="w-3.5 h-3.5 text-ink-muted" />
         </span>
       </div>
 
       {mediaList.length === 0 ? (
-        <div className="py-6 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center text-center">
-          <div className="w-10 h-10 rounded-full bg-slate-200/60 dark:bg-slate-700/60 text-slate-400 flex items-center justify-center mb-2">
+        <div className="py-6 px-4 rounded-2xl bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark flex flex-col items-center justify-center text-center">
+          <div className="w-10 h-10 rounded-full bg-surface dark:bg-surface-dark border border-line dark:border-line-dark text-ink-muted flex items-center justify-center mb-2">
             <Image className="w-5 h-5" />
           </div>
-          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+          <p className="text-xs font-medium text-ink-muted">
             No photos or videos yet
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-2">
-          {mediaList.slice(0, 6).map((m, idx) => {
+        <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
+          {mediaList.map((m, idx) => {
             const isImg = Boolean(
               m.attachment_url && (
                 m.attachment_url.includes('cloudinary') ||
@@ -40,12 +40,12 @@ const ContactInfoMedia = ({ messages = [] }) => {
                 href={m.attachment_url}
                 target="_blank"
                 rel="noreferrer"
-                className="group relative aspect-square rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 block"
+                className="group relative w-20 h-20 shrink-0 aspect-square rounded-xl overflow-hidden bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark block"
               >
                 {isImg ? (
                   <img src={m.attachment_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center p-2 text-slate-400">
+                  <div className="w-full h-full flex flex-col items-center justify-center p-2 text-ink-muted">
                     <FileText className="w-5 h-5 mb-1" />
                     <span className="text-[9px] truncate max-w-full text-center">{m.attachment_name || 'File'}</span>
                   </div>

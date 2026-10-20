@@ -35,7 +35,7 @@ const MessagingChatArea = ({
 
   if (!conversation) {
     return (
-      <div className="flex-1 flex flex-col relative overflow-hidden bg-slate-50/50 dark:bg-slate-900/50">
+      <div className="flex-1 flex flex-col relative overflow-hidden bg-surface-secondary/40 dark:bg-surface-dark">
         <DoodleBackground />
         <ChatAreaEmptyState />
       </div>
@@ -45,7 +45,7 @@ const MessagingChatArea = ({
   const matchCount = searchTerm ? filterChatMessages(messages, searchTerm).length : 0;
 
   return (
-    <div className="flex-1 flex flex-col relative overflow-hidden bg-slate-50/50 dark:bg-slate-900/50 h-full">
+    <div className="flex-1 min-h-0 flex flex-col relative overflow-hidden bg-surface-secondary/40 dark:bg-surface-dark h-full">
       <DoodleBackground />
 
       <ChatHeaderBar
@@ -60,7 +60,7 @@ const MessagingChatArea = ({
       />
 
       {conversation.disappearing_messages && (
-        <div className="px-4 py-1.5 bg-indigo-50/90 dark:bg-indigo-950/50 border-b border-indigo-100 dark:border-indigo-900/60 z-10 flex items-center justify-center gap-1.5 text-[11px] font-semibold text-indigo-700 dark:text-indigo-300">
+        <div className="px-4 py-1.5 bg-primary/10 border-b border-primary/20 z-10 flex items-center justify-center gap-1.5 text-[11px] font-semibold text-primary">
           <Clock className="w-3.5 h-3.5 shrink-0" />
           <span>Disappearing messages is active • Messages disappear after 24h</span>
         </div>
@@ -79,6 +79,7 @@ const MessagingChatArea = ({
         messages={messages}
         loadingMessages={loadingMessages}
         currentUserId={currentUserId}
+        conversation={conversation}
         onReply={(msg) => setReplyingTo(msg)}
         onEdit={(msg) => setEditingMessage(msg)}
         onDelete={(id) => {

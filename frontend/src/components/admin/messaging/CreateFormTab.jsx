@@ -26,7 +26,7 @@ const CreateFormTab = ({ title, setTitle, description, setDescription, fields, s
   return (
     <div className="space-y-3">
       <div>
-        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+        <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1">
           Form Title
         </label>
         <input
@@ -34,12 +34,12 @@ const CreateFormTab = ({ title, setTitle, description, setDescription, fields, s
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="e.g. Teacher Transport Request"
-          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs outline-none"
+          className="w-full bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark text-ink dark:text-ink-dark rounded-xl px-3 py-2 text-xs outline-none"
         />
       </div>
 
       <div>
-        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+        <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1">
           Description (Optional)
         </label>
         <input
@@ -47,12 +47,12 @@ const CreateFormTab = ({ title, setTitle, description, setDescription, fields, s
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Brief details about this form"
-          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs outline-none"
+          className="w-full bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark text-ink dark:text-ink-dark rounded-xl px-3 py-2 text-xs outline-none"
         />
       </div>
 
       <div className="space-y-2">
-        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+        <label className="block text-xs font-semibold text-ink dark:text-ink-dark">
           Form Fields (1 - 5)
         </label>
         {fields.map((f, idx) => (
@@ -62,12 +62,12 @@ const CreateFormTab = ({ title, setTitle, description, setDescription, fields, s
               value={f.label}
               onChange={(e) => handleFieldChange(idx, 'label', e.target.value)}
               placeholder="Field name"
-              className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs outline-none"
+              className="flex-1 bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark text-ink dark:text-ink-dark rounded-xl px-3 py-1.5 text-xs outline-none"
             />
             <select
               value={f.field_type}
               onChange={(e) => handleFieldChange(idx, 'field_type', e.target.value)}
-              className="w-28 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 text-xs outline-none"
+              className="w-28 bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark text-ink dark:text-ink-dark rounded-xl px-2 py-1.5 text-xs outline-none"
             >
               <option value="text">Text</option>
               <option value="dropdown">Dropdown</option>
@@ -77,7 +77,7 @@ const CreateFormTab = ({ title, setTitle, description, setDescription, fields, s
               <button
                 type="button"
                 onClick={() => handleRemoveField(idx)}
-                className="p-1.5 text-slate-400 hover:text-red-500 rounded-lg"
+                className="p-1.5 text-ink-muted hover:text-red-500 rounded-lg"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -88,7 +88,7 @@ const CreateFormTab = ({ title, setTitle, description, setDescription, fields, s
           <button
             type="button"
             onClick={handleAddField}
-            className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 hover:underline pt-1"
+            className="text-xs font-semibold text-primary flex items-center gap-1 hover:underline pt-1"
           >
             <Plus className="w-3.5 h-3.5" /> Add field
           </button>
