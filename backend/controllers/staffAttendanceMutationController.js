@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const StaffAttendance = require('../models/StaffAttendance');
 const User = require('../models/User');
-const { buildSummary } = require('./staffAttendanceQueryController');
+const { buildSummary, resolveSchoolId } = require('./staffAttendanceQueryController');
 
 const formatTimeNow = () => new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 
@@ -11,18 +11,19 @@ const resolveStaffMember = async (code, school_id) => {
   if (urlMatch) staffId = urlMatch[1];
   else if (mongoose.Types.ObjectId.isValid(code) && code.length === 24) staffId = code;
 
+  const roleQuery = { $in: ['Teacher', 'Staff', 'Employee', 'Admin'] };
   if (staffId) {
-    return User.findOne({ _id: staffId, school_id, role: 'Teacher' }).populate('campus_id', 'name').lean();
+    return User.findOne({ _id: staffId, school_id, role: roleQuery }).populate('campus_id', 'name').lean();
   }
   return User.findOne({
-    school_id, role: 'Teacher',
+    school_id, role: roleQuery,
     $or: [{ employee_code: code }, { personal_id: code }, { cnic: code }]
   }).populate('campus_id', 'name').lean();
 };
 
 const markBulkStaff = async (req, res) => {
   try {
-    const school_id = req.user.school_id;
+    const school_id = await resolveSchoolId(req);
     const marked_by = req.user.id || req.user._id;
     const date = req.body.date || new Date().toISOString().slice(0, 10);
     const attendances = req.body.attendances || req.body.records || [];
@@ -59,7 +60,7 @@ const markBulkStaff = async (req, res) => {
 
 const scanStaffCard = async (req, res) => {
   try {
-    const school_id = req.user.school_id;
+    const school_id = await resolveSchoolId(req);
     const marked_by = req.user.id || req.user._id;
     const { code, date, status = 'P' } = req.body;
     if (!code || !date) return res.status(400).json({ message: 'Code and date are required' });
@@ -86,7 +87,7 @@ const scanStaffCard = async (req, res) => {
     );
 
     const [totalStaff, allAttendances] = await Promise.all([
-      User.countDocuments({ school_id, role: 'Teacher', status: 'Active' }),
+      User.countDocuments({ school_id, role: { $in: ['Teacher', 'Staff', 'Employee', 'Admin'] }, status: 'Active' }),
       StaffAttendance.find({ school_id, date }).lean()
     ]);
 
@@ -102,7 +103,7 @@ const scanStaffCard = async (req, res) => {
 
 const resetStaffAttendance = async (req, res) => {
   try {
-    const school_id = req.user.school_id;
+    const school_id = await resolveSchoolId(req);
     const { date } = req.body;
     if (!date) return res.status(400).json({ message: 'Date is required' });
     await StaffAttendance.deleteMany({ school_id, date });

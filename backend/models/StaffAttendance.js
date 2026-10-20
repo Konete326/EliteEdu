@@ -25,7 +25,7 @@ const staffAttendanceSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['P', 'A', 'L', 'LT', 'HD', 'Hol'],
+    enum: ['P', 'A', 'L', 'SL', 'LT', 'Late', 'HD', 'H', 'Hol', 'Off', 'U'],
     default: 'P'
   },
   check_in_time: {

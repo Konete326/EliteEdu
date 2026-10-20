@@ -97,4 +97,4 @@ const getMyHistory = async (req, res) => {
   }
 };
 
-module.exports = { getStaffSheet, getMyHistory, buildSummary };
+module.exports = { getStaffSheet, getMyHistory, buildSummary, resolveSchoolId };
