@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Send, Paperclip, Megaphone, Smile, Mic, Check, BarChart3, Plus } from 'lucide-react';
+import { Send, Mic, Check, Plus } from 'lucide-react';
 import ComposerPreviewBar from './ComposerPreviewBar';
 import SlashCommandMenu from './SlashCommandMenu';
 import ComposerEmojiPicker from './ComposerEmojiPicker';
 import ComposerMobileMenu from './ComposerMobileMenu';
+import ComposerActionButtons from './ComposerActionButtons';
+import VoiceNoteComingSoonModal from './VoiceNoteComingSoonModal';
 import { useChatComposer } from './useChatComposer';
 
 const ChatComposerBar = ({
@@ -11,9 +13,18 @@ const ChatComposerBar = ({
   onCancelReply, editingMessage, onSaveEdit, onCancelEdit, sending = false
 }) => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
   const c = useChatComposer({
     onSendMessage, replyingTo, onCancelReply, editingMessage, onSaveEdit, onCancelEdit, sending
   });
+
+  const handleAction = (e) => {
+    if (editingMessage || c.hasContent) {
+      c.handleSend(e);
+    } else {
+      setShowVoiceModal(true);
+    }
+  };
 
   return (
     <div className="relative bg-surface/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-line dark:border-line-dark p-2 sm:p-3 z-20 shrink-0">
@@ -33,6 +44,11 @@ const ChatComposerBar = ({
         onOpenEmoji={() => c.setShowEmoji((v) => !v)}
         onOpenCardModal={onOpenCardModal}
         onOpenFormPollModal={onOpenFormPollModal}
+      />
+
+      <VoiceNoteComingSoonModal
+        isOpen={showVoiceModal}
+        onClose={() => setShowVoiceModal(false)}
       />
 
       <ComposerPreviewBar
@@ -56,40 +72,13 @@ const ChatComposerBar = ({
           <Plus className="w-5 h-5 transition-transform" />
         </button>
 
-        <div className="hidden sm:flex items-center gap-1">
-          <button
-            type="button"
-            onClick={() => c.fileInputRef.current?.click()}
-            className="p-2 rounded-xl text-ink-muted hover:text-ink hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark transition-colors"
-            title="Attach file"
-          >
-            <Paperclip className="w-5 h-5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => c.setShowEmoji((v) => !v)}
-            className={`p-2 rounded-xl transition-colors ${c.showEmoji ? 'text-amber-500 bg-amber-50 dark:bg-amber-950/60' : 'text-ink-muted hover:text-ink hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark'}`}
-            title="Quick emojis"
-          >
-            <Smile className="w-5 h-5" />
-          </button>
-          <button
-            type="button"
-            onClick={onOpenCardModal}
-            className="p-2 rounded-xl text-primary hover:bg-primary/10 transition-colors"
-            title="Notice & Action Card"
-          >
-            <Megaphone className="w-5 h-5" />
-          </button>
-          <button
-            type="button"
-            onClick={onOpenFormPollModal}
-            className="p-2 rounded-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition-colors"
-            title="Quick Poll or Form"
-          >
-            <BarChart3 className="w-5 h-5" />
-          </button>
-        </div>
+        <ComposerActionButtons
+          onAttachFile={() => c.fileInputRef.current?.click()}
+          showEmoji={c.showEmoji}
+          onToggleEmoji={() => c.setShowEmoji((v) => !v)}
+          onOpenCardModal={onOpenCardModal}
+          onOpenFormPollModal={onOpenFormPollModal}
+        />
 
         <input
           ref={c.textInputRef}
@@ -104,10 +93,16 @@ const ChatComposerBar = ({
 
         <button
           type="button"
-          onClick={c.handleSend}
-          disabled={!c.hasContent || sending}
-          className={`p-2 sm:p-2.5 rounded-xl text-white disabled:opacity-40 disabled:cursor-not-allowed shadow-xs transition-colors shrink-0 ${editingMessage ? 'bg-amber-600 hover:bg-amber-700' : 'bg-primary hover:bg-primary-hover'}`}
-          title={editingMessage ? 'Save edit' : 'Send message'}
+          onClick={handleAction}
+          disabled={sending}
+          className={`p-2 sm:p-2.5 rounded-xl shadow-xs transition-all shrink-0 ${
+            editingMessage
+              ? 'bg-amber-600 hover:bg-amber-700 text-white'
+              : c.hasContent
+              ? 'bg-primary hover:bg-primary-hover text-white'
+              : 'bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 hover:scale-105 active:scale-95'
+          }`}
+          title={editingMessage ? 'Save edit' : c.hasContent ? 'Send message' : 'Record voice note (Coming soon)'}
         >
           {editingMessage ? <Check className="w-4 h-4" /> : c.hasContent ? <Send className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
         </button>
