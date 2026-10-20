@@ -15,7 +15,18 @@ export const useChatMessageFetcher = ({ activeId, setConversations }) => {
         cacheRef.current[id] = list;
         setMessages(list);
         setLoadingMessages(false);
-        setConversations((prev) => prev.map((c) => (c._id === id ? { ...c, unread_count: 0 } : c)));
+        setConversations((prev) =>
+          prev.map((c) =>
+            c._id === id
+              ? {
+                  ...c,
+                  unread_count: 0,
+                  is_online: res.data.is_online !== undefined ? res.data.is_online : c.is_online,
+                  disappearing_messages: res.data.disappearing_messages !== undefined ? res.data.disappearing_messages : c.disappearing_messages
+                }
+              : c
+          )
+        );
       }
     } catch {
       setLoadingMessages(false);

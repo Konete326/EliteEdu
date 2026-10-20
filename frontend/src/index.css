@@ -242,6 +242,10 @@ html:not([data-sidebar-bg]) .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
   @page {
     margin: 0;
   }
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
   html, body {
     margin: 0 !important;
     padding: 0 !important;

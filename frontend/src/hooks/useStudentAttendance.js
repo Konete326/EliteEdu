@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import api from '../services/api';
+import { formatStandardTime } from '../utils/timeFormatters';
 
 const getTodayLocalDate = () => {
   const d = new Date();
@@ -155,7 +156,7 @@ export const useStudentAttendance = () => {
       setScanning(true);
       const res = await api.post('/attendance/scan-card', { code, date, grade_id: selectedGradeId || undefined, status: 'P' });
       const data = res.data;
-      const scanItem = { student: data.student, status: data.status, time: new Date().toLocaleTimeString() };
+      const scanItem = { student: data.student, status: data.status, time: formatStandardTime(new Date()) };
       setLastScanned(scanItem);
       setScanHistory((prev) => [scanItem, ...prev.slice(0, 19)]);
       if (data.summary) setSummary(data.summary);

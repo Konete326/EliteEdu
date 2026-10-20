@@ -42,7 +42,7 @@ import {
   AccountsSuitePage, StaffPayrollPage, LmsSuitePage, TimetablePage,
   PosStorePage, StorePosPage, BehaviorSkillsPage, CampusTransferPage, CampusOperationsHubPage,
   CampusOperationsPage, PlannersAndEventsPage, BulkMigrationPage, BulkDataImportPage, TransportManagementPage,
-  MessagingStudioPage
+  MessagingStudioPage, ZoomSettingsPage
 } from './pages/admin';
 import StudentPortalPage from './pages/student/StudentPortalPage';
 
@@ -163,6 +163,7 @@ function App() {
                     <Route path="/admin/exam-management/grading-policies" element={<GradingPoliciesPage />} />
                     <Route path="/admin/exams/grading-policies" element={<GradingPoliciesPage />} />
                     <Route path="/admin/settings/general" element={<GeneralSettingsPage />} />
+                    <Route path="/admin/settings/integrations/zoom" element={<ZoomSettingsPage />} />
                     <Route path="/admin/general-settings/signatures" element={<GeneralSignaturesPage />} />
                     <Route path="/admin/settings/signatures" element={<GeneralSignaturesPage />} />
                     <Route path="/admin/settings/appearance" element={<ThemeSettingsPage />} />

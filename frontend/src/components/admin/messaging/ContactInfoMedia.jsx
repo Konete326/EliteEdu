@@ -27,7 +27,13 @@ const ContactInfoMedia = ({ messages = [] }) => {
       ) : (
         <div className="grid grid-cols-3 gap-2">
           {mediaList.slice(0, 6).map((m, idx) => {
-            const isImg = m.attachment_url.startsWith('data:image') || m.attachment_url.match(/\.(jpeg|jpg|gif|png|webp)/i);
+            const isImg = Boolean(
+              m.attachment_url && (
+                m.attachment_url.includes('cloudinary') ||
+                m.attachment_url.startsWith('data:image') ||
+                m.attachment_url.match(/\.(jpeg|jpg|gif|png|webp)/i)
+              )
+            );
             return (
               <a
                 key={m._id || idx}

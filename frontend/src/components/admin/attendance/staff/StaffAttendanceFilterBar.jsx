@@ -21,7 +21,7 @@ const StaffAttendanceFilterBar = ({
   loaded
 }) => {
   return (
-    <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-5 shadow-xs space-y-4">
+    <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-4 shadow-xs space-y-3">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
         <div className="lg:col-span-4">
           <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1.5">
@@ -51,8 +51,9 @@ const StaffAttendanceFilterBar = ({
           <input
             type="date"
             value={date}
+            onClick={(e) => e.target.showPicker && e.target.showPicker()}
             onChange={(e) => onDateChange(e.target.value)}
-            className="w-full bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-3.5 py-2 text-xs font-medium text-ink dark:text-ink-dark outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+            className="w-full bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-3.5 py-2 text-xs font-medium text-ink dark:text-ink-dark outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer"
           />
         </div>
 

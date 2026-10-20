@@ -38,6 +38,9 @@ const ConversationItem = ({ conversation, isActive, onSelect, onToggleFavorite }
             {conversation.title ? conversation.title.slice(0, 2).toUpperCase() : 'U'}
           </div>
         )}
+        {!conversation.is_group && (
+          <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-slate-800 ${conversation.is_online ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+        )}
       </div>
 
       <div className="flex-1 min-w-0">

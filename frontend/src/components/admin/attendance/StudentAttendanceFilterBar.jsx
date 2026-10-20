@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check, BarChart3, FileSpreadsheet, CheckCheck, XCircle, Clock, AlertCircle } from 'lucide-react';
+import { ChevronDown, Printer, BarChart3, CheckCheck, XCircle, Clock, AlertCircle } from 'lucide-react';
+import ClassSearchableSelect from './ClassSearchableSelect';
 
 const StudentAttendanceFilterBar = ({
   grades = [],
@@ -43,27 +44,18 @@ const StudentAttendanceFilterBar = ({
   };
 
   return (
-    <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-5 shadow-xs space-y-4">
+    <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-4 shadow-xs space-y-3">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
         <div className="lg:col-span-3">
           <label className="block text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1.5">
             Select Class
           </label>
-          <div className="relative">
-            <select
-              value={selectedGradeId}
-              onChange={(e) => onGradeChange(e.target.value)}
-              className="w-full appearance-none bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-3.5 py-2 text-xs font-medium text-ink dark:text-ink-dark outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer"
-            >
-              <option value="">Select Class</option>
-              {grades.map((g) => (
-                <option key={g._id} value={g._id}>
-                  {g.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="w-4 h-4 text-ink-muted absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-          </div>
+          <ClassSearchableSelect
+            grades={grades}
+            selectedGradeId={selectedGradeId}
+            onGradeChange={onGradeChange}
+            placeholder="Type class name or select..."
+          />
         </div>
 
         <div className="lg:col-span-3">
@@ -181,16 +173,6 @@ const StudentAttendanceFilterBar = ({
 
           <button
             type="button"
-            title="Quick Mark All Present"
-            onClick={() => onMarkAll('P')}
-            disabled={!loaded || !hasRecords}
-            className="p-2 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark text-ink-muted hover:text-emerald-600 hover:border-emerald-300 transition-all cursor-pointer disabled:opacity-40"
-          >
-            <Check className="w-4 h-4 text-emerald-600" />
-          </button>
-
-          <button
-            type="button"
             title="Attendance Statistics & Analytics"
             onClick={onOpenStats}
             className="p-2 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark text-ink-muted hover:text-primary hover:border-primary transition-all cursor-pointer"
@@ -204,7 +186,7 @@ const StudentAttendanceFilterBar = ({
             onClick={onPrint}
             className="p-2 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark text-ink-muted hover:text-primary hover:border-primary transition-all cursor-pointer"
           >
-            <FileSpreadsheet className="w-4 h-4" />
+            <Printer className="w-4 h-4" />
           </button>
         </div>
       </div>

@@ -18,7 +18,7 @@ const StudentAttendanceContentCard = ({
   const rate = total > 0 ? Math.round((present / total) * 100) : 0;
 
   return (
-    <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl shadow-xs overflow-hidden flex flex-col min-h-[460px]">
+    <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl shadow-xs overflow-hidden flex flex-col flex-1 min-h-0">
       {!loaded ? (
         <div className="flex-1 p-16 flex items-center justify-center text-center">
           <p className="text-xs sm:text-sm font-medium text-ink-muted dark:text-ink-muted">
@@ -43,8 +43,8 @@ const StudentAttendanceContentCard = ({
           </p>
         </div>
       ) : (
-        <div className="flex flex-col h-full">
-          <div className="flex-1">
+        <div className="flex flex-col h-full flex-1 min-h-0">
+          <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
             <StudentAttendanceSheetTable
               records={records}
               onStatusChange={onStatusChange}
@@ -52,7 +52,7 @@ const StudentAttendanceContentCard = ({
             />
           </div>
 
-          <div className="p-4 border-t border-line dark:border-line-dark bg-surface-secondary/40 dark:bg-surface-secondary-dark/40 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="shrink-0 p-3.5 border-t border-line dark:border-line-dark bg-surface-secondary/40 dark:bg-surface-secondary-dark/40 flex flex-wrap items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-4 flex-wrap font-semibold">
               <span className="text-ink-muted">
                 Total Enrolled: <strong className="text-ink dark:text-ink-dark font-bold">{total}</strong>

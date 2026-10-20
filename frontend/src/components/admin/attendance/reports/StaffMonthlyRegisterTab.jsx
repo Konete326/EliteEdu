@@ -31,8 +31,8 @@ const StaffMonthlyRegisterTab = ({ activeCampusId }) => {
   const exportRows = (data.matrix || []).map((m) => ({ ...m, staff_name: m.staff?.name, designation: m.staff?.designation }));
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs print:hidden">
+    <div className="space-y-3 flex-1 min-h-0 flex flex-col">
+      <div className="shrink-0 flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs print:hidden">
         <div className="flex flex-wrap items-center gap-2">
           <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} className="px-2.5 py-1.5 rounded-xl border border-line bg-transparent text-xs font-mono font-bold" />
           <select value={designation} onChange={(e) => setDesignation(e.target.value)} className="px-2.5 py-1.5 rounded-xl border border-line bg-transparent text-xs font-semibold">
@@ -43,20 +43,22 @@ const StaffMonthlyRegisterTab = ({ activeCampusId }) => {
         <button onClick={loadMatrix} className="px-3.5 py-1.5 rounded-xl bg-surface-secondary text-xs font-bold hover:bg-line text-ink cursor-pointer">Filter</button>
       </div>
 
-      <ReportExportToolbar columns={exportCols} rows={exportRows} filename={`staff-register-${month}`} searchTerm={search} onSearchChange={setSearch} />
+      <div className="shrink-0">
+        <ReportExportToolbar columns={exportCols} rows={exportRows} filename={`staff-register-${month}`} searchTerm={search} onSearchChange={setSearch} />
+      </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs print:[print-color-adjust:exact]">
         <table className="w-full text-left text-xs border-collapse">
-          <thead className="bg-surface-secondary/70 dark:bg-white/[0.03] border-b border-line dark:border-line-dark text-[10px] font-bold text-ink-muted uppercase">
+          <thead className="sticky top-0 z-20 bg-surface dark:bg-surface-dark shadow-2xs border-b border-line dark:border-line-dark text-[10px] font-bold text-ink-muted uppercase">
             <tr>
-              <th className="py-2.5 px-3 sticky left-0 bg-surface dark:bg-surface-dark z-10 min-w-[150px]">Faculty / Staff</th>
+              <th className="py-2.5 px-3 sticky left-0 bg-surface dark:bg-surface-dark z-30 min-w-[150px] border-r border-line dark:border-line-dark shadow-[2px_0_4px_rgba(0,0,0,0.05)]">Faculty / Staff</th>
               {(data.days || []).map((d) => (
-                <th key={d.day} className="py-1 px-1 text-center min-w-[24px] font-mono">{d.day}</th>
+                <th key={d.day} className="py-1 px-1 text-center min-w-[24px] font-mono bg-surface dark:bg-surface-dark">{d.day}</th>
               ))}
-              <th className="py-2.5 px-2 text-center text-emerald-600">P</th>
-              <th className="py-2.5 px-2 text-center text-rose-600">A</th>
-              <th className="py-2.5 px-2 text-center text-amber-600">L</th>
-              <th className="py-2.5 px-2 text-center text-primary">%</th>
+              <th className="py-2.5 px-2 text-center text-emerald-600 bg-surface dark:bg-surface-dark">P</th>
+              <th className="py-2.5 px-2 text-center text-rose-600 bg-surface dark:bg-surface-dark">A</th>
+              <th className="py-2.5 px-2 text-center text-amber-600 bg-surface dark:bg-surface-dark">L</th>
+              <th className="py-2.5 px-2 text-center text-primary bg-surface dark:bg-surface-dark">%</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line dark:divide-line-dark font-mono text-[11px]">
@@ -65,7 +67,7 @@ const StaffMonthlyRegisterTab = ({ activeCampusId }) => {
             ) : (
               data.matrix?.map((row) => (
                 <tr key={row.staff?._id} className="hover:bg-surface-secondary/40 transition-colors">
-                  <td className="py-2 px-3 sticky left-0 bg-surface dark:bg-surface-dark z-10 font-sans">
+                  <td className="py-2 px-3 sticky left-0 bg-surface dark:bg-surface-dark z-10 font-sans border-r border-line dark:border-line-dark shadow-[2px_0_4px_rgba(0,0,0,0.05)]">
                     <div className="font-bold text-ink dark:text-white truncate max-w-[150px]">{row.staff?.name}</div>
                     <div className="text-[10px] text-ink-muted">{row.staff?.designation || 'Faculty'} • {row.staff?.employee_code || '—'}</div>
                   </td>

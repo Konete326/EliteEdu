@@ -23,7 +23,7 @@ const plannerEventRoutes = require('./routes/plannerEventRoutes'); const operati
 const behaviorRoutes = require('./routes/behaviorRoutes'); const bulkMigrationRoutes = require('./routes/bulkMigrationRoutes');
 const bulkImportRoutes = require('./routes/bulkImportRoutes'); const campusTransferRoutes = require('./routes/campusTransferRoutes');
 const transportRoutes = require('./routes/transportRoutes'); const studentPortalRoutes = require('./routes/studentPortalRoutes');
-const messengerRoutes = require('./routes/messengerRoutes'); const scannerRoutes = require('./routes/scannerRoutes'); const messagingRoutes = require('./routes/messagingRoutes');
+const messengerRoutes = require('./routes/messengerRoutes'); const scannerRoutes = require('./routes/scannerRoutes'); const messagingRoutes = require('./routes/messagingRoutes'); const zoomRoutes = require('./routes/zoomRoutes');
 const auditLogger = require('./middlewares/auditLogger');
 const sanitizePayload = require('./utils/sanitizePayload');
 const seedSuperAdmin = require('./utils/seedSuperAdmin');
@@ -33,7 +33,7 @@ const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/eliteedu';
 
 app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: true }));
-app.use(express.json({ limit: '25mb' }));
+app.use(express.json({ limit: '25mb', verify: (req, res, buf) => { req.rawBody = buf.toString(); } }));
 app.use(express.urlencoded({ limit: '25mb', extended: true }));
 app.use((req, res, next) => {
   if (req.body && typeof req.body === 'object') req.body = sanitizePayload(req.body);
@@ -84,7 +84,7 @@ const routes = [
   [['/api/bulk-import', '/bulk-import'], bulkImportRoutes], [['/api/campus-transfers', '/campus-transfers'], campusTransferRoutes],
   [['/api/transport', '/transport'], transportRoutes], [['/api/student-portal', '/student-portal'], studentPortalRoutes],
   [['/api/messenger', '/messenger'], messengerRoutes], [['/api/scanner', '/scanner'], scannerRoutes],
-  [['/api/messaging', '/messaging'], messagingRoutes]
+  [['/api/messaging', '/messaging'], messagingRoutes], [['/api/zoom', '/zoom'], zoomRoutes]
 ];
 routes.forEach(([paths, handler]) => app.use(paths, handler));
 

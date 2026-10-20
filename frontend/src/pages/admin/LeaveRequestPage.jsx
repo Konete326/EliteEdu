@@ -71,32 +71,35 @@ const LeaveRequestPage = () => {
   };
 
   return (
-    <div className="w-full space-y-6 pb-12">
-      <LeaveHeader
-        totalLeaves={data.pagination?.total || data.leaves?.length || 0}
-        onNewLeave={() => setIsModalOpen(true)}
-        onReload={loadLeaves}
-        loading={loading}
-      />
+    <div className="w-full h-full flex flex-col min-h-0 gap-3">
+      <div className="shrink-0 space-y-3">
+        <LeaveHeader
+          totalLeaves={data.pagination?.total || data.leaves?.length || 0}
+          onNewLeave={() => setIsModalOpen(true)}
+          onReload={loadLeaves}
+          loading={loading}
+        />
+        <LeaveKpiStrip kpis={data.kpis} activeStatus={statusFilter} onSelectStatus={setStatusFilter} />
+      </div>
 
-      <LeaveKpiStrip kpis={data.kpis} activeStatus={statusFilter} onSelectStatus={setStatusFilter} />
-
-      <LeaveRequestsTable
-        leaves={data.leaves || []}
-        pagination={data.pagination || {}}
-        search={search}
-        onSearchChange={setSearch}
-        statusFilter={statusFilter}
-        onStatusChange={setStatusFilter}
-        applicantFilter={applicantFilter}
-        onApplicantChange={setApplicantFilter}
-        onApprove={(l) => handleUpdateStatus(l, 'Approved')}
-        onReject={(l) => handleUpdateStatus(l, 'Rejected')}
-        onPrint={setActiveSlip}
-        onDelete={setDeleteTarget}
-        isProcessing={loading}
-        onPageChange={setPage}
-      />
+      <div className="flex-1 min-h-0 flex flex-col">
+        <LeaveRequestsTable
+          leaves={data.leaves || []}
+          pagination={data.pagination || {}}
+          search={search}
+          onSearchChange={setSearch}
+          statusFilter={statusFilter}
+          onStatusChange={setStatusFilter}
+          applicantFilter={applicantFilter}
+          onApplicantChange={setApplicantFilter}
+          onApprove={(l) => handleUpdateStatus(l, 'Approved')}
+          onReject={(l) => handleUpdateStatus(l, 'Rejected')}
+          onPrint={setActiveSlip}
+          onDelete={setDeleteTarget}
+          isProcessing={loading}
+          onPageChange={setPage}
+        />
+      </div>
 
       <LeaveApplicationModal
         isOpen={isModalOpen}

@@ -31,9 +31,10 @@ const buildConversationQuery = ({ schoolId, userId, filter = 'all', search = '' 
   return query;
 };
 
-const mapConversationCard = (c, userId) => {
+const mapConversationCard = (c, userId, onlineUserIds = new Set()) => {
   const myPart = c.participants.find((p) => String(p.user_id) === String(userId)) || {};
   const otherPart = c.participants.find((p) => String(p.user_id) !== String(userId)) || myPart;
+  const isOnline = !c.is_group && otherPart.user_id ? onlineUserIds.has(String(otherPart.user_id)) : false;
   return {
     _id: c._id,
     is_group: c.is_group,
@@ -45,6 +46,7 @@ const mapConversationCard = (c, userId) => {
     subtitle: c.is_group ? `${c.participants.length} members` : otherPart.role_label || 'Staff',
     avatar_url: c.is_group ? '' : otherPart.avatar_url || '',
     other_user_id: c.is_group ? null : otherPart.user_id,
+    is_online: isOnline,
     unread_count: myPart.unread_count || 0,
     is_favorite: Boolean(myPart.is_favorite),
     is_pinned: Boolean(myPart.is_pinned),

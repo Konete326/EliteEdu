@@ -4,6 +4,7 @@ const User = require('../models/User');
 const StudentAttendance = require('../models/StudentAttendance');
 const StaffAttendance = require('../models/StaffAttendance');
 const { verifyClassAccess } = require('./attendanceAccessHelper');
+const { formatStandardTime } = require('./timeFormatter');
 
 const cleanCodeString = (raw) => {
   let clean = String(raw || '').trim();
@@ -49,7 +50,7 @@ const lookupStudent = async (clean, schoolId, user, date) => {
       blood_group: student.blood_group || '',
       status: student.status || 'Active',
       today_attendance: todayAtt?.status || null,
-      time_recorded: todayAtt?.scan_time ? new Date(todayAtt.scan_time).toLocaleTimeString() : null
+      time_recorded: todayAtt?.scan_time ? formatStandardTime(todayAtt.scan_time) : null
     }
   };
 };

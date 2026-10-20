@@ -11,14 +11,14 @@ const STATUS_BUTTONS = [
 
 const StudentAttendanceSheetTable = ({ records = [], onStatusChange, onRemarksChange }) => {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left text-xs">
-        <thead className="bg-surface-secondary/50 dark:bg-surface-secondary-dark/50 text-ink-muted border-b border-line dark:border-line-dark uppercase tracking-wider text-[10px] font-semibold">
+    <div className="overflow-x-auto overflow-y-auto flex-1 min-h-0 h-full">
+      <table className="w-full text-left text-xs border-collapse">
+        <thead className="sticky top-0 z-10 bg-surface dark:bg-surface-dark shadow-2xs text-ink-muted border-b border-line dark:border-line-dark uppercase tracking-wider text-[10px] font-semibold">
           <tr>
-            <th className="py-3 px-4 w-28">Roll / GR</th>
-            <th className="py-3 px-4">Student Details</th>
-            <th className="py-3 px-4 text-center w-56">Attendance Status</th>
-            <th className="py-3 px-4 w-60">Remarks</th>
+            <th className="py-3 px-4 w-28 bg-surface dark:bg-surface-dark">Roll / GR</th>
+            <th className="py-3 px-4 bg-surface dark:bg-surface-dark">Student Details</th>
+            <th className="py-3 px-4 text-center w-56 bg-surface dark:bg-surface-dark">Attendance Status</th>
+            <th className="py-3 px-4 w-60 bg-surface dark:bg-surface-dark">Remarks</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-line/60 dark:divide-line-dark/60 text-ink dark:text-ink-dark">
@@ -26,6 +26,7 @@ const StudentAttendanceSheetTable = ({ records = [], onStatusChange, onRemarksCh
             const student = r.student || {};
             const fullName = (student.name || `${student.first_name || ''} ${student.last_name || ''}`).trim() || 'Student';
             const rollDisplay = student.roll_number || student.gr_number || `S-${idx + 1}`;
+            const photo = student.photo_url || student.avatar_url || student.image || student.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0d9488&color=fff&size=64&bold=true`;
 
             return (
               <tr key={student._id || r._id} className="hover:bg-surface-secondary/40 dark:hover:bg-surface-secondary-dark/40 transition-colors">
@@ -35,9 +36,16 @@ const StudentAttendanceSheetTable = ({ records = [], onStatusChange, onRemarksCh
 
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden border border-line dark:border-line-dark">
-                      {student.photo_url ? (
-                        <img src={student.photo_url} alt="" className="w-full h-full object-cover" />
+                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden border border-line dark:border-line-dark shadow-2xs">
+                      {photo ? (
+                        <img
+                          src={photo}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
                       ) : (
                         <User className="w-4 h-4" />
                       )}

@@ -3,7 +3,9 @@ const StaffAttendance = require('../models/StaffAttendance');
 const User = require('../models/User');
 const { buildSummary, resolveSchoolId } = require('./staffAttendanceQueryController');
 
-const formatTimeNow = () => new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+const { formatStandardTime } = require('../utils/timeFormatter');
+
+const formatTimeNow = () => formatStandardTime();
 
 const resolveStaffMember = async (code, school_id) => {
   let staffId = null;

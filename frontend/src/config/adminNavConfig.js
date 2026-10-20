@@ -88,7 +88,7 @@ export const getAdminNavItems = (schoolType) => [
     title: 'Messaging',
     icon: MessageSquare,
     subItems: [
-      { name: 'Internal Messaging', path: '/admin/messaging/internal' },
+      { name: 'Msg', path: '/admin/messaging/internal' },
       { name: 'Notification Center', path: '/admin/notifications' }
     ]
   },
@@ -144,6 +144,7 @@ export const getAdminNavItems = (schoolType) => [
     icon: Sliders,
     subItems: [
       { name: 'General Settings', path: '/admin/settings/general' },
+      { name: 'Zoom Integration', path: '/admin/settings/integrations/zoom' },
       { name: 'Digital Signatures & Stamps', path: '/admin/general-settings/signatures' },
       { name: 'Roles & Permissions', path: '/admin/settings/roles' },
       { name: 'User Management', path: '/admin/control-panel/user-management' },
@@ -291,7 +292,7 @@ export const getNavCategories = (user) => {
         title: 'Messaging',
         icon: MessageSquare,
         subItems: [
-          { name: 'Internal Messaging', path: '/admin/messaging/internal' },
+          { name: 'Msg', path: '/admin/messaging/internal' },
           { name: 'Notification Center', path: '/admin/notifications' }
         ]
       });
@@ -388,7 +389,7 @@ export const getAllAdminRoutes = () => {
     '/admin/students/promote', '/admin/control-panel/class-transfer',
     '/admin/control-panel/user-management', '/admin/settings/roles', '/admin/control-panel/roles', '/admin/roles',
     '/admin/notifications', '/admin/messaging/notifications', '/admin/circular', '/teacher/notifications', '/superadmin/notifications',
-    '/admin/settings/general', '/admin/general-settings/signatures',
+    '/admin/settings/general', '/admin/settings/integrations/zoom', '/admin/general-settings/signatures',
     '/admin/settings/signatures', '/admin/attendance/students', '/admin/attendance/staff',
     '/admin/attendance/employees', '/admin/attendance/leave-request', '/admin/attendance/report',
     '/admin/certificates', '/admin/certificates/templates',
@@ -473,6 +474,7 @@ export const getRouteTitle = (pathname) => {
   if (pathname === '/admin/settings/roles' || pathname === '/admin/control-panel/roles' || pathname === '/admin/roles') return 'Roles & Permissions';
   if (pathname === '/admin/notifications' || pathname === '/admin/messaging/notifications' || pathname === '/admin/circular' || pathname === '/teacher/notifications' || pathname === '/superadmin/notifications') return 'Notification Center & Broadcasts';
   if (pathname === '/admin/general-settings/signatures' || pathname === '/admin/settings/signatures') return 'Digital Signatures & Stamps Studio';
+  if (pathname === '/admin/settings/integrations/zoom') return 'Zoom Team Chat Integration';
   if (pathname === '/admin/attendance/students') return 'Student Attendance';
   if (pathname === '/admin/attendance/staff' || pathname === '/admin/attendance/employees') return 'Staff Attendance';
   if (pathname === '/admin/attendance/leave-request' || pathname === '/teacher/leaves') return 'Leave Request Engine';

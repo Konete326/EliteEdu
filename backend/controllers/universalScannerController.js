@@ -4,6 +4,7 @@ const StudentAttendance = require('../models/StudentAttendance');
 const StaffAttendance = require('../models/StaffAttendance');
 const { resolveUniversalCode } = require('../utils/scannerLookupHelper');
 const { verifyClassAccess } = require('../utils/attendanceAccessHelper');
+const { formatStandardTime } = require('../utils/timeFormatter');
 
 const universalLookup = async (req, res) => {
   try {
@@ -68,7 +69,7 @@ const quickMarkAttendance = async (req, res) => {
       const staff = await User.findOne({ _id: id, school_id });
       if (!staff) return res.status(404).json({ success: false, message: 'Staff member not found' });
 
-      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+      const now = formatStandardTime();
       await StaffAttendance.findOneAndUpdate(
         { school_id, staff_id: staff._id, date },
         {

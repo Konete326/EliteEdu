@@ -1,16 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Phone, Mail, UserX, ShieldAlert } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { AlertTriangle, ShieldAlert, Sliders } from 'lucide-react';
 import api from '../../../../services/api';
 import ReportExportToolbar from '../../reports/ReportExportToolbar';
 import OfficialSignatureStampBlock from '../../../common/OfficialSignatureStampBlock';
 
+const getInstitutionalThreshold = () => {
+  try {
+    const raw = localStorage.getItem('elite_attendance_settings');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed.lowAttendanceThreshold) return Number(parsed.lowAttendanceThreshold);
+    }
+  } catch {}
+  return 75;
+};
+
 const LowAttendanceAlertTab = ({ activeCampusId }) => {
   const [month, setMonth] = useState(new Date().toISOString().slice(0, 7));
-  const [threshold, setThreshold] = useState(75);
+  const [policyThreshold, setPolicyThreshold] = useState(getInstitutionalThreshold);
+  const [threshold, setThreshold] = useState(getInstitutionalThreshold);
   const [targetType, setTargetType] = useState('Student');
   const [data, setData] = useState({ matrix: [] });
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
+
+  const syncSettings = useCallback(() => {
+    const current = getInstitutionalThreshold();
+    setPolicyThreshold(current);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('elite_attendance_settings_updated', syncSettings);
+    window.addEventListener('storage', syncSettings);
+    return () => {
+      window.removeEventListener('elite_attendance_settings_updated', syncSettings);
+      window.removeEventListener('storage', syncSettings);
+    };
+  }, [syncSettings]);
 
   const loadAlerts = async () => {
     try {
@@ -36,39 +62,94 @@ const LowAttendanceAlertTab = ({ activeCampusId }) => {
     presentCount: r.presentCount, absentCount: r.absentCount, leaveCount: r.leaveCount, percentage: r.percentage
   }));
 
+  const handleUpdatePolicyDefault = () => {
+    try {
+      const raw = localStorage.getItem('elite_attendance_settings');
+      const existing = raw ? JSON.parse(raw) : {};
+      existing.lowAttendanceThreshold = Number(threshold);
+      localStorage.setItem('elite_attendance_settings', JSON.stringify(existing));
+      setPolicyThreshold(Number(threshold));
+      window.dispatchEvent(new Event('elite_attendance_settings_updated'));
+      window.dispatchEvent(new Event('elite_settings_updated'));
+    } catch {}
+  };
+
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs print:hidden">
-        <div className="flex flex-wrap items-center gap-2">
-          <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} className="px-2.5 py-1.5 rounded-xl border border-line bg-transparent text-xs font-mono font-bold" />
-          <select value={targetType} onChange={(e) => setTargetType(e.target.value)} className="px-2.5 py-1.5 rounded-xl border border-line bg-transparent text-xs font-semibold">
-            <option value="Student">Students At-Risk</option>
-            <option value="Staff">Faculty / Staff At-Risk</option>
-          </select>
-          <select value={threshold} onChange={(e) => setThreshold(Number(e.target.value))} className="px-2.5 py-1.5 rounded-xl border border-line bg-transparent text-xs font-semibold">
-            <option value={75}>Below 75% (Official Policy)</option>
-            <option value={60}>Below 60% (Severe Defaulters)</option>
-            <option value={50}>Below 50% (Critical)</option>
-          </select>
+    <div className="space-y-3 flex-1 min-h-0 flex flex-col">
+      <div className="shrink-0 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs print:hidden">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <input
+              type="month"
+              value={month}
+              onChange={(e) => setMonth(e.target.value)}
+              className="px-2.5 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-surface-secondary-dark/50 text-xs font-mono font-bold text-ink dark:text-ink-dark outline-none focus:border-primary"
+            />
+            <select
+              value={targetType}
+              onChange={(e) => setTargetType(e.target.value)}
+              className="px-2.5 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-surface-secondary-dark/50 text-xs font-semibold text-ink dark:text-ink-dark outline-none focus:border-primary"
+            >
+              <option value="Student">Students At-Risk</option>
+              <option value="Staff">Faculty / Staff At-Risk</option>
+            </select>
+            <div className="flex items-center gap-1.5">
+              <select
+                value={threshold}
+                onChange={(e) => setThreshold(Number(e.target.value))}
+                className="px-2.5 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-surface-secondary-dark/50 text-xs font-semibold text-ink dark:text-ink-dark outline-none focus:border-primary"
+              >
+                <option value={policyThreshold}>Below {policyThreshold}% (Official Policy)</option>
+                <option value={80}>Below 80% (Warning Level)</option>
+                <option value={75}>Below 75% (Standard Default)</option>
+                <option value={60}>Below 60% (Severe Defaulters)</option>
+                <option value={50}>Below 50% (Critical Alert)</option>
+              </select>
+              <div className="flex items-center gap-1 bg-surface-secondary/50 dark:bg-surface-secondary-dark/50 border border-line dark:border-line-dark rounded-xl px-2 py-1">
+                <span className="text-[11px] text-ink-muted font-bold">%</span>
+                <input
+                  type="number"
+                  min="10"
+                  max="99"
+                  value={threshold}
+                  onChange={(e) => setThreshold(Number(e.target.value))}
+                  className="w-12 text-xs font-bold text-ink dark:text-ink-dark bg-transparent outline-none"
+                  title="Custom Attendance Threshold %"
+                />
+              </div>
+              {threshold !== policyThreshold && (
+                <button
+                  type="button"
+                  onClick={handleUpdatePolicyDefault}
+                  className="px-2.5 py-1 rounded-xl text-[10px] font-bold bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 transition-all cursor-pointer flex items-center gap-1"
+                  title="Save current threshold as institutional policy default"
+                >
+                  <Sliders size={12} />
+                  <span>Set as Default</span>
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="text-xs font-bold text-rose-600 bg-rose-500/10 border border-rose-500/20 px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+            <AlertTriangle size={14} />
+            <span>{atRiskRows.length} Defaulters Below {threshold}%</span>
+          </div>
         </div>
-        <div className="text-xs font-bold text-rose-600 bg-rose-500/10 px-3 py-1 rounded-xl flex items-center gap-1.5">
-          <AlertTriangle size={14} /> {atRiskRows.length} Defaulters Detected
-        </div>
+
+        <ReportExportToolbar columns={exportCols} rows={exportRows} filename={`low-attendance-${month}`} searchTerm={search} onSearchChange={setSearch} />
       </div>
 
-      <ReportExportToolbar columns={exportCols} rows={exportRows} filename={`low-attendance-${month}`} searchTerm={search} onSearchChange={setSearch} />
-
-      <div className="overflow-x-auto rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs print:[print-color-adjust:exact]">
         <table className="w-full text-left text-xs border-collapse">
-          <thead className="bg-surface-secondary/70 dark:bg-white/[0.03] border-b border-line dark:border-line-dark text-[11px] font-bold text-ink-muted uppercase">
+          <thead className="sticky top-0 z-20 bg-surface dark:bg-surface-dark shadow-2xs border-b border-line dark:border-line-dark text-[11px] font-bold text-ink-muted uppercase">
             <tr>
-              <th className="py-2.5 px-3">Subject Profile</th>
-              <th className="py-2.5 px-3">Class / Designation</th>
-              <th className="py-2.5 px-3 text-center text-emerald-600">Present</th>
-              <th className="py-2.5 px-3 text-center text-rose-600">Absent</th>
-              <th className="py-2.5 px-3 text-center text-amber-600">Leave</th>
-              <th className="py-2.5 px-3 text-center">Attendance %</th>
-              <th className="py-2.5 px-3">Defaulter Status</th>
+              <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Subject Profile</th>
+              <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Class / Designation</th>
+              <th className="py-2.5 px-3 text-center text-emerald-600 bg-surface dark:bg-surface-dark">Present</th>
+              <th className="py-2.5 px-3 text-center text-rose-600 bg-surface dark:bg-surface-dark">Absent</th>
+              <th className="py-2.5 px-3 text-center text-amber-600 bg-surface dark:bg-surface-dark">Leave</th>
+              <th className="py-2.5 px-3 text-center bg-surface dark:bg-surface-dark">Attendance %</th>
+              <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Defaulter Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line dark:divide-line-dark">

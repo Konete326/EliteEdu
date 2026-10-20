@@ -66,3 +66,4 @@ export { default as BulkDataImportPage } from './BulkDataImportPage';
 export { default as TransportManagementPage } from './TransportManagementPage';
 export { default as MessagingStudioPage } from './MessagingStudioPage';
 export { default as ComingSoonPage } from './ComingSoonPage';
+export { default as ZoomSettingsPage } from './ZoomSettingsPage';

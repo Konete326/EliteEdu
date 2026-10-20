@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import ChatMessageBubble from './ChatMessageBubble';
+import { filterChatMessages } from '../../../utils/chatSearchHelper';
 
 const ChatMessagesList = ({
   messages = [],
@@ -9,6 +10,7 @@ const ChatMessagesList = ({
   onEdit,
   onDelete,
   onCardAction,
+  onFormSubmit,
   searchTerm = ''
 }) => {
   const bottomRef = useRef(null);
@@ -17,11 +19,7 @@ const ChatMessagesList = ({
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages.length]);
 
-  const filtered = searchTerm
-    ? messages.filter((m) =>
-        m.message_text.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : messages;
+  const filtered = filterChatMessages(messages, searchTerm);
 
   return (
     <div className="flex-1 overflow-y-auto p-4 z-10 flex flex-col justify-start">
@@ -39,8 +37,15 @@ const ChatMessagesList = ({
         </div>
       ) : filtered.length === 0 ? (
         <div className="my-auto text-center py-10 select-none">
-          <div className="inline-block px-4 py-1.5 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700 text-slate-500 text-xs font-semibold shadow-2xs">
-            {searchTerm ? 'No matching messages found' : 'No messages yet • Say hello!'}
+          <div className="inline-flex flex-col items-center gap-1.5 px-5 py-3 rounded-2xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-slate-200/80 dark:border-slate-700 shadow-2xs max-w-sm">
+            <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+              {searchTerm ? `No messages found matching "${searchTerm}"` : 'No messages yet • Say hello!'}
+            </span>
+            {searchTerm && (
+              <span className="text-[11px] text-slate-400">
+                Search matches sender name, message text, card titles, and files.
+              </span>
+            )}
           </div>
         </div>
       ) : (
@@ -71,6 +76,8 @@ const ChatMessagesList = ({
                 onEdit={onEdit}
                 onDelete={onDelete}
                 onCardAction={onCardAction}
+                onFormSubmit={onFormSubmit}
+                searchTerm={searchTerm}
               />
             </React.Fragment>
           );

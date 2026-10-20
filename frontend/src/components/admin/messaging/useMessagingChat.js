@@ -12,6 +12,7 @@ export const useMessagingChat = () => {
   const [isDirectOpen, setIsDirectOpen] = useState(false);
   const [isGroupOpen, setIsGroupOpen] = useState(false);
   const [isCardModalOpen, setIsCardModalOpen] = useState(false);
+  const [isFormPollOpen, setIsFormPollOpen] = useState(false);
   const [isContactInfoOpen, setIsContactInfoOpen] = useState(false);
 
   const {
@@ -84,6 +85,13 @@ export const useMessagingChat = () => {
     } catch {}
   };
 
+  const handleFormSubmit = async (messageId, payload) => {
+    try {
+      const res = await api.post(`/messaging/messages/${messageId}/form-submit`, payload);
+      if (res.data?.success) updateMessage(activeId, messageId, res.data.data);
+    } catch {}
+  };
+
   const actions = useConversationActions({
     activeId, setActiveId, setMessages, setConversations, fetchConversations
   });
@@ -98,9 +106,10 @@ export const useMessagingChat = () => {
   return {
     conversations, activeId, setActiveId, filter, setFilter, search, setSearch,
     messages, loadingMessages,
-    isDirectOpen, setIsDirectOpen, isGroupOpen, setIsGroupOpen, isCardModalOpen, setIsCardModalOpen,
+    isDirectOpen, setIsDirectOpen, isGroupOpen, setIsGroupOpen,
+    isCardModalOpen, setIsCardModalOpen, isFormPollOpen, setIsFormPollOpen,
     isContactInfoOpen, setIsContactInfoOpen,
     fetchConversations, fetchMessages, handleSelectContact, handleSendMessage, handleSlashCommand,
-    handleCardAction, handleDeleteMessage, ...actions
+    handleCardAction, handleFormSubmit, handleDeleteMessage, ...actions
   };
 };

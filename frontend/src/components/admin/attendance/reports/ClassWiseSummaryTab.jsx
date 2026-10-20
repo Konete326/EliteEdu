@@ -29,44 +29,46 @@ const ClassWiseSummaryTab = ({ activeCampusId }) => {
   ];
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs print:hidden">
-        <div className="flex items-center gap-2">
-          <Calendar size={15} className="text-primary" />
-          <span className="text-xs font-bold text-ink-muted">Select Date:</span>
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="px-2.5 py-1 rounded-xl border border-line bg-transparent text-xs font-mono font-bold" />
+    <div className="space-y-3 flex-1 min-h-0 flex flex-col">
+      <div className="shrink-0 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs print:hidden">
+          <div className="flex items-center gap-2">
+            <Calendar size={15} className="text-primary" />
+            <span className="text-xs font-bold text-ink-muted">Select Date:</span>
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="px-2.5 py-1 rounded-xl border border-line bg-transparent text-xs font-mono font-bold" />
+          </div>
+          <button onClick={loadData} className="px-3.5 py-1.5 rounded-xl bg-surface-secondary text-xs font-bold hover:bg-line text-ink cursor-pointer">Refresh</button>
         </div>
-        <button onClick={loadData} className="px-3.5 py-1.5 rounded-xl bg-surface-secondary text-xs font-bold hover:bg-line text-ink cursor-pointer">Refresh</button>
-      </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 print:hidden">
-        <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark"><span className="text-[10px] text-ink-muted font-bold block">TOTAL ENROLLED</span><span className="text-lg font-bold font-mono">{data.kpis?.totalStudents || 0}</span></div>
-        <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark"><span className="text-[10px] text-emerald-600 font-bold block">PRESENT</span><span className="text-lg font-bold text-emerald-600 font-mono">{data.kpis?.present || 0}</span></div>
-        <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark"><span className="text-[10px] text-rose-600 font-bold block">ABSENT</span><span className="text-lg font-bold text-rose-600 font-mono">{data.kpis?.absent || 0}</span></div>
-        <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark"><span className="text-[10px] text-amber-600 font-bold block">ON LEAVE</span><span className="text-lg font-bold text-amber-600 font-mono">{data.kpis?.leave || 0}</span></div>
-        <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark"><span className="text-[10px] text-blue-600 font-bold block">LATE ARRIVALS</span><span className="text-lg font-bold text-blue-600 font-mono">{data.kpis?.late || 0}</span></div>
-        <div className="p-3 rounded-xl border border-primary/30 bg-primary/5"><span className="text-[10px] text-primary font-bold block">ATTENDANCE RATE</span><span className="text-lg font-bold text-primary font-mono">{data.kpis?.rate || 0}%</span></div>
-      </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 print:hidden">
+          <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark"><span className="text-[10px] text-ink-muted font-bold block">TOTAL ENROLLED</span><span className="text-lg font-bold font-mono">{data.kpis?.totalStudents || 0}</span></div>
+          <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark"><span className="text-[10px] text-emerald-600 font-bold block">PRESENT</span><span className="text-lg font-bold text-emerald-600 font-mono">{data.kpis?.present || 0}</span></div>
+          <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark"><span className="text-[10px] text-rose-600 font-bold block">ABSENT</span><span className="text-lg font-bold text-rose-600 font-mono">{data.kpis?.absent || 0}</span></div>
+          <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark"><span className="text-[10px] text-amber-600 font-bold block">ON LEAVE</span><span className="text-lg font-bold text-amber-600 font-mono">{data.kpis?.leave || 0}</span></div>
+          <div className="p-3 rounded-xl border border-line bg-surface dark:bg-surface-dark"><span className="text-[10px] text-blue-600 font-bold block">LATE ARRIVALS</span><span className="text-lg font-bold text-blue-600 font-mono">{data.kpis?.late || 0}</span></div>
+          <div className="p-3 rounded-xl border border-primary/30 bg-primary/5"><span className="text-[10px] text-primary font-bold block">ATTENDANCE RATE</span><span className="text-lg font-bold text-primary font-mono">{data.kpis?.rate || 0}%</span></div>
+        </div>
 
-      <ReportExportToolbar columns={exportCols} rows={filteredRows} filename={`class-attendance-${date}`} searchTerm={search} onSearchChange={setSearch} />
+        <ReportExportToolbar columns={exportCols} rows={filteredRows} filename={`class-attendance-${date}`} searchTerm={search} onSearchChange={setSearch} />
+      </div>
 
       <div className="hidden print:block text-center pb-2 border-b border-line mb-2">
         <h2 className="text-base font-black uppercase">{data.header?.school_name}</h2>
         <p className="text-xs font-bold text-slate-600">{data.header?.campus_name} — Class-Wise Attendance Summary ({date})</p>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs print:[print-color-adjust:exact]">
         <table className="w-full text-left text-xs border-collapse">
-          <thead className="bg-surface-secondary/70 dark:bg-white/[0.03] border-b border-line dark:border-line-dark text-[11px] font-bold text-ink-muted uppercase">
+          <thead className="sticky top-0 z-20 bg-surface dark:bg-surface-dark shadow-2xs border-b border-line dark:border-line-dark text-[11px] font-bold text-ink-muted uppercase">
             <tr>
-              <th className="py-2.5 px-3">Class & Section</th>
-              <th className="py-2.5 px-3 text-center">Enrolled</th>
-              <th className="py-2.5 px-3 text-center text-emerald-600">Present</th>
-              <th className="py-2.5 px-3 text-center text-rose-600">Absent</th>
-              <th className="py-2.5 px-3 text-center text-amber-600">Leave</th>
-              <th className="py-2.5 px-3 text-center text-blue-600">Late</th>
-              <th className="py-2.5 px-3 text-center text-ink-muted">Unmarked</th>
-              <th className="py-2.5 px-3">Attendance Rate</th>
+              <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Class & Section</th>
+              <th className="py-2.5 px-3 text-center bg-surface dark:bg-surface-dark">Enrolled</th>
+              <th className="py-2.5 px-3 text-center text-emerald-600 bg-surface dark:bg-surface-dark">Present</th>
+              <th className="py-2.5 px-3 text-center text-rose-600 bg-surface dark:bg-surface-dark">Absent</th>
+              <th className="py-2.5 px-3 text-center text-amber-600 bg-surface dark:bg-surface-dark">Leave</th>
+              <th className="py-2.5 px-3 text-center text-blue-600 bg-surface dark:bg-surface-dark">Late</th>
+              <th className="py-2.5 px-3 text-center text-ink-muted bg-surface dark:bg-surface-dark">Unmarked</th>
+              <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Attendance Rate</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line dark:divide-line-dark">

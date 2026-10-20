@@ -10,6 +10,7 @@ import AttendanceSettingsModal from '../../components/admin/attendance/Attendanc
 import EmployeeAttendancePage from './EmployeeAttendancePage';
 import LeaveRequestPage from './LeaveRequestPage';
 import AttendanceReportPage from './AttendanceReportPage';
+import StudentAttendancePrintSheet from '../../components/admin/attendance/StudentAttendancePrintSheet';
 
 const StudentAttendancePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -33,45 +34,47 @@ const StudentAttendancePage = () => {
   };
 
   return (
-    <div className="w-full space-y-4 pb-12">
-      <AttendanceTopTabs
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        onOpenSettings={() => setSettingsOpen(true)}
-      />
+    <div className="w-full h-full flex flex-col min-h-0 gap-3">
+      <div className="shrink-0 sticky top-0 z-30 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-xs pb-1 print:hidden">
+        <AttendanceTopTabs
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          onOpenSettings={() => setSettingsOpen(true)}
+        />
+      </div>
 
-      {feedback.error && (
-        <div className="p-3.5 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-semibold">
+      {activeTab === 'student' && feedback.error && (
+        <div className="shrink-0 p-3 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-semibold print:hidden">
           {feedback.error}
         </div>
       )}
 
-      {feedback.success && (
-        <div className="p-3.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-bold">
+      {activeTab === 'student' && feedback.success && (
+        <div className="shrink-0 p-3 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-bold print:hidden">
           {feedback.success}
         </div>
       )}
 
       {activeTab === 'staff' && (
-        <div className="pt-1">
+        <div className="flex-1 min-h-0 flex flex-col">
           <EmployeeAttendancePage />
         </div>
       )}
 
       {activeTab === 'leave' && (
-        <div className="pt-1">
+        <div className="flex-1 min-h-0 flex flex-col">
           <LeaveRequestPage />
         </div>
       )}
 
       {activeTab === 'report' && (
-        <div className="pt-1">
+        <div className="flex-1 min-h-0 flex flex-col">
           <AttendanceReportPage />
         </div>
       )}
 
       {activeTab === 'realtime' && (
-        <div className="pt-1">
+        <div className="flex-1 min-h-0 flex flex-col">
           <CardScannerTerminal
             onScanCode={handleScanCode}
             scanning={scanning}
@@ -83,49 +86,64 @@ const StudentAttendancePage = () => {
       )}
 
       {activeTab === 'student' && (
-        <div className="space-y-4 pt-1">
-          <StudentAttendanceFilterBar
-            grades={grades}
-            selectedGradeId={selectedGradeId}
-            onGradeChange={(id) => {
-              setSelectedGradeId(id);
-              setSelectedSection('');
-            }}
-            sections={sections}
-            selectedSection={selectedSection}
-            onSectionChange={setSelectedSection}
-            date={date}
-            onDateChange={setDate}
-            search={search}
-            onSearchChange={setSearch}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-            onShow={handleShow}
-            onSave={handleSave}
-            onMarkAll={handleMarkAll}
-            onOpenStats={() => setStatsOpen(true)}
-            onPrint={() => window.print()}
-            loading={loading}
-            saving={saving}
-            loaded={loaded}
-            hasRecords={records.length > 0}
-          />
+        <>
+          <div className="flex-1 min-h-0 flex flex-col gap-3 print:hidden">
+            <div className="shrink-0">
+              <StudentAttendanceFilterBar
+                grades={grades}
+                selectedGradeId={selectedGradeId}
+                onGradeChange={(id) => {
+                  setSelectedGradeId(id);
+                  setSelectedSection('');
+                }}
+                sections={sections}
+                selectedSection={selectedSection}
+                onSectionChange={setSelectedSection}
+                date={date}
+                onDateChange={setDate}
+                search={search}
+                onSearchChange={setSearch}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                onShow={handleShow}
+                onSave={handleSave}
+                onMarkAll={handleMarkAll}
+                onOpenStats={() => setStatsOpen(true)}
+                onPrint={() => window.print()}
+                loading={loading}
+                saving={saving}
+                loaded={loaded}
+                hasRecords={records.length > 0}
+              />
+            </div>
 
-          <StudentAttendanceContentCard
-            loaded={loaded}
-            loading={loading}
-            records={filteredRecords}
+            <div className="flex-1 min-h-0 flex flex-col">
+              <StudentAttendanceContentCard
+                loaded={loaded}
+                loading={loading}
+                records={filteredRecords}
+                summary={summary}
+                onStatusChange={handleStatusChange}
+                onRemarksChange={handleRemarksChange}
+              />
+            </div>
+          </div>
+
+          <StudentAttendancePrintSheet
+            records={records}
             summary={summary}
-            onStatusChange={handleStatusChange}
-            onRemarksChange={handleRemarksChange}
+            classLabel={classLabel}
+            section={selectedSection}
+            date={date}
           />
-        </div>
+        </>
       )}
 
       <AttendanceStatsModal
         isOpen={statsOpen}
         onClose={() => setStatsOpen(false)}
         summary={summary}
+        records={records}
         classLabel={classLabel}
         date={date}
       />

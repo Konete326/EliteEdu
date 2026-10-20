@@ -1,7 +1,14 @@
 import React from 'react';
 import { HardDrive, Bell, BellOff, Clock, Download, Eraser, Trash2 } from 'lucide-react';
 
-const ContactInfoActions = ({ conversation, messages = [], onUpdateSettings, onOpenClearModal, onOpenDeleteModal }) => {
+const ContactInfoActions = ({
+  conversation,
+  messages = [],
+  onUpdateSettings,
+  onOpenExportModal,
+  onOpenClearModal,
+  onOpenDeleteModal
+}) => {
   const isMuted = Boolean(conversation?.is_muted);
   const isDisappearing = Boolean(conversation?.disappearing_messages);
 
@@ -9,26 +16,6 @@ const ContactInfoActions = ({ conversation, messages = [], onUpdateSettings, onO
   const mediaCount = messages.filter((m) => m.attachment_url).length;
   const approxKb = Math.max(1, Math.round(totalChars / 1024) + mediaCount * 12);
   const storageLabel = messages.length === 0 ? 'No media stored' : `${approxKb} KB stored • ${messages.length} msgs`;
-
-  const handleExportChat = () => {
-    const lines = [
-      `EliteEdu Chat Transcript - ${conversation?.title || 'Conversation'}`,
-      `Exported: ${new Date().toLocaleString()}`,
-      `--------------------------------------------------`,
-      ...messages.map((m) => {
-        const time = new Date(m.createdAt).toLocaleString();
-        const text = m.message_text || (m.attachment_name ? `[Attachment: ${m.attachment_name}]` : '');
-        return `[${time}] ${m.sender_name}: ${text}`;
-      })
-    ];
-    const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `chat-${(conversation?.title || 'transcript').toLowerCase().replace(/\s+/g, '-')}.txt`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <div className="p-4 space-y-4">
@@ -79,7 +66,7 @@ const ContactInfoActions = ({ conversation, messages = [], onUpdateSettings, onO
       <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1">
         <button
           type="button"
-          onClick={handleExportChat}
+          onClick={onOpenExportModal}
           className="w-full flex items-center gap-3 p-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
         >
           <Download className="w-4 h-4 text-slate-400" />

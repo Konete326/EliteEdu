@@ -3,6 +3,7 @@ import { Calendar, Search } from 'lucide-react';
 import api from '../../../../services/api';
 import ReportExportToolbar from '../../reports/ReportExportToolbar';
 import OfficialSignatureStampBlock from '../../../common/OfficialSignatureStampBlock';
+import ClassSearchableSelect from '../ClassSearchableSelect';
 
 const StudentMonthlyRegisterTab = ({ activeCampusId }) => {
   const [month, setMonth] = useState(new Date().toISOString().slice(0, 7));
@@ -43,14 +44,20 @@ const StudentMonthlyRegisterTab = ({ activeCampusId }) => {
   const exportRows = (data.matrix || []).map((m) => ({ ...m, student_name: m.student?.name, gr_number: m.student?.gr_number }));
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs print:hidden">
+    <div className="space-y-3 flex-1 min-h-0 flex flex-col">
+      <div className="shrink-0 flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs print:hidden">
         <div className="flex flex-wrap items-center gap-2">
           <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} className="px-2.5 py-1.5 rounded-xl border border-line bg-transparent text-xs font-mono font-bold" />
-          <select value={selectedGrade} onChange={(e) => setSelectedGrade(e.target.value)} className="px-2.5 py-1.5 rounded-xl border border-line bg-transparent text-xs font-semibold">
-            <option value="all">All Classes</option>
-            {grades.map((g) => <option key={g._id} value={g._id}>{g.name}</option>)}
-          </select>
+          <div className="w-48">
+            <ClassSearchableSelect
+              grades={grades}
+              selectedGradeId={selectedGrade}
+              onGradeChange={setSelectedGrade}
+              allowAll={true}
+              allLabel="All Classes"
+              placeholder="Search or type class..."
+            />
+          </div>
           <select value={selectedSection} onChange={(e) => setSelectedSection(e.target.value)} className="px-2.5 py-1.5 rounded-xl border border-line bg-transparent text-xs font-semibold">
             <option value="all">All Sections</option>
             {['A', 'B', 'C', 'D'].map((s) => <option key={s} value={s}>Section {s}</option>)}
@@ -59,20 +66,22 @@ const StudentMonthlyRegisterTab = ({ activeCampusId }) => {
         <button onClick={loadMatrix} className="px-3.5 py-1.5 rounded-xl bg-surface-secondary text-xs font-bold hover:bg-line text-ink cursor-pointer">Filter</button>
       </div>
 
-      <ReportExportToolbar columns={exportCols} rows={exportRows} filename={`student-register-${month}`} searchTerm={search} onSearchChange={setSearch} />
+      <div className="shrink-0">
+        <ReportExportToolbar columns={exportCols} rows={exportRows} filename={`student-register-${month}`} searchTerm={search} onSearchChange={setSearch} />
+      </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs print:[print-color-adjust:exact]">
         <table className="w-full text-left text-xs border-collapse">
-          <thead className="bg-surface-secondary/70 dark:bg-white/[0.03] border-b border-line dark:border-line-dark text-[10px] font-bold text-ink-muted uppercase">
+          <thead className="sticky top-0 z-20 bg-surface dark:bg-surface-dark shadow-2xs border-b border-line dark:border-line-dark text-[10px] font-bold text-ink-muted uppercase">
             <tr>
-              <th className="py-2.5 px-3 sticky left-0 bg-surface dark:bg-surface-dark z-10 min-w-[140px]">Student / GR#</th>
+              <th className="py-2.5 px-3 sticky left-0 bg-surface dark:bg-surface-dark z-30 min-w-[140px] border-r border-line dark:border-line-dark shadow-[2px_0_4px_rgba(0,0,0,0.05)]">Student / GR#</th>
               {(data.days || []).map((d) => (
-                <th key={d.day} className="py-1 px-1 text-center min-w-[24px] font-mono">{d.day}</th>
+                <th key={d.day} className="py-1 px-1 text-center min-w-[24px] font-mono bg-surface dark:bg-surface-dark">{d.day}</th>
               ))}
-              <th className="py-2.5 px-2 text-center text-emerald-600">P</th>
-              <th className="py-2.5 px-2 text-center text-rose-600">A</th>
-              <th className="py-2.5 px-2 text-center text-amber-600">L</th>
-              <th className="py-2.5 px-2 text-center text-primary">%</th>
+              <th className="py-2.5 px-2 text-center text-emerald-600 bg-surface dark:bg-surface-dark">P</th>
+              <th className="py-2.5 px-2 text-center text-rose-600 bg-surface dark:bg-surface-dark">A</th>
+              <th className="py-2.5 px-2 text-center text-amber-600 bg-surface dark:bg-surface-dark">L</th>
+              <th className="py-2.5 px-2 text-center text-primary bg-surface dark:bg-surface-dark">%</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line dark:divide-line-dark font-mono text-[11px]">
@@ -81,7 +90,7 @@ const StudentMonthlyRegisterTab = ({ activeCampusId }) => {
             ) : (
               data.matrix?.map((row) => (
                 <tr key={row.student?._id} className="hover:bg-surface-secondary/40 transition-colors">
-                  <td className="py-2 px-3 sticky left-0 bg-surface dark:bg-surface-dark z-10 font-sans">
+                  <td className="py-2 px-3 sticky left-0 bg-surface dark:bg-surface-dark z-10 font-sans border-r border-line dark:border-line-dark shadow-[2px_0_4px_rgba(0,0,0,0.05)]">
                     <div className="font-bold text-ink dark:text-white truncate max-w-[140px]">{row.student?.name}</div>
                     <div className="text-[10px] text-ink-muted">GR: {row.student?.gr_number || '—'}</div>
                   </td>

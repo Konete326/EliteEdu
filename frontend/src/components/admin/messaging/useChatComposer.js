@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import api from '../../../services/api';
 
 export const useChatComposer = ({
   onSendMessage,
@@ -24,7 +25,7 @@ export const useChatComposer = ({
 
   const handleSend = () => {
     const trimmed = text.trim();
-    if ((!trimmed && !attachment) || sending) return;
+    if ((!trimmed && !attachment) || sending || attachment?.uploading) return;
     if (editingMessage) {
       onSaveEdit(editingMessage._id, trimmed);
       setText('');
@@ -56,13 +57,31 @@ export const useChatComposer = ({
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const isImage = file.type?.startsWith('image/') || /\.(jpe?g|png|gif|webp|bmp|svg)$/i.test(file.name);
     const reader = new FileReader();
-    reader.onload = () => setAttachment({ name: file.name, dataUrl: reader.result });
+    reader.onload = async () => {
+      const rawData = reader.result;
+      if (isImage) {
+        setAttachment({ name: file.name, dataUrl: rawData, isImage: true, uploading: true });
+        try {
+          const res = await api.post('/messaging/upload', { dataUrl: rawData, name: file.name });
+          if (res.data?.success && res.data.url) {
+            setAttachment({ name: file.name, dataUrl: res.data.url, isImage: true, uploading: false });
+          } else {
+            setAttachment({ name: file.name, dataUrl: rawData, isImage: true, uploading: false });
+          }
+        } catch {
+          setAttachment({ name: file.name, dataUrl: rawData, isImage: true, uploading: false });
+        }
+      } else {
+        setAttachment({ name: file.name, dataUrl: rawData, isImage: false, uploading: false });
+      }
+    };
     reader.readAsDataURL(file);
     e.target.value = '';
   };
 
-  const hasContent = Boolean(text.trim() || attachment || editingMessage);
+  const hasContent = Boolean((text.trim() || (attachment && !attachment.uploading) || editingMessage) && !sending);
 
   return {
     text,

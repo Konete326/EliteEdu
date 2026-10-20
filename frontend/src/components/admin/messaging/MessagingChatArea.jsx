@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { Clock } from 'lucide-react';
 import DoodleBackground from './DoodleBackground';
 import ChatAreaEmptyState from './ChatAreaEmptyState';
 import ChatHeaderBar from './ChatHeaderBar';
 import ChatMessagesList from './ChatMessagesList';
 import ChatComposerBar from './ChatComposerBar';
 import DeleteMessageModal from './DeleteMessageModal';
+import ChatSearchBar from './ChatSearchBar';
+import { filterChatMessages } from '../../../utils/chatSearchHelper';
 
 const MessagingChatArea = ({
   conversation,
@@ -18,7 +21,9 @@ const MessagingChatArea = ({
   onDeleteMessage,
   onEditMessage,
   onCardAction,
+  onFormSubmit,
   onOpenCardModal,
+  onOpenFormPollModal,
   onToggleContactInfo,
   isContactInfoOpen = false
 }) => {
@@ -37,6 +42,8 @@ const MessagingChatArea = ({
     );
   }
 
+  const matchCount = searchTerm ? filterChatMessages(messages, searchTerm).length : 0;
+
   return (
     <div className="flex-1 flex flex-col relative overflow-hidden bg-slate-50/50 dark:bg-slate-900/50 h-full">
       <DoodleBackground />
@@ -47,25 +54,25 @@ const MessagingChatArea = ({
         onToggleFavorite={onToggleFavorite}
         onRefresh={onRefresh}
         searchVisible={searchVisible}
-        onToggleSearch={() => {
-          setSearchVisible(!searchVisible);
-          if (searchVisible) setSearchTerm('');
-        }}
+        onToggleSearch={() => { setSearchVisible(!searchVisible); if (searchVisible) setSearchTerm(''); }}
         onToggleContactInfo={onToggleContactInfo}
         isContactInfoOpen={isContactInfoOpen}
       />
 
-      {searchVisible && (
-        <div className="px-4 py-2 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 z-20">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search messages in this conversation..."
-            className="w-full bg-slate-100 dark:bg-slate-800 rounded-xl px-3 py-1.5 text-xs outline-none"
-            autoFocus
-          />
+      {conversation.disappearing_messages && (
+        <div className="px-4 py-1.5 bg-indigo-50/90 dark:bg-indigo-950/50 border-b border-indigo-100 dark:border-indigo-900/60 z-10 flex items-center justify-center gap-1.5 text-[11px] font-semibold text-indigo-700 dark:text-indigo-300">
+          <Clock className="w-3.5 h-3.5 shrink-0" />
+          <span>Disappearing messages is active • Messages disappear after 24h</span>
         </div>
+      )}
+
+      {searchVisible && (
+        <ChatSearchBar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          onClose={() => { setSearchVisible(false); setSearchTerm(''); }}
+          matchCount={matchCount}
+        />
       )}
 
       <ChatMessagesList
@@ -79,19 +86,18 @@ const MessagingChatArea = ({
           setDeleteTarget(target || { _id: id });
         }}
         onCardAction={onCardAction}
+        onFormSubmit={onFormSubmit}
         searchTerm={searchTerm}
       />
 
       <ChatComposerBar
         onSendMessage={onSendMessage}
         onOpenCardModal={onOpenCardModal}
+        onOpenFormPollModal={onOpenFormPollModal}
         replyingTo={replyingTo}
         onCancelReply={() => setReplyingTo(null)}
         editingMessage={editingMessage}
-        onSaveEdit={async (id, text) => {
-          await onEditMessage?.(id, text);
-          setEditingMessage(null);
-        }}
+        onSaveEdit={async (id, text) => { await onEditMessage?.(id, text); setEditingMessage(null); }}
         onCancelEdit={() => setEditingMessage(null)}
       />
 
@@ -100,10 +106,8 @@ const MessagingChatArea = ({
         message={deleteTarget}
         onClose={() => setDeleteTarget(null)}
         onConfirm={async () => {
-          if (deleteTarget?._id) {
-            await onDeleteMessage(deleteTarget._id);
-            setDeleteTarget(null);
-          }
+          if (deleteTarget?._id) await onDeleteMessage(deleteTarget._id);
+          setDeleteTarget(null);
         }}
       />
     </div>

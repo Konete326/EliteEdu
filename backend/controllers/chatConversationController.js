@@ -1,4 +1,5 @@
 const ChatConversation = require('../models/ChatConversation');
+const UserSession = require('../models/UserSession');
 const { buildConversationQuery, mapConversationCard } = require('../utils/chatQueryHelper');
 
 const getConversations = async (req, res) => {
@@ -13,8 +14,15 @@ const getConversations = async (req, res) => {
       .sort({ last_message_at: -1 })
       .limit(100);
 
+    const activeThreshold = new Date(Date.now() - 3 * 60 * 1000);
+    const activeSessions = await UserSession.find({
+      status: 'Active',
+      last_active: { $gte: activeThreshold }
+    }).select('user_id').lean();
+    const onlineUserIds = new Set(activeSessions.map((s) => String(s.user_id)));
+
     const mapped = conversations
-      .map((c) => mapConversationCard(c, userId))
+      .map((c) => mapConversationCard(c, userId, onlineUserIds))
       .sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0));
     res.status(200).json({ success: true, data: mapped });
   } catch (error) {

@@ -7,6 +7,7 @@ import ChatContactInfoDrawer from '../../components/admin/messaging/ChatContactI
 import NewChatModal from '../../components/admin/messaging/NewChatModal';
 import CreateGroupModal from '../../components/admin/messaging/CreateGroupModal';
 import SendRichCardModal from '../../components/admin/messaging/SendRichCardModal';
+import SendFormPollModal from '../../components/admin/messaging/SendFormPollModal';
 
 const MessagingStudioPage = () => {
   const { user } = useAuth();
@@ -42,13 +43,16 @@ const MessagingStudioPage = () => {
           loadingMessages={chat.loadingMessages}
           currentUserId={user?.id}
           onBack={() => chat.setActiveId(null)}
-          onToggleFavorite={chat.handleToggleFavorite}
-          onRefresh={() => chat.fetchMessages(chat.activeId)}
+          onRefresh={async () => {
+            await Promise.all([chat.fetchMessages(chat.activeId), chat.fetchConversations()]);
+          }}
           onSendMessage={chat.handleSendMessage}
           onDeleteMessage={chat.handleDeleteMessage}
           onEditMessage={chat.handleEditMessage}
           onCardAction={chat.handleCardAction}
+          onFormSubmit={chat.handleFormSubmit}
           onOpenCardModal={() => chat.setIsCardModalOpen(true)}
+          onOpenFormPollModal={() => chat.setIsFormPollOpen(true)}
           onToggleContactInfo={() => chat.setIsContactInfoOpen((p) => !p)}
           isContactInfoOpen={chat.isContactInfoOpen}
         />
@@ -86,6 +90,11 @@ const MessagingStudioPage = () => {
         isOpen={chat.isCardModalOpen}
         onClose={() => chat.setIsCardModalOpen(false)}
         onSendCard={chat.handleSendMessage}
+      />
+      <SendFormPollModal
+        isOpen={chat.isFormPollOpen}
+        onClose={() => chat.setIsFormPollOpen(false)}
+        onSendFormPoll={chat.handleSendMessage}
       />
     </div>
   );

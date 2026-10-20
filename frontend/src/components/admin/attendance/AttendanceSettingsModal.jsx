@@ -1,13 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { X, Settings, Check, BellRing, Clock, ShieldCheck } from 'lucide-react';
+import { X, Settings, Check, BellRing, Clock, ShieldCheck, AlertTriangle } from 'lucide-react';
 
 const AttendanceSettingsModal = ({ isOpen, onClose }) => {
   const [entryTime, setEntryTime] = useState('08:00');
+  const [departureTime, setDepartureTime] = useState('14:00');
   const [gracePeriod, setGracePeriod] = useState('15');
   const [halfDayTime, setHalfDayTime] = useState('11:30');
   const [notifyParentsOnAbsent, setNotifyParentsOnAbsent] = useState(true);
   const [autoMarkDefault, setAutoMarkDefault] = useState('P');
+  const [lowAttendanceThreshold, setLowAttendanceThreshold] = useState(75);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('elite_attendance_settings');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.entryTime) setEntryTime(parsed.entryTime);
+        if (parsed.departureTime) setDepartureTime(parsed.departureTime);
+        if (parsed.gracePeriod) setGracePeriod(parsed.gracePeriod);
+        if (parsed.halfDayTime) setHalfDayTime(parsed.halfDayTime);
+        if (typeof parsed.notifyParentsOnAbsent === 'boolean') setNotifyParentsOnAbsent(parsed.notifyParentsOnAbsent);
+        if (parsed.autoMarkDefault) setAutoMarkDefault(parsed.autoMarkDefault);
+        if (parsed.lowAttendanceThreshold) setLowAttendanceThreshold(Number(parsed.lowAttendanceThreshold));
+      }
+    } catch {}
+  }, [isOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -25,11 +43,15 @@ const AttendanceSettingsModal = ({ isOpen, onClose }) => {
     e.preventDefault();
     localStorage.setItem('elite_attendance_settings', JSON.stringify({
       entryTime,
+      departureTime,
       gracePeriod,
       halfDayTime,
       notifyParentsOnAbsent,
-      autoMarkDefault
+      autoMarkDefault,
+      lowAttendanceThreshold: Number(lowAttendanceThreshold) || 75
     }));
+    window.dispatchEvent(new Event('elite_attendance_settings_updated'));
+    window.dispatchEvent(new Event('elite_settings_updated'));
     setSaved(true);
     setTimeout(() => {
       setSaved(false);
@@ -80,6 +102,21 @@ const AttendanceSettingsModal = ({ isOpen, onClose }) => {
 
             <div>
               <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Departure Time</span>
+              </label>
+              <input
+                type="time"
+                value={departureTime}
+                onChange={(e) => setDepartureTime(e.target.value)}
+                className="w-full bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-3 py-2 font-medium text-ink dark:text-ink-dark outline-none focus:border-primary"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-amber-600" />
                 <span>Late Grace (Mins)</span>
               </label>
@@ -92,17 +129,32 @@ const AttendanceSettingsModal = ({ isOpen, onClose }) => {
                 className="w-full bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-3 py-2 font-medium text-ink dark:text-ink-dark outline-none focus:border-primary"
               />
             </div>
+
+            <div>
+              <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-violet-600" />
+                <span>Half Day Cutoff</span>
+              </label>
+              <input
+                type="time"
+                value={halfDayTime}
+                onChange={(e) => setHalfDayTime(e.target.value)}
+                className="w-full bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-3 py-2 font-medium text-ink dark:text-ink-dark outline-none focus:border-primary"
+              />
+            </div>
           </div>
 
           <div>
             <label className="block font-semibold text-ink-sub dark:text-ink-sub-dark mb-1 flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-violet-600" />
-              <span>Half Day Departure Cutoff</span>
+              <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
+              <span>Low Attendance Alert Benchmark (%)</span>
             </label>
             <input
-              type="time"
-              value={halfDayTime}
-              onChange={(e) => setHalfDayTime(e.target.value)}
+              type="number"
+              min="10"
+              max="95"
+              value={lowAttendanceThreshold}
+              onChange={(e) => setLowAttendanceThreshold(e.target.value)}
               className="w-full bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-3 py-2 font-medium text-ink dark:text-ink-dark outline-none focus:border-primary"
             />
           </div>

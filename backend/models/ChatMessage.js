@@ -6,10 +6,36 @@ const cardActionSchema = new mongoose.Schema({
   style: { type: String, enum: ['Primary', 'Danger', 'Default'], default: 'Primary' }
 }, { _id: false });
 
+const pollOptionSchema = new mongoose.Schema({
+  key: { type: String, required: true },
+  text: { type: String, required: true },
+  vote_count: { type: Number, default: 0 }
+}, { _id: false });
+
+const formFieldSchema = new mongoose.Schema({
+  field_id: { type: String, required: true },
+  label: { type: String, required: true },
+  field_type: { type: String, enum: ['text', 'dropdown', 'date_picker'], default: 'text' },
+  options: [{ type: String }],
+  required: { type: Boolean, default: false }
+}, { _id: false });
+
+const submissionSchema = new mongoose.Schema({
+  user_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+  user_name: { type: String, required: true },
+  option_key: { type: String, default: '' },
+  values: { type: mongoose.Schema.Types.Mixed, default: {} },
+  submitted_at: { type: Date, default: Date.now }
+}, { _id: false });
+
 const cardPayloadSchema = new mongoose.Schema({
   card_type: {
     type: String,
-    enum: ['None', 'Leave_Approval', 'Voucher_Approval', 'Fee_Reminder', 'Circular_Notice', 'Student_Lookup', 'Attendance_Summary', 'Custom_Card'],
+    enum: [
+      'None', 'Leave_Approval', 'Voucher_Approval', 'Fee_Reminder',
+      'Circular_Notice', 'Student_Lookup', 'Attendance_Summary',
+      'Custom_Card', 'Interactive_Form', 'Interactive_Poll'
+    ],
     default: 'None'
   },
   ref_model: {
@@ -29,6 +55,12 @@ const cardPayloadSchema = new mongoose.Schema({
   },
   fields: [{ key: String, value: String }],
   actions: [cardActionSchema],
+  poll_options: [pollOptionSchema],
+  form_fields: [formFieldSchema],
+  submissions: [submissionSchema],
+  total_votes: { type: Number, default: 0 },
+  is_closed: { type: Boolean, default: false },
+  expires_at: { type: Date, default: null },
   action_taken: {
     status: { type: String, default: '' },
     by_name: { type: String, default: '' },

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Send, Paperclip, Sparkles, Smile, Mic, Check } from 'lucide-react';
+import { Send, Paperclip, Sparkles, Smile, Mic, Check, Vote } from 'lucide-react';
 import ComposerPreviewBar from './ComposerPreviewBar';
 import SlashCommandMenu from './SlashCommandMenu';
 import ComposerEmojiPicker from './ComposerEmojiPicker';
@@ -8,6 +8,7 @@ import { useChatComposer } from './useChatComposer';
 const ChatComposerBar = ({
   onSendMessage,
   onOpenCardModal,
+  onOpenFormPollModal,
   replyingTo,
   onCancelReply,
   editingMessage,
@@ -28,22 +29,12 @@ const ChatComposerBar = ({
   return (
     <div className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-3 z-20 shrink-0">
       {c.text.startsWith('/') && (
-        <SlashCommandMenu
-          query={c.text}
-          onSelect={(val) => {
-            c.setText(val);
-            c.textInputRef.current?.focus();
-          }}
-        />
+        <SlashCommandMenu query={c.text} onSelect={(val) => { c.setText(val); c.textInputRef.current?.focus(); }} />
       )}
 
       <ComposerEmojiPicker
         isOpen={c.showEmoji}
-        onSelect={(em) => {
-          c.setText((p) => p + em);
-          c.setShowEmoji(false);
-          c.textInputRef.current?.focus();
-        }}
+        onSelect={(em) => { c.setText((p) => p + em); c.setShowEmoji(false); c.textInputRef.current?.focus(); }}
       />
 
       <ComposerPreviewBar
@@ -52,10 +43,7 @@ const ChatComposerBar = ({
         attachment={c.attachment}
         onCancelAttachment={() => c.setAttachment(null)}
         editingMessage={editingMessage}
-        onCancelEdit={() => {
-          c.setText('');
-          onCancelEdit?.();
-        }}
+        onCancelEdit={() => { c.setText(''); onCancelEdit?.(); }}
       />
 
       <div className="flex items-center gap-2">
@@ -83,6 +71,14 @@ const ChatComposerBar = ({
           title="Send action card"
         >
           <Sparkles className="w-5 h-5" />
+        </button>
+        <button
+          type="button"
+          onClick={onOpenFormPollModal}
+          className="p-2.5 rounded-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition-colors"
+          title="Create poll or form"
+        >
+          <Vote className="w-5 h-5" />
         </button>
         <input
           ref={c.textInputRef}
