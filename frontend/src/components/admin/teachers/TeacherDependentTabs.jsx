@@ -514,7 +514,15 @@ const TeacherDependentTabs = ({
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <p className="font-mono text-ink dark:text-white font-semibold">{sess.ip_address || '—'}</p>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <p className="font-mono text-ink dark:text-white font-semibold">{sess.ip_address || '—'}</p>
+                          {sess.is_suspicious && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                              <AlertCircle className="w-2.5 h-2.5" />
+                              New Location
+                            </span>
+                          )}
+                        </div>
                         {sess.is_blocked && (
                           <span className="inline-block mt-0.5 text-[9px] font-bold text-bad bg-bad/10 px-1.5 py-0.5 rounded">IP Blocked</span>
                         )}
@@ -527,10 +535,17 @@ const TeacherDependentTabs = ({
                       </td>
                       <td className="px-4 py-3">
                         {isActive ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-good/10 text-good border border-good/20">
-                            <span className="w-1.5 h-1.5 rounded-full bg-good animate-pulse" />
-                            Active Session
-                          </span>
+                          <div className="space-y-1">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-good/10 text-good border border-good/20">
+                              <span className="w-1.5 h-1.5 rounded-full bg-good animate-pulse" />
+                              Active Session
+                            </span>
+                            {sess.is_suspicious && (
+                              <span className="block text-[9px] font-bold text-amber-600 dark:text-amber-400">
+                                ⚠️ Alert: Changed IP
+                              </span>
+                            )}
+                          </div>
                         ) : (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-ink-muted/10 text-ink-muted border border-ink-muted/20">
                             Revoked / Blacklisted

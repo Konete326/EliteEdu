@@ -7,6 +7,9 @@ const userSessionSchema = new mongoose.Schema(
     token_id: { type: String, required: true, index: true },
     ip_address: { type: String, default: '10.0.0.2', trim: true },
     device: { type: String, default: '—', trim: true },
+    country: { type: String, default: '', trim: true },
+    city: { type: String, default: '', trim: true },
+    is_suspicious: { type: Boolean, default: false, index: true },
     last_active: { type: Date, default: Date.now, index: true },
     expires_at: { type: Date, required: true, index: true },
     status: { type: String, enum: ['Active', 'Revoked'], default: 'Active', index: true }

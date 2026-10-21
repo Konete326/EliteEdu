@@ -43,6 +43,20 @@ const StaffApplicantsList = () => {
         onToggleMapView={() => setIsMapView(!isMapView)}
       />
 
+      <div className="p-3.5 rounded-2xl bg-primary/5 border border-primary/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-primary/20 text-primary flex items-center justify-center shrink-0 border border-primary/30">
+            <UserCheck className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="font-bold text-ink dark:text-white">Recruitment &amp; Staff Hiring Pipeline</p>
+            <p className="text-[11px] text-ink-muted">
+              Review applicant CVs, manage interview status, set approved salaries, and click &ldquo;Hire&rdquo; to instantly enroll candidates into the active staff directory.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {toastMessage && (
         <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs flex items-center gap-2 animate-in fade-in">
           <CheckCircle className="w-4 h-4 shrink-0" />
@@ -111,6 +125,10 @@ const StaffApplicantsList = () => {
         isOpen={Boolean(viewApplicant)}
         applicant={viewApplicant}
         onClose={() => setViewApplicant(null)}
+        onConvert={(app) => {
+          setViewApplicant(null);
+          setApplicantToConvert(app);
+        }}
       />
 
       <ApplicantSalaryModal
@@ -129,9 +147,9 @@ const StaffApplicantsList = () => {
         isOpen={Boolean(applicantToConvert)}
         onClose={() => !actionLoading && setApplicantToConvert(null)}
         onConfirm={handleConvertConfirm}
-        title="Convert Applicant to Staff"
-        message={`Are you sure you want to convert ${applicantToConvert?.name} to an active Teacher / Staff member? This will automatically generate a unique employee code and staff profile.`}
-        confirmText={actionLoading ? 'Converting...' : 'Convert to Staff'}
+        title="Hire Candidate as Active Teacher"
+        message={`Are you sure you want to hire ${applicantToConvert?.name} as an active Teacher? This will automatically generate a unique employee code, assign login credentials, and transfer their profile directly into the Teachers directory.`}
+        confirmText={actionLoading ? 'Enrolling...' : 'Confirm & Enroll'}
         confirmStyle="primary"
       />
 

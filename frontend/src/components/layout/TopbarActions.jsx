@@ -9,6 +9,7 @@ import { usePwaInstall } from '../../hooks/usePwaInstall';
 import TopbarNotifications from './TopbarNotifications';
 import TopbarMessages from './TopbarMessages';
 import UniversalScannerModal from './scanner/UniversalScannerModal';
+import VideoComingSoonModal from './VideoComingSoonModal';
 import SearchableSelect from '../common/SearchableSelect';
 
 const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
@@ -16,6 +17,7 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
   const { campuses, activeCampusId, requestCampusSwitch } = useCampus();
   const { isInstalled, promptInstall } = usePwaInstall();
   const [scannerOpen, setScannerOpen] = useState(false);
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleCampusSelect = (val) => {
@@ -62,8 +64,8 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
 
       <button
         type="button"
-        onClick={() => window.open('https://www.youtube.com', '_blank', 'noopener,noreferrer')}
-        className={`hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-colors ${
+        onClick={() => setVideoModalOpen(true)}
+        className={`hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${
           isColored ? 'bg-white/15 border-white/20 text-white hover:bg-white/25' : 'border-line dark:border-line-dark hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark text-ink dark:text-ink-dark'
         }`}
       >
@@ -112,6 +114,7 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
       </button>
 
       <UniversalScannerModal isOpen={scannerOpen} onClose={() => setScannerOpen(false)} />
+      <VideoComingSoonModal isOpen={videoModalOpen} onClose={() => setVideoModalOpen(false)} />
     </div>
   );
 };

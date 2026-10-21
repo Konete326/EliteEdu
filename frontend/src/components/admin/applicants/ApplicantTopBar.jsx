@@ -27,7 +27,7 @@ const ApplicantTopBar = ({
             Staff Applicants
           </h1>
           <p className="text-xs text-ink-muted dark:text-ink-muted-dark mt-0.5">
-            Manage incoming staff applications
+            HR Recruitment &amp; Hiring Pipeline — Evaluate candidates &amp; enroll into faculty
           </p>
         </div>
 

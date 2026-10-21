@@ -17,12 +17,26 @@ const createLoginSession = async (user, req) => {
   const tokenId = crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString('hex');
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
+  const prevSession = await UserSession.findOne({ user_id: user._id })
+    .sort({ createdAt: -1 })
+    .select('ip_address')
+    .lean();
+
+  let isSuspicious = false;
+  if (prevSession && prevSession.ip_address && ipAddress) {
+    const isLocal = ['127.0.0.1', '::1', 'localhost', '10.0.0.2'].includes(ipAddress);
+    if (!isLocal && prevSession.ip_address !== ipAddress) {
+      isSuspicious = true;
+    }
+  }
+
   const session = await UserSession.create({
     school_id: user.school_id || null,
     user_id: user._id,
     token_id: tokenId,
     ip_address: ipAddress,
     device,
+    is_suspicious: isSuspicious,
     last_active: new Date(),
     expires_at: expiresAt,
     status: 'Active'

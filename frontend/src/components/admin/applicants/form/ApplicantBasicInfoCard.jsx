@@ -150,14 +150,14 @@ const ApplicantBasicInfoCard = ({ formData, onChange, teachers = [], errors = {}
 
         <div>
           <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">
-            Staff Replacement (Optional)
+            Replacing Existing Staff (Optional)
           </label>
           <select
             value={formData.replacement_staff || ''}
             onChange={(e) => onChange('replacement_staff', e.target.value)}
-            className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-[#161616] text-ink dark:text-ink-dark outline-none font-medium"
+            className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-[#161616] text-ink dark:text-ink-dark outline-none font-medium cursor-pointer"
           >
-            <option value="">Search staff...</option>
+            <option value="">None (New Position / Vacancy)</option>
             {teachers.map((t) => (
               <option key={t._id} value={t._id}>{t.name} {t.basic_salary ? `- Rs. ${t.basic_salary.toLocaleString()}` : ''}</option>
             ))}
