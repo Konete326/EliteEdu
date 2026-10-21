@@ -72,8 +72,14 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
     setCameraError('');
     await stopScanner();
 
+    if (typeof window !== 'undefined' && window.isSecureContext === false && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      setCameraError('Camera blocked: Insecure LAN origin (HTTP). Modern mobile browsers require HTTPS or localhost to access camera hardware. Run Vite with --https or use Chrome port-forwarding on your mobile device.');
+      isStartingRef.current = false;
+      return;
+    }
+
     if (typeof navigator !== 'undefined' && (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)) {
-      setCameraError('Camera access requires a secure HTTPS connection or localhost permissions.');
+      setCameraError('Camera access requires a secure HTTPS connection or camera permissions.');
       isStartingRef.current = false;
       return;
     }

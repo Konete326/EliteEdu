@@ -1,5 +1,6 @@
 import React from 'react';
 import { Calendar, Clock, CheckCircle2, XCircle } from 'lucide-react';
+import MobileStepSlider from '../../../common/MobileStepSlider';
 
 const LeaveKpiStrip = ({ kpis = {}, activeStatus = 'all', onSelectStatus }) => {
   const cards = [
@@ -9,8 +10,14 @@ const LeaveKpiStrip = ({ kpis = {}, activeStatus = 'all', onSelectStatus }) => {
     { key: 'Rejected', label: 'Rejected', count: kpis.rejected || 0, icon: XCircle, color: 'text-rose-500 bg-rose-500/10 border-rose-500/20' }
   ];
 
+  const activeIdx = Math.max(0, cards.findIndex((c) => c.key === activeStatus));
+
   return (
-    <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
+    <MobileStepSlider
+      desktopClassName="sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full"
+      controlledIndex={activeIdx}
+      onIndexChange={(idx) => onSelectStatus && onSelectStatus(cards[idx].key)}
+    >
       {cards.map((c) => {
         const Icon = c.icon;
         const isActive = activeStatus === c.key;
@@ -19,7 +26,7 @@ const LeaveKpiStrip = ({ kpis = {}, activeStatus = 'all', onSelectStatus }) => {
             key={c.key}
             type="button"
             onClick={() => onSelectStatus && onSelectStatus(c.key)}
-            className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer bg-surface dark:bg-surface-dark ${
+            className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer bg-surface dark:bg-surface-dark w-full max-w-xs mx-auto ${
               isActive ? 'ring-2 ring-primary border-primary shadow-xs' : 'border-line dark:border-line-dark hover:border-line-dark'
             }`}
           >
@@ -31,7 +38,7 @@ const LeaveKpiStrip = ({ kpis = {}, activeStatus = 'all', onSelectStatus }) => {
           </button>
         );
       })}
-    </div>
+    </MobileStepSlider>
   );
 };
 

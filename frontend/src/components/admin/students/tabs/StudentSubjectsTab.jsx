@@ -1,8 +1,15 @@
 import { useState } from 'react';
-import { BookOpen, Search, CheckCheck, X, Sparkles } from 'lucide-react';
+import { BookOpen, Search, CheckCheck, X, Layers } from 'lucide-react';
 import StudentSubjectCard from '../cards/StudentSubjectCard';
 
-const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onChange, currentGradeName = '' }) => {
+const StudentSubjectsTab = ({
+  subjects = [],
+  selectedSubjectIds = [],
+  onToggleSubject,
+  onChange,
+  currentGradeName = '',
+  electiveStream = 'None'
+}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
 
@@ -17,8 +24,23 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
 
   const handleAutoSelectForGrade = () => {
     if (!currentGradeName) return;
-    const ids = subjects.filter((s) => !s.classes || s.classes.length === 0 || s.classes.includes(currentGradeName)).map((s) => s._id);
-    onChange('subjects', ids);
+    const gradeSubjects = subjects.filter((s) => !s.classes || s.classes.length === 0 || s.classes.includes(currentGradeName));
+
+    const selectedIds = gradeSubjects.filter((s) => {
+      if (s.subject_type === 'Compulsory' || s.mandatory) return true;
+      if (electiveStream === 'Science (Biology)') {
+        return s.stream === 'Science (Biology)' || s.code === 'BIO' || s.name.toLowerCase().includes('bio');
+      }
+      if (electiveStream === 'Science (Computer)') {
+        return s.stream === 'Science (Computer)' || s.code === 'CS' || s.name.toLowerCase().includes('computer');
+      }
+      if (electiveStream === 'Arts / Humanities') {
+        return s.stream === 'Arts / Humanities' || s.name.toLowerCase().includes('arts');
+      }
+      return false;
+    }).map((s) => s._id);
+
+    onChange('subjects', selectedIds);
   };
 
   const filterOptions = [
@@ -34,10 +56,15 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-ink dark:text-ink-dark font-bold text-sm">
             <BookOpen className="w-4 h-4 text-primary" />
-            <span>Enrolled Subjects & Curriculum</span>
+            <span>Subjects</span>
             <span className="ml-2 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark">
               {selectedSubjectIds.length} Selected
             </span>
+            {electiveStream && electiveStream !== 'None' && (
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-accent/15 text-accent border border-accent/20">
+                {electiveStream}
+              </span>
+            )}
           </div>
 
           <div className="flex items-center flex-wrap gap-2 text-xs">
@@ -45,17 +72,17 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
               <button
                 type="button"
                 onClick={handleAutoSelectForGrade}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-primary/30 text-primary dark:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/10 font-medium transition-colors"
-                title={`Auto-select standard subjects for ${currentGradeName}`}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-primary/30 text-primary dark:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/10 font-bold transition-colors cursor-pointer"
+                title={`Auto-select ${electiveStream !== 'None' ? electiveStream : 'curriculum'} subjects for ${currentGradeName}`}
               >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Auto-Select for {currentGradeName}</span>
+                <Layers className="w-3.5 h-3.5" />
+                <span>Auto-Enroll for {currentGradeName}</span>
               </button>
             )}
             <button
               type="button"
               onClick={() => onChange('subjects', subjects.map((s) => s._id))}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary dark:hover:bg-white/10 text-ink dark:text-ink-dark font-medium transition-colors"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary dark:hover:bg-white/10 text-ink dark:text-ink-dark font-medium transition-colors cursor-pointer"
             >
               <CheckCheck className="w-3.5 h-3.5 text-good" />
               <span>Select All</span>
@@ -63,7 +90,7 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
             <button
               type="button"
               onClick={() => onChange('subjects', [])}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary dark:hover:bg-white/10 text-ink dark:text-ink-dark font-medium transition-colors"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary dark:hover:bg-white/10 text-ink dark:text-ink-dark font-medium transition-colors cursor-pointer"
             >
               <X className="w-3.5 h-3.5 text-bad" />
               <span>Clear</span>
@@ -88,7 +115,7 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
                 key={opt.id}
                 type="button"
                 onClick={() => setFilter(opt.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                   filter === opt.id
                     ? 'bg-primary text-white shadow-sm'
                     : 'bg-surface-secondary/50 dark:bg-[#141414] border border-line dark:border-white/10 text-ink-sub hover:text-ink'
@@ -99,18 +126,20 @@ const StudentSubjectsTab = ({ subjects, selectedSubjectIds, onToggleSubject, onC
             ))}
           </div>
         </div>
+      </div>
 
-        {filteredSubjects.length === 0 ? (
-          <p className="text-xs text-ink-muted text-center py-6">
-            No subjects found matching your criteria. Ensure subjects are added in Subjects Management.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
-            {filteredSubjects.map((sub) => (
-              <StudentSubjectCard key={sub._id} sub={sub} isSelected={selectedSubjectIds.includes(sub._id)} onToggle={onToggleSubject} />
-            ))}
-          </div>
-        )}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {filteredSubjects.map((sub) => {
+          const isSelected = selectedSubjectIds.includes(sub._id);
+          return (
+            <StudentSubjectCard
+              key={sub._id}
+              subject={sub}
+              isSelected={isSelected}
+              onToggle={() => onToggleSubject(sub._id)}
+            />
+          );
+        })}
       </div>
     </div>
   );

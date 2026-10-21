@@ -1,6 +1,5 @@
 import React from 'react';
-import { Users, Briefcase, CalendarDays, BarChart3, ScanLine, Settings } from 'lucide-react';
-import MobileScrollSlider from '../../common/MobileScrollSlider';
+import { Users, Briefcase, CalendarDays, BarChart3, ScanLine, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const TABS = [
   { id: 'student', label: 'Student Attendance', icon: Users },
@@ -12,6 +11,8 @@ const TABS = [
 ];
 
 const AttendanceTopTabs = ({ activeTab, onTabChange, onOpenSettings }) => {
+  const activeIdx = Math.max(0, TABS.findIndex((t) => t.id === activeTab));
+
   const handleTabClick = (tabId) => {
     if (tabId === 'settings') {
       if (onOpenSettings) onOpenSettings();
@@ -20,9 +21,67 @@ const AttendanceTopTabs = ({ activeTab, onTabChange, onOpenSettings }) => {
     onTabChange(tabId);
   };
 
+  const handleMobilePrev = () => {
+    const prevIdx = activeIdx > 0 ? activeIdx - 1 : TABS.length - 1;
+    handleTabClick(TABS[prevIdx].id);
+  };
+
+  const handleMobileNext = () => {
+    const nextIdx = activeIdx < TABS.length - 1 ? activeIdx + 1 : 0;
+    handleTabClick(TABS[nextIdx].id);
+  };
+
+  const currentTab = TABS[activeIdx] || TABS[0];
+  const ActiveIcon = currentTab.icon;
+
   return (
-    <MobileScrollSlider containerClassName="w-full sm:w-fit max-w-full">
-      <div className="flex items-center gap-1 p-1 bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl w-full sm:w-fit shadow-2xs">
+    <div className="w-full sm:w-fit">
+      <div className="sm:hidden w-full flex flex-col gap-1.5 p-1 bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl shadow-2xs">
+        <div className="w-full flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={handleMobilePrev}
+            className="w-8 h-8 rounded-xl bg-surface-secondary dark:bg-white/5 border border-line dark:border-line-dark flex items-center justify-center text-ink dark:text-ink-dark cursor-pointer active:scale-95 transition-all shrink-0"
+            aria-label="Previous Attendance Module"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleTabClick(currentTab.id)}
+            className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-primary text-white text-xs font-bold shadow-xs transition-all truncate cursor-pointer"
+          >
+            <ActiveIcon className="w-4 h-4 shrink-0 text-white" />
+            <span className="truncate">{currentTab.label}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleMobileNext}
+            className="w-8 h-8 rounded-xl bg-surface-secondary dark:bg-white/5 border border-line dark:border-line-dark flex items-center justify-center text-ink dark:text-ink-dark cursor-pointer active:scale-95 transition-all shrink-0"
+            aria-label="Next Attendance Module"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-center gap-1.5 pb-0.5">
+          {TABS.map((tab, idx) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => handleTabClick(tab.id)}
+              className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                idx === activeIdx ? 'w-5 bg-primary' : 'w-1.5 bg-line dark:bg-line-dark'
+              }`}
+              aria-label={tab.label}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="hidden sm:flex items-center gap-1 p-1 bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl w-fit shadow-2xs">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -43,7 +102,7 @@ const AttendanceTopTabs = ({ activeTab, onTabChange, onOpenSettings }) => {
           );
         })}
       </div>
-    </MobileScrollSlider>
+    </div>
   );
 };
 

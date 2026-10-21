@@ -1,5 +1,6 @@
 const LmsItem = require('../models/LmsItem');
 const Student = require('../models/Student');
+const { syncSubmissionsToClassTest } = require('../utils/lmsClassTestSync');
 
 const getItemSubmissions = async (req, res) => {
   try {
@@ -12,6 +13,7 @@ const getItemSubmissions = async (req, res) => {
     const studentQuery = { school_id: req.schoolId, status: 'Active' };
     if (item.grade_id) studentQuery.current_grade = item.grade_id._id || item.grade_id;
     if (item.section) studentQuery.current_section = item.section;
+    if (item.campus_id) studentQuery.campus_id = item.campus_id;
 
     const students = await Student.find(studentQuery)
       .select('name father_name gr_number current_section photo_url')
@@ -24,6 +26,7 @@ const getItemSubmissions = async (req, res) => {
     const roster = students.map((std) => {
       const sub = existingMap.get(String(std._id));
       return {
+        _id: std._id,
         student_id: std._id,
         name: std.name,
         father_name: std.father_name,
@@ -41,8 +44,6 @@ const getItemSubmissions = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
-const { syncSubmissionsToClassTest } = require('../utils/lmsClassTestSync');
 
 const updateItemSubmissions = async (req, res) => {
   try {

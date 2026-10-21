@@ -1,18 +1,26 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
+import { useCampus } from '../context/CampusContext';
+import { useToast } from '../context/ToastContext';
 
 export const useSubjectsManager = () => {
+  const { activeCampusId } = useCampus();
+  const { showToast } = useToast();
+
   const [subjects, setSubjects] = useState([]);
   const [campuses, setCampuses] = useState([]);
   const [grades, setGrades] = useState([]);
-  const [selectedCampus, setSelectedCampus] = useState('all');
+  const [teachers, setTeachers] = useState([]);
+  const [selectedCampus, setSelectedCampus] = useState(activeCampusId !== 'all' ? activeCampusId : 'all');
   const [selectedClass, setSelectedClass] = useState('all');
+  const [selectedStream, setSelectedStream] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [pageSize, setPageSize] = useState(25);
   const [modalState, setModalState] = useState({ isOpen: false, mode: 'add', subject: null });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subjectToDelete, setSubjectToDelete] = useState(null);
@@ -20,14 +28,22 @@ export const useSubjectsManager = () => {
   const [toggleLoadingId, setToggleLoadingId] = useState(null);
   const [isSeeding, setIsSeeding] = useState(false);
 
-  const fetchCampusesAndGrades = async () => {
+  useEffect(() => {
+    if (activeCampusId && activeCampusId !== 'all') {
+      setSelectedCampus(activeCampusId);
+    }
+  }, [activeCampusId]);
+
+  const fetchAuxiliaryData = async () => {
     try {
-      const [cRes, gRes] = await Promise.all([
+      const [cRes, gRes, tRes] = await Promise.all([
         api.get('/campuses').catch(() => ({ data: { campuses: [] } })),
-        api.get('/grades').catch(() => ({ data: { grades: [] } }))
+        api.get('/grades').catch(() => ({ data: { grades: [] } })),
+        api.get('/teachers').catch(() => ({ data: { teachers: [] } }))
       ]);
       setCampuses(cRes.data?.campuses || []);
       setGrades(gRes.data?.grades || []);
+      setTeachers(tRes.data?.teachers || []);
     } catch (err) {
       console.error(err);
     }
@@ -39,24 +55,27 @@ export const useSubjectsManager = () => {
       setError('');
       const params = {
         page,
-        limit: 10,
+        limit: pageSize,
         campus_id: selectedCampus,
         search: searchQuery,
-        class_name: selectedClass !== 'all' ? selectedClass : undefined
+        class_name: selectedClass !== 'all' ? selectedClass : undefined,
+        stream: selectedStream !== 'all' ? selectedStream : undefined
       };
       const res = await api.get('/subjects', { params });
-      setSubjects(res.data.subjects || []);
-      setTotalItems(res.data.total || 0);
-      setTotalPages(res.data.pages || 1);
-      setCurrentPage(res.data.page || 1);
+      setSubjects(res.data?.subjects || []);
+      setTotalItems(res.data?.total || 0);
+      setTotalPages(res.data?.pages || 1);
+      setCurrentPage(res.data?.page || 1);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load subjects');
     } finally {
       setLoading(false);
     }
-  }, [selectedCampus, selectedClass, searchQuery]);
+  }, [selectedCampus, selectedClass, selectedStream, searchQuery, pageSize]);
 
-  useEffect(() => { fetchCampusesAndGrades(); }, []);
+  useEffect(() => {
+    fetchAuxiliaryData();
+  }, []);
 
   useEffect(() => {
     if (!searchQuery) {
@@ -75,10 +94,14 @@ export const useSubjectsManager = () => {
     setSubjects((prev) => prev.map((s) => (s._id === id ? { ...s, [field]: optimisticValue } : s)));
     try {
       setToggleLoadingId(id);
-      await api.patch(`/subjects/${id}/toggle`, { field });
+      const res = await api.patch(`/subjects/${id}/toggle`, { field });
+      showToast(`${target.name} ${field === 'mandatory' ? 'type' : 'status'} updated`, 'success');
+      if (res.data?.subject) {
+        setSubjects((prev) => prev.map((s) => (s._id === id ? { ...s, ...res.data.subject } : s)));
+      }
     } catch (err) {
       setSubjects((prev) => prev.map((s) => (s._id === id ? { ...s, [field]: previousValue } : s)));
-      setError(err.response?.data?.message || 'Failed to toggle subject property');
+      showToast(err.response?.data?.message || 'Failed to toggle subject property', 'error');
     } finally {
       setToggleLoadingId(null);
     }
@@ -88,10 +111,11 @@ export const useSubjectsManager = () => {
     try {
       setIsSeeding(true);
       setError('');
-      await api.post('/subjects/seed-defaults', { campus_id: selectedCampus !== 'all' ? selectedCampus : null });
+      const res = await api.post('/subjects/seed-defaults', { campus_id: selectedCampus !== 'all' ? selectedCampus : null });
+      showToast(res.data?.message || 'Standard curriculum loaded successfully', 'success');
       await fetchSubjects(1);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to auto-seed standard subjects');
+      showToast(err.response?.data?.message || 'Failed to auto-seed standard subjects', 'error');
     } finally {
       setIsSeeding(false);
     }
@@ -103,13 +127,16 @@ export const useSubjectsManager = () => {
       setError('');
       if (modalState.mode === 'edit' && modalState.subject?._id) {
         await api.put(`/subjects/${modalState.subject._id}`, formData);
+        showToast(`Subject "${formData.name}" updated successfully`, 'success');
       } else {
         await api.post('/subjects', formData);
+        showToast(`Subject "${formData.name}" created successfully`, 'success');
       }
       setModalState({ isOpen: false, mode: 'add', subject: null });
       await fetchSubjects(currentPage);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save subject');
+      showToast(err.response?.data?.message || 'Failed to save subject', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -120,23 +147,26 @@ export const useSubjectsManager = () => {
     try {
       setDeleteLoading(true);
       await api.delete(`/subjects/${subjectToDelete._id}`);
+      showToast(`Subject "${subjectToDelete.name}" deleted successfully`, 'success');
       setSubjectToDelete(null);
       await fetchSubjects(currentPage);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to delete subject');
+      showToast(err.response?.data?.message || 'Failed to delete subject', 'error');
     } finally {
       setDeleteLoading(false);
     }
   };
 
   return {
-    subjects, campuses, grades, selectedCampus, setSelectedCampus,
-    selectedClass, setSelectedClass,
+    subjects, campuses, grades, teachers, selectedCampus, setSelectedCampus,
+    selectedClass, setSelectedClass, selectedStream, setSelectedStream,
     searchQuery, setSearchQuery, loading, error, setError,
-    currentPage, totalPages, totalItems, modalState, setModalState,
+    currentPage, totalPages, totalItems, pageSize, setPageSize, modalState, setModalState,
     isSubmitting, subjectToDelete, setSubjectToDelete,
     deleteLoading, toggleLoadingId, isSeeding,
     handleToggle, handleAutoLoad, handleFormSubmit,
     handleDeleteConfirm, fetchSubjects, setCurrentPage
   };
 };
+
+export default useSubjectsManager;

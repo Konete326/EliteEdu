@@ -1,9 +1,9 @@
 import React from 'react';
 import { Camera, Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
 
-const CameraViewfinder = ({ containerId, isReady, error, onRetry, isScanning }) => {
+const CameraViewfinder = ({ containerId, isReady, error, onRetry, isScanning, className = '' }) => {
   return (
-    <div className="relative w-full aspect-square max-w-sm mx-auto overflow-hidden rounded-2xl bg-slate-950 border-2 border-slate-800 shadow-2xl flex items-center justify-center">
+    <div className={`relative w-full aspect-square max-w-sm mx-auto overflow-hidden rounded-2xl bg-slate-950 border-2 border-slate-800 shadow-2xl flex items-center justify-center ${className}`}>
       <div id={containerId} className="w-full h-full object-cover" />
 
       {!isReady && !error && (

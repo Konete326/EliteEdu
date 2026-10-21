@@ -5,7 +5,7 @@ const getLmsItems = async (req, res) => {
     const { item_type, grade_id, section, subject_id, teacher_id, status, search, campus_id } = req.query;
     const query = { school_id: req.schoolId };
 
-    if (campus_id) query.campus_id = campus_id;
+    if (campus_id && campus_id !== 'all') query.campus_id = campus_id;
     if (item_type) query.item_type = item_type;
     if (grade_id) query.grade_id = grade_id;
     if (section) query.section = section;
@@ -31,13 +31,16 @@ const getLmsItems = async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
+    const baseCounterQuery = { school_id: req.schoolId };
+    if (campus_id && campus_id !== 'all') baseCounterQuery.campus_id = campus_id;
+
     const [allCount, hwCount, matCount, liveCount, quizCount, topics] = await Promise.all([
-      LmsItem.countDocuments({ school_id: req.schoolId }),
-      LmsItem.countDocuments({ school_id: req.schoolId, item_type: 'Homework', status: 'Active' }),
-      LmsItem.countDocuments({ school_id: req.schoolId, item_type: 'Lecture_Material' }),
-      LmsItem.countDocuments({ school_id: req.schoolId, item_type: 'Live_Class', status: { $in: ['Active', 'In_Progress'] } }),
-      LmsItem.countDocuments({ school_id: req.schoolId, item_type: 'Quiz' }),
-      LmsItem.find({ school_id: req.schoolId, item_type: 'Course_Topic' }).select('status').lean()
+      LmsItem.countDocuments(baseCounterQuery),
+      LmsItem.countDocuments({ ...baseCounterQuery, item_type: 'Homework', status: 'Active' }),
+      LmsItem.countDocuments({ ...baseCounterQuery, item_type: 'Lecture_Material' }),
+      LmsItem.countDocuments({ ...baseCounterQuery, item_type: 'Live_Class', status: { $in: ['Active', 'In_Progress'] } }),
+      LmsItem.countDocuments({ ...baseCounterQuery, item_type: 'Quiz' }),
+      LmsItem.find({ ...baseCounterQuery, item_type: 'Course_Topic' }).select('status').lean()
     ]);
 
     const completedTopics = topics.filter((t) => t.status === 'Completed').length;

@@ -71,10 +71,10 @@ const BehaviorMatrixRow = ({ student, evaluation, onChangeRating, onChangeConduc
           onChange={(e) => onChangeConduct(e.target.value)}
           className={`w-full px-2 py-1 rounded-lg text-xs font-bold border ${CONDUCT_COLORS[evaluation.general_conduct || 'Good']}`}
         >
-          <option value="Exemplary">🌟 Exemplary</option>
-          <option value="Good">👍 Good</option>
-          <option value="Satisfactory">👌 Satisfactory</option>
-          <option value="Needs Improvement">⚠️ Needs Work</option>
+          <option value="Exemplary">Exemplary</option>
+          <option value="Good">Good</option>
+          <option value="Satisfactory">Satisfactory</option>
+          <option value="Needs Improvement">Needs Work</option>
         </select>
       </td>
 

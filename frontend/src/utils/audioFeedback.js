@@ -1,4 +1,18 @@
+export const isAudioFeedbackEnabled = () => {
+  try {
+    const raw = localStorage.getItem('elite_attendance_settings');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (typeof parsed.soundEnabled === 'boolean') {
+        return parsed.soundEnabled;
+      }
+    }
+  } catch (_) {}
+  return true;
+};
+
 export const playScanSuccessBeep = () => {
+  if (!isAudioFeedbackEnabled()) return;
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();
@@ -14,6 +28,7 @@ export const playScanSuccessBeep = () => {
 };
 
 export const playScanErrorBeep = () => {
+  if (!isAudioFeedbackEnabled()) return;
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();

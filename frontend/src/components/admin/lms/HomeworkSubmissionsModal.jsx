@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, Users } from 'lucide-react';
 import api from '../../../utils/axiosConfig';
 import { useToast } from '../../../context/ToastContext';
 import HomeworkSubmissionRow from './HomeworkSubmissionRow';
@@ -55,42 +55,70 @@ const HomeworkSubmissionsModal = ({ item, isOpen, onClose, onSaved }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
-        <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-          <div>
-            <h3 className="font-bold text-gray-900 dark:text-gray-100">{item.title}</h3>
-            <p className="text-xs text-gray-500">Max Marks: {item.max_marks || 10} • Class: {item.grade_id?.name || 'Class'} ({item.section})</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-2xs p-3 sm:p-4">
+      <div className="bg-surface dark:bg-surface-dark rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-line dark:border-line-dark">
+        <div className="p-3.5 sm:p-4 border-b border-line dark:border-line-dark flex items-center justify-between">
+          <div className="min-w-0 flex-1">
+            <h3 className="font-bold text-sm sm:text-base text-ink dark:text-white truncate">{item.title}</h3>
+            <p className="text-[11px] text-ink-muted">
+              Max Marks: <strong className="text-ink dark:text-white font-mono">{item.max_marks || 10}</strong> • Class: {item.grade_id?.name || 'Class'} ({item.section || 'A'})
+            </p>
           </div>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 rounded-lg cursor-pointer"><X className="w-5 h-5" /></button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-ink-muted hover:text-ink hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark rounded-xl transition-colors cursor-pointer"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
-        <div className="p-4 overflow-y-auto flex-1">
+
+        <div className="p-3 sm:p-4 overflow-y-auto flex-1">
           {loading ? (
-            <div className="flex items-center justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-blue-500" /></div>
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
           ) : students.length === 0 ? (
-            <p className="text-center py-8 text-gray-400 text-sm">No active students enrolled in this class/section.</p>
+            <div className="p-8 text-center text-xs text-ink-muted space-y-2">
+              <Users className="w-8 h-8 mx-auto text-ink-muted/50" />
+              <p className="font-bold text-ink dark:text-white">No enrolled students found</p>
+              <p className="text-[11px]">There are no active students matching this class and section.</p>
+            </div>
           ) : (
-            <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 text-xs">
-                <tr>
-                  <th className="p-3">Roll #</th><th className="p-3">Student Name</th><th className="p-3">Status</th><th className="p-3">Marks</th><th className="p-3">Teacher Remarks</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                {students.map((st) => (
-                  <HomeworkSubmissionRow
-                    key={st._id || st.student_id}
-                    student={st}
-                    submission={submissions.find((s) => String(s.student_id) === String(st._id || st.student_id))}
-                    maxMarks={item.max_marks || 100}
-                    onStatusChange={handleStatusChange}
-                  />
-                ))}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto rounded-xl border border-line dark:border-line-dark">
+              <table className="w-full text-left text-xs min-w-[560px]">
+                <thead className="bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 text-ink-muted text-[10px] font-bold uppercase tracking-wider border-b border-line dark:border-line-dark">
+                  <tr>
+                    <th className="p-3">GR / Roll #</th>
+                    <th className="p-3">Student Name</th>
+                    <th className="p-3">Status</th>
+                    <th className="p-3">Marks</th>
+                    <th className="p-3">Teacher Remarks</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line dark:divide-line-dark">
+                  {students.map((st) => (
+                    <HomeworkSubmissionRow
+                      key={st._id || st.student_id}
+                      student={st}
+                      submission={submissions.find((s) => String(s.student_id) === String(st._id || st.student_id))}
+                      maxMarks={item.max_marks || 100}
+                      onStatusChange={handleStatusChange}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
-        <HomeworkSubmissionsFooter saving={saving} syncToClassTest={syncToClassTest} onToggleSync={setSyncToClassTest} onSave={handleSave} onClose={onClose} />
+
+        <HomeworkSubmissionsFooter
+          saving={saving}
+          syncToClassTest={syncToClassTest}
+          onToggleSync={setSyncToClassTest}
+          onSave={handleSave}
+          onClose={onClose}
+        />
       </div>
     </div>
   );

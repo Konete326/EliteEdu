@@ -54,7 +54,7 @@ const MobileScrollSlider = ({
 
       <div
         ref={scrollRef}
-        className={`overflow-x-auto no-scrollbar scroll-smooth w-full ${className}`}
+        className={`overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory w-full ${className}`}
       >
         {children}
       </div>

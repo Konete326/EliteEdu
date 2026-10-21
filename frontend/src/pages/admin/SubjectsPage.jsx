@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, BookOpen } from 'lucide-react';
 import { useSubjectsManager } from '../../hooks/useSubjectsManager';
 import SubjectTopBar from '../../components/admin/subjects/SubjectTopBar';
+import SubjectKpiStrip from '../../components/admin/subjects/SubjectKpiStrip';
 import SubjectTable from '../../components/admin/subjects/SubjectTable';
 import SubjectPagination from '../../components/admin/subjects/SubjectPagination';
 import SubjectModal from '../../components/admin/subjects/SubjectModal';
@@ -12,9 +13,10 @@ import PageLoader from '../../components/common/PageLoader';
 
 const SubjectsPage = () => {
   const {
-    subjects, campuses, grades, selectedCampus, setSelectedCampus, selectedClass, setSelectedClass,
+    subjects, campuses, grades, teachers, selectedCampus, setSelectedCampus,
+    selectedClass, setSelectedClass, selectedStream, setSelectedStream,
     searchQuery, setSearchQuery, loading, error, setError, currentPage, totalPages, totalItems,
-    modalState, setModalState, isSubmitting, subjectToDelete, setSubjectToDelete, deleteLoading,
+    pageSize, modalState, setModalState, isSubmitting, subjectToDelete, setSubjectToDelete, deleteLoading,
     toggleLoadingId, isSeeding, handleToggle, handleAutoLoad, handleFormSubmit, handleDeleteConfirm,
     fetchSubjects, setCurrentPage
   } = useSubjectsManager();
@@ -23,7 +25,7 @@ const SubjectsPage = () => {
   const targetCampusName = campuses.find((c) => c._id === selectedCampus)?.name || 'All Campuses';
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-12">
       <SubjectTopBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -33,19 +35,33 @@ const SubjectsPage = () => {
         onCampusChange={(val) => { setSelectedCampus(val); setCurrentPage(1); }}
         selectedClass={selectedClass}
         onClassChange={(val) => { setSelectedClass(val); setCurrentPage(1); }}
+        selectedStream={selectedStream}
+        onStreamChange={(val) => { setSelectedStream(val); setCurrentPage(1); }}
         onAutoLoad={() => setShowAutoLoadModal(true)}
         onAddClick={() => setModalState({ isOpen: true, mode: 'add', subject: null })}
         isSeeding={isSeeding}
+        totalItems={totalItems}
+      />
+
+      <SubjectKpiStrip
+        subjects={subjects}
+        totalCount={totalItems}
+        activeCampusName={targetCampusName}
       />
 
       {error && (
-        <div className="p-3.5 rounded-xl bg-bad-soft dark:bg-bad/10 text-bad border border-bad/20 text-xs flex items-center justify-between">
-          <div className="flex items-center gap-2"><AlertCircle className="w-4 h-4 shrink-0" /><span>{error}</span></div>
-          <button type="button" onClick={() => setError('')} className="underline font-semibold cursor-pointer">Dismiss</button>
+        <div className="p-3.5 rounded-xl bg-bad/10 text-bad dark:text-bad-dark border border-bad/20 text-xs flex items-center justify-between font-semibold">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{error}</span>
+          </div>
+          <button type="button" onClick={() => setError('')} className="underline cursor-pointer">
+            Dismiss
+          </button>
         </div>
       )}
 
-      <div className="bg-surface dark:bg-[#0c0c0c] border border-line dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl overflow-hidden shadow-xs p-4 sm:p-5">
         {loading ? (
           <PageLoader text="Loading subjects..." />
         ) : subjects.length === 0 ? (
@@ -68,7 +84,7 @@ const SubjectsPage = () => {
               currentPage={currentPage}
               totalPages={totalPages}
               totalItems={totalItems}
-              limit={10}
+              limit={pageSize}
               onPageChange={(page) => fetchSubjects(page)}
             />
           </>
@@ -81,6 +97,7 @@ const SubjectsPage = () => {
         subject={modalState.subject}
         campuses={campuses}
         grades={grades}
+        teachers={teachers}
         onClose={() => setModalState({ isOpen: false, mode: 'add', subject: null })}
         onSubmit={handleFormSubmit}
         isSubmitting={isSubmitting}
@@ -91,26 +108,27 @@ const SubjectsPage = () => {
         onClose={() => !deleteLoading && setSubjectToDelete(null)}
         onConfirm={handleDeleteConfirm}
         title="Delete Subject"
-        message={`Are you sure you want to delete ${subjectToDelete?.name || 'this subject'}? This action cannot be undone.`}
+        message={`Are you sure you want to delete "${subjectToDelete?.name || 'this subject'}"? This action cannot be undone.`}
         confirmText={deleteLoading ? 'Deleting...' : 'Delete'}
         confirmStyle="danger"
       />
 
       <AutoLoadConfirmModal
         isOpen={showAutoLoadModal}
-        onClose={() => !isSeeding && setShowAutoLoadModal(false)}
-        onConfirm={async () => {
-          await handleAutoLoad();
+        onClose={() => setShowAutoLoadModal(false)}
+        onConfirm={() => {
           setShowAutoLoadModal(false);
+          handleAutoLoad();
         }}
         isLoading={isSeeding}
-        title="Auto-Load Standard Curriculum"
-        description="Seed standard Pakistani curriculum courses for Class 1 to Class 10 with official subject codes and categories."
+        icon={BookOpen}
+        title="Load Standard Subjects"
+        description="Load standard Pakistani school subjects from Playgroup to Class 10 with Compulsory subjects and Electives (Biology and Computer Science)."
         targetName={targetCampusName}
         features={[
-          'Loads standard curriculum courses for Class 1 to Class 10 (English, Urdu, Science, Math, etc.)',
-          'Preserves all existing subjects without duplicate collisions',
-          'Sets default mandatory/optional statuses and academic credit configs'
+          'Includes English, Urdu, Islamiat, Math, Science, Physics, Chemistry, Biology, and Computer Science',
+          'Sets up Biology and Computer Science as elective choices for Class 9 and 10',
+          'Your existing subjects and teachers will remain safe'
         ]}
       />
     </div>

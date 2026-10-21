@@ -1,80 +1,140 @@
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, UserCheck, Layers, BookOpen } from 'lucide-react';
 import SubjectToggle from './SubjectToggle';
 import { formatClassesLabel } from '../../../utils/curriculumPresets';
 
-const SubjectTable = ({ subjects, onEdit, onDelete, onToggle, toggleLoadingId }) => {
+const SubjectTable = ({ subjects = [], onEdit, onDelete, onToggle, toggleLoadingId }) => {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left text-sm">
-        <thead className="bg-surface-secondary/70 dark:bg-[#141414] text-[11px] font-semibold text-ink-muted dark:text-ink-muted-dark uppercase tracking-wider border-b border-line dark:border-white/10">
-          <tr>
-            <th className="px-5 py-3">Name</th>
-            <th className="px-5 py-3">Code</th>
-            <th className="px-5 py-3">Classes</th>
-            <th className="px-5 py-3 text-center w-36">Status</th>
-            <th className="px-5 py-3 text-center w-36">Mandatory</th>
-            <th className="px-5 py-3 text-right w-28">Actions</th>
+    <div className="overflow-x-auto rounded-xl border border-line dark:border-line-dark">
+      <table className="w-full text-left text-xs border-collapse">
+        <thead>
+          <tr className="bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border-b border-line dark:border-line-dark text-[10px] font-bold uppercase tracking-wider text-ink-muted">
+            <th className="py-3 px-3.5">Subject & Code</th>
+            <th className="py-3 px-3.5">Type</th>
+            <th className="py-3 px-3.5">Classes</th>
+            <th className="py-3 px-3.5">Teacher</th>
+            <th className="py-3 px-3.5">Periods & Marks</th>
+            <th className="py-3 px-3.5">Campus</th>
+            <th className="py-3 px-3.5 text-center">Status</th>
+            <th className="py-3 px-3.5 text-right">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-line/60 dark:divide-white/5 bg-surface dark:bg-[#0c0c0c]">
+        <tbody className="divide-y divide-line dark:divide-line-dark text-xs">
           {subjects.map((subject) => {
             const isToggling = toggleLoadingId === subject._id;
             const classesLabel = formatClassesLabel(subject.classes);
+            const isElective = subject.subject_type === 'Elective' || !subject.mandatory;
+            const campusName = subject.campus_id?.name || 'All Campuses';
+            const teacherName = subject.assigned_teacher?.name;
+            const totalMarks = (subject.theory_marks || 0) + (subject.practical_marks || 0);
+
             return (
               <tr
                 key={subject._id}
-                className="hover:bg-surface-secondary/40 dark:hover:bg-[#151515] transition-colors"
+                className="hover:bg-surface-secondary/50 dark:hover:bg-white/5 transition-colors group"
               >
-                <td className="px-5 py-3 font-semibold text-ink dark:text-ink-dark">
-                  {subject.name}
+                <td className="py-3 px-3.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                      <BookOpen size={14} />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="font-bold text-ink dark:text-white truncate block">
+                        {subject.name}
+                      </span>
+                      <span className="inline-block px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-primary/10 text-primary">
+                        {subject.code}
+                      </span>
+                    </div>
+                  </div>
                 </td>
-                <td className="px-5 py-3">
-                  <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark border border-primary/20">
-                    {subject.code}
-                  </span>
+
+                <td className="py-3 px-3.5">
+                  <div className="space-y-0.5">
+                    <span
+                      className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                        isElective
+                          ? 'bg-accent/15 text-accent dark:bg-accent/25 border border-accent/20'
+                          : 'bg-good/15 text-good dark:bg-good/25 border border-good/20'
+                      }`}
+                    >
+                      {isElective ? 'Elective' : 'Compulsory'}
+                    </span>
+                    {subject.stream && subject.stream !== 'General' && (
+                      <p className="text-[10px] font-semibold text-ink-muted flex items-center gap-1">
+                        <Layers size={10} className="text-primary shrink-0" />
+                        <span className="truncate">{subject.stream}</span>
+                      </p>
+                    )}
+                    {subject.elective_group && (
+                      <p className="text-[9px] text-ink-muted truncate">
+                        Slot: {subject.elective_group}
+                      </p>
+                    )}
+                  </div>
                 </td>
-                <td className="px-5 py-3">
-                  <span className="inline-block px-2.5 py-0.5 rounded-md text-xs font-medium bg-surface-secondary dark:bg-[#1a1a1a] text-ink-sub dark:text-ink-muted-dark border border-line dark:border-white/10">
+
+                <td className="py-3 px-3.5">
+                  <span className="inline-block px-2 py-0.5 rounded-md text-[11px] font-medium bg-surface-secondary dark:bg-[#1f1f1f] border border-line dark:border-white/10 text-ink dark:text-white">
                     {classesLabel}
                   </span>
                 </td>
-                <td className="px-5 py-3 text-center">
-                  <div className="inline-flex items-center justify-center">
-                    <SubjectToggle
-                      checked={subject.status === 'Active'}
-                      onChange={() => onToggle(subject._id, 'status')}
-                      disabled={isToggling}
-                      ariaLabel={`Toggle status for ${subject.name}`}
-                    />
+
+                <td className="py-3 px-3.5">
+                  {teacherName ? (
+                    <div className="flex items-center gap-1.5 text-ink dark:text-white">
+                      <UserCheck size={13} className="text-good dark:text-good-dark shrink-0" />
+                      <div className="min-w-0">
+                        <p className="font-bold truncate max-w-[130px]">{teacherName}</p>
+                        <p className="text-[10px] text-ink-muted truncate max-w-[130px]">
+                          {subject.assigned_teacher?.designation || 'Teacher'}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="text-[11px] text-ink-muted italic">Not assigned</span>
+                  )}
+                </td>
+
+                <td className="py-3 px-3.5 text-[11px] text-ink dark:text-white">
+                  <div>
+                    <span className="font-semibold">{subject.periods_per_week || 5} per week</span>
+                    <span className="text-ink-muted text-[10px] block">
+                      {totalMarks} Marks
+                    </span>
                   </div>
                 </td>
-                <td className="px-5 py-3 text-center">
-                  <div className="inline-flex items-center justify-center">
-                    <SubjectToggle
-                      checked={subject.mandatory}
-                      onChange={() => onToggle(subject._id, 'mandatory')}
-                      disabled={isToggling}
-                      ariaLabel={`Toggle mandatory for ${subject.name}`}
-                    />
-                  </div>
+
+                <td className="py-3 px-3.5">
+                  <span className="inline-block px-2 py-0.5 rounded-md text-[11px] font-medium bg-surface-secondary dark:bg-[#1a1a1a] text-ink dark:text-white border border-line dark:border-white/5 truncate max-w-[120px]">
+                    {campusName}
+                  </span>
                 </td>
-                <td className="px-5 py-3 text-right">
+
+                <td className="py-3 px-3.5 text-center">
+                  <SubjectToggle
+                    active={subject.status === 'Active'}
+                    onToggle={() => onToggle(subject._id, 'status')}
+                    loading={isToggling}
+                  />
+                </td>
+
+                <td className="py-3 px-3.5 text-right">
                   <div className="flex items-center justify-end gap-1">
                     <button
                       type="button"
                       onClick={() => onEdit(subject)}
-                      title="Edit Subject"
-                      className="p-1.5 rounded-lg text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20 transition-colors"
+                      className="p-1.5 rounded-lg text-ink-muted hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+                      title="Edit"
                     >
-                      <Pencil className="w-4 h-4" />
+                      <Pencil size={13} />
                     </button>
                     <button
                       type="button"
                       onClick={() => onDelete(subject)}
-                      title="Delete Subject"
-                      className="p-1.5 rounded-lg text-bad/80 hover:text-bad hover:bg-bad-soft dark:hover:bg-bad/20 transition-colors"
+                      className="p-1.5 rounded-lg text-ink-muted hover:text-bad hover:bg-bad/10 transition-colors cursor-pointer"
+                      title="Delete"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 size={13} />
                     </button>
                   </div>
                 </td>

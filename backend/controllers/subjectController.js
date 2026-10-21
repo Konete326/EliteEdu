@@ -5,33 +5,28 @@ const Campus = require('../models/Campus');
 const getSubjects = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
-    const { campus_id, search, class_name, page = 1, limit = 10 } = req.query;
+    const { campus_id, search, class_name, stream, subject_type, page = 1, limit = 25 } = req.query;
     const filter = { school_id: schoolId };
 
-    if (campus_id && campus_id !== 'all' && mongoose.Types.ObjectId.isValid(campus_id)) {
-      filter.campus_id = campus_id;
-    }
-    if (class_name && class_name !== 'all') {
-      filter.classes = class_name;
-    }
-    if (search && search.trim()) {
-      const q = search.trim();
-      filter.$or = [{ name: { $regex: q, $options: 'i' } }, { code: { $regex: q, $options: 'i' } }];
+    if (campus_id && campus_id !== 'all' && mongoose.Types.ObjectId.isValid(campus_id)) filter.campus_id = campus_id;
+    if (class_name && class_name !== 'all') filter.classes = class_name;
+    if (stream && stream !== 'all') filter.stream = stream;
+    if (subject_type && subject_type !== 'all') filter.subject_type = subject_type;
+    if (search?.trim()) {
+      filter.$or = [{ name: { $regex: search.trim(), $options: 'i' } }, { code: { $regex: search.trim(), $options: 'i' } }];
     }
 
     const skip = (Math.max(1, parseInt(page)) - 1) * parseInt(limit);
     const [total, subjects] = await Promise.all([
       Subject.countDocuments(filter),
-      Subject.find(filter).sort({ createdAt: -1 }).skip(skip).limit(parseInt(limit))
+      Subject.find(filter)
+        .populate('assigned_teacher', 'name email designation employee_code')
+        .populate('campus_id', 'name code')
+        .sort({ order: 1, createdAt: 1 })
+        .skip(skip).limit(parseInt(limit)).lean()
     ]);
 
-    res.status(200).json({
-      success: true,
-      subjects,
-      total,
-      page: parseInt(page),
-      pages: Math.ceil(total / parseInt(limit)) || 1
-    });
+    res.status(200).json({ success: true, subjects, total, page: parseInt(page), pages: Math.ceil(total / parseInt(limit)) || 1 });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch subjects', error: error.message });
   }
@@ -40,11 +35,8 @@ const getSubjects = async (req, res) => {
 const createSubject = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
-    const { name, code, campus_id, status = 'Active', mandatory = true, classes = [] } = req.body;
-
-    if (!name?.trim() || !code?.trim()) {
-      return res.status(400).json({ message: 'Subject name and code are required' });
-    }
+    const { name, code, campus_id, status = 'Active', mandatory = true, subject_type, stream = 'General', elective_group = '', assigned_teacher, periods_per_week = 5, theory_marks = 75, practical_marks = 0, order, classes = [] } = req.body;
+    if (!name?.trim() || !code?.trim()) return res.status(400).json({ message: 'Subject name and code are required' });
 
     let campusRef = null;
     if (campus_id && mongoose.Types.ObjectId.isValid(campus_id)) {
@@ -52,17 +44,22 @@ const createSubject = async (req, res) => {
       if (campus) campusRef = campus._id;
     }
 
+    const count = await Subject.countDocuments({ school_id: schoolId });
+    const isMandatory = mandatory !== undefined ? Boolean(mandatory) : subject_type !== 'Elective';
+
     const subject = await Subject.create({
-      school_id: schoolId,
-      campus_id: campusRef,
-      name: name.trim(),
-      code: code.trim().toUpperCase(),
-      status: ['Active', 'Inactive'].includes(status) ? status : 'Active',
-      mandatory: Boolean(mandatory),
+      school_id: schoolId, campus_id: campusRef, name: name.trim(), code: code.trim().toUpperCase(),
+      status: ['Active', 'Inactive'].includes(status) ? status : 'Active', mandatory: isMandatory,
+      subject_type: subject_type || (isMandatory ? 'Compulsory' : 'Elective'), stream: stream || 'General',
+      elective_group: elective_group?.trim() || '',
+      assigned_teacher: assigned_teacher && mongoose.Types.ObjectId.isValid(assigned_teacher) ? assigned_teacher : null,
+      periods_per_week: Number(periods_per_week) || 5, theory_marks: Number(theory_marks) || 0,
+      practical_marks: Number(practical_marks) || 0, order: order !== undefined ? Number(order) : count + 1,
       classes: Array.isArray(classes) ? classes : []
     });
 
-    res.status(201).json({ success: true, subject });
+    const populated = await Subject.findById(subject._id).populate('assigned_teacher', 'name email designation employee_code').populate('campus_id', 'name code').lean();
+    res.status(201).json({ success: true, subject: populated });
   } catch (error) {
     res.status(500).json({ message: 'Failed to create subject', error: error.message });
   }
@@ -72,25 +69,30 @@ const updateSubject = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
     const { id } = req.params;
-    const { name, code, campus_id, status, mandatory, classes } = req.body;
-
+    const b = req.body;
     const update = {};
-    if (name !== undefined) update.name = name.trim();
-    if (code !== undefined) update.code = code.trim().toUpperCase();
-    if (status !== undefined) update.status = status;
-    if (mandatory !== undefined) update.mandatory = Boolean(mandatory);
-    if (classes !== undefined && Array.isArray(classes)) update.classes = classes;
-    if (campus_id !== undefined) {
-      update.campus_id = mongoose.Types.ObjectId.isValid(campus_id) ? campus_id : null;
+    if (b.name !== undefined) update.name = b.name.trim();
+    if (b.code !== undefined) update.code = b.code.trim().toUpperCase();
+    if (b.status !== undefined) update.status = b.status;
+    if (b.mandatory !== undefined) {
+      update.mandatory = Boolean(b.mandatory);
+      if (!b.subject_type) update.subject_type = Boolean(b.mandatory) ? 'Compulsory' : 'Elective';
     }
+    if (b.subject_type !== undefined) update.subject_type = b.subject_type;
+    if (b.stream !== undefined) update.stream = b.stream;
+    if (b.elective_group !== undefined) update.elective_group = b.elective_group.trim();
+    if (b.assigned_teacher !== undefined) update.assigned_teacher = mongoose.Types.ObjectId.isValid(b.assigned_teacher) ? b.assigned_teacher : null;
+    if (b.periods_per_week !== undefined) update.periods_per_week = Number(b.periods_per_week);
+    if (b.theory_marks !== undefined) update.theory_marks = Number(b.theory_marks);
+    if (b.practical_marks !== undefined) update.practical_marks = Number(b.practical_marks);
+    if (b.order !== undefined) update.order = Number(b.order);
+    if (b.classes !== undefined && Array.isArray(b.classes)) update.classes = b.classes;
+    if (b.campus_id !== undefined) update.campus_id = mongoose.Types.ObjectId.isValid(b.campus_id) ? b.campus_id : null;
 
-    const subject = await Subject.findOneAndUpdate(
-      { _id: id, school_id: schoolId },
-      update,
-      { new: true, runValidators: true }
-    );
+    const subject = await Subject.findOneAndUpdate({ _id: id, school_id: schoolId }, update, { new: true, runValidators: true })
+      .populate('assigned_teacher', 'name email designation employee_code')
+      .populate('campus_id', 'name code').lean();
     if (!subject) return res.status(404).json({ message: 'Subject not found' });
-
     res.status(200).json({ success: true, subject });
   } catch (error) {
     res.status(500).json({ message: 'Failed to update subject', error: error.message });

@@ -37,6 +37,9 @@ const StudentDetailsModal = ({ isOpen, student, onClose }) => {
             <p><span className="text-ink-muted">Gender:</span> {student.gender || 'N/A'} • <span className="text-ink-muted">B-Form:</span> {student.b_form || 'N/A'}</p>
             <p><span className="text-ink-muted">Date of Birth:</span> {student.dob ? new Date(student.dob).toLocaleDateString() : 'N/A'}</p>
             <p><span className="text-ink-muted">Current Class:</span> {student.current_grade?.name || 'N/A'} ({student.current_section || 'N/A'})</p>
+            {student.elective_stream && student.elective_stream !== 'None' && (
+              <p><span className="text-ink-muted">Elective Stream:</span> <span className="font-bold text-accent">{student.elective_stream}</span></p>
+            )}
             <p><span className="text-ink-muted">Campus:</span> {student.campus_id?.name || 'Main Campus'}</p>
           </div>
 

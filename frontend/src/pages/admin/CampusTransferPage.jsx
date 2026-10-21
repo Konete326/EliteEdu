@@ -1,18 +1,21 @@
 import { useState } from 'react';
 import api from '../../services/api';
-import TransferHeader from '../../components/admin/transfer/TransferHeader';
+import TransferHeader from '../../components/admin/campustransfer/TransferHeader';
 import TransferKpiStrip from '../../components/admin/campustransfer/TransferKpiStrip';
 import TransferLedgerTable from '../../components/admin/campustransfer/TransferLedgerTable';
 import TransferExecutionModal from '../../components/admin/campustransfer/TransferExecutionModal';
 import PrintableTransferOrderModal from '../../components/admin/campustransfer/PrintableTransferOrderModal';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import { useCampusTransferData } from '../../components/admin/campustransfer/useCampusTransferData';
+import { useToast } from '../../context/ToastContext';
 
 const CampusTransferPage = () => {
+  const { showToast } = useToast();
   const {
     campuses, grades, students, teachers, transfers, kpis, loading,
     prereqsLoading, loadData, loadPrereqs
   } = useCampusTransferData();
+
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
   const [executing, setExecuting] = useState(false);
   const [selectedTransfer, setSelectedTransfer] = useState(null);
@@ -24,12 +27,14 @@ const CampusTransferPage = () => {
     try {
       const res = await api.post('/campus-transfers', payload);
       if (res.data?.success) {
+        showToast('Campus transfer executed successfully', 'success');
         setSelectedTransfer(res.data.data);
         loadData();
         return true;
       }
       return false;
-    } catch {
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to execute transfer', 'error');
       return false;
     } finally {
       setExecuting(false);
@@ -41,17 +46,22 @@ const CampusTransferPage = () => {
     setDeleting(true);
     try {
       await api.delete(`/campus-transfers/${transferToDelete._id}`);
+      showToast('Transfer audit record deleted', 'success');
       setTransferToDelete(null);
       loadData();
-    } catch {} finally {
+    } catch {
+      showToast('Failed to delete transfer record', 'error');
+    } finally {
       setDeleting(false);
     }
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full min-h-full flex flex-col gap-3 sm:gap-4">
       <TransferHeader
         totalTransfers={transfers.length}
+        loading={loading}
+        onRefresh={loadData}
         onInitiateTransfer={() => {
           loadPrereqs();
           setIsTransferModalOpen(true);
@@ -91,7 +101,7 @@ const CampusTransferPage = () => {
         onClose={() => !deleting && setTransferToDelete(null)}
         onConfirm={handleDelete}
         title="Delete Transfer Record"
-        message={`Remove order ${transferToDelete?.transfer_no || ''}? This will only delete the audit record.`}
+        message={`Are you sure you want to remove transfer order "${transferToDelete?.transfer_no || ''}"? This action will permanently remove the audit entry.`}
         confirmText={deleting ? 'Deleting...' : 'Delete Record'}
         confirmStyle="danger"
       />

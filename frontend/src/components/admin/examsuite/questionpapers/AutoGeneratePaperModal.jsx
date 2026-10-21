@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Sparkles } from 'lucide-react';
+import { X, FileText } from 'lucide-react';
 
 const AutoGeneratePaperModal = ({ isOpen, onClose, onGenerate, grades, subjects, chapters }) => {
   const [title, setTitle] = useState('Mid Term Assessment Paper');
@@ -30,7 +30,7 @@ const AutoGeneratePaperModal = ({ isOpen, onClose, onGenerate, grades, subjects,
       <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-lg shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800">
           <h3 className="font-semibold text-slate-800 dark:text-white flex items-center gap-2">
-            <Sparkles size={16} className="text-primary" /> Auto-Generate Question Paper
+            <FileText size={16} className="text-primary" /> Auto-Generate Question Paper
           </h3>
           <button onClick={onClose} className="p-1 rounded-lg text-slate-400 hover:bg-slate-100"><X size={18} /></button>
         </div>
@@ -76,7 +76,7 @@ const AutoGeneratePaperModal = ({ isOpen, onClose, onGenerate, grades, subjects,
           <div className="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
             <button type="button" onClick={onClose} className="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100">Cancel</button>
             <button type="submit" disabled={generating} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary text-white hover:bg-primary-hover shadow-xs">
-              <Sparkles size={14} /> {generating ? 'Generating Paper...' : 'Generate Paper'}
+              <FileText size={14} /> {generating ? 'Generating Paper...' : 'Generate Paper'}
             </button>
           </div>
         </form>

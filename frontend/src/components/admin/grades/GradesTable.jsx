@@ -1,15 +1,24 @@
 import { useState } from 'react';
+import { Layers } from 'lucide-react';
 import GradeTableRow from './GradeTableRow';
 
-const GradesTable = ({ grades = [], onEdit, onView, onDelete, onToggleStatus, onReorder }) => {
+const GradesTable = ({
+  grades = [],
+  onEdit,
+  onView,
+  onDelete,
+  onToggleStatus,
+  onReorder
+}) => {
   const [draggedIdx, setDraggedIdx] = useState(null);
   const [dragOverIdx, setDragOverIdx] = useState(null);
 
   if (grades.length === 0) {
     return (
-      <div className="py-16 text-center text-ink-muted">
-        <p className="text-sm font-medium">No grades found.</p>
-        <p className="text-xs mt-1">Click &ldquo;+ Add Grade&rdquo; to create your first grade and assign sections.</p>
+      <div className="py-14 text-center text-ink-muted space-y-2">
+        <Layers className="w-8 h-8 mx-auto text-ink-muted" />
+        <p className="text-sm font-bold text-ink dark:text-white">No academic grades found</p>
+        <p className="text-xs">Click &quot;Add Grade&quot; or &quot;Auto-Load Standard&quot; to configure classes.</p>
       </div>
     );
   }
@@ -46,24 +55,47 @@ const GradesTable = ({ grades = [], onEdit, onView, onDelete, onToggleStatus, on
     setDragOverIdx(null);
   };
 
+  const handleMoveUp = (index) => {
+    if (index <= 0) return;
+    const updated = [...grades];
+    const temp = updated[index - 1];
+    updated[index - 1] = updated[index];
+    updated[index] = temp;
+    if (onReorder) onReorder(updated);
+  };
+
+  const handleMoveDown = (index) => {
+    if (index >= grades.length - 1) return;
+    const updated = [...grades];
+    const temp = updated[index + 1];
+    updated[index + 1] = updated[index];
+    updated[index] = temp;
+    if (onReorder) onReorder(updated);
+  };
+
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto rounded-xl border border-line dark:border-line-dark">
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="border-b border-line dark:border-line-dark text-[11px] font-bold uppercase tracking-wider text-ink-muted">
-            <th className="py-3.5 px-4">Grade Name</th>
-            <th className="py-3.5 px-4">Sections</th>
-            <th className="py-3.5 px-4">Class Teacher</th>
-            <th className="py-3.5 px-4 text-center">Status</th>
-            <th className="py-3.5 px-4 text-right">Actions</th>
+          <tr className="bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border-b border-line dark:border-line-dark text-[10px] font-bold uppercase tracking-wider text-ink-muted">
+            <th className="py-3 px-3.5">Sequence & Class</th>
+            <th className="py-3 px-3.5">Active Sections</th>
+            <th className="py-3 px-3.5">Class Teacher</th>
+            <th className="py-3 px-3.5">Campus Branch</th>
+            <th className="py-3 px-3.5 text-center">Status</th>
+            <th className="py-3 px-3.5 text-right">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-line/60 dark:divide-line-dark/60 text-xs">
+        <tbody className="divide-y divide-line dark:divide-line-dark text-xs">
           {grades.map((grade, index) => (
             <GradeTableRow
               key={grade._id}
               grade={grade}
               index={index}
+              isFirst={index === 0}
+              isLast={index === grades.length - 1}
+              onMoveUp={handleMoveUp}
+              onMoveDown={handleMoveDown}
               isDragged={draggedIdx === index}
               isDragOver={dragOverIdx === index}
               onDragStart={handleDragStart}

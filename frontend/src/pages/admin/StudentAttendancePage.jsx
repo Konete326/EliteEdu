@@ -34,7 +34,7 @@ const StudentAttendancePage = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col min-h-0 gap-3">
+    <div className="w-full min-h-full flex flex-col gap-3">
       <div className="shrink-0 sticky top-0 z-30 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-xs pb-1 print:hidden">
         <AttendanceTopTabs
           activeTab={activeTab}

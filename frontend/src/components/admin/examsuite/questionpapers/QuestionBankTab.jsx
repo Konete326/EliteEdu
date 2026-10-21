@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Sparkles, HelpCircle, Edit2, Trash2 } from 'lucide-react';
+import { Plus, HelpCircle, Edit2, Trash2 } from 'lucide-react';
 import QuestionModal from './QuestionModal';
 
 const QuestionBankTab = ({ questions, grades, subjects, chapters, selectedGrade, selectedSubject, selectedChapter, onGradeChange, onSubjectChange, onChapterChange, onSaveQuestion, onDeleteQuestion, onSeedQuestions }) => {
@@ -31,7 +31,7 @@ const QuestionBankTab = ({ questions, grades, subjects, chapters, selectedGrade,
         <div className="flex items-center gap-2">
           {selectedGrade && selectedSubject && (
             <button onClick={onSeedQuestions} className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-indigo-200 text-indigo-700 dark:border-indigo-800 dark:text-indigo-300 hover:bg-indigo-50">
-              <Sparkles size={14} /> Seed Sample Questions
+              <HelpCircle size={14} /> Seed Sample Questions
             </button>
           )}
           <button onClick={() => { setSelectedQuestion(null); setModalOpen(true); }} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary text-white hover:bg-primary-hover shadow-xs">

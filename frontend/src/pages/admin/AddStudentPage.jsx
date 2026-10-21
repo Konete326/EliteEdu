@@ -75,7 +75,14 @@ const AddStudentPage = () => {
         <StudentAcademicTab formData={formData} onNestedChange={handleNestedField} />
       )}
       {activeTab === 'subjects' && (
-        <StudentSubjectsTab subjects={subjects} selectedSubjectIds={formData.subjects || []} onToggleSubject={handleToggleSubject} onChange={handleField} currentGradeName={currentGradeName} />
+        <StudentSubjectsTab
+          subjects={subjects}
+          selectedSubjectIds={formData.subjects || []}
+          onToggleSubject={handleToggleSubject}
+          onChange={handleField}
+          currentGradeName={currentGradeName}
+          electiveStream={formData.elective_stream || 'None'}
+        />
       )}
       {activeTab === 'app_settings' && (
         <StudentAppSettingsTab appSettings={formData.app_settings} onToggleSetting={handleToggleAppSetting} onToggleAll={handleToggleAllAppSettings} />

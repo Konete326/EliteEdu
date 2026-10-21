@@ -10,49 +10,44 @@ export const useCampusTransferData = () => {
   const [kpis, setKpis] = useState({});
   const [loading, setLoading] = useState(false);
   const [prereqsLoading, setPrereqsLoading] = useState(false);
-  const [prereqsLoaded, setPrereqsLoaded] = useState(false);
 
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await api.get('/campus-transfers');
+      const res = await api.get('/campus-transfers?limit=200');
       setTransfers(res.data?.data || []);
       setKpis(res.data?.kpis || {});
-    } catch {} finally {
+    } catch {
+      setTransfers([]);
+      setKpis({});
+    } finally {
       setLoading(false);
     }
   }, []);
 
   const loadPrereqs = useCallback(async () => {
-    if (prereqsLoaded || prereqsLoading) return;
     setPrereqsLoading(true);
     try {
       const [campusesRes, gradesRes, studentsRes, teachersRes] = await Promise.all([
         api.get('/campuses'),
         api.get('/grades'),
-        api.get('/students?status=Active&limit=300'),
+        api.get('/students?status=Active&limit=500'),
         api.get('/teachers')
       ]);
       setCampuses(campusesRes.data?.campuses || campusesRes.data?.data || []);
       setGrades(gradesRes.data?.grades || gradesRes.data?.data || []);
       setStudents(studentsRes.data?.students || studentsRes.data?.data?.students || studentsRes.data?.data || []);
       setTeachers(teachersRes.data?.teachers || teachersRes.data?.data || []);
-      setPrereqsLoaded(true);
-    } catch {} finally {
+    } catch {
+    } finally {
       setPrereqsLoading(false);
     }
-  }, [prereqsLoaded, prereqsLoading]);
+  }, []);
 
   useEffect(() => {
     loadData();
-  }, [loadData]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      loadPrereqs();
-    }, 150);
-    return () => clearTimeout(timer);
-  }, [loadPrereqs]);
+    loadPrereqs();
+  }, [loadData, loadPrereqs]);
 
   return {
     campuses,
@@ -63,7 +58,6 @@ export const useCampusTransferData = () => {
     kpis,
     loading,
     prereqsLoading,
-    prereqsLoaded,
     loadData,
     loadPrereqs
   };

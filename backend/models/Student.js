@@ -61,6 +61,11 @@ const studentSchema = new mongoose.Schema(
     family_members: [familyMemberSchema],
     address: { type: addressSchema, default: () => ({}) },
     academic_history: { type: academicHistorySchema, default: () => ({}) },
+    elective_stream: {
+      type: String,
+      enum: ['None', 'Science (Biology)', 'Science (Computer)', 'Arts / Humanities', 'Commerce', 'General'],
+      default: 'None'
+    },
     subjects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subject' }],
     app_settings: { type: appSettingsSchema, default: () => ({}) },
     admin_notes: { type: String, trim: true, default: '' },

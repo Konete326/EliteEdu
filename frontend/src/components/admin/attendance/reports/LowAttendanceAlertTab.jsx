@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { AlertTriangle, ShieldAlert, Sliders } from 'lucide-react';
+import { AlertTriangle, ShieldAlert, Sliders, LayoutGrid, Table2, ArrowRightLeft } from 'lucide-react';
 import api from '../../../../services/api';
 import ReportExportToolbar from '../../reports/ReportExportToolbar';
 import OfficialSignatureStampBlock from '../../../common/OfficialSignatureStampBlock';
+import LowAttendanceMobileCard from './LowAttendanceMobileCard';
 
 const getInstitutionalThreshold = () => {
   try {
@@ -23,6 +24,7 @@ const LowAttendanceAlertTab = ({ activeCampusId }) => {
   const [data, setData] = useState({ matrix: [] });
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
+  const [mobileView, setMobileView] = useState('cards');
 
   const syncSettings = useCallback(() => {
     const current = getInstitutionalThreshold();
@@ -75,29 +77,29 @@ const LowAttendanceAlertTab = ({ activeCampusId }) => {
   };
 
   return (
-    <div className="space-y-3 flex-1 min-h-0 flex flex-col">
+    <div className="space-y-3 flex-1 flex flex-col w-full">
       <div className="shrink-0 space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs print:hidden">
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
             <input
               type="month"
               value={month}
               onChange={(e) => setMonth(e.target.value)}
-              className="px-2.5 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-surface-secondary-dark/50 text-xs font-mono font-bold text-ink dark:text-ink-dark outline-none focus:border-primary"
+              className="px-2.5 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-surface-secondary-dark/50 text-xs font-mono font-bold text-ink dark:text-ink-dark outline-none focus:border-primary w-full sm:w-auto"
             />
             <select
               value={targetType}
               onChange={(e) => setTargetType(e.target.value)}
-              className="px-2.5 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-surface-secondary-dark/50 text-xs font-semibold text-ink dark:text-ink-dark outline-none focus:border-primary"
+              className="px-2.5 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-surface-secondary-dark/50 text-xs font-semibold text-ink dark:text-ink-dark outline-none focus:border-primary w-full sm:w-auto"
             >
               <option value="Student">Students At-Risk</option>
               <option value="Staff">Faculty / Staff At-Risk</option>
             </select>
-            <div className="flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
               <select
                 value={threshold}
                 onChange={(e) => setThreshold(Number(e.target.value))}
-                className="px-2.5 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-surface-secondary-dark/50 text-xs font-semibold text-ink dark:text-ink-dark outline-none focus:border-primary"
+                className="px-2.5 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-surface-secondary-dark/50 text-xs font-semibold text-ink dark:text-ink-dark outline-none focus:border-primary flex-1 sm:flex-none"
               >
                 <option value={policyThreshold}>Below {policyThreshold}% (Official Policy)</option>
                 <option value={80}>Below 80% (Warning Level)</option>
@@ -130,7 +132,7 @@ const LowAttendanceAlertTab = ({ activeCampusId }) => {
               )}
             </div>
           </div>
-          <div className="text-xs font-bold text-rose-600 bg-rose-500/10 border border-rose-500/20 px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+          <div className="text-xs font-bold text-rose-600 bg-rose-500/10 border border-rose-500/20 px-3 py-1.5 rounded-xl flex items-center gap-1.5 w-full sm:w-auto justify-center sm:justify-start">
             <AlertTriangle size={14} />
             <span>{atRiskRows.length} Defaulters Below {threshold}%</span>
           </div>
@@ -139,43 +141,107 @@ const LowAttendanceAlertTab = ({ activeCampusId }) => {
         <ReportExportToolbar columns={exportCols} rows={exportRows} filename={`low-attendance-${month}`} searchTerm={search} onSearchChange={setSearch} />
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs print:[print-color-adjust:exact]">
-        <table className="w-full text-left text-xs border-collapse">
-          <thead className="sticky top-0 z-20 bg-surface dark:bg-surface-dark shadow-2xs border-b border-line dark:border-line-dark text-[11px] font-bold text-ink-muted uppercase">
-            <tr>
-              <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Subject Profile</th>
-              <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Class / Designation</th>
-              <th className="py-2.5 px-3 text-center text-emerald-600 bg-surface dark:bg-surface-dark">Present</th>
-              <th className="py-2.5 px-3 text-center text-rose-600 bg-surface dark:bg-surface-dark">Absent</th>
-              <th className="py-2.5 px-3 text-center text-amber-600 bg-surface dark:bg-surface-dark">Leave</th>
-              <th className="py-2.5 px-3 text-center bg-surface dark:bg-surface-dark">Attendance %</th>
-              <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Defaulter Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-line dark:divide-line-dark">
-            {atRiskRows.length === 0 ? (
-              <tr><td colSpan={7} className="py-10 text-center text-xs text-ink-muted">{loading ? 'Checking records...' : `Excellent! No ${targetType.toLowerCase()}s found below ${threshold}% attendance.`}</td></tr>
-            ) : (
-              atRiskRows.map((r) => {
-                const entity = targetType === 'Student' ? r.student : r.staff;
-                return (
-                  <tr key={entity?._id} className="hover:bg-rose-500/[0.03] transition-colors">
-                    <td className="py-2.5 px-3">
-                      <div className="font-bold text-ink dark:text-white">{entity?.name}</div>
-                      <div className="text-[10px] text-ink-muted">{targetType === 'Student' ? `GR: ${entity?.gr_number || '—'} • Father: ${entity?.father_name || '—'}` : `Code: ${entity?.employee_code || '—'} • ${entity?.email || ''}`}</div>
-                    </td>
-                    <td className="py-2.5 px-3 font-semibold text-xs">{targetType === 'Student' ? `Class Section ${entity?.current_section || 'A'}` : entity?.designation || 'Staff'}</td>
-                    <td className="py-2.5 px-3 text-center font-mono font-bold text-emerald-600">{r.presentCount}</td>
-                    <td className="py-2.5 px-3 text-center font-mono font-bold text-rose-600">{r.absentCount}</td>
-                    <td className="py-2.5 px-3 text-center font-mono font-bold text-amber-600">{r.leaveCount}</td>
-                    <td className="py-2.5 px-3 text-center font-mono font-bold text-rose-600"><span className="px-2 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/20">{r.percentage}%</span></td>
-                    <td className="py-2.5 px-3"><span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 uppercase tracking-wide"><ShieldAlert size={12} /> Low Attendance Alert</span></td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+      <div className="sm:hidden flex items-center justify-between px-3 py-2 rounded-xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-2xs print:hidden">
+        <span className="text-xs font-bold text-ink-muted">
+          {atRiskRows.length} Defaulters Listed
+        </span>
+        <div className="flex items-center gap-1 bg-surface-secondary dark:bg-surface-secondary-dark p-1 rounded-lg border border-line dark:border-line-dark">
+          <button
+            type="button"
+            onClick={() => setMobileView('cards')}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+              mobileView === 'cards'
+                ? 'bg-primary text-white shadow-2xs'
+                : 'text-ink-muted hover:text-ink'
+            }`}
+          >
+            <LayoutGrid size={12} />
+            <span>Cards</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileView('table')}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+              mobileView === 'table'
+                ? 'bg-primary text-white shadow-2xs'
+                : 'text-ink-muted hover:text-ink'
+            }`}
+          >
+            <Table2 size={12} />
+            <span>Table</span>
+          </button>
+        </div>
+      </div>
+
+      {mobileView === 'cards' && (
+        <div className="sm:hidden space-y-2.5 pb-4 print:hidden">
+          {loading ? (
+            <div className="p-8 text-center text-xs text-ink-muted bg-surface dark:bg-surface-dark rounded-2xl border border-line dark:border-line-dark">
+              Checking records...
+            </div>
+          ) : atRiskRows.length === 0 ? (
+            <div className="p-8 text-center text-xs text-ink-muted bg-surface dark:bg-surface-dark rounded-2xl border border-line dark:border-line-dark">
+              Excellent! No {targetType.toLowerCase()}s found below {threshold}% attendance.
+            </div>
+          ) : (
+            atRiskRows.map((r) => (
+              <LowAttendanceMobileCard
+                key={targetType === 'Student' ? r.student?._id : r.staff?._id}
+                row={r}
+                targetType={targetType}
+              />
+            ))
+          )}
+        </div>
+      )}
+
+      <div className={`${mobileView === 'cards' ? 'hidden sm:flex' : 'flex'} flex-1 min-h-[380px] sm:min-h-0 flex-col rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs overflow-hidden print:[print-color-adjust:exact]`}>
+        <div className="sm:hidden shrink-0 flex items-center justify-between px-3 py-1.5 bg-rose-500/10 border-b border-line dark:border-line-dark text-rose-600 text-[10px] font-bold">
+          <span className="flex items-center gap-1">
+            <ArrowRightLeft size={11} />
+            Swipe table horizontally to see details
+          </span>
+          <span className="font-mono">{atRiskRows.length} Defaulters</span>
+        </div>
+
+        <div className="flex-1 overflow-x-auto overflow-y-auto">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead className="sticky top-0 z-20 bg-surface dark:bg-surface-dark shadow-2xs border-b border-line dark:border-line-dark text-[11px] font-bold text-ink-muted uppercase">
+              <tr>
+                <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Subject Profile</th>
+                <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Class / Designation</th>
+                <th className="py-2.5 px-3 text-center text-emerald-600 bg-surface dark:bg-surface-dark">Present</th>
+                <th className="py-2.5 px-3 text-center text-rose-600 bg-surface dark:bg-surface-dark">Absent</th>
+                <th className="py-2.5 px-3 text-center text-amber-600 bg-surface dark:bg-surface-dark">Leave</th>
+                <th className="py-2.5 px-3 text-center bg-surface dark:bg-surface-dark">Attendance %</th>
+                <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Defaulter Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line dark:divide-line-dark">
+              {atRiskRows.length === 0 ? (
+                <tr><td colSpan={7} className="py-10 text-center text-xs text-ink-muted">{loading ? 'Checking records...' : `Excellent! No ${targetType.toLowerCase()}s found below ${threshold}% attendance.`}</td></tr>
+              ) : (
+                atRiskRows.map((r) => {
+                  const entity = targetType === 'Student' ? r.student : r.staff;
+                  return (
+                    <tr key={entity?._id} className="hover:bg-rose-500/[0.03] transition-colors">
+                      <td className="py-2.5 px-3">
+                        <div className="font-bold text-ink dark:text-white">{entity?.name}</div>
+                        <div className="text-[10px] text-ink-muted">{targetType === 'Student' ? `GR: ${entity?.gr_number || '—'} • Father: ${entity?.father_name || '—'}` : `Code: ${entity?.employee_code || '—'} • ${entity?.email || ''}`}</div>
+                      </td>
+                      <td className="py-2.5 px-3 font-semibold text-xs">{targetType === 'Student' ? `Class Section ${entity?.current_section || 'A'}` : entity?.designation || 'Staff'}</td>
+                      <td className="py-2.5 px-3 text-center font-mono font-bold text-emerald-600">{r.presentCount}</td>
+                      <td className="py-2.5 px-3 text-center font-mono font-bold text-rose-600">{r.absentCount}</td>
+                      <td className="py-2.5 px-3 text-center font-mono font-bold text-amber-600">{r.leaveCount}</td>
+                      <td className="py-2.5 px-3 text-center font-mono font-bold text-rose-600"><span className="px-2 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/20">{r.percentage}%</span></td>
+                      <td className="py-2.5 px-3"><span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 uppercase tracking-wide"><ShieldAlert size={12} /> Low Attendance Alert</span></td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="hidden print:flex items-center justify-between pt-4 border-t border-line">

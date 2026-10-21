@@ -1,8 +1,12 @@
-import { GripVertical, Eye, Pencil, Trash2 } from 'lucide-react';
+import { GripVertical, ChevronUp, ChevronDown, Eye, Pencil, Trash2, GraduationCap, Building2 } from 'lucide-react';
 
 const GradeTableRow = ({
   grade,
   index,
+  isFirst,
+  isLast,
+  onMoveUp,
+  onMoveDown,
   isDragged,
   isDragOver,
   onDragStart,
@@ -15,6 +19,9 @@ const GradeTableRow = ({
   onToggleStatus,
   canReorder
 }) => {
+  const isActive = grade.status === 'Active';
+  const campusName = grade.campus_id?.name || 'All Campuses';
+
   return (
     <tr
       draggable={canReorder}
@@ -27,51 +34,125 @@ const GradeTableRow = ({
           ? 'opacity-30 bg-primary/20'
           : isDragOver
           ? 'bg-primary/5 border-t-2 border-primary'
-          : 'hover:bg-surface-secondary/40'
+          : 'hover:bg-surface-secondary/50 dark:hover:bg-white/5'
       }`}
     >
-      <td className="py-3 px-4">
-        <div className="flex items-center gap-2.5">
-          <span
-            className="cursor-grab active:cursor-grabbing p-1 rounded hover:bg-surface-secondary text-ink-muted hover:text-primary transition-colors shrink-0"
-            title="Drag and drop to reorder class sequence"
-          >
-            <GripVertical className="w-4 h-4" />
-          </span>
-          <span className="font-bold text-ink dark:text-ink-dark">{grade.name}</span>
+      <td className="py-3 px-3.5">
+        <div className="flex items-center gap-2">
+          {canReorder && (
+            <div className="flex items-center gap-0.5 shrink-0">
+              <span
+                className="cursor-grab active:cursor-grabbing p-1 rounded hover:bg-surface-secondary text-ink-muted hover:text-primary transition-colors"
+                title="Drag to reorder sequence"
+              >
+                <GripVertical size={14} />
+              </span>
+              <button
+                type="button"
+                disabled={isFirst}
+                onClick={() => onMoveUp && onMoveUp(index)}
+                className="p-0.5 rounded text-ink-muted hover:text-primary disabled:opacity-20 cursor-pointer"
+                title="Move Up"
+              >
+                <ChevronUp size={13} />
+              </button>
+              <button
+                type="button"
+                disabled={isLast}
+                onClick={() => onMoveDown && onMoveDown(index)}
+                className="p-0.5 rounded text-ink-muted hover:text-primary disabled:opacity-20 cursor-pointer"
+                title="Move Down"
+              >
+                <ChevronDown size={13} />
+              </button>
+            </div>
+          )}
+
+          <div className="min-w-0">
+            <span className="font-bold text-xs text-ink dark:text-white truncate block">
+              {grade.name}
+            </span>
+            <span className="inline-flex items-center gap-1 text-[10px] text-ink-muted font-semibold">
+              <GraduationCap size={10} className="text-info dark:text-info-dark" />
+              <span>{grade.students_count || 0} Students</span>
+            </span>
+          </div>
         </div>
       </td>
-      <td className="py-3 px-4">
-        <div className="flex flex-wrap gap-1.5 items-center">
+
+      <td className="py-3 px-3.5">
+        <div className="flex flex-wrap gap-1 items-center">
           {grade.sections?.map((sec, i) => (
-            <span key={i} className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
+            <span
+              key={i}
+              className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"
+            >
               {sec}
             </span>
           ))}
         </div>
       </td>
-      <td className="py-3 px-4 text-ink dark:text-ink-dark font-medium">
-        {grade.class_teacher?.name || '—'}
+
+      <td className="py-3 px-3.5 text-xs text-ink dark:text-white font-medium">
+        {grade.class_teacher?.name ? (
+          <div>
+            <p className="font-bold truncate max-w-[140px]">{grade.class_teacher.name}</p>
+            <p className="text-[10px] text-ink-muted truncate max-w-[140px]">{grade.class_teacher.designation || 'Class Teacher'}</p>
+          </div>
+        ) : (
+          <span className="text-ink-muted text-[11px] italic">Unassigned</span>
+        )}
       </td>
-      <td className="py-3 px-4 text-center">
+
+      <td className="py-3 px-3.5 text-xs text-ink-muted">
+        <span className="inline-flex items-center gap-1 font-semibold text-[11px] truncate max-w-[130px]">
+          <Building2 size={11} className="text-primary shrink-0" />
+          <span className="truncate">{campusName}</span>
+        </span>
+      </td>
+
+      <td className="py-3 px-3.5 text-center">
         <button
           type="button"
           onClick={() => onToggleStatus(grade)}
-          className={`w-10 h-5.5 rounded-full transition-colors relative p-0.5 inline-flex items-center ${grade.status === 'Active' ? 'bg-primary' : 'bg-bad'}`}
+          className={`w-9 h-5 rounded-full transition-colors relative p-0.5 inline-flex items-center cursor-pointer ${
+            isActive ? 'bg-primary' : 'bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark'
+          }`}
+          title={isActive ? 'Click to deactivate' : 'Click to activate'}
         >
-          <div className={`w-4.5 h-4.5 rounded-full bg-white transition-transform ${grade.status === 'Active' ? 'translate-x-4.5' : 'translate-x-0'}`} />
+          <div
+            className={`w-4 h-4 rounded-full bg-white transition-transform ${
+              isActive ? 'translate-x-4' : 'translate-x-0 bg-ink-muted'
+            }`}
+          />
         </button>
       </td>
-      <td className="py-3 px-4 text-right">
-        <div className="flex items-center justify-end gap-1.5">
-          <button type="button" onClick={() => onView(grade)} className="p-1.5 rounded-lg border border-purple-100 dark:border-purple-900/30 bg-purple-50 dark:bg-purple-950/30 text-primary hover:bg-purple-100">
-            <Eye className="w-3.5 h-3.5" />
+
+      <td className="py-3 px-3.5 text-right whitespace-nowrap">
+        <div className="flex items-center justify-end gap-1">
+          <button
+            type="button"
+            onClick={() => onView(grade)}
+            title="View Details"
+            className="p-1.5 rounded-lg text-ink-muted hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+          >
+            <Eye size={14} />
           </button>
-          <button type="button" onClick={() => onEdit(grade)} className="p-1.5 rounded-lg border border-purple-100 dark:border-purple-900/30 bg-purple-50 dark:bg-purple-950/30 text-primary hover:bg-purple-100">
-            <Pencil className="w-3.5 h-3.5" />
+          <button
+            type="button"
+            onClick={() => onEdit(grade)}
+            title="Edit Class"
+            className="p-1.5 rounded-lg text-ink-muted hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+          >
+            <Pencil size={14} />
           </button>
-          <button type="button" onClick={() => onDelete(grade)} className="p-1.5 rounded-lg border border-red-100 dark:border-red-900/30 bg-red-50 dark:bg-red-950/30 text-bad hover:bg-red-100">
-            <Trash2 className="w-3.5 h-3.5" />
+          <button
+            type="button"
+            onClick={() => onDelete(grade)}
+            title="Delete Class"
+            className="p-1.5 rounded-lg text-ink-muted hover:text-bad hover:bg-bad/10 transition-colors cursor-pointer"
+          >
+            <Trash2 size={14} />
           </button>
         </div>
       </td>

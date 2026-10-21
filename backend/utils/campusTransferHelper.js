@@ -17,8 +17,13 @@ const executeStudentTransfer = async (payload, { schoolId, userId }) => {
   const student = await Student.findOne({ _id: student_id, school_id: schoolId });
   if (!student) throw new Error('Student record not found');
 
+  const previousCampusId = student.campus_id;
+  if (previousCampusId && String(previousCampusId) === String(to_campus_id)) {
+    throw new Error('Destination branch cannot be the same as current branch');
+  }
+
   const [fromCampus, toCampus, targetGrade, currentGrade] = await Promise.all([
-    student.campus_id ? Campus.findById(student.campus_id).select('name').lean() : null,
+    previousCampusId ? Campus.findById(previousCampusId).select('name').lean() : null,
     Campus.findById(to_campus_id).select('name').lean(),
     to_grade_id ? Grade.findById(to_grade_id).select('name').lean() : null,
     student.current_grade ? Grade.findById(student.current_grade).select('name').lean() : null
@@ -49,7 +54,7 @@ const executeStudentTransfer = async (payload, { schoolId, userId }) => {
     student_id: student._id,
     person_name: student.name,
     identifier_code: student.gr_number || '',
-    from_campus_id: student.campus_id || null,
+    from_campus_id: previousCampusId || null,
     from_campus_name: fromCampus?.name || 'Main Campus',
     to_campus_id,
     to_campus_name: toCampus.name,
@@ -58,7 +63,7 @@ const executeStudentTransfer = async (payload, { schoolId, userId }) => {
     to_section: destSection,
     to_class_or_role: `${targetGrade?.name || currentGrade?.name || 'Class'} (${destSection})`,
     transfer_date: transfer_date ? new Date(transfer_date) : new Date(),
-    reason: String(reason).trim(),
+    reason: String(reason || 'Inter-campus relocation').trim(),
     transfer_unpaid_dues: Boolean(transfer_unpaid_dues),
     approved_by: userId || null
   });
@@ -71,8 +76,13 @@ const executeStaffTransfer = async (payload, { schoolId, userId }) => {
   const staff = await User.findOne({ _id: staff_id, school_id: schoolId });
   if (!staff) throw new Error('Staff record not found');
 
+  const previousCampusId = staff.campus_id;
+  if (previousCampusId && String(previousCampusId) === String(to_campus_id)) {
+    throw new Error('Destination branch cannot be the same as current branch');
+  }
+
   const [fromCampus, toCampus] = await Promise.all([
-    staff.campus_id ? Campus.findById(staff.campus_id).select('name').lean() : null,
+    previousCampusId ? Campus.findById(previousCampusId).select('name').lean() : null,
     Campus.findById(to_campus_id).select('name').lean()
   ]);
 
@@ -93,14 +103,14 @@ const executeStaffTransfer = async (payload, { schoolId, userId }) => {
     staff_id: staff._id,
     person_name: staff.name,
     identifier_code: staff.employee_code || staff.email || '',
-    from_campus_id: staff.campus_id || null,
+    from_campus_id: previousCampusId || null,
     from_campus_name: fromCampus?.name || 'Main Branch',
     to_campus_id,
     to_campus_name: toCampus.name,
     from_class_or_role: staff.designation || staff.role,
     to_class_or_role: staff.designation || staff.role,
     transfer_date: transfer_date ? new Date(transfer_date) : new Date(),
-    reason: String(reason).trim(),
+    reason: String(reason || 'Branch reassignment').trim(),
     transfer_unpaid_dues: false,
     approved_by: userId || null
   });

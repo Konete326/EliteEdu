@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema(
     role: { type: String, enum: ['SuperAdmin', 'Admin', 'Teacher', 'Student'], required: true },
     school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', default: null },
     campus_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Campus', default: null },
+    last_active_campus: { type: mongoose.Schema.Types.ObjectId, ref: 'Campus', default: null },
     assigned_campuses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Campus' }],
     custom_role_id: { type: mongoose.Schema.Types.ObjectId, ref: 'UserRole', default: null },
     status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },

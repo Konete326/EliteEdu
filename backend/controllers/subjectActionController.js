@@ -30,27 +30,36 @@ const bulkSeedSubjects = async (req, res) => {
           code: s.code,
           status: 'Active',
           mandatory: s.mandatory,
+          subject_type: s.subject_type || (s.mandatory ? 'Compulsory' : 'Elective'),
+          stream: s.stream || 'General',
+          elective_group: s.elective_group || '',
+          order: s.order || 0,
+          theory_marks: s.theory_marks || 75,
+          practical_marks: s.practical_marks || 0,
+          periods_per_week: s.periods_per_week || 5,
           classes: s.classes || []
         });
-      } else if (!match.classes || match.classes.length === 0) {
-        updatePromises.push(
-          Subject.updateOne({ _id: match._id }, { $set: { classes: s.classes || [] } })
-        );
+      } else {
+        const updateFields = {};
+        if (!match.classes || match.classes.length === 0) updateFields.classes = s.classes || [];
+        if (match.order === undefined || match.order === 0) updateFields.order = s.order;
+        if (!match.subject_type) updateFields.subject_type = s.subject_type;
+        if (!match.stream) updateFields.stream = s.stream;
+        if (!match.elective_group && s.elective_group) updateFields.elective_group = s.elective_group;
+        if (Object.keys(updateFields).length > 0) {
+          updatePromises.push(Subject.updateOne({ _id: match._id }, { $set: updateFields }));
+        }
       }
     }
 
-    if (toInsert.length > 0) {
-      await Subject.insertMany(toInsert);
-    }
-    if (updatePromises.length > 0) {
-      await Promise.all(updatePromises);
-    }
+    if (toInsert.length > 0) await Subject.insertMany(toInsert);
+    if (updatePromises.length > 0) await Promise.all(updatePromises);
 
     res.status(200).json({
       success: true,
       count: toInsert.length,
       updated: updatePromises.length,
-      message: `Standard curriculum subjects loaded successfully (${toInsert.length} added, ${updatePromises.length} synced)`
+      message: `Standard Pakistani curriculum loaded (${toInsert.length} added, ${updatePromises.length} synchronized)`
     });
   } catch (error) {
     res.status(500).json({ message: 'Failed to seed standard subjects', error: error.message });
@@ -70,6 +79,7 @@ const toggleSubjectField = async (req, res) => {
       subject.status = value !== undefined ? value : subject.status === 'Active' ? 'Inactive' : 'Active';
     } else if (field === 'mandatory') {
       subject.mandatory = value !== undefined ? Boolean(value) : !subject.mandatory;
+      subject.subject_type = subject.mandatory ? 'Compulsory' : 'Elective';
     } else {
       return res.status(400).json({ message: 'Invalid toggle field' });
     }

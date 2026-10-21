@@ -1,12 +1,13 @@
+import { GraduationCap, Users, Building2, BookOpen } from 'lucide-react';
 import SearchableSelect from '../../common/SearchableSelect';
 
-const TransferPersonSelect = ({ form, setForm, personList, isStudent, selectedPerson, campuses }) => {
+const TransferPersonSelect = ({ form, setForm, personList = [], isStudent, selectedPerson, campuses = [] }) => {
   const options = personList.map((p) => {
     const code = p.gr_number || p.employee_code || p.email || 'N/A';
     const campusName = p.campus_id?.name || campuses.find((c) => String(c._id) === String(p.campus_id))?.name || 'Main Campus';
     const extra = isStudent
-      ? `Grade: ${p.current_grade?.name || 'N/A'} (${p.current_section || 'A'}) | Branch: ${campusName}`
-      : `Role: ${p.designation || p.role || 'Staff'} | Branch: ${campusName}`;
+      ? `Class: ${p.current_grade?.name || 'N/A'} (${p.current_section || 'A'}) • Branch: ${campusName}`
+      : `Role: ${p.designation || p.role || 'Staff'} • Branch: ${campusName}`;
 
     return {
       value: p._id,
@@ -15,38 +16,76 @@ const TransferPersonSelect = ({ form, setForm, personList, isStudent, selectedPe
     };
   });
 
+  const currentCampusName = selectedPerson?.campus_id?.name ||
+    campuses.find((c) => String(c._id) === String(selectedPerson?.campus_id))?.name ||
+    'Main Campus';
+
   return (
     <div className="space-y-3">
-      <div className="flex p-0.5 rounded-xl bg-surface-secondary dark:bg-white/5 border border-line">
+      <div className="flex p-1 rounded-xl bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark">
         <button
           type="button"
-          onClick={() => setForm({ ...form, entity_type: 'Student', person_id: '' })}
-          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${isStudent ? 'bg-surface dark:bg-surface-dark text-primary shadow-xs' : 'text-ink-muted'}`}
+          onClick={() => setForm({ ...form, entity_type: 'Student', person_id: '', to_grade_id: '', to_section: 'A' })}
+          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            isStudent
+              ? 'bg-primary text-white shadow-xs'
+              : 'text-ink-muted hover:text-ink'
+          }`}
         >
-          Student Transfer
+          <GraduationCap size={14} />
+          <span>Student Relocation</span>
         </button>
         <button
           type="button"
-          onClick={() => setForm({ ...form, entity_type: 'Staff', person_id: '' })}
-          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${!isStudent ? 'bg-surface dark:bg-surface-dark text-primary shadow-xs' : 'text-ink-muted'}`}
+          onClick={() => setForm({ ...form, entity_type: 'Staff', person_id: '', to_grade_id: '', to_section: '' })}
+          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            !isStudent
+              ? 'bg-primary text-white shadow-xs'
+              : 'text-ink-muted hover:text-ink'
+          }`}
         >
-          Teacher / Staff
+          <Users size={14} />
+          <span>Faculty / Staff</span>
         </button>
       </div>
 
       <div>
         <SearchableSelect
-          label={isStudent ? 'Select Student *' : 'Select Teacher / Staff *'}
+          label={isStudent ? 'Select Student to Transfer *' : 'Select Faculty Member to Transfer *'}
           value={form.person_id}
           onChange={(val) => setForm({ ...form, person_id: val })}
           options={options}
-          placeholder={isStudent ? 'Type student name or GR number...' : 'Type staff name or code...'}
+          placeholder={isStudent ? 'Search by student name or GR number...' : 'Search by teacher name or employee ID...'}
         />
 
         {selectedPerson && (
-          <div className="mt-2 p-2.5 rounded-xl bg-primary/5 border border-primary/15 text-[11px] text-ink dark:text-ink-dark flex items-center justify-between">
-            <span>Current Branch: <strong className="text-primary">{selectedPerson.campus_id?.name || campuses.find((c) => String(c._id) === String(selectedPerson.campus_id))?.name || 'Main Campus'}</strong></span>
-            <span className="font-semibold text-ink-muted">{isStudent ? `Class Section: ${selectedPerson.current_section || 'A'}` : `Designation: ${selectedPerson.designation || 'Teacher'}`}</span>
+          <div className="mt-2.5 p-3 rounded-xl bg-surface-secondary/70 dark:bg-surface-secondary-dark/70 border border-line dark:border-line-dark flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                {selectedPerson.name?.charAt(0) || 'P'}
+              </div>
+              <div className="min-w-0">
+                <p className="font-bold text-xs text-ink dark:text-white truncate">
+                  {selectedPerson.name}
+                </p>
+                <p className="text-[10px] text-ink-muted font-mono">
+                  ID: {selectedPerson.gr_number || selectedPerson.employee_code || 'N/A'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 text-[11px] self-end sm:self-center">
+              <span className="flex items-center gap-1 font-semibold text-primary">
+                <Building2 size={12} />
+                <span>{currentCampusName}</span>
+              </span>
+              {isStudent && (
+                <span className="flex items-center gap-1 text-ink-muted font-medium">
+                  <BookOpen size={12} />
+                  <span>{selectedPerson.current_grade?.name || 'Class'} ({selectedPerson.current_section || 'A'})</span>
+                </span>
+              )}
+            </div>
           </div>
         )}
       </div>

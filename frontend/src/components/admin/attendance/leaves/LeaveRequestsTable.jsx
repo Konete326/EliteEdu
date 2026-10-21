@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import LeaveRequestRow from './LeaveRequestRow';
+import LeaveRequestMobileCard from './LeaveRequestMobileCard';
 
 const LeaveRequestsTable = ({
   leaves = [], pagination = {}, search = '', onSearchChange,
@@ -47,13 +48,34 @@ const LeaveRequestsTable = ({
         </div>
       </div>
 
-      <div className="overflow-x-auto overflow-y-auto flex-1 min-h-0 h-full">
+      <div className="block sm:hidden flex-1 overflow-y-auto p-3 space-y-2.5">
+        {leaves.length === 0 ? (
+          <div className="py-12 text-center text-xs text-ink-muted">
+            No leave applications found matching filters.
+          </div>
+        ) : (
+          leaves.map((l) => (
+            <LeaveRequestMobileCard
+              key={l._id}
+              leave={l}
+              onApprove={onApprove}
+              onReject={onReject}
+              onPrint={onPrint}
+              onDelete={onDelete}
+              onWhatsApp={onWhatsApp}
+              isProcessing={isProcessing}
+            />
+          ))
+        )}
+      </div>
+
+      <div className="hidden sm:block overflow-x-auto overflow-y-auto flex-1 min-h-0 h-full">
         <table className="w-full text-left text-xs border-collapse">
           <thead className="sticky top-0 z-10 bg-surface dark:bg-surface-dark shadow-2xs border-b border-line dark:border-line-dark text-[11px] font-bold text-ink-muted uppercase">
             <tr>
               <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Applicant</th>
               <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Leave Type</th>
-              <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Period & Days</th>
+              <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Period &amp; Days</th>
               <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Reason</th>
               <th className="py-2.5 px-3 bg-surface dark:bg-surface-dark">Status</th>
               <th className="py-2.5 px-3 text-right bg-surface dark:bg-surface-dark">Actions</th>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Sparkles, BookOpen, Edit2, Trash2 } from 'lucide-react';
+import { Plus, BookOpen, Edit2, Trash2 } from 'lucide-react';
 import ChapterModal from './ChapterModal';
 
 const ChaptersTab = ({ chapters, grades, subjects, selectedGrade, selectedSubject, onGradeChange, onSubjectChange, onSaveChapter, onDeleteChapter, onSeedChapters }) => {
@@ -22,7 +22,7 @@ const ChaptersTab = ({ chapters, grades, subjects, selectedGrade, selectedSubjec
         <div className="flex items-center gap-2">
           {selectedGrade && selectedSubject && (
             <button onClick={onSeedChapters} className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-indigo-200 text-indigo-700 dark:border-indigo-800 dark:text-indigo-300 hover:bg-indigo-50">
-              <Sparkles size={14} /> Seed Standard Chapters
+              <BookOpen size={14} /> Seed Standard Chapters
             </button>
           )}
           <button onClick={() => { setSelectedChapter(null); setModalOpen(true); }} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary text-white hover:bg-primary-hover shadow-xs">

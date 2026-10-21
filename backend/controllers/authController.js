@@ -18,6 +18,7 @@ const buildUserPayload = (user, meta) => {
     photo_url: user.photo_url || '',
     school_id: user.school_id,
     campus_id: user.campus_id,
+    last_active_campus: user.last_active_campus || user.campus_id || null,
     assigned_campuses: user.assigned_campuses || [],
     custom_role_id: user.custom_role_id,
     custom_role: user.custom_role_id,

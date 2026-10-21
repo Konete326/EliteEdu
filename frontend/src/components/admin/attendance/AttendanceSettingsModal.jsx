@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Settings, Check, BellRing, Clock, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { X, Settings, Check, BellRing, Clock, ShieldCheck, AlertTriangle, Volume2, VolumeX } from 'lucide-react';
 
 const AttendanceSettingsModal = ({ isOpen, onClose }) => {
   const [entryTime, setEntryTime] = useState('08:00');
@@ -9,6 +9,7 @@ const AttendanceSettingsModal = ({ isOpen, onClose }) => {
   const [notifyParentsOnAbsent, setNotifyParentsOnAbsent] = useState(true);
   const [autoMarkDefault, setAutoMarkDefault] = useState('P');
   const [lowAttendanceThreshold, setLowAttendanceThreshold] = useState(75);
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
@@ -23,6 +24,7 @@ const AttendanceSettingsModal = ({ isOpen, onClose }) => {
         if (typeof parsed.notifyParentsOnAbsent === 'boolean') setNotifyParentsOnAbsent(parsed.notifyParentsOnAbsent);
         if (parsed.autoMarkDefault) setAutoMarkDefault(parsed.autoMarkDefault);
         if (parsed.lowAttendanceThreshold) setLowAttendanceThreshold(Number(parsed.lowAttendanceThreshold));
+        if (typeof parsed.soundEnabled === 'boolean') setSoundEnabled(parsed.soundEnabled);
       }
     } catch {}
   }, [isOpen]);
@@ -48,7 +50,8 @@ const AttendanceSettingsModal = ({ isOpen, onClose }) => {
       halfDayTime,
       notifyParentsOnAbsent,
       autoMarkDefault,
-      lowAttendanceThreshold: Number(lowAttendanceThreshold) || 75
+      lowAttendanceThreshold: Number(lowAttendanceThreshold) || 75,
+      soundEnabled
     }));
     window.dispatchEvent(new Event('elite_attendance_settings_updated'));
     window.dispatchEvent(new Event('elite_settings_updated'));
@@ -72,7 +75,7 @@ const AttendanceSettingsModal = ({ isOpen, onClose }) => {
               <Settings className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-ink dark:text-ink-dark">Attendance Policy & Timings</h3>
+              <h3 className="text-base font-bold text-ink dark:text-ink-dark">Attendance Policy &amp; Timings</h3>
               <p className="text-xs text-ink-muted font-medium">Configure daily operational rules</p>
             </div>
           </div>
@@ -156,6 +159,26 @@ const AttendanceSettingsModal = ({ isOpen, onClose }) => {
               value={lowAttendanceThreshold}
               onChange={(e) => setLowAttendanceThreshold(e.target.value)}
               className="w-full bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-3 py-2 font-medium text-ink dark:text-ink-dark outline-none focus:border-primary"
+            />
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-surface-secondary/50 dark:bg-surface-secondary-dark/50 border border-line dark:border-line-dark flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              {soundEnabled ? (
+                <Volume2 className="w-4 h-4 text-primary" />
+              ) : (
+                <VolumeX className="w-4 h-4 text-ink-muted" />
+              )}
+              <div>
+                <p className="font-bold text-ink dark:text-ink-dark">Scanner Audio Beep &amp; Chime</p>
+                <p className="text-[11px] text-ink-muted">Audible verification tone (mute for library or exam halls)</p>
+              </div>
+            </div>
+            <input
+              type="checkbox"
+              checked={soundEnabled}
+              onChange={(e) => setSoundEnabled(e.target.checked)}
+              className="w-4 h-4 rounded text-primary focus:ring-primary cursor-pointer accent-primary"
             />
           </div>
 

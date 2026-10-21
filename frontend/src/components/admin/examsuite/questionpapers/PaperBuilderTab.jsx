@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Printer, FileText, Trash2 } from 'lucide-react';
+import { Printer, FileText, Trash2 } from 'lucide-react';
 import AutoGeneratePaperModal from './AutoGeneratePaperModal';
 import PrintQuestionPaperModal from './PrintQuestionPaperModal';
 
@@ -15,7 +15,7 @@ const PaperBuilderTab = ({ papers, grades, subjects, chapters, onGeneratePaper, 
           <p className="text-xs text-slate-400">Generate, review, and print Board-standard examination sheets.</p>
         </div>
         <button onClick={() => setGenerateModalOpen(true)} className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold bg-primary text-white hover:bg-primary-hover shadow-xs">
-          <Sparkles size={15} /> 1-Click Auto-Generate Paper
+          <FileText size={15} /> Auto-Generate Paper
         </button>
       </div>
 

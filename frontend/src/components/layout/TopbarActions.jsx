@@ -9,13 +9,22 @@ import { usePwaInstall } from '../../hooks/usePwaInstall';
 import TopbarNotifications from './TopbarNotifications';
 import TopbarMessages from './TopbarMessages';
 import UniversalScannerModal from './scanner/UniversalScannerModal';
+import SearchableSelect from '../common/SearchableSelect';
 
 const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
   const { user } = useAuth();
-  const { campuses, activeCampusId, setActiveCampusId } = useCampus();
+  const { campuses, activeCampusId, requestCampusSwitch } = useCampus();
   const { isInstalled, promptInstall } = usePwaInstall();
   const [scannerOpen, setScannerOpen] = useState(false);
   const navigate = useNavigate();
+
+  const handleCampusSelect = (val) => {
+    if (val === activeCampusId) return;
+    const targetName = val === 'all'
+      ? 'All Campuses'
+      : (campuses.find((c) => String(c._id) === String(val))?.name || 'Selected Branch');
+    requestCampusSwitch(val, targetName);
+  };
 
   const getInitials = (name) => {
     if (!name) return 'ED';
@@ -29,29 +38,26 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
 
   const schoolPill = user?.school_name || (user?.role === 'SuperAdmin' ? 'System HQ' : 'School');
 
+  const campusOptions = [
+    { value: 'all', label: campuses.length > 0 ? 'All Campuses' : schoolPill },
+    ...campuses.map((c) => ({
+      value: c._id,
+      label: c.name,
+      subtext: c.code ? `Code: ${c.code}` : ''
+    }))
+  ];
+
   return (
     <div className="flex items-center gap-1 sm:gap-2">
-      <div className="relative hidden sm:block">
-        <select
+      <div className="hidden sm:block w-36 sm:w-44">
+        <SearchableSelect
+          options={campusOptions}
           value={activeCampusId}
-          onChange={(e) => setActiveCampusId(e.target.value)}
-          aria-label="Select Active Campus"
-          className={`flex items-center gap-2 pl-7 pr-3 py-1.5 rounded-lg border text-xs font-semibold transition-colors appearance-none outline-none cursor-pointer ${
-            isColored
-              ? 'bg-white/15 border-white/20 text-white hover:bg-white/25 focus:ring-1 focus:ring-white/40'
-              : 'bg-surface-secondary dark:bg-surface-secondary-dark border-line dark:border-line-dark text-ink dark:text-ink-dark hover:border-primary/50'
-          }`}
-        >
-          <option value="all" className="bg-surface text-ink dark:bg-surface-dark dark:text-ink-dark">
-            {campuses.length > 0 ? 'All Campuses' : schoolPill}
-          </option>
-          {campuses.map((c) => (
-            <option key={c._id} value={c._id} className="bg-surface text-ink dark:bg-surface-dark dark:text-ink-dark">
-              {c.name}
-            </option>
-          ))}
-        </select>
-        <Building2 className={`w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none ${isColored ? 'text-white' : 'text-primary'}`} />
+          onChange={handleCampusSelect}
+          placeholder="Select Campus..."
+          icon={Building2}
+          size="sm"
+        />
       </div>
 
       <button

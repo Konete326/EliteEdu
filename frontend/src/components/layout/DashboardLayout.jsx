@@ -4,6 +4,7 @@ import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import PageLoader from '../common/PageLoader';
 import ConfirmModal from '../common/ConfirmModal';
+import CampusSwitchModal from '../common/CampusSwitchModal';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -55,6 +56,8 @@ const DashboardLayout = () => {
         confirmText="Yes, Sign Out"
         confirmStyle="danger"
       />
+
+      <CampusSwitchModal />
     </div>
   );
 };

@@ -23,6 +23,7 @@ const INITIAL_FORM = {
   section_admitted: 'A',
   current_grade: '',
   current_section: 'A',
+  elective_stream: 'None',
   monthly_fee: 0,
   discount: 0,
   family_number: '',

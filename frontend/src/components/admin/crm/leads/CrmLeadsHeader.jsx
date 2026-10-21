@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserPlus, Settings, Sparkles, CheckCircle2, Users } from 'lucide-react';
+import { UserPlus, Settings, CheckCircle2, Users } from 'lucide-react';
 
 export default function CrmLeadsHeader({ badges = { totalLeads: 0, convertedLeads: 0 }, onOpenSettings }) {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ export default function CrmLeadsHeader({ badges = { totalLeads: 0, convertedLead
               Admissions CRM &amp; Leads
             </h1>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary">
-              <Sparkles className="w-3 h-3" /> Inquiries Hub
+              <UserPlus className="w-3 h-3" /> Inquiries Hub
             </span>
           </div>
           <p className="text-xs font-semibold text-ink-muted">

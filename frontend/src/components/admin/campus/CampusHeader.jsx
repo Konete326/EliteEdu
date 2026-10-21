@@ -1,55 +1,88 @@
-import { Plus, Search, X, Building2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Building2, Plus, RotateCw, ArrowLeftRight, Settings2, Compass } from 'lucide-react';
 
-const CampusHeader = ({ searchQuery, onSearchChange, onAddClick, totalCount, filteredCount }) => {
+const CampusHeader = ({
+  activeCampus,
+  onResetActiveCampus,
+  onRefresh,
+  loading,
+  onAddClick,
+  totalCount = 0
+}) => {
   return (
-    <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8 mb-6 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">
-            <Building2 className="w-6 h-6" />
-          </div>
-          <div>
-            <h1 className="text-xl font-black text-ink dark:text-ink-dark tracking-tight">Campus Management</h1>
-            <p className="text-xs font-semibold text-ink-muted">
-              Manage your institutional branches and physical campuses
-            </p>
-          </div>
+    <div className="p-4 sm:p-5 rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-2xs">
+          <Building2 className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-base sm:text-lg font-black text-ink dark:text-white tracking-tight">
+              Campuses & Institutional Branches
+            </h1>
+            <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-surface-secondary dark:bg-surface-secondary-dark text-ink-muted border border-line dark:border-line-dark">
+              {totalCount} {totalCount === 1 ? 'Campus' : 'Campuses'}
+            </span>
+          </div>
+
+          <p className="text-xs text-ink-muted">
+            Manage multi-branch physical facilities, student rosters, and faculty distribution
+          </p>
+
+          {activeCampus && (
+            <div className="flex items-center gap-1.5 pt-1 text-[11px]">
+              <span className="text-ink-muted">Active Workspace:</span>
+              <span className="px-2 py-0.5 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 font-bold flex items-center gap-1">
+                <Compass size={11} /> {activeCampus.name}
+              </span>
+              <button
+                type="button"
+                onClick={onResetActiveCampus}
+                className="text-[10px] font-bold text-primary hover:underline cursor-pointer"
+              >
+                (View All)
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 flex-wrap self-end md:self-center">
+        <button
+          type="button"
+          onClick={onRefresh}
+          disabled={loading}
+          className="p-2 sm:px-3 sm:py-2 rounded-xl border border-line dark:border-line-dark text-ink-muted hover:text-ink hover:bg-surface-secondary text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+          title="Refresh campus data"
+        >
+          <RotateCw size={14} className={loading ? 'animate-spin text-primary' : ''} />
+          <span className="hidden sm:inline">Sync</span>
+        </button>
+
+        <Link
+          to="/admin/campus-transfer"
+          className="px-3 py-2 rounded-xl border border-line dark:border-line-dark text-ink-muted hover:text-ink hover:bg-surface-secondary text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+        >
+          <ArrowLeftRight size={14} className="text-purple-500" />
+          <span className="hidden sm:inline">Transfer Hub</span>
+        </Link>
+
+        <Link
+          to="/admin/operations"
+          className="px-3 py-2 rounded-xl border border-line dark:border-line-dark text-ink-muted hover:text-ink hover:bg-surface-secondary text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+        >
+          <Settings2 size={14} className="text-blue-500" />
+          <span className="hidden sm:inline">Operations</span>
+        </Link>
 
         <button
           type="button"
           onClick={onAddClick}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-primary/20 w-fit"
+          className="px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
         >
-          <Plus className="w-4 h-4" />
+          <Plus size={14} />
           <span>Add Campus</span>
         </button>
-      </div>
-
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-line/60 dark:border-white/5">
-        <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted dark:text-ink-muted-dark" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search campuses by name, email, website, address..."
-            className="w-full pl-10 pr-9 py-2 rounded-xl text-xs sm:text-sm bg-surface-secondary/50 dark:bg-[#141414] border border-line dark:border-white/10 text-ink dark:text-ink-dark placeholder:text-ink-muted outline-none focus:border-primary transition-all shadow-inner"
-          />
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => onSearchChange('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink p-0.5 rounded"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
-
-        <div className="text-xs text-ink-muted dark:text-ink-muted-dark self-center sm:self-auto font-medium">
-          Showing {filteredCount} of {totalCount} {totalCount === 1 ? 'campus' : 'campuses'}
-        </div>
       </div>
     </div>
   );

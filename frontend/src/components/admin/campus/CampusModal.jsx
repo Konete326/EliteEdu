@@ -10,7 +10,7 @@ const INITIAL_FORM = {
   name: '', email: '', website: '', contact_number: '', address: '', image_url: '', status: 'Active'
 };
 
-const CampusModal = ({ isOpen, mode = 'add', campus = null, existingCampuses = [], onClose, onSubmit, isSubmitting = false }) => {
+const CampusModal = ({ isOpen, mode = 'add', campus = null, existingCampuses = [], onClose, onSubmit, isSubmitting = false, isActiveCampus = false, onQuickSwitch }) => {
   const { user } = useAuth();
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [touched, setTouched] = useState({});
@@ -89,7 +89,13 @@ const CampusModal = ({ isOpen, mode = 'add', campus = null, existingCampuses = [
           onClose={onClose}
         />
         {mode === 'view' ? (
-          <CampusDetailsView campus={campus} onClose={onClose} schoolLogo={logoToShow} />
+          <CampusDetailsView
+            campus={campus}
+            onClose={onClose}
+            schoolLogo={logoToShow}
+            isActiveCampus={isActiveCampus}
+            onQuickSwitch={onQuickSwitch}
+          />
         ) : (
           <CampusForm
             formData={formData}

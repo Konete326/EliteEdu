@@ -1,4 +1,4 @@
-import { Users, Award, Sparkles } from 'lucide-react';
+import { Users, Award, RotateCw } from 'lucide-react';
 import BehaviorMatrixRow from './BehaviorMatrixRow';
 
 const BehaviorMatrixTable = ({
@@ -7,7 +7,7 @@ const BehaviorMatrixTable = ({
   if (loading) {
     return (
       <div className="bg-white dark:bg-gray-800 p-12 rounded-3xl border border-gray-100 dark:border-gray-700 text-center space-y-3">
-        <Sparkles className="w-8 h-8 text-blue-500 animate-spin mx-auto" />
+        <RotateCw className="w-8 h-8 text-primary animate-spin mx-auto" />
         <p className="text-xs text-gray-500 font-semibold">Loading student roster and behavior evaluations...</p>
       </div>
     );

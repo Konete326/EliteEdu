@@ -1,4 +1,4 @@
-import { Check, Sparkles, ThumbsUp, Save, Filter, BookOpen } from 'lucide-react';
+import { Check, Award, ThumbsUp, Save, Filter, BookOpen } from 'lucide-react';
 
 const TERMS = ['First Term', 'Mid Term', 'Final Term'];
 const SECTIONS = ['A', 'B', 'C', 'D'];
@@ -68,7 +68,7 @@ const BehaviorFilterSidebar = ({
 
     <div className="p-3.5 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10 border border-amber-200 dark:border-amber-800/40 space-y-2">
       <div className="text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
-        <Sparkles className="w-3.5 h-3.5" /> 1-Click Batch Automation
+        <Award className="w-3.5 h-3.5" /> 1-Click Batch Rating
       </div>
       <div className="grid grid-cols-1 gap-2">
         <button
@@ -76,7 +76,7 @@ const BehaviorFilterSidebar = ({
           onClick={() => onSetAllRatings(5, 'Exemplary')}
           className="w-full py-2 px-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all"
         >
-          <Sparkles className="w-3.5 h-3.5" /> Set All Exemplary (5/5)
+          <Award className="w-3.5 h-3.5" /> Set All Exemplary (5/5)
         </button>
         <button
           type="button"
@@ -107,7 +107,7 @@ const BehaviorFilterSidebar = ({
       disabled={saving}
       className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all"
     >
-      {saving ? <Sparkles className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+      {saving ? <Save className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
       {saving ? 'Saving Records...' : '✓ Save Class Behavior Sheet'}
     </button>
   </div>

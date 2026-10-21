@@ -3,6 +3,7 @@ import AutoLoadConfirmModal from '../../common/AutoLoadConfirmModal';
 import GradeModal from './GradeModal';
 import GradeDetailsModal from './GradeDetailsModal';
 import { STANDARD_SEQUENCE } from '../../../utils/gradeSortHelper';
+import { Layers } from 'lucide-react';
 
 const GradeModals = ({
   modalOpen,
@@ -48,7 +49,11 @@ const GradeModals = ({
         onClose={onCloseDelete}
         onConfirm={onConfirmDelete}
         title="Delete Grade"
-        message={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
+        message={
+          deleteTarget?.students_count > 0
+            ? `Warning: "${deleteTarget?.name}" has ${deleteTarget?.students_count} enrolled student(s). You must reassign or remove students before deleting this class.`
+            : `Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`
+        }
         confirmText="Delete Grade"
         confirmStyle="danger"
       />
@@ -58,6 +63,7 @@ const GradeModals = ({
         onClose={onCloseAutoLoad}
         onConfirm={onConfirmAutoLoad}
         isLoading={isSeeding}
+        icon={Layers}
         title="Auto-Load Standard Classes"
         description="Seed standard academic levels in proper sequence (Playgroup to Class 10) with default sections."
         targetName={targetCampusName}

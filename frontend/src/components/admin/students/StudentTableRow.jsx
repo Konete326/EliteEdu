@@ -36,6 +36,11 @@ const StudentTableRow = ({ student, onEdit, onDelete, onView, onOpenLedger, onOp
         <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark border border-primary/20">
           {student.current_grade?.name || 'Unassigned'}
         </span>
+        {student.elective_stream && student.elective_stream !== 'None' && (
+          <span className="block mt-0.5 text-[10px] font-bold text-accent truncate max-w-[120px]">
+            {student.elective_stream}
+          </span>
+        )}
       </td>
       <td className="px-5 py-3.5">
         <span className="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold bg-surface-secondary dark:bg-[#202020] border border-line dark:border-white/10 text-ink dark:text-ink-dark">

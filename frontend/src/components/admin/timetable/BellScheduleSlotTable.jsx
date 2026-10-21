@@ -1,4 +1,4 @@
-import { Clock, Coffee, Bell, Sparkles } from 'lucide-react';
+import { Clock, Coffee, Bell } from 'lucide-react';
 
 const BellScheduleSlotTable = ({ slots = [] }) => {
   if (!slots.length) {
@@ -6,7 +6,7 @@ const BellScheduleSlotTable = ({ slots = [] }) => {
       <div className="p-8 text-center bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
         <Clock className="w-8 h-8 text-gray-400 mx-auto mb-2" />
         <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">No period slots generated yet</p>
-        <p className="text-xs text-gray-400 mt-1">Click "⚡ Auto-Generate Period Timings" to calculate your daily bell schedule.</p>
+        <p className="text-xs text-gray-400 mt-1">Click "Auto-Generate Period Timings" to calculate your daily bell schedule.</p>
       </div>
     );
   }
@@ -15,7 +15,7 @@ const BellScheduleSlotTable = ({ slots = [] }) => {
     <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden shadow-sm">
       <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
         <h3 className="font-bold text-sm text-gray-900 dark:text-gray-100 flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-amber-500" /> Daily Period & Bell Roster ({slots.length} Slots)
+          <Clock className="w-4 h-4 text-primary" /> Daily Period & Bell Roster ({slots.length} Slots)
         </h3>
         <span className="text-xs font-semibold px-2.5 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full">
           Auto-Calculated

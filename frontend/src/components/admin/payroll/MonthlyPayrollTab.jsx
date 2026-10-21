@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Zap, Calendar } from 'lucide-react';
+import { Search, Calculator, Calendar } from 'lucide-react';
 import SalarySlipRow from './SalarySlipRow';
 
 const MonthlyPayrollTab = ({ slips = [], currentMonth, onMonthChange, onGenerate, onEdit, onPay, onPrint, loading, generating }) => {
@@ -33,8 +33,8 @@ const MonthlyPayrollTab = ({ slips = [], currentMonth, onMonthChange, onGenerate
             disabled={generating}
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-hover shadow-md shadow-primary/20 disabled:opacity-50"
           >
-            <Zap className="w-3.5 h-3.5" />
-            <span>{generating ? 'Calculating Attendance & Loans...' : '⚡ Generate Monthly Payroll'}</span>
+            <Calculator className="w-3.5 h-3.5" />
+            <span>{generating ? 'Calculating Attendance & Loans...' : 'Generate Monthly Payroll'}</span>
           </button>
         </div>
 
@@ -79,7 +79,7 @@ const MonthlyPayrollTab = ({ slips = [], currentMonth, onMonthChange, onGenerate
             {loading ? (
               <tr><td colSpan="8" className="py-8 text-center text-ink-muted">Loading payroll slips...</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan="8" className="py-8 text-center text-ink-muted">No salary slips generated for this month. Click "⚡ Generate Monthly Payroll" to compute.</td></tr>
+              <tr><td colSpan="8" className="py-8 text-center text-ink-muted">No salary slips generated for this month. Click "Generate Monthly Payroll" to compute.</td></tr>
             ) : (
               filtered.map((slip) => (
                 <SalarySlipRow

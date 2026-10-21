@@ -1,4 +1,4 @@
-import { Calendar, GraduationCap, Sparkles } from 'lucide-react';
+import { Calendar, GraduationCap, BookmarkCheck } from 'lucide-react';
 import AttendanceStatsCard from './AttendanceStatsCard';
 
 const AttendanceControlDock = ({
@@ -71,7 +71,7 @@ const AttendanceControlDock = ({
         {selectedGrade && (
           <div className="space-y-1.5">
             <label className="text-xs font-bold uppercase tracking-wider text-ink dark:text-ink-dark flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-primary" />
+              <BookmarkCheck className="w-3.5 h-3.5 text-primary" />
               <span>Section</span>
             </label>
             <div className="flex flex-wrap gap-1.5">

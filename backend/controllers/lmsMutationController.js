@@ -5,6 +5,11 @@ const createLmsItem = async (req, res) => {
   try {
     const payload = { ...req.body, school_id: req.schoolId, created_by: req.user?.id };
     if (!payload.teacher_id && req.user?.id) payload.teacher_id = req.user.id;
+    if (payload.campus_id === 'all') payload.campus_id = null;
+    if (!payload.campus_id && req.user?.campus_id) payload.campus_id = req.user.campus_id;
+    if (!payload.campus_id && req.headers['x-campus-id'] && req.headers['x-campus-id'] !== 'all') {
+      payload.campus_id = req.headers['x-campus-id'];
+    }
 
     if (payload.item_type === 'Live_Class') {
       if (!payload.meeting_room_code) {
