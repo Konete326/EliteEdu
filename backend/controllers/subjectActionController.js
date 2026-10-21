@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Subject = require('../models/Subject');
 const Campus = require('../models/Campus');
 const { DEFAULT_SUBJECTS } = require('../utils/curriculumDefaults');
+const { checkSubjectUsage } = require('../utils/subjectIntegrityHelper');
 
 const bulkSeedSubjects = async (req, res) => {
   try {
@@ -15,40 +16,29 @@ const bulkSeedSubjects = async (req, res) => {
 
     const existing = await Subject.find({ school_id: schoolId, campus_id: campusRef });
     const existingMap = new Map(existing.map((s) => [s.name.toLowerCase().trim(), s]));
-
     const toInsert = [];
     const updatePromises = [];
 
     for (const s of DEFAULT_SUBJECTS) {
-      const key = s.name.toLowerCase().trim();
-      const match = existingMap.get(key);
+      const match = existingMap.get(s.name.toLowerCase().trim());
       if (!match) {
         toInsert.push({
-          school_id: schoolId,
-          campus_id: campusRef,
-          name: s.name,
-          code: s.code,
-          status: 'Active',
-          mandatory: s.mandatory,
+          school_id: schoolId, campus_id: campusRef, name: s.name, code: s.code,
+          status: 'Active', mandatory: s.mandatory,
           subject_type: s.subject_type || (s.mandatory ? 'Compulsory' : 'Elective'),
-          stream: s.stream || 'General',
-          elective_group: s.elective_group || '',
-          order: s.order || 0,
-          theory_marks: s.theory_marks || 75,
-          practical_marks: s.practical_marks || 0,
-          periods_per_week: s.periods_per_week || 5,
+          stream: s.stream || 'General', elective_group: s.elective_group || '',
+          order: s.order || 0, theory_marks: s.theory_marks || 75,
+          practical_marks: s.practical_marks || 0, periods_per_week: s.periods_per_week || 5,
           classes: s.classes || []
         });
       } else {
-        const updateFields = {};
-        if (!match.classes || match.classes.length === 0) updateFields.classes = s.classes || [];
-        if (match.order === undefined || match.order === 0) updateFields.order = s.order;
-        if (!match.subject_type) updateFields.subject_type = s.subject_type;
-        if (!match.stream) updateFields.stream = s.stream;
-        if (!match.elective_group && s.elective_group) updateFields.elective_group = s.elective_group;
-        if (Object.keys(updateFields).length > 0) {
-          updatePromises.push(Subject.updateOne({ _id: match._id }, { $set: updateFields }));
-        }
+        const u = {};
+        if (!match.classes || match.classes.length === 0) u.classes = s.classes || [];
+        if (match.order === undefined || match.order === 0) u.order = s.order;
+        if (!match.subject_type) u.subject_type = s.subject_type;
+        if (!match.stream) u.stream = s.stream;
+        if (!match.elective_group && s.elective_group) u.elective_group = s.elective_group;
+        if (Object.keys(u).length > 0) updatePromises.push(Subject.updateOne({ _id: match._id }, { $set: u }));
       }
     }
 
@@ -91,4 +81,27 @@ const toggleSubjectField = async (req, res) => {
   }
 };
 
-module.exports = { bulkSeedSubjects, toggleSubjectField };
+const deleteSubject = async (req, res) => {
+  try {
+    const schoolId = req.user?.school_id;
+    const { id } = req.params;
+    const { force } = req.query;
+
+    const usage = await checkSubjectUsage(schoolId, id);
+    if (usage.totalLinked > 0 && force !== 'true') {
+      return res.status(409).json({
+        can_delete: false,
+        message: `Subject is in use by ${usage.summaryText}. Please set it to Inactive to preserve existing records.`,
+        linked_items: usage.breakdown
+      });
+    }
+
+    const subject = await Subject.findOneAndDelete({ _id: id, school_id: schoolId });
+    if (!subject) return res.status(404).json({ message: 'Subject not found' });
+    res.status(200).json({ success: true, message: 'Subject deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete subject', error: error.message });
+  }
+};
+
+module.exports = { bulkSeedSubjects, toggleSubjectField, deleteSubject };

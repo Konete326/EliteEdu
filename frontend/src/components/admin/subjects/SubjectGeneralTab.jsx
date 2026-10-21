@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Building2, UserCheck, Layers, AlertCircle } from 'lucide-react';
 import SearchableSelect from '../../common/SearchableSelect';
+import { suggestUniqueCode } from '../../../utils/validators';
 
 const STREAM_OPTIONS = [
   { value: 'General', label: 'General (All Students)' },
@@ -22,11 +23,18 @@ const SubjectGeneralTab = ({
   isManualCode,
   campuses = [],
   teachers = [],
+  existingCodes = [],
   onNameChange,
   onCodeChange,
   onResetAutoCode,
   onBlur
 }) => {
+  const trimmedCode = (formData.code || '').trim().toUpperCase();
+  const isDuplicateCode = Boolean(trimmedCode && existingCodes.includes(trimmedCode));
+  const suggestedCode = useMemo(() => {
+    if (!isDuplicateCode) return '';
+    return suggestUniqueCode(trimmedCode, existingCodes);
+  }, [isDuplicateCode, trimmedCode, existingCodes]);
   const campusOptions = useMemo(() => [
     { value: '', label: 'All Campuses' },
     ...campuses.map((c) => ({
@@ -120,6 +128,23 @@ const SubjectGeneralTab = ({
             <p className="flex items-center gap-1 text-[11px] text-bad mt-1 font-semibold">
               <AlertCircle size={12} /> Enter valid code
             </p>
+          )}
+          {isDuplicateCode && (
+            <div className="mt-1.5 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-between gap-2 text-[11px]">
+              <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
+                <AlertCircle size={12} className="shrink-0" />
+                <span>Code already in use</span>
+              </span>
+              {suggestedCode && (
+                <button
+                  type="button"
+                  onClick={() => onCodeChange({ target: { value: suggestedCode } })}
+                  className="px-2 py-0.5 rounded-md bg-amber-500 text-white font-bold text-[10px] hover:bg-amber-600 transition-colors cursor-pointer"
+                >
+                  Use {suggestedCode}
+                </button>
+              )}
+            </div>
           )}
         </div>
       </div>

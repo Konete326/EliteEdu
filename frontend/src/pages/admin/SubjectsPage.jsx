@@ -9,6 +9,7 @@ import SubjectModal from '../../components/admin/subjects/SubjectModal';
 import SubjectEmptyState from '../../components/admin/subjects/SubjectEmptyState';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import AutoLoadConfirmModal from '../../components/common/AutoLoadConfirmModal';
+import SubjectInUseModal from '../../components/admin/subjects/SubjectInUseModal';
 import PageLoader from '../../components/common/PageLoader';
 
 const SubjectsPage = () => {
@@ -17,8 +18,8 @@ const SubjectsPage = () => {
     selectedClass, setSelectedClass, selectedStream, setSelectedStream,
     searchQuery, setSearchQuery, loading, error, setError, currentPage, totalPages, totalItems,
     pageSize, modalState, setModalState, isSubmitting, subjectToDelete, setSubjectToDelete, deleteLoading,
-    toggleLoadingId, isSeeding, handleToggle, handleAutoLoad, handleFormSubmit, handleDeleteConfirm,
-    fetchSubjects, setCurrentPage
+    toggleLoadingId, isSeeding, inUseConflict, setInUseConflict, handleToggle, handleAutoLoad, handleFormSubmit,
+    handleDeleteConfirm, handleInactivateFromConflict, fetchSubjects, setCurrentPage
   } = useSubjectsManager();
 
   const [showAutoLoadModal, setShowAutoLoadModal] = useState(false);
@@ -98,6 +99,7 @@ const SubjectsPage = () => {
         campuses={campuses}
         grades={grades}
         teachers={teachers}
+        existingSubjects={subjects}
         onClose={() => setModalState({ isOpen: false, mode: 'add', subject: null })}
         onSubmit={handleFormSubmit}
         isSubmitting={isSubmitting}
@@ -111,6 +113,14 @@ const SubjectsPage = () => {
         message={`Are you sure you want to delete "${subjectToDelete?.name || 'this subject'}"? This action cannot be undone.`}
         confirmText={deleteLoading ? 'Deleting...' : 'Delete'}
         confirmStyle="danger"
+      />
+
+      <SubjectInUseModal
+        isOpen={!!inUseConflict}
+        conflict={inUseConflict}
+        onClose={() => setInUseConflict(null)}
+        onInactivate={handleInactivateFromConflict}
+        isLoading={isSubmitting}
       />
 
       <AutoLoadConfirmModal

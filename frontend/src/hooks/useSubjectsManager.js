@@ -27,6 +27,7 @@ export const useSubjectsManager = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [toggleLoadingId, setToggleLoadingId] = useState(null);
   const [isSeeding, setIsSeeding] = useState(false);
+  const [inUseConflict, setInUseConflict] = useState(null);
 
   useEffect(() => {
     if (activeCampusId && activeCampusId !== 'all') {
@@ -151,9 +152,33 @@ export const useSubjectsManager = () => {
       setSubjectToDelete(null);
       await fetchSubjects(currentPage);
     } catch (err) {
-      showToast(err.response?.data?.message || 'Failed to delete subject', 'error');
+      if (err.response?.status === 409 && err.response?.data?.linked_items) {
+        setInUseConflict({
+          subject: subjectToDelete,
+          linked_items: err.response.data.linked_items,
+          message: err.response.data.message
+        });
+        setSubjectToDelete(null);
+      } else {
+        showToast(err.response?.data?.message || 'Failed to delete subject', 'error');
+      }
     } finally {
       setDeleteLoading(false);
+    }
+  };
+
+  const handleInactivateFromConflict = async () => {
+    if (!inUseConflict?.subject?._id) return;
+    try {
+      setIsSubmitting(true);
+      await api.patch(`/subjects/${inUseConflict.subject._id}/toggle`, { field: 'status', value: 'Inactive' });
+      showToast(`Subject "${inUseConflict.subject.name}" set to Inactive. Historical records are safe.`, 'success');
+      setInUseConflict(null);
+      await fetchSubjects(currentPage);
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to update subject status', 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -163,9 +188,9 @@ export const useSubjectsManager = () => {
     searchQuery, setSearchQuery, loading, error, setError,
     currentPage, totalPages, totalItems, pageSize, setPageSize, modalState, setModalState,
     isSubmitting, subjectToDelete, setSubjectToDelete,
-    deleteLoading, toggleLoadingId, isSeeding,
+    deleteLoading, toggleLoadingId, isSeeding, inUseConflict, setInUseConflict,
     handleToggle, handleAutoLoad, handleFormSubmit,
-    handleDeleteConfirm, fetchSubjects, setCurrentPage
+    handleDeleteConfirm, handleInactivateFromConflict, fetchSubjects, setCurrentPage
   };
 };
 

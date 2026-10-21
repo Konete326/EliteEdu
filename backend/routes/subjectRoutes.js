@@ -4,12 +4,12 @@ const authorizeRoles = require('../middlewares/roleMiddleware');
 const {
   getSubjects,
   createSubject,
-  updateSubject,
-  deleteSubject
+  updateSubject
 } = require('../controllers/subjectController');
 const {
   bulkSeedSubjects,
-  toggleSubjectField
+  toggleSubjectField,
+  deleteSubject
 } = require('../controllers/subjectActionController');
 
 const router = express.Router();

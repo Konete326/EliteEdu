@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { BookOpen, Layers } from 'lucide-react';
-import { isValidSubjectName, isValidSubjectCode, generateSubjectCode } from '../../../utils/validators';
+import { isValidSubjectName, isValidSubjectCode, generateUniqueSubjectCode } from '../../../utils/validators';
 import { STANDARD_SUBJECT_PRESETS } from '../../../utils/curriculumPresets';
 import SubjectModalHeader from './SubjectModalHeader';
 import SubjectGeneralTab from './SubjectGeneralTab';
@@ -30,6 +30,7 @@ const SubjectModal = ({
   campuses = [],
   grades = [],
   teachers = [],
+  existingSubjects = [],
   onClose,
   onSubmit,
   isSubmitting = false
@@ -38,6 +39,12 @@ const SubjectModal = ({
   const [isManualCode, setIsManualCode] = useState(false);
   const [touched, setTouched] = useState({});
   const [activeTab, setActiveTab] = useState('general');
+
+  const existingCodes = useMemo(() => {
+    return (existingSubjects || [])
+      .filter((s) => s._id !== subject?._id)
+      .map((s) => (s.code || '').toUpperCase().trim());
+  }, [existingSubjects, subject]);
 
   useEffect(() => {
     if (subject && mode === 'edit') {
@@ -79,23 +86,23 @@ const SubjectModal = ({
 
   const handleNameChange = (e) => {
     const newName = e.target.value;
-    const prevAuto = generateSubjectCode(formData.name);
+    const prevAuto = generateUniqueSubjectCode(formData.name, existingCodes);
     const shouldAutoUpdate = !isManualCode || !formData.code.trim() || formData.code === prevAuto;
-    const newCode = shouldAutoUpdate ? generateSubjectCode(newName) : formData.code;
+    const newCode = shouldAutoUpdate ? generateUniqueSubjectCode(newName, existingCodes) : formData.code;
     if (shouldAutoUpdate) setIsManualCode(false);
     setFormData((prev) => ({ ...prev, name: newName, code: newCode }));
   };
 
   const handleCodeChange = (e) => {
     const val = e.target.value.toUpperCase();
-    const isAutoMatch = val === generateSubjectCode(formData.name);
+    const isAutoMatch = val === generateUniqueSubjectCode(formData.name, existingCodes);
     setIsManualCode(!isAutoMatch && Boolean(val.trim()));
     setFormData((prev) => ({ ...prev, code: val }));
   };
 
   const handleResetAutoCode = () => {
     setIsManualCode(false);
-    setFormData((prev) => ({ ...prev, code: generateSubjectCode(prev.name) }));
+    setFormData((prev) => ({ ...prev, code: generateUniqueSubjectCode(prev.name, existingCodes) }));
   };
 
   const handlePresetSelect = (presetName) => {
@@ -193,6 +200,7 @@ const SubjectModal = ({
                 isManualCode={isManualCode}
                 campuses={campuses}
                 teachers={teachers}
+                existingCodes={existingCodes}
                 onNameChange={handleNameChange}
                 onCodeChange={handleCodeChange}
                 onResetAutoCode={handleResetAutoCode}

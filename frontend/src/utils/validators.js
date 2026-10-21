@@ -100,3 +100,29 @@ export const generateSubjectCode = (name) => {
   };
   return commonMap[single] || single.slice(0, 4);
 };
+
+export const generateUniqueSubjectCode = (name, existingCodes = []) => {
+  const base = generateSubjectCode(name);
+  if (!base) return '';
+  const upperSet = new Set(existingCodes.filter(Boolean).map((c) => String(c).toUpperCase().trim()));
+  if (!upperSet.has(base)) return base;
+  let suffix = 2;
+  const root = base.replace(/-\d+$/, '');
+  while (upperSet.has(`${root}-${suffix}`)) {
+    suffix++;
+  }
+  return `${root}-${suffix}`;
+};
+
+export const suggestUniqueCode = (code, existingCodes = []) => {
+  if (!code || !code.trim()) return '';
+  const base = code.trim().toUpperCase();
+  const upperSet = new Set(existingCodes.filter(Boolean).map((c) => String(c).toUpperCase().trim()));
+  if (!upperSet.has(base)) return base;
+  let suffix = 2;
+  const root = base.replace(/-\d+$/, '');
+  while (upperSet.has(`${root}-${suffix}`)) {
+    suffix++;
+  }
+  return `${root}-${suffix}`;
+};

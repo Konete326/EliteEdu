@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Subject = require('../models/Subject');
 const Campus = require('../models/Campus');
+const { findCodeCollision } = require('../utils/subjectIntegrityHelper');
 
 const getSubjects = async (req, res) => {
   try {
@@ -44,6 +45,14 @@ const createSubject = async (req, res) => {
       if (campus) campusRef = campus._id;
     }
 
+    const collision = await findCodeCollision(schoolId, code, null, campusRef);
+    if (collision) {
+      return res.status(409).json({
+        message: `Subject code "${code.trim().toUpperCase()}" is already used by "${collision.existing.name}".`,
+        suggested_code: collision.suggested_code
+      });
+    }
+
     const count = await Subject.countDocuments({ school_id: schoolId });
     const isMandatory = mandatory !== undefined ? Boolean(mandatory) : subject_type !== 'Elective';
 
@@ -72,7 +81,16 @@ const updateSubject = async (req, res) => {
     const b = req.body;
     const update = {};
     if (b.name !== undefined) update.name = b.name.trim();
-    if (b.code !== undefined) update.code = b.code.trim().toUpperCase();
+    if (b.code !== undefined) {
+      const collision = await findCodeCollision(schoolId, b.code, id, b.campus_id);
+      if (collision) {
+        return res.status(409).json({
+          message: `Subject code "${b.code.trim().toUpperCase()}" is already used by "${collision.existing.name}".`,
+          suggested_code: collision.suggested_code
+        });
+      }
+      update.code = b.code.trim().toUpperCase();
+    }
     if (b.status !== undefined) update.status = b.status;
     if (b.mandatory !== undefined) {
       update.mandatory = Boolean(b.mandatory);
@@ -82,11 +100,10 @@ const updateSubject = async (req, res) => {
     if (b.stream !== undefined) update.stream = b.stream;
     if (b.elective_group !== undefined) update.elective_group = b.elective_group.trim();
     if (b.assigned_teacher !== undefined) update.assigned_teacher = mongoose.Types.ObjectId.isValid(b.assigned_teacher) ? b.assigned_teacher : null;
-    if (b.periods_per_week !== undefined) update.periods_per_week = Number(b.periods_per_week);
-    if (b.theory_marks !== undefined) update.theory_marks = Number(b.theory_marks);
-    if (b.practical_marks !== undefined) update.practical_marks = Number(b.practical_marks);
-    if (b.order !== undefined) update.order = Number(b.order);
-    if (b.classes !== undefined && Array.isArray(b.classes)) update.classes = b.classes;
+    ['periods_per_week', 'theory_marks', 'practical_marks', 'order'].forEach((k) => {
+      if (b[k] !== undefined) update[k] = Number(b[k]);
+    });
+    if (b.classes && Array.isArray(b.classes)) update.classes = b.classes;
     if (b.campus_id !== undefined) update.campus_id = mongoose.Types.ObjectId.isValid(b.campus_id) ? b.campus_id : null;
 
     const subject = await Subject.findOneAndUpdate({ _id: id, school_id: schoolId }, update, { new: true, runValidators: true })
@@ -99,15 +116,4 @@ const updateSubject = async (req, res) => {
   }
 };
 
-const deleteSubject = async (req, res) => {
-  try {
-    const schoolId = req.user?.school_id;
-    const subject = await Subject.findOneAndDelete({ _id: req.params.id, school_id: schoolId });
-    if (!subject) return res.status(404).json({ message: 'Subject not found' });
-    res.status(200).json({ success: true, message: 'Subject deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to delete subject', error: error.message });
-  }
-};
-
-module.exports = { getSubjects, createSubject, updateSubject, deleteSubject };
+module.exports = { getSubjects, createSubject, updateSubject };
