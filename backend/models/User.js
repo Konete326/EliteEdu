@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema(
     custom_role_id: { type: mongoose.Schema.Types.ObjectId, ref: 'UserRole', default: null },
     status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
     is_active: { type: Boolean, default: true },
+    token_version: { type: Number, default: 0 },
     photo_url: { type: String, default: '' },
     dob: { type: Date, default: null },
     gender: { type: String, enum: ['Male', 'Female', 'Other'], default: 'Male' },

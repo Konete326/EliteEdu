@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Lock,
   Plus,
@@ -14,9 +14,14 @@ import {
   X,
   CheckCircle2,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  RefreshCw,
+  LogOut,
+  Loader2
 } from 'lucide-react';
 import DocumentUploadList from '../../common/DocumentUploadList';
+import api from '../../../services/api';
+import { emitToastSuccess, emitToastError } from '../../../utils/toastEvents';
 
 const TAB_TITLES = {
   security_deposit: 'Security Deposits Ledger',
@@ -43,29 +48,6 @@ const FOLLOWUP_TYPES = [
   'Formal Warning / Notice',
   'Professional Development Counseling',
   'General Administration'
-];
-
-const MOCK_SESSIONS = [
-  {
-    id: 'sess-1',
-    device: 'Windows 11 (Google Chrome)',
-    ip: '182.185.162.24',
-    location: 'Karachi, Sindh (Main Campus LAN)',
-    login_time: 'Today at 07:50 AM',
-    last_active: 'Just now',
-    is_current: true,
-    is_mobile: false
-  },
-  {
-    id: 'sess-2',
-    device: 'Android 14 (Samsung Galaxy A54)',
-    ip: '39.40.88.192',
-    location: 'Karachi, Mobile Data',
-    login_time: 'Yesterday at 04:15 PM',
-    last_active: '18 hours ago',
-    is_current: false,
-    is_mobile: true
-  }
 ];
 
 const TeacherDependentTabs = ({
@@ -97,7 +79,10 @@ const TeacherDependentTabs = ({
   const [finReason, setFinReason] = useState('');
   const [finReceipt, setFinReceipt] = useState('');
 
-  const [sessions, setSessions] = useState(MOCK_SESSIONS);
+  const [sessions, setSessions] = useState([]);
+  const [loadingSessions, setLoadingSessions] = useState(false);
+  const [revoking, setRevoking] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
 
   const title = TAB_TITLES[activeTab] || 'Tab Details';
 
@@ -225,8 +210,51 @@ const TeacherDependentTabs = ({
     setModalOpen(false);
   };
 
-  const handleRevokeSession = (sessionId) => {
-    setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+  const fetchSessions = useCallback(async (uid) => {
+    if (!uid) return;
+    setLoadingSessions(true);
+    try {
+      const res = await api.get(`/user-mgmt/sessions?user_id=${uid}&show_revoked=true`);
+      if (res.data?.success && Array.isArray(res.data?.sessions)) {
+        setSessions(res.data.sessions);
+      } else {
+        setSessions([]);
+      }
+    } catch {
+      setSessions([]);
+    } finally {
+      setLoadingSessions(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'active_sessions' && teacherId) {
+      fetchSessions(teacherId);
+    }
+  }, [activeTab, teacherId, fetchSessions]);
+
+  const handleConfirmRevoke = async () => {
+    if (!confirmAction) return;
+    setRevoking(true);
+    try {
+      if (confirmAction.type === 'single') {
+        const res = await api.patch(`/user-mgmt/sessions/${confirmAction.id}/revoke`);
+        if (res.data?.success) {
+          emitToastSuccess('Session revoked successfully. Device logged out.');
+        }
+      } else if (confirmAction.type === 'all') {
+        const res = await api.post(`/user-mgmt/sessions/revoke-user/${teacherId}`);
+        if (res.data?.success) {
+          emitToastSuccess(res.data.message || 'All sessions revoked. All devices logged out.');
+        }
+      }
+      await fetchSessions(teacherId);
+      setConfirmAction(null);
+    } catch (err) {
+      emitToastError(err.response?.data?.message || 'Failed to revoke session');
+    } finally {
+      setRevoking(false);
+    }
   };
 
   return (
@@ -258,7 +286,32 @@ const TeacherDependentTabs = ({
           </div>
         </div>
 
-        {activeTab !== 'active_sessions' && (
+        {activeTab === 'active_sessions' ? (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => fetchSessions(teacherId)}
+              disabled={loadingSessions}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary dark:hover:bg-[#141414] text-ink dark:text-white text-xs font-semibold transition-all cursor-pointer"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loadingSessions ? 'animate-spin text-primary' : ''}`} />
+              <span>Refresh</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirmAction({
+                type: 'all',
+                title: 'Revoke All Remote Sessions',
+                message: 'Are you sure you want to terminate all active sessions for this teacher? All logged-in devices (phones, tablets, PCs) will be immediately logged out.'
+              })}
+              disabled={loadingSessions || sessions.filter((s) => s.status === 'Active').length === 0}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bad hover:bg-bad/90 text-white text-xs font-bold transition-all shadow-xs disabled:opacity-50 cursor-pointer"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Revoke All Devices</span>
+            </button>
+          </div>
+        ) : (
           <button
             type="button"
             onClick={handleOpenAdd}
@@ -415,65 +468,100 @@ const TeacherDependentTabs = ({
       )}
 
       {activeTab === 'active_sessions' && (
-        <div className="overflow-x-auto rounded-xl border border-line dark:border-white/10">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-surface-secondary/70 dark:bg-[#141414] text-[10px] font-bold text-ink-muted uppercase tracking-wider border-b border-line dark:border-white/10">
-              <tr>
-                <th className="px-4 py-3">Device &amp; Browser</th>
-                <th className="px-4 py-3">IP Address &amp; Location</th>
-                <th className="px-4 py-3">Login Time</th>
-                <th className="px-4 py-3">Last Active</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line/60 dark:divide-white/5 bg-surface dark:bg-[#0c0c0c]">
-              {sessions.map((sess) => (
-                <tr key={sess.id} className="hover:bg-surface-secondary/40 dark:hover:bg-[#141414] transition-colors">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      {sess.is_mobile ? (
-                        <Smartphone className="w-4 h-4 text-primary shrink-0" />
-                      ) : (
-                        <Laptop className="w-4 h-4 text-primary shrink-0" />
-                      )}
-                      <span className="font-bold text-ink dark:text-white">{sess.device}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <p className="font-mono text-ink dark:text-white font-semibold">{sess.ip}</p>
-                    <p className="text-[10px] text-ink-muted">{sess.location}</p>
-                  </td>
-                  <td className="px-4 py-3 text-ink-muted whitespace-nowrap">{sess.login_time}</td>
-                  <td className="px-4 py-3 text-ink-muted whitespace-nowrap">{sess.last_active}</td>
-                  <td className="px-4 py-3">
-                    {sess.is_current ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-good/10 text-good border border-good/20">
-                        <span className="w-1.5 h-1.5 rounded-full bg-good" />
-                        Current Session
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-secondary text-ink-muted">
-                        Active Remote
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    {!sess.is_current && (
-                      <button
-                        type="button"
-                        onClick={() => handleRevokeSession(sess.id)}
-                        className="px-2.5 py-1 rounded-lg border border-bad/30 text-bad hover:bg-bad-soft text-[11px] font-bold transition-all cursor-pointer"
-                      >
-                        Revoke
-                      </button>
-                    )}
-                  </td>
+        loadingSessions ? (
+          <div className="py-16 text-center space-y-3">
+            <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto" />
+            <p className="text-xs text-ink-muted font-medium">Loading active sessions from security ledger...</p>
+          </div>
+        ) : sessions.length === 0 ? (
+          <div className="py-16 text-center space-y-3 rounded-xl border border-dashed border-line dark:border-white/10 bg-surface/50 dark:bg-[#0c0c0c]/50">
+            <ShieldAlert className="w-10 h-10 text-ink-muted/40 mx-auto" />
+            <h4 className="text-sm font-bold text-ink dark:text-white">No Active Sessions</h4>
+            <p className="text-xs text-ink-muted max-w-sm mx-auto">
+              This staff member has no active login sessions registered in the system.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto rounded-xl border border-line dark:border-white/10">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-surface-secondary/70 dark:bg-[#141414] text-[10px] font-bold text-ink-muted uppercase tracking-wider border-b border-line dark:border-white/10">
+                <tr>
+                  <th className="px-4 py-3">Device &amp; OS</th>
+                  <th className="px-4 py-3">IP Address</th>
+                  <th className="px-4 py-3">Login Time</th>
+                  <th className="px-4 py-3">Last Active</th>
+                  <th className="px-4 py-3">Security Status</th>
+                  <th className="px-4 py-3 text-right">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-line/60 dark:divide-white/5 bg-surface dark:bg-[#0c0c0c]">
+                {sessions.map((sess) => {
+                  const isMobile = /android|iphone|ipad|ios/i.test(sess.device || '');
+                  const isActive = sess.status === 'Active';
+                  return (
+                    <tr key={sess._id} className="hover:bg-surface-secondary/40 dark:hover:bg-[#141414] transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          {isMobile ? (
+                            <Smartphone className="w-4 h-4 text-primary shrink-0" />
+                          ) : (
+                            <Laptop className="w-4 h-4 text-primary shrink-0" />
+                          )}
+                          <div>
+                            <span className="font-bold text-ink dark:text-white block">{sess.device || 'Unknown Device'}</span>
+                            <span className="text-[10px] font-mono text-ink-muted">ID: {sess._id}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="font-mono text-ink dark:text-white font-semibold">{sess.ip_address || '—'}</p>
+                        {sess.is_blocked && (
+                          <span className="inline-block mt-0.5 text-[9px] font-bold text-bad bg-bad/10 px-1.5 py-0.5 rounded">IP Blocked</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-ink-muted whitespace-nowrap">
+                        {sess.createdAt ? new Date(sess.createdAt).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : '—'}
+                      </td>
+                      <td className="px-4 py-3 text-ink-muted whitespace-nowrap">
+                        {sess.last_active ? new Date(sess.last_active).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : '—'}
+                      </td>
+                      <td className="px-4 py-3">
+                        {isActive ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-good/10 text-good border border-good/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-good animate-pulse" />
+                            Active Session
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-ink-muted/10 text-ink-muted border border-ink-muted/20">
+                            Revoked / Blacklisted
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        {isActive ? (
+                          <button
+                            type="button"
+                            onClick={() => setConfirmAction({
+                              type: 'single',
+                              id: sess._id,
+                              title: 'Revoke Device Session',
+                              message: `Are you sure you want to revoke the session on "${sess.device || 'this device'}"? The user will be immediately logged out on that device.`
+                            })}
+                            className="px-2.5 py-1 rounded-lg border border-bad/30 text-bad hover:bg-bad-soft text-[11px] font-bold transition-all cursor-pointer"
+                          >
+                            Revoke
+                          </button>
+                        ) : (
+                          <span className="text-[11px] text-ink-muted font-semibold italic">Terminated</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )
       )}
 
       {(activeTab === 'security_deposit' || activeTab === 'loan_advance') && (
@@ -799,6 +887,41 @@ const TeacherDependentTabs = ({
                 className="px-4 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-xs cursor-pointer"
               >
                 Save Record
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmAction && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="w-full max-w-md rounded-2xl bg-surface dark:bg-[#121212] border border-line dark:border-white/10 p-6 shadow-2xl space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-bad/10 text-bad flex items-center justify-center shrink-0 border border-bad/20">
+                <AlertCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-ink dark:text-white">{confirmAction.title}</h4>
+                <p className="text-xs text-ink-muted mt-1 leading-relaxed">{confirmAction.message}</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-line/60 dark:border-white/10">
+              <button
+                type="button"
+                onClick={() => setConfirmAction(null)}
+                disabled={revoking}
+                className="px-4 py-2 rounded-xl border border-line dark:border-white/10 text-xs font-semibold hover:bg-surface-secondary dark:hover:bg-[#1a1a1a] text-ink dark:text-white transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmRevoke}
+                disabled={revoking}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-bad hover:bg-bad/90 text-white text-xs font-bold transition-all shadow-xs disabled:opacity-50 cursor-pointer"
+              >
+                {revoking ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <LogOut className="w-3.5 h-3.5" />}
+                <span>Confirm Revoke</span>
               </button>
             </div>
           </div>

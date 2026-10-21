@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Building2, LayoutGrid, ScanLine, Moon, Sun, Download, Play
+  Building2, ScanLine, Moon, Sun, Download, Play
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCampus } from '../../context/CampusContext';
@@ -69,10 +69,6 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
       >
         <Play className={`w-3.5 h-3.5 shrink-0 ${isColored ? 'text-white fill-white/20' : 'text-primary fill-primary/20'}`} />
         <span>Watch Video</span>
-      </button>
-
-      <button type="button" onClick={() => navigate(user?.role === 'Teacher' ? '/teacher' : user?.role === 'Student' ? '/student/dashboard' : '/admin')} className={btnClass} title="Modules Dashboard">
-        <LayoutGrid className="w-4 h-4" />
       </button>
 
       <TopbarMessages isColored={isColored} btnClass={btnClass} />

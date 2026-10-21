@@ -14,9 +14,15 @@ const authMiddleware = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (decoded.session_id) {
-      const { valid } = await verifySession(decoded.session_id);
+      const { valid } = await verifySession(decoded.session_id, decoded.token_version);
       if (!valid) {
         return res.status(401).json({ message: 'Session revoked or expired. Please sign in again.' });
+      }
+    } else if (decoded.id && decoded.token_version !== undefined) {
+      const User = require('../models/User');
+      const usr = await User.findById(decoded.id).select('token_version status is_active').lean();
+      if (!usr || usr.is_active === false || usr.status === 'Inactive' || (usr.token_version || 0) > decoded.token_version) {
+        return res.status(401).json({ message: 'Session revoked. Please sign in again.' });
       }
     }
 

@@ -5,7 +5,7 @@ const User = require('../models/User');
 
 const getSessions = async (req, res) => {
   try {
-    const { page = 1, limit = 20, ip = '', show_revoked = 'false' } = req.query;
+    const { page = 1, limit = 20, ip = '', show_revoked = 'false', user_id } = req.query;
     const schoolId = req.user.role === 'Admin' ? req.user.school_id : req.user.school_id;
 
     const currentUser = await User.findById(req.user.id);
@@ -17,6 +17,7 @@ const getSessions = async (req, res) => {
     if (schoolId) filter.school_id = schoolId;
     if (show_revoked !== 'true') filter.status = 'Active';
     if (ip.trim()) filter.ip_address = new RegExp(ip.trim(), 'i');
+    if (user_id) filter.user_id = user_id;
 
     const pageNum = Math.max(1, parseInt(page, 10) || 1);
     const limitNum = Math.max(1, parseInt(limit, 10) || 20);
@@ -64,7 +65,11 @@ const revokeSession = async (req, res) => {
 
 const revokeUserSessions = async (req, res) => {
   try {
-    const result = await UserSession.updateMany({ user_id: req.params.userId, status: 'Active' }, { status: 'Revoked' });
+    const { userId } = req.params;
+    const [result] = await Promise.all([
+      UserSession.updateMany({ user_id: userId, status: 'Active' }, { status: 'Revoked' }),
+      User.findByIdAndUpdate(userId, { $inc: { token_version: 1 } })
+    ]);
     res.status(200).json({ success: true, message: `Revoked ${result.modifiedCount} active session(s) for user` });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -78,7 +83,10 @@ const revokeAllSessions = async (req, res) => {
     if (schoolId) filter.school_id = schoolId;
     if (req.user.session_id) filter._id = { $ne: req.user.session_id };
 
-    const result = await UserSession.updateMany(filter, { status: 'Revoked' });
+    const [result] = await Promise.all([
+      UserSession.updateMany(filter, { status: 'Revoked' }),
+      schoolId ? User.updateMany({ school_id: schoolId }, { $inc: { token_version: 1 } }) : null
+    ]);
     res.status(200).json({ success: true, message: `All active sessions revoked (${result.modifiedCount} sessions)` });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

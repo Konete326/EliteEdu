@@ -31,13 +31,22 @@ const createLoginSession = async (user, req) => {
   return { sessionId: session._id, tokenId };
 };
 
-const verifySession = async (sessionId) => {
+const verifySession = async (sessionId, tokenVersion) => {
   if (!sessionId) return { valid: true };
-  const session = await UserSession.findById(sessionId);
+  const session = await UserSession.findById(sessionId).populate('user_id', 'token_version status is_active');
   if (!session) return { valid: false, reason: 'Session expired or revoked' };
   if (session.status !== 'Active') return { valid: false, reason: 'Session revoked' };
   if (session.expires_at && new Date() > session.expires_at) {
     return { valid: false, reason: 'Session expired' };
+  }
+  if (session.user_id) {
+    const usr = session.user_id;
+    if (usr.is_active === false || usr.status === 'Inactive') {
+      return { valid: false, reason: 'Account deactivated' };
+    }
+    if (tokenVersion !== undefined && (usr.token_version || 0) > tokenVersion) {
+      return { valid: false, reason: 'Session revoked' };
+    }
   }
   UserSession.findByIdAndUpdate(sessionId, { last_active: new Date() }).exec();
   return { valid: true, session };

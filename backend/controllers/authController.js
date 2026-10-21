@@ -83,7 +83,7 @@ const login = async (req, res) => {
         custom_role_id: user.custom_role_id?._id || user.custom_role_id || null,
         school_id: user.school_id, campus_id: user.campus_id,
         school_type: meta.school_type, school_name: meta.school_name,
-        session_id: sessionId, jti: tokenId
+        session_id: sessionId, jti: tokenId, token_version: user.token_version || 0
       },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
