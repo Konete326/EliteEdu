@@ -58,23 +58,37 @@ const SearchableSelect = ({
     });
   }, [normalizedOptions, query]);
 
-  const updatePosition = () => {
-    if (!containerRef.current) return;
+  const calculatePosition = () => {
+    if (!containerRef.current) return null;
     const rect = containerRef.current.getBoundingClientRect();
-    if (rect.width === 0 && rect.height === 0) return;
+    if (rect.width === 0 && rect.height === 0) return null;
 
     const spaceBelow = window.innerHeight - rect.bottom;
     const spaceAbove = rect.top;
     const openUpwards = spaceBelow < 220 && spaceAbove > spaceBelow;
 
-    setMenuPos({
+    return {
       left: Math.max(8, rect.left),
       width: Math.min(rect.width, window.innerWidth - 16),
       openUpwards,
       bottom: window.innerHeight - rect.top + 4,
       top: rect.bottom + 4,
       maxHeight: Math.min(220, Math.max(120, openUpwards ? spaceAbove - 16 : spaceBelow - 16))
-    });
+    };
+  };
+
+  const updatePosition = () => {
+    const pos = calculatePosition();
+    if (pos) setMenuPos(pos);
+  };
+
+  const handleToggleOpen = () => {
+    if (disabled) return;
+    if (!isOpen) {
+      const pos = calculatePosition();
+      if (pos) setMenuPos(pos);
+    }
+    setIsOpen(!isOpen);
   };
 
   useLayoutEffect(() => {
@@ -147,7 +161,7 @@ const SearchableSelect = ({
       <button
         type="button"
         disabled={disabled}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggleOpen}
         className={`w-full flex items-center justify-between gap-2 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 text-ink dark:text-white transition-all outline-none focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer ${sizeClasses} ${
           isOpen ? 'border-primary ring-2 ring-primary/10 shadow-xs' : 'hover:border-primary/50'
         }`}
@@ -199,7 +213,7 @@ const SearchableSelect = ({
         </div>
       </button>
 
-      {isOpen && typeof document !== 'undefined' && createPortal(
+      {isOpen && menuPos.width > 0 && typeof document !== 'undefined' && createPortal(
         <div
           ref={menuRef}
           style={{
@@ -207,12 +221,12 @@ const SearchableSelect = ({
             left: `${menuPos.left}px`,
             width: `${menuPos.width}px`,
             ...(menuPos.openUpwards
-              ? { bottom: `${menuPos.bottom}px` }
-              : { top: `${menuPos.top}px` }),
+              ? { bottom: `${menuPos.bottom}px`, transformOrigin: 'bottom center' }
+              : { top: `${menuPos.top}px`, transformOrigin: 'top center' }),
             maxHeight: `${menuPos.maxHeight}px`,
             zIndex: 99999
           }}
-          className="rounded-2xl bg-surface dark:bg-[#141414] border border-line dark:border-white/10 shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-100 flex flex-col min-w-[200px]"
+          className="rounded-2xl bg-surface dark:bg-[#141414] border border-line dark:border-white/10 shadow-2xl p-1.5 animate-in fade-in duration-75 flex flex-col min-w-[200px]"
         >
           {searchable && (
             <div className="relative mb-1 p-1 shrink-0">
@@ -251,29 +265,30 @@ const SearchableSelect = ({
                     key={String(opt.value)}
                     type="button"
                     onClick={() => handleSelect(opt.value)}
-                    className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-left text-xs transition-all cursor-pointer ${
+                    className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs transition-colors cursor-pointer text-left ${
                       isSelected
-                        ? 'bg-primary/10 text-primary font-bold dark:bg-primary/20'
-                        : 'text-ink dark:text-white hover:bg-surface-secondary dark:hover:bg-white/5'
+                        ? 'bg-primary text-white font-bold'
+                        : 'hover:bg-surface-secondary dark:hover:bg-[#1e1e1e] text-ink dark:text-white'
                     }`}
                   >
                     <div className="flex items-center gap-2 min-w-0">
-                      {ItemIcon && <ItemIcon size={13} className="shrink-0 text-primary" />}
-                      <div className="min-w-0">
-                        <p className="truncate font-semibold">{opt.label}</p>
-                        {opt.subtext && (
-                          <p className="text-[10px] text-ink-muted truncate">{opt.subtext}</p>
-                        )}
-                      </div>
+                      {ItemIcon && <ItemIcon size={13} className={isSelected ? 'text-white' : 'text-primary'} />}
+                      <span className="truncate">{opt.label}</span>
+                      {opt.subtext && (
+                        <span className={`text-[10px] truncate ${isSelected ? 'text-white/80' : 'text-ink-muted'}`}>
+                          • {opt.subtext}
+                        </span>
+                      )}
                     </div>
-
                     <div className="flex items-center gap-1.5 shrink-0">
                       {opt.badge && (
-                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-primary/10 text-primary">
+                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                          isSelected ? 'bg-white/20 text-white' : 'bg-primary/10 text-primary'
+                        }`}>
                           {opt.badge}
                         </span>
                       )}
-                      {isSelected && <Check size={13} className="text-primary" />}
+                      {isSelected && <Check size={13} className="shrink-0" />}
                     </div>
                   </button>
                 );
