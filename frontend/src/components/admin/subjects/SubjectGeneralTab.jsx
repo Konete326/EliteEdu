@@ -46,12 +46,21 @@ const SubjectGeneralTab = ({
 
   const teacherOptions = useMemo(() => [
     { value: '', label: 'No Teacher Assigned' },
-    ...teachers.map((t) => ({
-      value: t._id,
-      label: t.name,
-      subtext: t.designation || 'Teacher',
-      badge: t.department || ''
-    }))
+    ...teachers.map((t) => {
+      const load = t.weekly_periods_count ?? 0;
+      const max = t.max_weekly_periods || 28;
+      const isOverload = load >= max;
+      const todaySlotSummary = t.today_slots?.length > 0
+        ? `Today: ${t.today_slots.map((s) => `${s.start_time}-${s.end_time}`).slice(0, 2).join(', ')}`
+        : '';
+      return {
+        value: t._id,
+        label: `${t.name} (${load}/${max} Periods)`,
+        subtext: todaySlotSummary || `Current Load: ${load} Periods/wk • ${t.designation || 'Teacher'}`,
+        badge: isOverload ? 'High Load (30+)' : `${load} Periods`,
+        badgeColor: isOverload ? 'bg-amber-500/10 text-amber-600' : 'bg-primary/10 text-primary'
+      };
+    })
   ], [teachers]);
 
   const isElective = formData.subject_type === 'Elective' || !formData.mandatory;

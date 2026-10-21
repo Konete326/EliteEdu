@@ -43,7 +43,8 @@ export const useTeacherIdCardsData = (initialTeacherId) => {
         t.name?.toLowerCase().includes(q) ||
         t.employee_code?.toLowerCase().includes(q) ||
         t.personal_id?.toLowerCase().includes(q) ||
-        t.cnic?.toLowerCase().includes(q)
+        t.cnic?.toLowerCase().includes(q) ||
+        t.designation?.toLowerCase().includes(q)
       );
     });
   }, [teachers, selectedCampus, searchQuery]);
@@ -51,14 +52,6 @@ export const useTeacherIdCardsData = (initialTeacherId) => {
   const selectedTeachers = useMemo(() => {
     return filteredTeachers.filter((t) => selectedIds.includes(t._id));
   }, [filteredTeachers, selectedIds]);
-
-  const chunks = useMemo(() => {
-    const res = [];
-    for (let i = 0; i < selectedTeachers.length; i += 8) {
-      res.push(selectedTeachers.slice(i, i + 8));
-    }
-    return res;
-  }, [selectedTeachers]);
 
   const handleToggleSelect = (id) => {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
@@ -85,9 +78,9 @@ export const useTeacherIdCardsData = (initialTeacherId) => {
     selectedCampus,
     setSelectedCampus,
     selectedIds,
+    setSelectedIds,
     filteredTeachers,
     selectedTeachers,
-    chunks,
     handleToggleSelect,
     handleToggleSelectAll,
     updateTeacherInList

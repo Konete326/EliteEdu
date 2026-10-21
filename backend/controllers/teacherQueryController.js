@@ -27,15 +27,15 @@ const getTeachers = async (req, res) => {
 
     const isCard = req.query.cardView === 'true';
     let query = User.find(filter)
-      .populate('campus_id', 'name logo area semis_code address')
-      .populate('school_id', 'name school_type logo_url slogan');
+      .populate('campus_id', 'name logo area semis_code address contact_number email phone')
+      .populate('school_id', 'name school_type logo_url slogan address contact_number email principal_name principal_signature_url');
 
     if (!isCard) {
       query = query
         .populate('subjects', 'name code')
         .populate('grades', 'name sections');
     } else {
-      query = query.select('name father_name spouse_name designation bps_grade employee_code personal_id cnic photo_url date_of_joining joining_date campus_id school_id status is_active');
+      query = query.select('name father_name spouse_name designation bps_grade employee_code personal_id cnic photo_url date_of_joining joining_date blood_group contact_number emergency_contact department qualification address campus_id school_id status is_active');
     }
 
     const teachers = await query.select('-password').sort({ createdAt: -1 }).lean();
@@ -51,7 +51,8 @@ const getTeacherById = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
     const teacher = await User.findOne({ _id: req.params.id, school_id: schoolId, role: 'Teacher' })
-      .populate('campus_id', 'name')
+      .populate('campus_id', 'name logo area semis_code address contact_number email phone')
+      .populate('school_id', 'name school_type logo_url slogan address contact_number email principal_name principal_signature_url')
       .populate('subjects', 'name code')
       .populate('grades', 'name sections')
       .populate('class_assignments.subject_id', 'name code')

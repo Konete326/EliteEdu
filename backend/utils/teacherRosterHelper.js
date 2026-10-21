@@ -40,7 +40,8 @@ const buildLiveActivity = (slots, currentMinutes) => {
     return {
       status: 'in_class', label: `In Class: ${g}-${current.section} (${sub})`,
       room: current.room_no || 'Room 101', class_name: `${g}-${current.section}`,
-      subject_name: sub, period_no: current.period_no
+      subject_name: sub, period_no: current.period_no,
+      start_time: current.start_time, end_time: current.end_time
     };
   }
   if (!slots.length) {
@@ -51,7 +52,8 @@ const buildLiveActivity = (slots, currentMinutes) => {
     const sub = next.subject_id?.name || 'Subject';
     return {
       status: 'free', label: `Free Now (Next: P${next.period_no} ${g}-${next.section})`,
-      room: next.room_no || '', class_name: `${g}-${next.section}`, subject_name: sub, period_no: next.period_no
+      room: next.room_no || '', class_name: `${g}-${next.section}`, subject_name: sub, period_no: next.period_no,
+      next_start_time: next.start_time
     };
   }
   return { status: 'free', label: 'Free Period (Staff Room)', room: '', class_name: '', subject_name: '', period_no: null };
@@ -63,11 +65,15 @@ const enrichTeachersWithRosterAndAttendance = async (schoolId, teachers) => {
   const todayDate = getTodayDateString();
   const todayWeekday = getTodayWeekday();
 
-  const [attendances, slots] = await Promise.all([
+  const [attendances, slots, weeklyCounts] = await Promise.all([
     StaffAttendance.find({ school_id: schoolId, date: todayDate, staff_id: { $in: teacherIds } })
       .select('staff_id status check_in_time check_out_time').lean(),
     TimetableSlot.find({ school_id: schoolId, day_of_week: todayWeekday, teacher_id: { $in: teacherIds }, is_break: false })
-      .populate('grade_id', 'name code').populate('subject_id', 'name code').sort({ period_no: 1 }).lean()
+      .populate('grade_id', 'name code').populate('subject_id', 'name code').sort({ period_no: 1 }).lean(),
+    TimetableSlot.aggregate([
+      { $match: { school_id: schoolId, teacher_id: { $in: teacherIds }, is_break: false } },
+      { $group: { _id: '$teacher_id', count: { $sum: 1 } } }
+    ])
   ]);
 
   const attMap = new Map(attendances.map((a) => [String(a.staff_id), a]));
@@ -77,6 +83,7 @@ const enrichTeachersWithRosterAndAttendance = async (schoolId, teachers) => {
     if (!slotsMap.has(k)) slotsMap.set(k, []);
     slotsMap.get(k).push(s);
   });
+  const weeklyMap = new Map(weeklyCounts.map((w) => [String(w._id), w.count]));
 
   const now = new Date();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -85,6 +92,7 @@ const enrichTeachersWithRosterAndAttendance = async (schoolId, teachers) => {
     const tId = String(teacher._id);
     const att = attMap.get(tId);
     const tSlots = slotsMap.get(tId) || [];
+    const weeklyCount = weeklyMap.get(tId) || 0;
     return {
       ...teacher,
       attendance_today: att
@@ -92,7 +100,10 @@ const enrichTeachersWithRosterAndAttendance = async (schoolId, teachers) => {
         : { status: 'Not_Marked', check_in_time: '', check_out_time: '' },
       live_activity: buildLiveActivity(tSlots, currentMinutes),
       today_slots_count: tSlots.length,
-      today_slots: tSlots
+      today_slots: tSlots,
+      weekly_periods_count: weeklyCount,
+      max_weekly_periods: 28,
+      workload_status: weeklyCount >= 28 ? 'overload' : weeklyCount >= 22 ? 'busy' : 'normal'
     };
   });
 };

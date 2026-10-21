@@ -4,9 +4,8 @@ import IdCardPhotoAvatar from '../IdCardPhotoAvatar.jsx';
 import IdCardDataRows from '../IdCardDataRows.jsx';
 import IdCardInstHeader from '../IdCardInstHeader.jsx';
 
-const GOLD = '#F5A623';
-const NAVY = '#1a2744';
-const ROYAL = '#2E4A9E';
+const GOLD = '#D97706';
+const NAVY = '#0F172A';
 
 const fmtDate = (d) => {
   if (!d) return '';
@@ -14,90 +13,154 @@ const fmtDate = (d) => {
   return isNaN(dt) ? d : `${String(dt.getMonth() + 1).padStart(2, '0')}/${dt.getFullYear()}`;
 };
 
-const DotPattern = () => (
-  <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <pattern id="dots" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
-        <circle cx="2" cy="2" r="1" fill={GOLD} />
-      </pattern>
-    </defs>
-    <rect width="100%" height="100%" fill="url(#dots)" />
-  </svg>
-);
-
-const Template2GoldBlueFrame = ({ holder = {}, holderType = 'student', orientation = 'vertical', accentColor = ROYAL, institution = {}, isSelected, onToggleSelect }) => {
+const Template2GoldBlueFrame = ({
+  holder = {},
+  holderType = 'teacher',
+  orientation = 'vertical',
+  accentColor = '#1E3A8A',
+  institution = {},
+  isSelected,
+  onToggleSelect,
+  sideMode = 'front'
+}) => {
   const isStudent = holderType === 'student';
-  const codeVal = isStudent ? holder.gr_number : holder.employee_code;
+  const codeVal = isStudent ? holder.gr_number : (holder.employee_code || holder.personal_id || 'EMP-001');
   const verifyUrl = isStudent ? generateStudentVerifyUrl(holder) : generateStaffVerifyUrl(holder);
+  const isFrontOnly = sideMode === 'front';
+
   const rows = isStudent
     ? [
-        { label: 'ID', value: holder.gr_number },
-        { label: 'Class', value: holder.current_grade?.name },
+        { label: 'GR NO', value: holder.gr_number },
+        { label: 'CLASS', value: holder.current_grade?.name },
         { label: 'DOA', value: fmtDate(holder.date_of_admission) },
-        { label: 'Phone', value: holder.parent_phone },
+        { label: 'PHONE', value: holder.parent_phone },
+        ...(isFrontOnly ? [{ label: 'BLOOD', value: holder.blood_group }, { label: 'EMERGENCY', value: holder.emergency_contact }] : [])
       ]
     : [
-        { label: 'ID', value: holder.employee_code },
-        { label: 'Role', value: holder.designation },
-        { label: 'DOJ', value: fmtDate(holder.date_of_joining) },
-        { label: 'CNIC', value: holder.cnic },
+        { label: 'STAFF ID', value: holder.employee_code || holder.personal_id },
+        { label: 'DESIGNATION', value: `${holder.designation || 'Staff'}${holder.bps_grade ? ` (BPS-${holder.bps_grade})` : ''}` },
+        { label: 'DEPARTMENT', value: holder.department || 'Faculty' },
+        { label: 'JOINED', value: fmtDate(holder.date_of_joining || holder.joining_date) },
+        ...(isFrontOnly
+          ? [
+              { label: 'CNIC', value: holder.cnic },
+              { label: 'BLOOD', value: holder.blood_group },
+              { label: 'PHONE', value: holder.contact_number || holder.whatsapp_number }
+            ]
+          : [])
       ];
-  const badge = isStudent ? '🎓 STUDENT' : holder.designation || 'STAFF';
+
+  const badge = isStudent ? 'STUDENT' : (holder.designation || 'FACULTY').toUpperCase();
 
   if (orientation === 'horizontal') {
     return (
-      <div onClick={onToggleSelect} className={`relative flex flex-col rounded-xl overflow-hidden shadow-lg cursor-pointer w-[380px] h-[235px] shrink-0 bg-white select-none ${isSelected ? 'ring-2 ring-blue-500' : ''}`} style={{ border: `2.5px solid ${GOLD}` }}>
-        <div className="relative px-2.5 py-1 flex items-center justify-between shrink-0 overflow-hidden" style={{ background: accentColor }}>
-          <DotPattern />
+      <div
+        onClick={onToggleSelect}
+        className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-lg cursor-pointer w-[380px] h-[235px] shrink-0 bg-white select-none border-2 border-amber-500/40 ${
+          isSelected ? 'ring-2 ring-amber-500 shadow-xl' : ''
+        }`}
+      >
+        <div
+          className="relative px-3 py-1.5 flex items-center justify-between shrink-0"
+          style={{ background: `linear-gradient(135deg, ${NAVY} 0%, ${accentColor} 100%)` }}
+        >
           <IdCardInstHeader {...institution} textColor="white" compact={true} bgColor="transparent" />
-          <span className="z-10 text-[7px] font-bold px-2 py-0.5 rounded-full text-slate-900 tracking-wider shrink-0" style={{ background: GOLD }}>{badge}</span>
+          <span className="text-[7.5px] font-black px-2.5 py-0.5 rounded-full text-slate-950 tracking-wider shrink-0 bg-amber-400 font-mono shadow-xs">
+            {badge}
+          </span>
         </div>
-        <div className="flex flex-1 px-3 py-1.5 gap-3 items-center">
+
+        <div className="flex flex-1 px-3.5 py-2 gap-3 items-center">
           <div className="flex flex-col items-center justify-center shrink-0">
-            <IdCardPhotoAvatar photoUrl={holder.photo_url} name={holder.name} size={64} ringColor={GOLD} ringWidth={2.5} />
+            <IdCardPhotoAvatar
+              photoUrl={holder.photo_url}
+              name={holder.name}
+              size={isFrontOnly ? 72 : 78}
+              ringColor={GOLD}
+              ringWidth={2.5}
+            />
           </div>
+
           <div className="flex flex-col flex-1 min-w-0 gap-1">
-            <span className="font-extrabold text-[10px] uppercase tracking-wide truncate" style={{ color: NAVY }}>{holder.name}</span>
-            <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[7px] text-slate-700">
-              {rows.map((r, i) => (
-                <div key={i} className="flex justify-between border-b border-amber-100 pb-0.5">
-                  <span className="font-semibold text-slate-500">{r.label}:</span>
-                  <span className="font-medium truncate ml-1">{r.value}</span>
-                </div>
-              ))}
+            <div className="border-b border-amber-100 pb-0.5">
+              <span className="font-black text-[11px] uppercase tracking-wide truncate block text-slate-900">
+                {holder.name}
+              </span>
+              <span className="text-[8px] font-bold text-amber-700 block truncate">
+                {holder.designation || 'Faculty'} {holder.bps_grade ? `• BPS-${holder.bps_grade}` : ''}
+              </span>
             </div>
+
+            <div className="w-full">
+              <IdCardDataRows rows={rows} layout={isFrontOnly ? 'grid' : 'single'} fontSize="text-[7px]" />
+            </div>
+
             <div className="w-full flex justify-center py-0.5" style={{ color: NAVY }}>
-              {renderSvgBarcode(codeVal, 140, 15)}
+              {renderSvgBarcode(codeVal, 160, 16)}
             </div>
           </div>
         </div>
-        <div className="flex items-center justify-between px-3 py-1 border-t border-amber-200 mt-auto bg-amber-50/40">
-          <OfficialSignatureStampBlock compact={true} />
-          <div className="shrink-0 rounded p-0.5 bg-white border border-amber-200">{renderSvgQrCode(verifyUrl, 32)}</div>
+
+        <div className="flex items-center justify-between px-3.5 py-1 border-t border-amber-200 mt-auto bg-amber-50/50">
+          <OfficialSignatureStampBlock compact={true} signatureTitle="Authorized Signatory" />
+          <div className="shrink-0 flex items-center gap-1.5">
+            <div className="p-0.5 bg-white rounded border border-amber-300">
+              {renderSvgQrCode(verifyUrl, 32)}
+            </div>
+          </div>
         </div>
-        <span className="absolute bottom-0.5 right-1 text-[6.5px] font-bold tracking-widest opacity-25">EliteEdu</span>
       </div>
     );
   }
 
   return (
-    <div onClick={onToggleSelect} className={`relative flex flex-col bg-white rounded-xl overflow-hidden shadow-lg cursor-pointer w-[248px] min-h-[390px] select-none ${isSelected ? 'ring-2 ring-blue-500' : ''}`} style={{ border: `3px solid ${GOLD}` }}>
-      <div className="relative overflow-hidden shrink-0" style={{ background: accentColor }}>
-        <DotPattern />
-        <IdCardInstHeader {...institution} textColor="white" bgColor="transparent" />
-      </div>
-      <div className="flex flex-col items-center px-3 py-2 gap-1.5 flex-1">
-        <div style={{ border: `2px solid ${NAVY}`, borderRadius: 10 }}><IdCardPhotoAvatar photoUrl={holder.photo_url} name={holder.name} size={68} ringColor={GOLD} ringWidth={3} /></div>
-        <span className="text-[7px] font-bold px-2 py-0.5 rounded-full text-slate-900 tracking-wider" style={{ background: GOLD }}>{badge}</span>
-        <span className="font-extrabold text-[10px] uppercase tracking-wide text-center" style={{ color: NAVY }}>{holder.name}</span>
-        <div className="w-full"><IdCardDataRows rows={rows} textColorClass="text-slate-700" labelColorClass="text-slate-500" /></div>
-        <div className="mt-auto w-full flex justify-center" style={{ color: NAVY }}>{renderSvgBarcode(codeVal, 200, 20)}</div>
-        <div className="flex items-center justify-between w-full pt-1">
-          <OfficialSignatureStampBlock compact={true} />
-          <div className="rounded-lg border border-amber-200 p-0.5 shadow-sm">{renderSvgQrCode(verifyUrl, 38)}</div>
+    <div
+      onClick={onToggleSelect}
+      className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-lg cursor-pointer w-[248px] min-h-[390px] bg-white border-2 border-amber-500/40 select-none ${
+        isSelected ? 'ring-2 ring-amber-500 shadow-xl' : ''
+      }`}
+    >
+      <div
+        className="relative shrink-0 pb-7 pt-2 px-1"
+        style={{ background: `linear-gradient(135deg, ${NAVY} 0%, ${accentColor} 100%)` }}
+      >
+        <IdCardInstHeader {...institution} textColor="white" compact={true} bgColor="transparent" />
+
+        <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 z-20">
+          <IdCardPhotoAvatar
+            photoUrl={holder.photo_url}
+            name={holder.name}
+            size={isFrontOnly ? 72 : 78}
+            ringColor={GOLD}
+            ringWidth={3}
+          />
         </div>
       </div>
-      <span className="absolute bottom-1 right-1 text-[7px] font-bold tracking-widest opacity-30">EliteEdu</span>
+
+      <div className="flex flex-col items-center px-3 pt-9 pb-1.5 gap-1 flex-1 text-center">
+        <span className="font-black text-[11px] uppercase tracking-wide truncate max-w-[220px] text-slate-900">
+          {holder.name}
+        </span>
+
+        <span className="text-[7.5px] font-black px-2.5 py-0.5 rounded-full text-slate-950 tracking-wider bg-amber-400 font-mono shadow-xs">
+          {badge}
+        </span>
+
+        <div className="w-full mt-1.5 text-left">
+          <IdCardDataRows rows={rows} layout={isFrontOnly ? 'grid' : 'single'} fontSize="text-[7.5px]" />
+        </div>
+
+        <div className="mt-1 w-full flex justify-center" style={{ color: NAVY }}>
+          {renderSvgBarcode(codeVal, 190, 20)}
+        </div>
+      </div>
+
+      <div className="px-3 py-1.5 border-t border-amber-200 bg-amber-50/50 flex items-center justify-between">
+        <OfficialSignatureStampBlock compact={true} signatureTitle="Authorized Signatory" />
+        <div className="shrink-0 p-0.5 bg-white rounded border border-amber-300">
+          {renderSvgQrCode(verifyUrl, 32)}
+        </div>
+      </div>
     </div>
   );
 };

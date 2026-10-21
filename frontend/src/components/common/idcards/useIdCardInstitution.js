@@ -69,13 +69,36 @@ const useIdCardInstitution = (campusIdProp) => {
     return () => { mounted = false; };
   }, [campusIdProp]);
 
-  const institutionName = school?.name || school?.school_name || '';
-  const semisCode = school?.semis_code || school?.emis_code || '';
+  const institutionName = school?.name || school?.school_name || campus?.name || 'ELITE EDUCATION SYSTEM';
+  const campusName = campus?.name || 'Main Campus';
+  const slogan = school?.slogan || 'Excellence in Education';
+  const semisCode = campus?.semis_code || school?.semis_code || school?.emis_code || '';
   const urduMotto = school?.urdu_motto || school?.motto_urdu || '';
-  const logoUrl = school?.logo_url || school?.logo || '';
-  const areaName = campus?.area || campus?.name || school?.area || '';
+  const logoUrl = school?.logo_url || school?.logo || campus?.logo || '/logo.png';
+  const areaName = campus?.area || campus?.address || school?.address || '';
+  const schoolPhone = campus?.contact_number || campus?.phone || school?.contact_number || '';
+  const schoolEmail = campus?.email || school?.email || '';
+  const schoolWebsite = school?.website || '';
+  const principalName = school?.principal_name || 'Principal';
+  const principalSignatureUrl = school?.principal_signature_url || '';
 
-  return { school, campus, loading, institutionName, semisCode, urduMotto, logoUrl, areaName };
+  return {
+    school,
+    campus,
+    loading,
+    institutionName,
+    campusName,
+    slogan,
+    semisCode,
+    urduMotto,
+    logoUrl,
+    areaName,
+    schoolPhone,
+    schoolEmail,
+    schoolWebsite,
+    principalName,
+    principalSignatureUrl
+  };
 };
 
 export default useIdCardInstitution;

@@ -9,7 +9,7 @@ const renderFrontCard = (template, props) => {
     return <Template2GoldBlueFrame {...props} />;
   }
   if (template === 'template_3_wave_ribbon') {
-    return <Template3WaveRibbon {...props} sideMode="front" />;
+    return <Template3WaveRibbon {...props} />;
   }
   if (template === 'template_4_apwa_classic') {
     return <Template4ApwaClassic {...props} />;
@@ -19,7 +19,7 @@ const renderFrontCard = (template, props) => {
 
 const UniversalIdCard = ({
   holder,
-  holderType = 'student',
+  holderType = 'teacher',
   template = 'template_1_curve_blue',
   orientation = 'vertical',
   accentColor = '#003B73',
@@ -36,29 +36,24 @@ const UniversalIdCard = ({
     institution,
     isSelected,
     onToggleSelect,
+    sideMode
   };
 
   const renderContent = () => {
     if (sideMode === 'back') {
-      if (template === 'template_3_wave_ribbon') {
-        return <Template3WaveRibbon {...commonProps} sideMode="back" />;
-      }
       return <UniversalIdCardBack {...commonProps} />;
     }
 
     if (sideMode === 'both') {
-      if (template === 'template_3_wave_ribbon') {
-        return <Template3WaveRibbon {...commonProps} sideMode="both" />;
-      }
       return (
         <div className={`flex flex-col ${orientation === 'horizontal' ? 'xl:flex-row' : 'sm:flex-row'} gap-3 items-center justify-center print:flex-row print:gap-3`}>
-          {renderFrontCard(template, commonProps)}
+          {renderFrontCard(template, { ...commonProps, sideMode: 'both' })}
           <UniversalIdCardBack {...commonProps} />
         </div>
       );
     }
 
-    return renderFrontCard(template, commonProps);
+    return renderFrontCard(template, { ...commonProps, sideMode: 'front' });
   };
 
   return (
