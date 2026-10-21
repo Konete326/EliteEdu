@@ -1,8 +1,29 @@
 import { useState, useEffect, useMemo } from 'react';
-import { X, CalendarPlus, AlertCircle, Loader2, Clock, Sparkles } from 'lucide-react';
+import { X, CalendarPlus, AlertCircle, AlertTriangle, Loader2, Clock, Sparkles } from 'lucide-react';
 import api from '../../../services/api';
 import SearchableSelect from '../../common/SearchableSelect';
 import { useToast } from '../../../context/ToastContext';
+
+const parseTimeToMinutes = (str) => {
+  if (!str || typeof str !== 'string') return null;
+  const match = str.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+  if (!match) return null;
+  let h = parseInt(match[1], 10);
+  const m = parseInt(match[2], 10);
+  const meridiem = match[3] ? match[3].toUpperCase() : null;
+  if (meridiem === 'PM' && h < 12) h += 12;
+  if (meridiem === 'AM' && h === 12) h = 0;
+  return h * 60 + m;
+};
+
+const isTimeOverlap = (startA, endA, startB, endB) => {
+  const sA = parseTimeToMinutes(startA);
+  const eA = parseTimeToMinutes(endA);
+  const sB = parseTimeToMinutes(startB);
+  const eB = parseTimeToMinutes(endB);
+  if (sA === null || eA === null || sB === null || eB === null) return false;
+  return sA < eB && eA > sB;
+};
 
 const PERIOD_DEFAULTS = [
   { period_no: 1, start_time: '08:00 AM', end_time: '08:45 AM' },
@@ -67,6 +88,7 @@ const TeacherAssignPeriodModal = ({
   const { showToast } = useToast();
   const [grades, setGrades] = useState([]);
   const [subjects, setSubjects] = useState([]);
+  const [existingSlots, setExistingSlots] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [conflictError, setConflictError] = useState('');
@@ -86,12 +108,14 @@ const TeacherAssignPeriodModal = ({
     const fetchOptions = async () => {
       try {
         setLoadingData(true);
-        const [gRes, sRes] = await Promise.all([
+        const [gRes, sRes, tRes] = await Promise.all([
           api.get('/grades').catch(() => ({ data: { grades: [] } })),
-          api.get('/subjects?limit=100').catch(() => ({ data: { subjects: [] } }))
+          api.get('/subjects?limit=100').catch(() => ({ data: { subjects: [] } })),
+          teacher?._id ? api.get(`/timetable?teacher_id=${teacher._id}`).catch(() => ({ data: { slots: [] } })) : Promise.resolve({ data: { slots: [] } })
         ]);
         setGrades(gRes.data?.grades || []);
         setSubjects(sRes.data?.subjects || []);
+        setExistingSlots(tRes.data?.slots || []);
       } catch (err) {
         console.error(err);
       } finally {
@@ -100,7 +124,7 @@ const TeacherAssignPeriodModal = ({
     };
     fetchOptions();
     setConflictError('');
-  }, [isOpen]);
+  }, [isOpen, teacher?._id]);
 
   const currentGrade = useMemo(() => {
     return grades.find((g) => g._id === selectedGradeId);
@@ -126,10 +150,49 @@ const TeacherAssignPeriodModal = ({
 
   const isCustom = selectedPeriod === 'custom';
 
+  const detectedConflict = useMemo(() => {
+    if (!existingSlots.length) return null;
+    const resolvedPeriodNo = isCustom ? (Number(customPeriodNo) || 9) : Number(selectedPeriod);
+    const daysToCheck = selectedDay === 'all'
+      ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+      : [selectedDay];
+
+    for (const day of daysToCheck) {
+      for (const slot of existingSlots) {
+        if (slot.day_of_week !== day || slot.is_break) continue;
+        const slotGradeId = String(slot.grade_id?._id || slot.grade_id || '');
+        const slotSection = String(slot.section || '').trim().toUpperCase();
+        const curGradeId = String(selectedGradeId || '');
+        const curSection = String(selectedSection || '').trim().toUpperCase();
+
+        const isDiff = slotGradeId !== curGradeId || slotSection !== curSection;
+        const periodMatch = Number(slot.period_no) === resolvedPeriodNo;
+        const timeMatch = isTimeOverlap(startTime, endTime, slot.start_time, slot.end_time);
+
+        if (isDiff && (periodMatch || timeMatch)) {
+          return {
+            day,
+            period: slot.period_no,
+            time: `${slot.start_time || '—'} - ${slot.end_time || '—'}`,
+            className: slot.grade_id?.name || 'Another Class',
+            section: slot.section,
+            subject: slot.subject_id?.name || 'Class Routine'
+          };
+        }
+      }
+    }
+    return null;
+  }, [existingSlots, isCustom, customPeriodNo, selectedPeriod, selectedDay, selectedGradeId, selectedSection, startTime, endTime]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedGradeId || !selectedSubjectId || !teacher?._id) {
       setConflictError('Please select both a class and a subject.');
+      return;
+    }
+
+    if (detectedConflict) {
+      setConflictError(`Schedule Conflict: ${teacher.name} is already assigned to ${detectedConflict.className} (${detectedConflict.section}) during Period ${detectedConflict.period} (${detectedConflict.time}) on ${detectedConflict.day}.`);
       return;
     }
 
@@ -202,6 +265,22 @@ const TeacherAssignPeriodModal = ({
 
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
           <div className="flex-1 min-h-0 overflow-y-auto p-5 space-y-4">
+            {detectedConflict && (
+              <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs space-y-1.5 animate-in fade-in">
+                <div className="flex items-center gap-2 font-bold text-amber-900 dark:text-amber-200">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span>Teacher Schedule Conflict Detected</span>
+                </div>
+                <p className="text-[11px] leading-relaxed">
+                  <span className="font-bold">{teacher.name}</span> is already teaching{' '}
+                  <span className="font-bold underline">{detectedConflict.className} ({detectedConflict.section})</span> for {detectedConflict.subject} during Period {detectedConflict.period} ({detectedConflict.time}) on {detectedConflict.day}.
+                </p>
+                <p className="text-[10px] text-amber-700/90 dark:text-amber-400/90 italic">
+                  Assigning this slot will create a timetable double-booking clash. Please choose a different period or time.
+                </p>
+              </div>
+            )}
+
             {conflictError && (
               <div className="p-3 rounded-xl bg-bad/10 border border-bad/20 text-bad text-xs font-semibold flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />

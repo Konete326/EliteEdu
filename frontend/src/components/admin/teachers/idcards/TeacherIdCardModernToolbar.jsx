@@ -10,7 +10,8 @@ import {
   UserCheck,
   Layers,
   Palette,
-  Maximize2
+  Maximize2,
+  Archive
 } from 'lucide-react';
 import SearchableSelect from '../../../common/SearchableSelect';
 
@@ -52,7 +53,9 @@ const TeacherIdCardModernToolbar = ({
   totalCount = 0,
   onToggleSelectAll,
   onExportPdf,
-  isExporting = false
+  isExporting = false,
+  onExportZip,
+  isExportingZip = false
 }) => {
   const isAllSelected = totalCount > 0 && selectedCount === totalCount;
 
@@ -117,10 +120,23 @@ const TeacherIdCardModernToolbar = ({
               type="button"
               onClick={onExportPdf}
               disabled={isExporting || selectedCount === 0}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-primary hover:bg-primary-hover disabled:opacity-50 text-white text-xs font-bold transition-all shadow-sm shadow-primary/20 cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-primary hover:bg-primary-hover disabled:opacity-50 text-white text-xs font-bold transition-all shadow-sm shadow-primary/20 cursor-pointer"
             >
               <Download className="w-4 h-4" />
               <span>{isExporting ? 'Generating PDF...' : 'Export PDF'}</span>
+            </button>
+          )}
+
+          {onExportZip && (
+            <button
+              type="button"
+              onClick={onExportZip}
+              disabled={isExportingZip || selectedCount === 0}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary dark:text-primary-dark text-xs font-bold transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
+              title="Download ZIP package with individual printable cards + manifest for vendor"
+            >
+              <Archive className="w-4 h-4" />
+              <span>{isExportingZip ? 'Packing ZIP...' : 'Export Vendor ZIP'}</span>
             </button>
           )}
         </div>

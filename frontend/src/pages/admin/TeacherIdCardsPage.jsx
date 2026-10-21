@@ -6,6 +6,7 @@ import useIdCardInstitution from '../../components/common/idcards/useIdCardInsti
 import TeacherCardEditModal from '../../components/admin/teachers/idcards/TeacherCardEditModal';
 import { useTeacherIdCardsData } from '../../components/admin/teachers/idcards/useTeacherIdCardsData';
 import { exportTeacherCardsPdf } from '../../utils/pdf/teacherCardPdfExporter';
+import { exportTeacherCardsZip } from '../../utils/pdf/teacherCardZipExporter';
 import { UserCheck, Sparkles, CheckCircle2 } from 'lucide-react';
 
 const TeacherIdCardsPage = () => {
@@ -37,6 +38,7 @@ const TeacherIdCardsPage = () => {
   const [selectedTeacherId, setSelectedTeacherId] = useState(initialTeacherId || 'all');
   const [editingTeacher, setEditingTeacher] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [isExportingZip, setIsExportingZip] = useState(false);
   const [exportNotice, setExportNotice] = useState('');
 
   const handleSelectSpecificTeacher = (tId) => {
@@ -76,6 +78,25 @@ const TeacherIdCardsPage = () => {
     }
   };
 
+  const handleExportZip = async () => {
+    try {
+      setIsExportingZip(true);
+      await exportTeacherCardsZip(selectedTeachers, {
+        sideMode,
+        style: template,
+        orientation,
+        accentColor,
+        institution
+      });
+      setExportNotice(`Vendor package exported! ${selectedTeachers.length} card(s) saved in ZIP archive.`);
+      setTimeout(() => setExportNotice(''), 5000);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsExportingZip(false);
+    }
+  };
+
   const singleSelectedTeacher = selectedTeachers.length === 1 ? selectedTeachers[0] : null;
 
   return (
@@ -102,6 +123,8 @@ const TeacherIdCardsPage = () => {
         onToggleSelectAll={handleToggleSelectAll}
         onExportPdf={handleExportPdf}
         isExporting={isExporting}
+        onExportZip={handleExportZip}
+        isExportingZip={isExportingZip}
       />
 
       {exportNotice && (

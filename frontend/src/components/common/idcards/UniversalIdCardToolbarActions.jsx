@@ -1,4 +1,4 @@
-import { Printer, Download, CheckSquare, Square, Search } from 'lucide-react';
+import { Printer, Download, CheckSquare, Square, Search, Archive } from 'lucide-react';
 
 const UniversalIdCardToolbarActions = ({
   searchQuery = '',
@@ -14,6 +14,8 @@ const UniversalIdCardToolbarActions = ({
   onToggleSelectAll,
   onExportPdf,
   isExporting = false,
+  onExportZip,
+  isExportingZip = false
 }) => {
   const isAllSelected = totalCount > 0 && selectedCount === totalCount;
 
@@ -79,6 +81,17 @@ const UniversalIdCardToolbarActions = ({
           >
             <Download className="w-3.5 h-3.5" />
             <span>{isExporting ? 'Generating...' : 'Export PDF'}</span>
+          </button>
+        )}
+        {onExportZip && (
+          <button
+            onClick={onExportZip}
+            disabled={isExportingZip || selectedCount === 0}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-blue-600/30 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold shadow-xs disabled:opacity-50 cursor-pointer"
+            title="Export Vendor ZIP"
+          >
+            <Archive className="w-3.5 h-3.5" />
+            <span>{isExportingZip ? 'Packing...' : 'Export ZIP'}</span>
           </button>
         )}
       </div>

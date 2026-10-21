@@ -71,7 +71,7 @@ const assignTimetableSlot = async (req, res) => {
 
     for (const day of daysToAssign) {
       const conflictMsg = await checkTimetableConflict({
-        school_id: schoolId, id, day_of_week: day, period_no, teacher_id, room_no, grade_id, section
+        school_id: schoolId, id, day_of_week: day, period_no, start_time, end_time, teacher_id, room_no, grade_id, section
       });
       if (conflictMsg) return res.status(409).json({ success: false, message: conflictMsg });
     }

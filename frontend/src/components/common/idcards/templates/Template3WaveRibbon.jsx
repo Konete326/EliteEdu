@@ -75,8 +75,9 @@ const Template3WaveRibbon = ({
       return (
         <div
           onClick={onToggleSelect}
+          style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
           className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[380px] h-[235px] shrink-0 bg-white select-none border border-slate-200 ${
-            isSelected ? 'ring-2 ring-emerald-500 shadow-xl' : ''
+            isSelected ? 'shadow-xl' : ''
           }`}
         >
           <div
@@ -136,13 +137,14 @@ const Template3WaveRibbon = ({
     return (
       <div
         onClick={onToggleSelect}
+        style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
         className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[248px] min-h-[390px] bg-white border border-slate-200 select-none ${
-          isSelected ? 'ring-2 ring-emerald-500 shadow-xl' : ''
+          isSelected ? 'shadow-xl' : ''
         }`}
       >
-        <div className="relative shrink-0" style={{ height: 95 }}>
-          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 248 95" preserveAspectRatio="none">
-            <path d="M0,0 L248,0 L248,65 Q186,95 124,75 Q62,55 0,85 Z" fill={accentColor} opacity="0.35" />
+        <div className="relative shrink-0 h-[96px] overflow-hidden">
+          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 248 96" preserveAspectRatio="none">
+            <path d="M0,0 L248,0 L248,65 Q186,96 124,75 Q62,55 0,85 Z" fill={accentColor} opacity="0.35" />
             <path d="M0,0 L248,0 L248,55 Q186,85 124,65 Q62,45 0,75 Z" fill={accentColor} />
           </svg>
 

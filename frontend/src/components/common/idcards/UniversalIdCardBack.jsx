@@ -45,8 +45,9 @@ const UniversalIdCardBack = ({
     return (
       <div
         onClick={onToggleSelect}
+        style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
         className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[380px] h-[235px] shrink-0 bg-white p-3 border border-slate-200 select-none ${
-          isSelected ? 'ring-2 ring-blue-500 shadow-lg' : ''
+          isSelected ? 'shadow-lg' : ''
         }`}
       >
         <div className="flex items-center justify-between border-b border-slate-200 pb-1 shrink-0">
@@ -119,8 +120,9 @@ const UniversalIdCardBack = ({
   return (
     <div
       onClick={onToggleSelect}
+      style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
       className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[248px] min-h-[390px] bg-white p-3 border border-slate-200 select-none ${
-        isSelected ? 'ring-2 ring-blue-500 shadow-lg' : ''
+        isSelected ? 'shadow-lg' : ''
       }`}
     >
       <div className="text-center border-b border-slate-200 pb-2 space-y-1 shrink-0">

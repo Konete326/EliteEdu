@@ -59,8 +59,9 @@ const Template4ApwaClassic = ({
     return (
       <div
         onClick={onToggleSelect}
+        style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
         className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[380px] h-[235px] shrink-0 bg-[#F8FAFC] select-none border border-slate-300 ${
-          isSelected ? 'ring-2 ring-primary shadow-xl' : ''
+          isSelected ? 'shadow-xl' : ''
         }`}
       >
         <div
@@ -124,8 +125,9 @@ const Template4ApwaClassic = ({
   return (
     <div
       onClick={onToggleSelect}
+      style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
       className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[248px] min-h-[390px] bg-[#F8FAFC] border border-slate-300 select-none ${
-        isSelected ? 'ring-2 ring-primary shadow-xl' : ''
+        isSelected ? 'shadow-xl' : ''
       }`}
     >
       <div

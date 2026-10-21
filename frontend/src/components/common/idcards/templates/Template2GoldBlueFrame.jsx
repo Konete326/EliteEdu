@@ -62,16 +62,20 @@ const Template2GoldBlueFrame = ({
     return (
       <div
         onClick={onToggleSelect}
-        className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-lg cursor-pointer w-[380px] h-[235px] shrink-0 bg-white select-none border-2 border-amber-500/40 ${
-          isSelected ? 'ring-2 ring-amber-500 shadow-xl' : ''
+        style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
+        className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[380px] h-[235px] shrink-0 bg-white select-none border border-slate-200 ${
+          isSelected ? 'shadow-xl' : ''
         }`}
       >
         <div
-          className="relative px-3 py-1.5 flex items-center justify-between shrink-0"
+          className="relative px-3 py-1 flex items-center justify-between shrink-0"
           style={{ background: `linear-gradient(135deg, ${NAVY} 0%, ${accentColor} 100%)` }}
         >
           <IdCardInstHeader {...institution} textColor="white" compact={true} bgColor="transparent" />
-          <span className="text-[7.5px] font-black px-2.5 py-0.5 rounded-full text-slate-950 tracking-wider shrink-0 bg-amber-400 font-mono shadow-xs">
+          <span
+            className="text-[7.5px] font-black px-2.5 py-0.5 rounded-full text-white tracking-wider shrink-0 shadow-xs"
+            style={{ background: accentColor }}
+          >
             {badge}
           </span>
         </div>
@@ -82,17 +86,20 @@ const Template2GoldBlueFrame = ({
               photoUrl={holder.photo_url}
               name={holder.name}
               size={isFrontOnly ? 72 : 78}
-              ringColor={GOLD}
+              ringColor={accentColor}
               ringWidth={2.5}
             />
           </div>
 
           <div className="flex flex-col flex-1 min-w-0 gap-1">
-            <div className="border-b border-amber-100 pb-0.5">
+            <div className="border-b border-slate-100 pb-0.5">
               <span className="font-black text-[11px] uppercase tracking-wide truncate block text-slate-900">
                 {holder.name}
               </span>
-              <span className="text-[8px] font-bold text-amber-700 block truncate">
+              <span
+                className="text-[8px] font-bold block truncate"
+                style={{ color: accentColor }}
+              >
                 {holder.designation || 'Faculty'} {holder.bps_grade ? `• BPS-${holder.bps_grade}` : ''}
               </span>
             </div>
@@ -107,10 +114,10 @@ const Template2GoldBlueFrame = ({
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-3.5 py-1 border-t border-amber-200 mt-auto bg-amber-50/50">
+        <div className="flex items-center justify-between px-3.5 py-1 border-t border-slate-100 mt-auto bg-slate-50/70">
           <OfficialSignatureStampBlock compact={true} signatureTitle="Authorized Signatory" />
           <div className="shrink-0 flex items-center gap-1.5">
-            <div className="p-0.5 bg-white rounded border border-amber-300">
+            <div className="p-0.5 bg-white rounded border border-slate-200">
               {renderSvgQrCode(verifyUrl, 32)}
             </div>
           </div>
@@ -122,12 +129,13 @@ const Template2GoldBlueFrame = ({
   return (
     <div
       onClick={onToggleSelect}
-      className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-lg cursor-pointer w-[248px] min-h-[390px] bg-white border-2 border-amber-500/40 select-none ${
-        isSelected ? 'ring-2 ring-amber-500 shadow-xl' : ''
+      style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
+      className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[248px] min-h-[390px] bg-white border border-slate-200 select-none ${
+        isSelected ? 'shadow-xl' : ''
       }`}
     >
       <div
-        className="relative shrink-0 pb-7 pt-2 px-1"
+        className="relative shrink-0 pb-7 pt-1 px-1 h-[96px] overflow-hidden"
         style={{ background: `linear-gradient(135deg, ${NAVY} 0%, ${accentColor} 100%)` }}
       >
         <IdCardInstHeader {...institution} textColor="white" compact={true} bgColor="transparent" />
@@ -137,7 +145,7 @@ const Template2GoldBlueFrame = ({
             photoUrl={holder.photo_url}
             name={holder.name}
             size={isFrontOnly ? 72 : 78}
-            ringColor={GOLD}
+            ringColor={accentColor}
             ringWidth={3}
           />
         </div>
@@ -148,7 +156,10 @@ const Template2GoldBlueFrame = ({
           {holder.name}
         </span>
 
-        <span className="text-[7.5px] font-black px-2.5 py-0.5 rounded-full text-slate-950 tracking-wider bg-amber-400 font-mono shadow-xs">
+        <span
+          className="text-[7.5px] font-black px-2.5 py-0.5 rounded-full text-white tracking-wider shadow-xs"
+          style={{ background: accentColor }}
+        >
           {badge}
         </span>
 
@@ -161,9 +172,9 @@ const Template2GoldBlueFrame = ({
         </div>
       </div>
 
-      <div className="px-3 py-1.5 border-t border-amber-200 bg-amber-50/50 flex items-center justify-between">
+      <div className="px-3 py-1.5 border-t border-slate-100 bg-slate-50/70 flex items-center justify-between">
         <OfficialSignatureStampBlock compact={true} signatureTitle="Authorized Signatory" />
-        <div className="shrink-0 p-0.5 bg-white rounded border border-amber-300">
+        <div className="shrink-0 p-0.5 bg-white rounded border border-slate-200">
           {renderSvgQrCode(verifyUrl, 32)}
         </div>
       </div>

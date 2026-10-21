@@ -13,7 +13,7 @@ const generateQrPng = async (url) => {
   }
 };
 
-export const exportTeacherCardsPdf = async (teachers, options = {}) => {
+export const generateTeacherCardsPdfBytes = async (teachers, options = {}) => {
   const {
     sideMode = 'both',
     style = 'template_1_curve_blue',
@@ -22,7 +22,7 @@ export const exportTeacherCardsPdf = async (teachers, options = {}) => {
     institution = {},
   } = options;
 
-  if (!teachers || teachers.length === 0) return false;
+  if (!teachers || teachers.length === 0) return null;
 
   const pdfDoc = await PDFDocument.create();
   const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
@@ -73,6 +73,7 @@ export const exportTeacherCardsPdf = async (teachers, options = {}) => {
           institution,
           qrImage: qrImages[idx],
           photoImage: photoImages[idx],
+          sideMode,
         });
       });
     }
@@ -93,7 +94,13 @@ export const exportTeacherCardsPdf = async (teachers, options = {}) => {
     }
   }
 
-  const pdfBytes = await pdfDoc.save();
+  return await pdfDoc.save();
+};
+
+export const exportTeacherCardsPdf = async (teachers, options = {}) => {
+  const pdfBytes = await generateTeacherCardsPdfBytes(teachers, options);
+  if (!pdfBytes) return false;
+  const orientation = options.orientation || 'vertical';
   const blob = new Blob([pdfBytes], { type: 'application/pdf' });
   const downloadUrl = URL.createObjectURL(blob);
   const a = document.createElement('a');
