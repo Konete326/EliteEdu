@@ -18,13 +18,13 @@ const UniversalIdCardSheet = ({
   const gridClass = isHoriz
     ? sideMode === 'both'
       ? 'grid grid-cols-1 2xl:grid-cols-2 gap-6 justify-items-center print:grid-cols-1 print:gap-4'
-      : 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 justify-items-center print:grid-cols-2 print:gap-3 print:w-[297mm]'
+      : 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 justify-items-center print:grid-cols-2 print:gap-4 print:w-full'
     : sideMode === 'both'
-      ? 'grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-center print:grid-cols-2 print:gap-3'
-      : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center print:grid-cols-3 print:gap-3 print:w-full print:max-w-[200mm] print:mx-auto';
+      ? 'grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-center print:grid-cols-2 print:gap-4'
+      : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center print:grid-cols-3 print:gap-4 print:w-full';
 
   return (
-    <div className="bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark rounded-2xl p-6 shadow-sm print:border-none print:shadow-none print:p-0 print:m-0 print:break-after-page print:break-inside-avoid [content-visibility:auto] [contain-intrinsic-size:680px] print:[content-visibility:visible]">
+    <div className="bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark rounded-2xl p-6 shadow-sm print:border-none print:shadow-none print:p-0 print:m-0 print:break-after-page print:break-inside-avoid">
       <div className="flex items-center justify-between pb-4 mb-4 border-b border-line dark:border-line-dark print:hidden text-xs text-ink-muted">
         <span className="font-semibold">
           Sheet {pageIndex + 1} of {totalSheets}

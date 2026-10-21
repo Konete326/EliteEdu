@@ -1,3 +1,13 @@
+const formatValue = (val) => {
+  if (val === null || val === undefined) return '';
+  if (typeof val === 'object') {
+    if (val.phone || val.name) return val.phone || val.name;
+    const parts = Object.values(val).filter((v) => typeof v === 'string' || typeof v === 'number');
+    return parts.join(', ') || '';
+  }
+  return String(val);
+};
+
 const IdCardDataRows = ({
   rows = [],
   layout = 'single',
@@ -6,7 +16,11 @@ const IdCardDataRows = ({
   fontSize = 'text-[7.5px]',
   maxRows = 12
 }) => {
-  const visible = rows.filter((r) => r.value !== undefined && r.value !== null && r.value !== '').slice(0, maxRows);
+  const visible = rows
+    .filter((r) => r.value !== undefined && r.value !== null && r.value !== '')
+    .map((r) => ({ ...r, value: formatValue(r.value) }))
+    .filter((r) => r.value !== '')
+    .slice(0, maxRows);
 
   if (layout === 'grid') {
     return (

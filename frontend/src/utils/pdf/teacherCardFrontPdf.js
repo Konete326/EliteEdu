@@ -18,6 +18,12 @@ const fmtDate = (d) => {
   return isNaN(dt.getTime()) ? String(d) : `${String(dt.getMonth() + 1).padStart(2, '0')}/${dt.getFullYear()}`;
 };
 
+const resolveEmergency = (em) => {
+  if (!em) return '';
+  if (typeof em === 'object') return em.phone || em.name || '';
+  return String(em);
+};
+
 const getInstInfo = (teacher, institution = {}) => {
   const campus = teacher?.campus_id || {};
   const school = teacher?.school_id || {};
@@ -28,10 +34,12 @@ const getInstInfo = (teacher, institution = {}) => {
   } catch (e) {}
 
   const name = (institution.institutionName || school?.name || userSchool?.school_name || campus?.name || 'ELITE EDUCATIONAL SYSTEM').toUpperCase();
-  const slogan = (institution.urduMotto || school?.slogan || userSchool?.school_slogan || campus?.motto || 'Strive for Excellence').toUpperCase();
+  const slogan = (institution.slogan || institution.urduMotto || school?.slogan || userSchool?.school_slogan || campus?.motto || 'Strive for Excellence').toUpperCase();
   const area = institution.areaName || campus?.address || '';
+  const campusName = institution.campusName || campus?.name || '';
   const semis = institution.semisCode || teacher?.semis_code || campus?.semis_code || '';
-  return { name, slogan, area, semis };
+  const phone = institution.phone || campus?.phone || school?.phone || '';
+  return { name, slogan, area, campusName, semis, phone };
 };
 
 const drawBarcode = (page, x, y, width, height, barColor) => {
@@ -213,7 +221,9 @@ const drawVerticalCard = (page, coords, teacher, fonts, opts) => {
     color: headerTextCol,
   });
 
-  const subLine = (inst.area ? `${inst.area} ` : '') + (inst.semis ? `| SEMIS: ${inst.semis}` : inst.slogan.slice(0, 24));
+  const subLine = inst.campusName
+    ? `${inst.campusName}${inst.semis ? ` | SEMIS: ${inst.semis}` : ''}`
+    : (inst.area ? `${inst.area} ` : '') + (inst.semis ? `| SEMIS: ${inst.semis}` : inst.slogan.slice(0, 24));
   page.drawText(subLine.slice(0, 34), {
     x: x + 10,
     y: y + height - 26,
@@ -307,26 +317,34 @@ const drawVerticalCard = (page, coords, teacher, fonts, opts) => {
   });
 
   const rowStartY = nameY - 14;
+  const isFrontOnly = opts?.sideMode === 'front';
+  const emergencyStr = resolveEmergency(teacher?.emergency_contact);
   const rows = [
     { label: 'ID', val: teacher?.employee_code || teacher?.personal_id || '—' },
     { label: 'Role', val: (teacher?.designation || 'Staff').slice(0, 20) },
     { label: 'DOJ', val: fmtDate(teacher?.date_of_joining || teacher?.appointment_date) },
     { label: 'CNIC', val: teacher?.cnic || '—' },
+    ...(isFrontOnly ? [
+      { label: 'Blood', val: teacher?.blood_group || '—' },
+      { label: 'Phone', val: teacher?.phone || teacher?.mobile || '—' },
+      { label: 'Emg', val: emergencyStr || '—' },
+    ] : []),
   ];
 
+  const rowStep = isFrontOnly ? 9.2 : 13;
   rows.forEach((r, idx) => {
-    const ry = rowStartY - idx * 13;
+    const ry = rowStartY - idx * rowStep;
     page.drawText(r.label, {
       x: x + 12,
       y: ry,
-      size: 5.5,
+      size: isFrontOnly ? 5 : 5.5,
       font: fonts.bold,
       color: rgb(0.45, 0.5, 0.55),
     });
-    page.drawText(String(r.val), {
+    page.drawText(String(r.val).slice(0, 24), {
       x: x + 44,
       y: ry,
-      size: 5.5,
+      size: isFrontOnly ? 5 : 5.5,
       font: fonts.regular,
       color: rgb(0.15, 0.2, 0.25),
     });
@@ -338,7 +356,7 @@ const drawVerticalCard = (page, coords, teacher, fonts, opts) => {
     });
   });
 
-  const barcodeY = rowStartY - 56;
+  const barcodeY = isFrontOnly ? (rowStartY - rows.length * rowStep - 3) : (rowStartY - 56);
   drawBarcode(page, x + 16, barcodeY, width - 32, 14, accent);
   const codeVal = teacher?.employee_code || teacher?.personal_id || teacher?.cnic || '12345678';
   page.drawText(String(codeVal).slice(0, 20), {
@@ -461,13 +479,24 @@ const drawHorizontalCard = (page, coords, teacher, fonts, opts) => {
     });
   }
 
-  page.drawText(inst.name.slice(0, 32), {
+  const topText = inst.campusName || inst.slogan;
+  page.drawText(inst.name.slice(0, 30), {
     x: rightX,
-    y: y + height - 14,
-    size: 7,
+    y: y + height - 12,
+    size: 6.8,
     font: fonts.bold,
     color: isGoldTemplate ? rgb(1, 1, 1) : accent,
   });
+
+  if (topText) {
+    page.drawText(topText.slice(0, 38), {
+      x: rightX,
+      y: y + height - 19,
+      size: 4.8,
+      font: fonts.regular,
+      color: isGoldTemplate ? rgb(0.9, 0.9, 0.9) : rgb(0.4, 0.45, 0.5),
+    });
+  }
 
   const nameY = y + height - topBarH - 16;
   const teacherName = (teacher?.name || 'FACULTY MEMBER').toUpperCase().slice(0, 26);
@@ -479,31 +508,84 @@ const drawHorizontalCard = (page, coords, teacher, fonts, opts) => {
     color: accent,
   });
 
-  const rowStartY = nameY - 14;
-  const rows = [
-    { label: 'ID', val: teacher?.employee_code || teacher?.personal_id || '—' },
-    { label: 'Role', val: (teacher?.designation || 'Staff').slice(0, 24) },
-    { label: 'DOJ', val: fmtDate(teacher?.date_of_joining || teacher?.appointment_date) },
-    { label: 'CNIC', val: teacher?.cnic || '—' },
-  ];
+  const rowStartY = nameY - 13;
+  const isFrontOnly = opts?.sideMode === 'front';
+  const emergencyStr = resolveEmergency(teacher?.emergency_contact);
 
-  rows.forEach((r, idx) => {
-    const ry = rowStartY - idx * 11;
-    page.drawText(r.label, {
-      x: rightX,
-      y: ry,
-      size: 5.5,
-      font: fonts.bold,
-      color: rgb(0.45, 0.5, 0.55),
+  if (isFrontOnly) {
+    const col1 = [
+      { label: 'ID', val: teacher?.employee_code || teacher?.personal_id || '—' },
+      { label: 'Role', val: (teacher?.designation || 'Staff').slice(0, 16) },
+      { label: 'CNIC', val: (teacher?.cnic || '—').slice(0, 16) },
+      { label: 'Phone', val: (teacher?.phone || teacher?.mobile || '—').slice(0, 16) },
+    ];
+    const col2 = [
+      { label: 'DOJ', val: fmtDate(teacher?.date_of_joining || teacher?.appointment_date) },
+      { label: 'Blood', val: teacher?.blood_group || '—' },
+      { label: 'Emg', val: emergencyStr.slice(0, 15) || '—' },
+    ];
+
+    col1.forEach((r, idx) => {
+      const ry = rowStartY - idx * 10;
+      page.drawText(r.label, {
+        x: rightX,
+        y: ry,
+        size: 5,
+        font: fonts.bold,
+        color: rgb(0.45, 0.5, 0.55),
+      });
+      page.drawText(String(r.val), {
+        x: rightX + 26,
+        y: ry,
+        size: 5,
+        font: fonts.regular,
+        color: rgb(0.15, 0.2, 0.25),
+      });
     });
-    page.drawText(String(r.val), {
-      x: rightX + 34,
-      y: ry,
-      size: 5.5,
-      font: fonts.regular,
-      color: rgb(0.15, 0.2, 0.25),
+
+    col2.forEach((r, idx) => {
+      const ry = rowStartY - idx * 10;
+      page.drawText(r.label, {
+        x: rightX + 78,
+        y: ry,
+        size: 5,
+        font: fonts.bold,
+        color: rgb(0.45, 0.5, 0.55),
+      });
+      page.drawText(String(r.val), {
+        x: rightX + 102,
+        y: ry,
+        size: 5,
+        font: fonts.regular,
+        color: rgb(0.15, 0.2, 0.25),
+      });
     });
-  });
+  } else {
+    const rows = [
+      { label: 'ID', val: teacher?.employee_code || teacher?.personal_id || '—' },
+      { label: 'Role', val: (teacher?.designation || 'Staff').slice(0, 24) },
+      { label: 'DOJ', val: fmtDate(teacher?.date_of_joining || teacher?.appointment_date) },
+      { label: 'CNIC', val: teacher?.cnic || '—' },
+    ];
+
+    rows.forEach((r, idx) => {
+      const ry = rowStartY - idx * 11;
+      page.drawText(r.label, {
+        x: rightX,
+        y: ry,
+        size: 5.5,
+        font: fonts.bold,
+        color: rgb(0.45, 0.5, 0.55),
+      });
+      page.drawText(String(r.val), {
+        x: rightX + 34,
+        y: ry,
+        size: 5.5,
+        font: fonts.regular,
+        color: rgb(0.15, 0.2, 0.25),
+      });
+    });
+  }
 
   drawBarcode(page, rightX, y + 16, 75, 12, accent);
 

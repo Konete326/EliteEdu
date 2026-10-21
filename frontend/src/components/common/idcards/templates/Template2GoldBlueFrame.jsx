@@ -13,6 +13,12 @@ const fmtDate = (d) => {
   return isNaN(dt) ? d : `${String(dt.getMonth() + 1).padStart(2, '0')}/${dt.getFullYear()}`;
 };
 
+const resolveEmergency = (em) => {
+  if (!em) return '';
+  if (typeof em === 'object') return em.phone || em.name || '';
+  return String(em);
+};
+
 const Template2GoldBlueFrame = ({
   holder = {},
   holderType = 'teacher',
@@ -34,7 +40,7 @@ const Template2GoldBlueFrame = ({
         { label: 'CLASS', value: holder.current_grade?.name },
         { label: 'DOA', value: fmtDate(holder.date_of_admission) },
         { label: 'PHONE', value: holder.parent_phone },
-        ...(isFrontOnly ? [{ label: 'BLOOD', value: holder.blood_group }, { label: 'EMERGENCY', value: holder.emergency_contact }] : [])
+        ...(isFrontOnly ? [{ label: 'BLOOD', value: holder.blood_group }, { label: 'EMERGENCY', value: resolveEmergency(holder.emergency_contact) }] : [])
       ]
     : [
         { label: 'STAFF ID', value: holder.employee_code || holder.personal_id },

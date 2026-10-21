@@ -30,8 +30,13 @@ const UniversalIdCardBack = ({
   const verifyUrl = isStudent ? generateStudentVerifyUrl(holder) : generateStaffVerifyUrl(holder);
   const isHoriz = orientation === 'horizontal';
 
+  const resolveEmergency = (em) => {
+    if (!em) return '';
+    if (typeof em === 'object') return em.phone || em.name || '';
+    return String(em);
+  };
   const phone = holder.contact_number || holder.phone || holder.parent_phone || '';
-  const emergency = holder.emergency_contact?.phone || holder.emergency_contact || '';
+  const emergency = resolveEmergency(holder.emergency_contact);
   const blood = holder.blood_group || '';
   const campus = institution.campusName || holder.campus_id?.name || 'Main Campus';
   const schoolPhone = institution.schoolPhone || institution.phone || '';

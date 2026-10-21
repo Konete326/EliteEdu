@@ -26,6 +26,12 @@ const addYears = (d, y) => {
   return fmtDate(dt);
 };
 
+const resolveEmergency = (em) => {
+  if (!em) return '';
+  if (typeof em === 'object') return em.phone || em.name || '';
+  return String(em);
+};
+
 const getInstInfo = (teacher, institution = {}) => {
   const campus = teacher?.campus_id || {};
   const school = teacher?.school_id || {};
@@ -36,8 +42,10 @@ const getInstInfo = (teacher, institution = {}) => {
   } catch (e) {}
 
   const name = (institution.institutionName || school?.name || userSchool?.school_name || campus?.name || 'THE INSTITUTION').toUpperCase();
-  const area = institution.areaName || campus?.address || '';
-  return { name, area };
+  const campusName = institution.campusName || campus?.name || 'Main Campus';
+  const area = institution.areaName || campus?.address || campus?.area || '';
+  const phone = institution.schoolPhone || campus?.contact_number || school?.contact_number || '';
+  return { name, campusName, area, phone };
 };
 
 const drawVerticalBack = (page, coords, teacher, fonts, qrImage, opts) => {
@@ -77,11 +85,13 @@ const drawVerticalBack = (page, coords, teacher, fonts, qrImage, opts) => {
   });
 
   const joinDate = teacher?.date_of_joining || teacher?.appointment_date;
+  const emergencyPhone = resolveEmergency(teacher?.emergency_contact);
   const rows = [
     { label: 'ISSUED:', val: fmtDate(joinDate) },
     { label: 'EXPIRES:', val: addYears(joinDate, 3) },
     { label: 'CNIC:', val: teacher?.cnic || '—' },
     { label: 'BLOOD:', val: teacher?.blood_group || '—' },
+    ...(emergencyPhone ? [{ label: 'EMERGENCY:', val: emergencyPhone.slice(0, 16) }] : [])
   ];
 
   rows.forEach((r, idx) => {
@@ -218,10 +228,13 @@ const drawHorizontalBack = (page, coords, teacher, fonts, qrImage, opts) => {
   });
 
   const joinDate = teacher?.date_of_joining || teacher?.appointment_date;
+  const emergencyPhone = resolveEmergency(teacher?.emergency_contact);
   const rows = [
     { label: 'ISSUED:', val: fmtDate(joinDate) },
     { label: 'EXPIRES:', val: addYears(joinDate, 3) },
     { label: 'CNIC:', val: teacher?.cnic || '—' },
+    { label: 'BLOOD:', val: teacher?.blood_group || '—' },
+    ...(emergencyPhone ? [{ label: 'EMERGENCY:', val: emergencyPhone.slice(0, 16) }] : [])
   ];
 
   rows.forEach((r, idx) => {
