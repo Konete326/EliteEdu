@@ -13,6 +13,7 @@ const {
   changeTeacherPassword
 } = require('../controllers/teacherActionController');
 const { exportTeacherCardsPdfHandler } = require('../controllers/teacherPdfController');
+const { uploadTeacherDocument, deleteTeacherDocument } = require('../controllers/teacherDocumentController');
 
 const router = express.Router();
 
@@ -27,5 +28,7 @@ router.put('/:id', updateTeacher);
 router.patch('/:id/status', toggleTeacherStatus);
 router.patch('/:id/password', changeTeacherPassword);
 router.delete('/:id', deleteTeacher);
+router.post('/:id/documents', uploadTeacherDocument);
+router.delete('/:id/documents/:docId', deleteTeacherDocument);
 
 module.exports = router;

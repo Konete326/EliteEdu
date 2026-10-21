@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const { enrichTeachersWithRosterAndAttendance } = require('../utils/teacherRosterHelper');
 
 const getTeachers = async (req, res) => {
   try {
@@ -38,8 +39,9 @@ const getTeachers = async (req, res) => {
     }
 
     const teachers = await query.select('-password').sort({ createdAt: -1 }).lean();
+    const enriched = await enrichTeachersWithRosterAndAttendance(schoolId, teachers);
 
-    res.status(200).json({ success: true, teachers });
+    res.status(200).json({ success: true, teachers: enriched });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch teachers', error: error.message });
   }

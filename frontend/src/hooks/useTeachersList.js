@@ -105,6 +105,7 @@ export const useTeachersList = () => {
     searchQuery, setSearchQuery,
     viewTeacher, setViewTeacher,
     teacherToDelete, setTeacherToDelete,
-    deleteLoading, handleToggleStatus, handleDeleteConfirm
+    deleteLoading, handleToggleStatus, handleDeleteConfirm,
+    fetchTeachers
   };
 };
