@@ -14,7 +14,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
-  ChevronsRight
+  ChevronsRight,
+  Archive
 } from 'lucide-react';
 
 const StudentIdCardsPage = () => {
@@ -54,6 +55,7 @@ const StudentIdCardsPage = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [isExportingSheet, setIsExportingSheet] = useState(false);
   const [isExportingZip, setIsExportingZip] = useState(false);
+  const [zipProgress, setZipProgress] = useState(null);
   const [exportNotice, setExportNotice] = useState('');
   const [activeSheetIndex, setActiveSheetIndex] = useState(0);
   const [viewMode, setViewMode] = useState('sheet');
@@ -124,12 +126,14 @@ const StudentIdCardsPage = () => {
   const handleExportZip = async () => {
     try {
       setIsExportingZip(true);
+      setZipProgress({ current: 0, total: selectedStudents.length, percent: 1, stage: 'init' });
       await exportStudentCardsZip(selectedStudents, {
         sideMode,
         style: template,
         orientation,
         accentColor,
-        institution
+        institution,
+        onProgress: (p) => setZipProgress(p)
       });
       setExportNotice(`Vendor package exported! ${selectedStudents.length} card(s) saved in ZIP archive.`);
       setTimeout(() => setExportNotice(''), 5000);
@@ -137,6 +141,7 @@ const StudentIdCardsPage = () => {
       console.error(e);
     } finally {
       setIsExportingZip(false);
+      setZipProgress(null);
     }
   };
 
@@ -178,7 +183,30 @@ const StudentIdCardsPage = () => {
         isExporting={isExporting}
         onExportZip={handleExportZip}
         isExportingZip={isExportingZip}
+        zipProgress={zipProgress}
       />
+
+      {isExportingZip && zipProgress && (
+        <div className="p-3.5 rounded-2xl bg-surface dark:bg-[#181818] border border-primary/20 shadow-xs space-y-2">
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <Archive className="w-4 h-4 text-primary animate-pulse" />
+              <span className="font-bold text-ink dark:text-white">
+                Packaging Vendor ZIP Archive ({zipProgress.percent}%)
+              </span>
+            </div>
+            <span className="font-semibold text-ink-muted">
+              {zipProgress.current} / {zipProgress.total} cards processed
+            </span>
+          </div>
+          <div className="w-full h-2 rounded-full bg-line dark:bg-white/10 overflow-hidden">
+            <div
+              className="h-full bg-primary transition-all duration-150 rounded-full"
+              style={{ width: `${zipProgress.percent}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       {exportNotice && (
         <div className="p-3.5 rounded-xl bg-good/10 text-good border border-good/20 text-xs flex items-center justify-between">
