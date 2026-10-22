@@ -32,7 +32,7 @@ const SavedCertificatesTable = ({
   };
 
   return (
-    <div className="bg-surface dark:bg-surface-dark rounded-2xl border border-line dark:border-line-dark shadow-xs p-3 sm:p-3.5 space-y-2 xl:h-[205px] xl:max-h-[210px] flex flex-col justify-between text-xs">
+    <div className="bg-surface dark:bg-surface-dark rounded-2xl border border-line dark:border-line-dark shadow-xs p-2.5 sm:p-3 space-y-1.5 h-[210px] max-h-[220px] xl:h-full xl:max-h-none flex flex-col justify-between text-xs min-h-0">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-1.5 border-b border-line dark:border-line-dark shrink-0">
         <div>
           <h3 className="font-bold text-xs sm:text-sm text-slate-800 dark:text-white flex items-center gap-1.5">
@@ -78,32 +78,32 @@ const SavedCertificatesTable = ({
         </div>
       </div>
 
-      <div className="flex-1 overflow-x-auto overflow-y-auto rounded-xl border border-line dark:border-line-dark relative custom-scrollbar">
+      <div className="flex-1 overflow-x-auto overflow-y-auto rounded-xl border border-line dark:border-line-dark relative custom-scrollbar min-h-0">
         <table className="w-full text-left text-xs border-collapse">
           <thead className="sticky top-0 z-10 bg-surface dark:bg-surface-dark border-b border-line text-[10px] font-bold text-ink-muted uppercase shadow-2xs">
             <tr>
-              <th className="py-1.5 px-3">Serial</th>
-              <th className="py-1.5 px-3">Template</th>
-              <th className="py-1.5 px-3">Type</th>
-              <th className="py-1.5 px-3">Recipient</th>
-              <th className="py-1.5 px-3">Date</th>
-              <th className="py-1.5 px-3 text-right">Actions</th>
+              <th className="py-1 px-3">Serial</th>
+              <th className="py-1 px-3">Template</th>
+              <th className="py-1 px-3">Type</th>
+              <th className="py-1 px-3">Recipient</th>
+              <th className="py-1 px-3">Date</th>
+              <th className="py-1 px-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line dark:divide-line-dark">
             {certificates.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-6 text-center text-xs text-ink-muted">
+                <td colSpan={6} className="py-4 text-center text-xs text-ink-muted">
                   No certificates generated yet.
                 </td>
               </tr>
             ) : (
               certificates.map((c) => (
                 <tr key={c._id} className="hover:bg-surface-secondary/40 transition-colors">
-                  <td className="py-1.5 px-3 font-mono font-bold text-primary">
+                  <td className="py-1 px-3 font-mono font-bold text-primary">
                     {c.certificate_no}
                   </td>
-                  <td className="py-1.5 px-3">
+                  <td className="py-1 px-3">
                     <span className="font-bold text-slate-800 dark:text-white block">
                       {c.template_name}
                     </span>
@@ -111,25 +111,25 @@ const SavedCertificatesTable = ({
                       {c.orientation || 'landscape'} • {c.design_style?.replace(/_/g, ' ')}
                     </span>
                   </td>
-                  <td className="py-1.5 px-3">
+                  <td className="py-1 px-3">
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary">
                       {c.recipient_type}
                     </span>
                   </td>
-                  <td className="py-1.5 px-3">
+                  <td className="py-1 px-3">
                     <span className="font-bold block text-slate-800 dark:text-white">
                       {c.recipient_name}
                     </span>
                     <span className="text-[10px] text-ink-muted">{c.class_or_designation}</span>
                   </td>
-                  <td className="py-1.5 px-3 font-mono text-ink-muted">
+                  <td className="py-1 px-3 font-mono text-ink-muted">
                     {new Date(c.issue_date || c.createdAt).toLocaleDateString('en-GB', {
                       day: '2-digit',
                       month: 'short',
                       year: 'numeric'
                     })}
                   </td>
-                  <td className="py-1.5 px-3 text-right">
+                  <td className="py-1 px-3 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button
                         type="button"
@@ -175,7 +175,7 @@ const SavedCertificatesTable = ({
       </div>
 
       {pages > 1 && (
-        <div className="flex items-center justify-between pt-2 text-xs text-ink-muted">
+        <div className="flex items-center justify-between pt-1 text-[11px] text-ink-muted shrink-0">
           <span>
             Page {page} of {pages} ({total} certificates)
           </span>
@@ -183,14 +183,14 @@ const SavedCertificatesTable = ({
             <button
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
-              className="px-3 py-1 rounded-lg border border-line disabled:opacity-40 cursor-pointer"
+              className="px-2.5 py-0.5 rounded-lg border border-line disabled:opacity-40 cursor-pointer"
             >
               Prev
             </button>
             <button
               disabled={page >= pages}
               onClick={() => onPageChange(page + 1)}
-              className="px-3 py-1 rounded-lg border border-line disabled:opacity-40 cursor-pointer"
+              className="px-2.5 py-0.5 rounded-lg border border-line disabled:opacity-40 cursor-pointer"
             >
               Next
             </button>

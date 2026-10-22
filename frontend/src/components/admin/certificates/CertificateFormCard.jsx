@@ -33,7 +33,7 @@ const CertificateFormCard = ({
   };
 
   return (
-    <div className="bg-surface dark:bg-surface-dark p-3.5 sm:p-4 rounded-2xl border border-line dark:border-line-dark shadow-xs flex flex-col justify-between text-xs xl:h-[490px] xl:max-h-[490px]">
+    <div className="bg-surface dark:bg-surface-dark p-3.5 sm:p-4 rounded-2xl border border-line dark:border-line-dark shadow-xs flex flex-col justify-between text-xs h-full min-h-0">
       <div className="flex items-center justify-between pb-2 border-b border-line dark:border-line-dark shrink-0">
         <h3 className="font-bold text-sm text-slate-800 dark:text-white flex items-center gap-1.5">
           <Award className="w-4 h-4 text-primary" /> Certificate Configuration
@@ -43,7 +43,7 @@ const CertificateFormCard = ({
 
       <PrerequisiteGuardBanner prerequisites={prereqs} onRefresh={onRefreshPrereqs} />
 
-      <div className="flex-1 overflow-y-auto pr-1 space-y-2.5 custom-scrollbar my-1.5">
+      <div className="flex-1 overflow-y-auto pr-1 space-y-2.5 custom-scrollbar my-1.5 min-h-0">
         <div>
           <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1 flex items-center gap-1">
             <FileText size={12} className="text-primary" />
@@ -83,7 +83,7 @@ const CertificateFormCard = ({
           type="button"
           onClick={onGenerate}
           disabled={generating || !form.recipient_id}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold bg-primary text-white hover:bg-primary-hover shadow-xs cursor-pointer disabled:opacity-50 transition-all text-xs"
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-xl font-bold bg-primary text-white hover:bg-primary-hover shadow-xs cursor-pointer disabled:opacity-50 transition-all text-xs"
         >
           <Save size={15} />
           <span>{generating ? 'Issuing & Saving Record...' : 'Generate & Issue Certificate'}</span>
@@ -94,7 +94,7 @@ const CertificateFormCard = ({
             type="button"
             onClick={onDownloadPdf}
             disabled={downloading}
-            className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl font-bold border border-primary/30 bg-primary/5 hover:bg-primary/10 text-primary shadow-2xs cursor-pointer transition-all disabled:opacity-50 text-xs"
+            className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl font-bold border border-primary/30 bg-primary/5 hover:bg-primary/10 text-primary shadow-2xs cursor-pointer transition-all disabled:opacity-50 text-xs"
           >
             <Download size={14} />
             <span>{downloading ? 'Exporting...' : 'Download PDF'}</span>
@@ -103,7 +103,7 @@ const CertificateFormCard = ({
           <button
             type="button"
             onClick={onPrint}
-            className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl font-bold border border-line bg-surface hover:bg-surface-secondary text-ink shadow-2xs cursor-pointer transition-all text-xs"
+            className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl font-bold border border-line bg-surface hover:bg-surface-secondary text-ink shadow-2xs cursor-pointer transition-all text-xs"
           >
             <Printer size={14} />
             <span>Print A4</span>

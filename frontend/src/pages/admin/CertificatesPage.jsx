@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Award, Layers, Sparkles } from 'lucide-react';
+import { Award, Eye, Settings2 } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useCampus } from '../../context/CampusContext';
@@ -18,6 +18,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
   const { user } = useAuth();
   const { activeCampus } = useCampus();
   const [tab, setTab] = useState(searchParams.get('tab') || defaultTab);
+  const [mobileStudioView, setMobileStudioView] = useState('preview');
   const [templates, setTemplates] = useState([]);
   const [students, setStudents] = useState([]);
   const [teachers, setTeachers] = useState([]);
@@ -203,8 +204,8 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
   ];
 
   return (
-    <div className="w-full flex flex-col gap-2.5 xl:h-[calc(100vh-80px)] xl:max-h-[calc(100vh-80px)] xl:overflow-hidden">
-      <div className="px-3.5 py-2 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xs flex items-center justify-between gap-3 shrink-0 print:hidden">
+    <div className="w-full flex flex-col gap-2 xl:h-[calc(100vh-80px)] xl:overflow-hidden">
+      <div className="px-3 py-2 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xs flex flex-wrap items-center justify-between gap-2 shrink-0 print:hidden">
         <div>
           <h1 className="text-base sm:text-lg font-bold text-ink dark:text-ink-dark flex items-center gap-2">
             <Award className="w-5 h-5 text-primary" />
@@ -243,9 +244,40 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
           <CertificateTemplatesManager templates={templates} onRefresh={loadData} />
         </div>
       ) : (
-        <div className="flex-1 flex flex-col gap-2.5 min-h-0">
-          <div className="grid grid-cols-1 xl:grid-cols-12 gap-2.5 items-stretch xl:h-[490px] xl:max-h-[490px] shrink-0">
-            <div className="xl:col-span-5 h-full min-h-0 print:hidden">
+        <div className="flex-1 flex flex-col gap-2 min-h-0">
+          <div className="xl:hidden flex items-center gap-1 p-1 rounded-xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark text-xs font-bold shrink-0">
+            <button
+              type="button"
+              onClick={() => setMobileStudioView('preview')}
+              className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                mobileStudioView === 'preview'
+                  ? 'bg-primary text-white shadow-2xs'
+                  : 'text-ink-muted hover:text-ink'
+              }`}
+            >
+              <Eye size={13} />
+              <span>Live Preview</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileStudioView('form')}
+              className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                mobileStudioView === 'form'
+                  ? 'bg-primary text-white shadow-2xs'
+                  : 'text-ink-muted hover:text-ink'
+              }`}
+            >
+              <Settings2 size={13} />
+              <span>Configuration</span>
+            </button>
+          </div>
+
+          <div className="flex-1 min-h-0 grid grid-cols-1 xl:grid-cols-12 gap-2 items-stretch">
+            <div
+              className={`xl:col-span-5 h-full min-h-0 print:hidden ${
+                mobileStudioView === 'form' ? 'block' : 'hidden xl:block'
+              }`}
+            >
               <CertificateFormCard
                 templates={templates}
                 students={students}
@@ -269,7 +301,11 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
               />
             </div>
 
-            <div className="xl:col-span-7 h-full min-h-0 flex justify-center">
+            <div
+              className={`xl:col-span-7 h-full min-h-0 flex flex-col items-center justify-center ${
+                mobileStudioView === 'preview' ? 'block' : 'hidden xl:block'
+              }`}
+            >
               <CertificatePreviewCanvas
                 certificateNo="CERT-2026-0001"
                 template={activeTemplate}
@@ -303,7 +339,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
             </div>
           </div>
 
-          <div className="xl:h-[205px] xl:max-h-[210px] shrink-0 print:hidden min-h-0">
+          <div className="h-[200px] max-h-[210px] shrink-0 print:hidden min-h-0">
             <SavedCertificatesTable
               certificates={issuedData.certificates}
               total={issuedData.total}
@@ -332,6 +368,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
                   show_stamp: c.show_stamp !== false,
                   show_qr: c.show_qr !== false
                 });
+                setMobileStudioView('preview');
               }}
               onPrintRow={() => window.print()}
               onDownloadRow={handleDownloadRow}
