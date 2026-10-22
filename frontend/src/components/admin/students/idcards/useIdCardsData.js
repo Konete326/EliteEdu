@@ -35,7 +35,7 @@ export const useIdCardsData = (initialStudentId) => {
     }
 
     Promise.all([
-      api.get('/students?cardView=true&limit=200'),
+      api.get('/students?cardView=true&limit=1000'),
       cachedCampuses ? Promise.resolve({ data: { campuses: cachedCampuses } }) : api.get('/campuses'),
       cachedGrades ? Promise.resolve({ data: { grades: cachedGrades } }) : api.get('/grades'),
     ]).then(([sRes, cRes, gRes]) => {

@@ -9,15 +9,18 @@ export const ROW_GAP = 25;
 
 export const VERT_CARD_WIDTH = 172;
 export const VERT_CARD_HEIGHT = 275;
-export const VERT_GAP = 20;
+export const VERT_COL_GAP = 20;
+export const VERT_ROW_GAP = 35;
+export const VERT_TOP_OFFSET = 70;
 
 export const getCardCoordinates = (indexOnPage, orientation = 'horizontal') => {
   if (orientation === 'vertical') {
     const col = indexOnPage % 3;
-    const totalWidth = 3 * VERT_CARD_WIDTH + 2 * VERT_GAP;
+    const row = Math.floor(indexOnPage / 3);
+    const totalWidth = 3 * VERT_CARD_WIDTH + 2 * VERT_COL_GAP;
     const leftMargin = (A4_WIDTH - totalWidth) / 2;
-    const x = leftMargin + col * (VERT_CARD_WIDTH + VERT_GAP);
-    const y = (A4_HEIGHT - VERT_CARD_HEIGHT) / 2;
+    const x = leftMargin + col * (VERT_CARD_WIDTH + VERT_COL_GAP);
+    const y = A4_HEIGHT - VERT_TOP_OFFSET - VERT_CARD_HEIGHT - row * (VERT_CARD_HEIGHT + VERT_ROW_GAP);
     return { x, y, width: VERT_CARD_WIDTH, height: VERT_CARD_HEIGHT };
   }
 
@@ -31,10 +34,11 @@ export const getCardCoordinates = (indexOnPage, orientation = 'horizontal') => {
 export const getMirroredBackCoordinates = (indexOnPage, orientation = 'horizontal') => {
   if (orientation === 'vertical') {
     const col = 2 - (indexOnPage % 3);
-    const totalWidth = 3 * VERT_CARD_WIDTH + 2 * VERT_GAP;
+    const row = Math.floor(indexOnPage / 3);
+    const totalWidth = 3 * VERT_CARD_WIDTH + 2 * VERT_COL_GAP;
     const leftMargin = (A4_WIDTH - totalWidth) / 2;
-    const x = leftMargin + col * (VERT_CARD_WIDTH + VERT_GAP);
-    const y = (A4_HEIGHT - VERT_CARD_HEIGHT) / 2;
+    const x = leftMargin + col * (VERT_CARD_WIDTH + VERT_COL_GAP);
+    const y = A4_HEIGHT - VERT_TOP_OFFSET - VERT_CARD_HEIGHT - row * (VERT_CARD_HEIGHT + VERT_ROW_GAP);
     return { x, y, width: VERT_CARD_WIDTH, height: VERT_CARD_HEIGHT };
   }
 
@@ -45,7 +49,7 @@ export const getMirroredBackCoordinates = (indexOnPage, orientation = 'horizonta
   return { x, y, width: CARD_WIDTH, height: CARD_HEIGHT };
 };
 
-export const chunkArray = (array, chunkSize = 8) => {
+export const chunkArray = (array, chunkSize = 6) => {
   const results = [];
   for (let i = 0; i < array.length; i += chunkSize) {
     results.push(array.slice(i, i + chunkSize));

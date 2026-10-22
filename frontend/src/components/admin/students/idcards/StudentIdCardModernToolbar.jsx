@@ -1,6 +1,7 @@
 import {
   Printer,
   Download,
+  FileText,
   CheckSquare,
   Square,
   Search,
@@ -59,6 +60,10 @@ const StudentIdCardModernToolbar = ({
   selectedCount = 0,
   totalCount = 0,
   onToggleSelectAll,
+  onExportSheetPdf,
+  isExportingSheet = false,
+  activeSheetIndex = 0,
+  activeSheetCount = 0,
   onExportPdf,
   isExporting = false,
   onExportZip,
@@ -121,21 +126,36 @@ const StudentIdCardModernToolbar = ({
           <button
             type="button"
             onClick={() => window.print()}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#181818] hover:bg-surface-secondary text-ink dark:text-white text-xs font-bold transition-all shadow-2xs cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#181818] hover:bg-surface-secondary text-ink dark:text-white text-xs font-bold transition-all shadow-2xs cursor-pointer"
+            title="Print current sheet using browser print dialog"
           >
             <Printer className="w-4 h-4 text-primary" />
             <span>Print Sheet</span>
           </button>
+
+          {onExportSheetPdf && (
+            <button
+              type="button"
+              onClick={onExportSheetPdf}
+              disabled={isExportingSheet || activeSheetCount === 0}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover disabled:opacity-50 text-white text-xs font-bold transition-all shadow-sm shadow-primary/20 cursor-pointer"
+              title={`Download high-resolution PDF of active sheet (${activeSheetCount} cards)`}
+            >
+              <Download className="w-4 h-4" />
+              <span>{isExportingSheet ? 'Generating...' : `Export Sheet ${activeSheetIndex + 1} PDF`}</span>
+            </button>
+          )}
 
           {onExportPdf && (
             <button
               type="button"
               onClick={onExportPdf}
               disabled={isExporting || selectedCount === 0}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-primary hover:bg-primary-hover disabled:opacity-50 text-white text-xs font-bold transition-all shadow-sm shadow-primary/20 cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary dark:text-primary-dark text-xs font-bold transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
+              title={`Download PDF of all ${selectedCount} selected cards across all sheets`}
             >
-              <Download className="w-4 h-4" />
-              <span>{isExporting ? 'Generating PDF...' : 'Export PDF'}</span>
+              <FileText className="w-4 h-4" />
+              <span>{isExporting ? 'Generating All...' : `Export All (${selectedCount})`}</span>
             </button>
           )}
 
@@ -144,7 +164,7 @@ const StudentIdCardModernToolbar = ({
               type="button"
               onClick={onExportZip}
               disabled={isExportingZip || selectedCount === 0}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary dark:text-primary-dark text-xs font-bold transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#181818] hover:bg-surface-secondary text-ink dark:text-white text-xs font-bold transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
               title="Download ZIP package with individual printable cards + manifest for vendor"
             >
               <Archive className="w-4 h-4" />

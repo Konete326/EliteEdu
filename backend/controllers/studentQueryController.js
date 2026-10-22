@@ -36,7 +36,7 @@ const getStudents = async (req, res) => {
         .populate('current_grade', 'name sections')
         .populate('campus_id', 'name');
     } else if (isCard) {
-      query.select('name gr_number father_name current_grade current_section photo_url campus_id date_of_admission admission_date parent_phone contact_number status emergency_contact_no b_form parents_cnic blood_group createdAt')
+      query.select('name gr_number father_name current_grade current_section photo_url campus_id date_of_admission admission_date parent_phone contact_number status emergency_contact_no b_form parents_cnic blood_group dob createdAt')
         .populate('current_grade', 'name')
         .populate('campus_id', 'name');
     } else if (isFull) {
@@ -48,6 +48,22 @@ const getStudents = async (req, res) => {
       query.select('name father_name surname family_number gr_number admission_date current_grade current_section contact_number monthly_fee discount status photo_url campus_id gender dob b_form emergency_contact_no parents_cnic mother_guardian_name address createdAt')
         .populate('campus_id', 'name address contact_number')
         .populate('current_grade', 'name sections');
+    }
+
+    if (isCard || isMinimal) {
+      const [totalCount, students] = await Promise.all([
+        Student.countDocuments(filter),
+        query.lean()
+      ]);
+      const totalPages = Math.ceil(totalCount / limitNum) || 1;
+      return res.status(200).json({
+        success: true,
+        students,
+        totalCount,
+        totalPages,
+        currentPage: pageNum,
+        pagination: { total: totalCount, totalPages, page: pageNum, limit: limitNum }
+      });
     }
 
     const baseScope = { school_id: schoolId };

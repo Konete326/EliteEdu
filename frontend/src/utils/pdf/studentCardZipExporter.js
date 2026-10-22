@@ -6,10 +6,42 @@ import { drawStudentCard } from './studentCardPdfRenderer';
 import { drawStudentCardBack } from './studentCardBackPdf';
 import { generateStudentVerifyUrl } from '../idCardCodeGenerator';
 
+const qrCache = new Map();
+const imageCache = new Map();
+
 const generateQrPng = async (url) => {
+  if (!url) return null;
+  if (qrCache.has(url)) return qrCache.get(url);
   try {
-    return await QRCode.toDataURL(url, { margin: 1, width: 140, errorCorrectionLevel: 'M' });
+    const dataUrl = await QRCode.toDataURL(url, { margin: 1, width: 140, errorCorrectionLevel: 'M' });
+    qrCache.set(url, dataUrl);
+    return dataUrl;
   } catch {
+    return null;
+  }
+};
+
+const fetchImageBytes = async (url) => {
+  if (!url || typeof url !== 'string') return null;
+  const clean = url.trim();
+  if (!clean || clean.startsWith('data:')) return null;
+  if (imageCache.has(clean)) return imageCache.get(clean);
+
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 1800);
+    const res = await fetch(clean, { signal: controller.signal });
+    clearTimeout(timer);
+    if (!res.ok) {
+      imageCache.set(clean, null);
+      return null;
+    }
+    const buf = await res.arrayBuffer();
+    const bytes = new Uint8Array(buf);
+    imageCache.set(clean, bytes);
+    return bytes;
+  } catch {
+    imageCache.set(clean, null);
     return null;
   }
 };
@@ -30,8 +62,15 @@ export const exportStudentCardsZip = async (students, options = {}) => {
   const zip = new JSZip();
   const individualFolder = zip.folder('Individual_Cards_PDF');
 
-  const cardWidth = orientation === 'vertical' ? 153 : 243;
-  const cardHeight = orientation === 'vertical' ? 243 : 153;
+  const cardWidth = orientation === 'vertical' ? 172 : 260;
+  const cardHeight = orientation === 'vertical' ? 275 : 165;
+
+  const photoBuffers = await Promise.all(
+    students.map(async (s) => {
+      if (!s?.photo_url) return null;
+      return await fetchImageBytes(s.photo_url);
+    })
+  );
 
   for (let i = 0; i < students.length; i++) {
     const student = students[i];
@@ -46,19 +85,15 @@ export const exportStudentCardsZip = async (students, options = {}) => {
     const qrImage = qrDataUrl ? await doc.embedPng(qrDataUrl) : null;
 
     let photoImage = null;
-    if (student?.photo_url) {
+    const bytes = photoBuffers[i];
+    if (bytes) {
       try {
-        const res = await fetch(student.photo_url);
-        if (res.ok) {
-          const buf = await res.arrayBuffer();
-          const bytes = new Uint8Array(buf);
-          try {
-            photoImage = await doc.embedJpg(bytes);
-          } catch {
-            photoImage = await doc.embedPng(bytes);
-          }
-        }
-      } catch {}
+        photoImage = await doc.embedJpg(bytes);
+      } catch {
+        try {
+          photoImage = await doc.embedPng(bytes);
+        } catch {}
+      }
     }
 
     if (sideMode === 'both' || sideMode === 'front') {
@@ -98,55 +133,43 @@ export const exportStudentCardsZip = async (students, options = {}) => {
   const dateStr = new Date().toLocaleString();
 
   const manifest = [
-    '====================================================================',
-    ' ELITE EDUCATION SYSTEM — STUDENT ID CARD VENDOR PRINTING MANIFEST',
-    '====================================================================',
-    `Generated At      : ${dateStr}`,
-    `Institution Name  : ${instName}`,
-    `Campus / Branch   : ${campusName}`,
-    `Total Cards       : ${students.length}`,
-    `Card Format       : Standard CR80 PVC (85.60 mm x 53.98 mm)`,
-    `Orientation       : ${orientation.toUpperCase()}`,
-    `Printing Side     : ${sideMode.toUpperCase()}`,
-    `Template Theme    : ${style}`,
-    `Primary Accent Hex: ${accentColor}`,
-    '--------------------------------------------------------------------',
-    'PRINTING SPECIFICATIONS FOR VENDOR / PRESS:',
-    '  - Resolution     : 300 DPI or higher',
-    '  - PVC Thickness  : 30 mil (0.76 mm) Standard',
-    '  - Finish Option  : Gloss Lamination or Matte Satin Overlay',
-    '  - Corner Radius  : 3.18 mm (Standard CR80)',
-    '  - Barcode / QR   : 100% vector scale, high contrast black',
-    '--------------------------------------------------------------------',
-    'STUDENT ROSTER INCLUDED IN THIS ARCHIVE:',
+    '========================================',
+    '       STUDENT ID CARDS PRINT MANIFEST   ',
+    '========================================',
+    `Institution : ${instName}`,
+    `Campus      : ${campusName}`,
+    `Date Export : ${dateStr}`,
+    `Card Format : ${orientation.toUpperCase()}`,
+    `Print Mode  : ${sideMode.toUpperCase()}`,
+    `Total Cards : ${students.length}`,
+    '========================================',
+    '',
+    'CARD ROSTER:',
     ...students.map((s, idx) => {
-      const num = String(idx + 1).padStart(3, ' ');
-      const gr = (s.gr_number || '—').padEnd(12, ' ');
-      const cls = (s.current_grade?.name || 'Class').padEnd(14, ' ');
-      const father = s.father_name ? `(S/O ${s.father_name})` : '';
-      return `[${num}] GR: ${gr} | Class: ${cls} | ${s.name} ${father}`;
+      const roll = s.roll_number || '—';
+      const gr = s.gr_number || '—';
+      const cls = s.current_grade?.name || 'Class';
+      const sec = s.current_section || '—';
+      return `${String(idx + 1).padStart(3, ' ')}. [GR: ${gr.padEnd(8, ' ')}] ${s.name.padEnd(25, ' ')} | ${cls} (${sec}) | Roll: ${roll}`;
     }),
-    '====================================================================',
-    'Package includes:',
-    '  1. /Individual_Cards_PDF/ -> Separate ready-to-print CR80 files',
-    '  2. All_Cards_A4_Batch_Print_Sheet.pdf -> Consolidated A4 sheet',
-    '  3. Printing_Vendor_Manifest.txt -> Job technical specifications',
-    '===================================================================='
-  ].join('\r\n');
+    '',
+    'VENDOR INSTRUCTIONS:',
+    '1. Standard PVC Card Dimensions: 54mm x 85.6mm (CR-80).',
+    '2. Double-sided printing: Back matches front orientation.',
+    '3. Individual PDFs are in the "Individual_Cards_PDF" directory.',
+    '4. "All_Cards_A4_Batch_Print_Sheet.pdf" contains 6 cards per A4 page for batch laminating.',
+    '========================================'
+  ].join('\n');
 
-  zip.file('Printing_Vendor_Manifest.txt', manifest);
+  zip.file('VENDOR_PRINT_MANIFEST.txt', manifest);
 
-  const zipBlob = await zip.generateAsync({
-    type: 'blob',
-    compression: 'DEFLATE',
-    compressionOptions: { level: 6 }
-  });
-
+  const zipBlob = await zip.generateAsync({ type: 'blob' });
+  const customName = options.filename;
+  const filename = customName || `Student_ID_Cards_Vendor_Package_${Date.now()}.zip`;
   const downloadUrl = URL.createObjectURL(zipBlob);
   const a = document.createElement('a');
   a.href = downloadUrl;
-  const stamp = new Date().toISOString().slice(0, 10);
-  a.download = `Student_ID_Cards_Vendor_Package_${sanitize(campusName)}_${stamp}.zip`;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

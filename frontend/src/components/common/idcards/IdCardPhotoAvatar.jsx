@@ -6,7 +6,8 @@ const IdCardPhotoAvatar = ({
   size = 72,
   ringColor = '#1e40af',
   ringWidth = 2,
-  shape = 'rounded'
+  shape = 'rounded',
+  fit = 'contain'
 }) => {
   const [hasError, setHasError] = useState(false);
 
@@ -22,7 +23,7 @@ const IdCardPhotoAvatar = ({
     .join('') || 'ED';
 
   const isSquare = shape === 'rounded';
-  const radius = isSquare ? '14px' : '50%';
+  const radius = isSquare ? '12px' : '50%';
   const showFallback = !photoUrl || hasError;
 
   return (
@@ -38,14 +39,16 @@ const IdCardPhotoAvatar = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: showFallback ? `linear-gradient(135deg, ${ringColor}18 0%, #f1f5f9 100%)` : '#e2e8f0',
+        background: showFallback
+          ? `linear-gradient(135deg, ${ringColor}18 0%, #f1f5f9 100%)`
+          : '#ffffff',
         boxShadow: '0 2px 6px rgba(0,0,0,0.12)'
       }}
     >
       {!showFallback ? (
         <img
           src={photoUrl}
-          className="w-full h-full object-cover"
+          className={`w-full h-full ${fit === 'cover' ? 'object-cover' : 'object-contain'} bg-white`}
           alt={name}
           onError={() => setHasError(true)}
         />

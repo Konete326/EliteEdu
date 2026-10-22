@@ -52,6 +52,7 @@ const StudentIdCardsPage = () => {
   const [selectedStudentId, setSelectedStudentId] = useState(initialStudentId || 'all');
   const [editingStudent, setEditingStudent] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [isExportingSheet, setIsExportingSheet] = useState(false);
   const [isExportingZip, setIsExportingZip] = useState(false);
   const [exportNotice, setExportNotice] = useState('');
   const [activeSheetIndex, setActiveSheetIndex] = useState(0);
@@ -67,7 +68,7 @@ const StudentIdCardsPage = () => {
     }
   };
 
-  const chunkSize = orientation === 'horizontal' ? 6 : 3;
+  const chunkSize = 6;
   const chunks = useMemo(() => {
     const list = [];
     for (let i = 0; i < selectedStudents.length; i += chunkSize) {
@@ -77,6 +78,28 @@ const StudentIdCardsPage = () => {
   }, [selectedStudents, chunkSize]);
 
   const safeSheetIndex = Math.min(activeSheetIndex, Math.max(0, chunks.length - 1));
+  const currentSheetStudents = chunks[safeSheetIndex] || [];
+
+  const handleExportSheetPdf = async () => {
+    if (!currentSheetStudents.length) return;
+    try {
+      setIsExportingSheet(true);
+      await exportStudentCardsPdf(currentSheet, {
+        sideMode,
+        style: template,
+        orientation,
+        accentColor,
+        institution,
+        filename: `Student_ID_Cards_Sheet_${safeSheetIndex + 1}_${orientation}.pdf`
+      });
+      setExportNotice(`Exported Sheet ${safeSheetIndex + 1} (${currentSheet.length} card(s)) successfully!`);
+      setTimeout(() => setExportNotice(''), 4000);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsExportingSheet(false);
+    }
+  };
 
   const handleExportPdf = async () => {
     try {
@@ -86,9 +109,10 @@ const StudentIdCardsPage = () => {
         style: template,
         orientation,
         accentColor,
-        institution
+        institution,
+        filename: `Student_ID_Cards_All_${selectedStudents.length}_Cards_${orientation}.pdf`
       });
-      setExportNotice(`Exported ${selectedStudents.length} card(s) successfully!`);
+      setExportNotice(`Exported all ${selectedStudents.length} card(s) successfully!`);
       setTimeout(() => setExportNotice(''), 4000);
     } catch (e) {
       console.error(e);
@@ -146,6 +170,10 @@ const StudentIdCardsPage = () => {
         selectedCount={selectedStudents.length}
         totalCount={filteredStudents.length}
         onToggleSelectAll={handleToggleSelectAll}
+        onExportSheetPdf={handleExportSheetPdf}
+        isExportingSheet={isExportingSheet}
+        activeSheetIndex={safeSheetIndex}
+        activeSheetCount={currentSheetStudents.length}
         onExportPdf={handleExportPdf}
         isExporting={isExporting}
         onExportZip={handleExportZip}
