@@ -27,13 +27,22 @@ const messengerRoutes = require('./routes/messengerRoutes'); const scannerRoutes
 const admissionLetterTemplateRoutes = require('./routes/admissionLetterTemplateRoutes');
 const auditLogger = require('./middlewares/auditLogger');
 const sanitizePayload = require('./utils/sanitizePayload');
-const seedSuperAdmin = require('./utils/seedSuperAdmin');
+const dbConnect = require('./utils/dbConnect');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/eliteedu';
 
 app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: true }));
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,x-campus-id,x-school-id,x-client-action');
+    return res.sendStatus(204);
+  }
+  next();
+});
 app.use(express.json({ limit: '25mb', verify: (req, res, buf) => { req.rawBody = buf.toString(); } }));
 app.use(express.urlencoded({ limit: '25mb', extended: true }));
 app.use((req, res, next) => {
@@ -43,17 +52,9 @@ app.use((req, res, next) => {
 });
 app.use(auditLogger);
 
-let isDbConnected = false;
-const connectDB = async () => {
-  if (isDbConnected && mongoose.connection.readyState === 1) return;
-  const conn = await mongoose.connect(MONGO_URI);
-  isDbConnected = conn.connections[0].readyState === 1;
-  if (isDbConnected) await seedSuperAdmin();
-};
-
 app.use(async (req, res, next) => {
   try {
-    await connectDB();
+    await dbConnect();
     next();
   } catch (err) {
     next(err);
@@ -96,7 +97,7 @@ app.use((err, req, res, next) => {
 });
 
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-  connectDB().then(() => {
+  dbConnect().then(() => {
     app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
   }).catch((err) => console.error('Database connection failed:', err));
 }

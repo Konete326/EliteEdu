@@ -12,7 +12,6 @@ import {
   Building2,
   Phone,
   MoreVertical,
-  Users,
   GraduationCap
 } from 'lucide-react';
 import usePermissions from '../../../hooks/usePermissions';
@@ -31,6 +30,7 @@ const StudentMobileCard = ({
   const { canDelete } = usePermissions();
   const hasDelete = canDelete('students');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openUpward, setOpenUpward] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -41,11 +41,22 @@ const StudentMobileCard = ({
     };
     if (menuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
     };
   }, [menuOpen]);
+
+  const handleToggleMenu = () => {
+    if (!menuOpen && menuRef.current) {
+      const rect = menuRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      setOpenUpward(spaceBelow < 230);
+    }
+    setMenuOpen(!menuOpen);
+  };
 
   const isActive = student.status === 'Active';
   const initials = student.name
@@ -54,7 +65,11 @@ const StudentMobileCard = ({
   const admissionDateStr = student.admission_date ? new Date(student.admission_date).toLocaleDateString() : '';
 
   return (
-    <div className="p-4 rounded-2xl bg-surface dark:bg-[#111111] border border-line dark:border-white/10 shadow-xs space-y-3.5 transition-all">
+    <div
+      className={`p-4 rounded-2xl bg-surface dark:bg-[#111111] border border-line dark:border-white/10 shadow-xs space-y-3 transition-all relative ${
+        menuOpen ? 'z-30' : 'z-0'
+      }`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary dark:text-primary-dark font-bold text-sm flex items-center justify-center shrink-0 border border-primary/20 overflow-hidden shadow-2xs">
@@ -71,7 +86,7 @@ const StudentMobileCard = ({
               {student.family_number ? ` • Family #${student.family_number}` : ''}
             </p>
             <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-ink-muted dark:text-ink-muted-dark">
-              <Building2 className="w-3 h-3 shrink-0" />
+              <Building2 className="w-3.5 h-3.5 shrink-0" />
               <span className="truncate">{student.campus_id?.name || 'Main School'}</span>
             </div>
           </div>
@@ -104,7 +119,7 @@ const StudentMobileCard = ({
         </div>
 
         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark border border-primary/20 font-semibold text-[11px]">
-          <GraduationCap className="w-3 h-3 shrink-0" />
+          <GraduationCap className="w-3.5 h-3.5 shrink-0" />
           <span>{student.current_grade?.name || 'Unassigned'}</span>
           <span className="px-1.5 py-0.2 rounded-md bg-white/40 dark:bg-black/20 text-[10px] font-bold">
             Sec {student.current_section || 'A'}
@@ -144,66 +159,72 @@ const StudentMobileCard = ({
         )}
       </div>
 
-      <div className="flex items-center justify-between gap-1.5 pt-2 border-t border-line/60 dark:border-white/5">
-        <div className="flex items-center gap-1.5 flex-1 min-w-0">
-          <button
-            type="button"
-            onClick={() => onOpenLedger(student)}
-            className="flex-1 min-h-[38px] inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-line dark:border-white/10 hover:border-primary text-[11px] font-semibold text-ink-sub dark:text-ink-sub-dark hover:text-primary dark:hover:text-primary-dark bg-surface-secondary/50 dark:bg-[#181818] transition-colors"
-          >
-            <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
-            <span>Ledger</span>
-          </button>
+      <div className="grid grid-cols-2 gap-2 pt-2 border-t border-line/60 dark:border-white/5">
+        <button
+          type="button"
+          onClick={() => onOpenLedger(student)}
+          className="h-10 inline-flex items-center justify-center gap-2 px-3 rounded-xl border border-line dark:border-white/10 hover:border-primary text-xs font-semibold text-ink dark:text-white hover:text-primary dark:hover:text-primary-dark bg-surface-secondary/50 dark:bg-[#181818] transition-colors cursor-pointer"
+        >
+          <FileText className="w-4 h-4 text-primary shrink-0" />
+          <span>Fee Ledger</span>
+        </button>
 
-          <button
-            type="button"
-            onClick={() => onOpenAttendance(student)}
-            className="flex-1 min-h-[38px] inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-line dark:border-white/10 hover:border-primary text-[11px] font-semibold text-ink-sub dark:text-ink-sub-dark hover:text-primary dark:hover:text-primary-dark bg-surface-secondary/50 dark:bg-[#181818] transition-colors"
-          >
-            <Calendar className="w-3.5 h-3.5 text-primary shrink-0" />
-            <span>Attendance</span>
-          </button>
+        <button
+          type="button"
+          onClick={() => onOpenAttendance(student)}
+          className="h-10 inline-flex items-center justify-center gap-2 px-3 rounded-xl border border-line dark:border-white/10 hover:border-primary text-xs font-semibold text-ink dark:text-white hover:text-primary dark:hover:text-primary-dark bg-surface-secondary/50 dark:bg-[#181818] transition-colors cursor-pointer"
+        >
+          <Calendar className="w-4 h-4 text-primary shrink-0" />
+          <span>Attendance</span>
+        </button>
+      </div>
 
-          <button
-            type="button"
-            onClick={() => onView(student)}
-            className="min-h-[38px] px-2.5 py-1.5 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary dark:hover:bg-[#1f1f1f] text-ink-muted hover:text-ink dark:hover:text-white transition-colors"
-            title="View Details"
-          >
-            <Eye className="w-4 h-4" />
-          </button>
+      <div className="flex items-center gap-2 pt-0.5">
+        <button
+          type="button"
+          onClick={() => onView(student)}
+          className="flex-1 h-10 inline-flex items-center justify-center gap-2 px-3 rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary dark:hover:bg-[#1a1a1a] text-xs font-semibold text-ink dark:text-white transition-colors cursor-pointer"
+        >
+          <Eye className="w-4 h-4 text-ink-muted dark:text-ink-muted-dark" />
+          <span>View Profile</span>
+        </button>
 
-          <button
-            type="button"
-            onClick={() => onEdit(student)}
-            className="min-h-[38px] px-2.5 py-1.5 rounded-xl border border-line dark:border-white/10 hover:border-primary text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20 transition-colors"
-            title="Edit Student"
-          >
-            <Pencil className="w-4 h-4" />
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => onEdit(student)}
+          className="h-10 px-3.5 inline-flex items-center justify-center gap-1.5 rounded-xl border border-line dark:border-white/10 hover:border-primary text-xs font-semibold text-ink dark:text-white hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20 transition-colors cursor-pointer"
+          title="Edit Student"
+        >
+          <Pencil className="w-4 h-4" />
+          <span>Edit</span>
+        </button>
 
         <div className="relative" ref={menuRef}>
           <button
             type="button"
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="min-h-[38px] w-9 flex items-center justify-center rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary dark:hover:bg-[#1f1f1f] text-ink-muted hover:text-ink dark:hover:text-white transition-colors"
+            onClick={handleToggleMenu}
+            className="h-10 w-10 flex items-center justify-center rounded-xl border border-line dark:border-white/10 hover:bg-surface-secondary dark:hover:bg-[#1a1a1a] text-ink-muted hover:text-ink dark:hover:text-white transition-colors cursor-pointer"
             title="More Options"
+            aria-label="More options"
           >
             <MoreVertical className="w-4 h-4" />
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 bottom-full mb-1 w-48 rounded-xl bg-surface dark:bg-[#161616] border border-line dark:border-white/10 shadow-xl py-1.5 z-30 text-xs">
+            <div
+              className={`absolute right-0 w-52 rounded-2xl bg-surface dark:bg-[#181818] border border-line dark:border-white/15 shadow-2xl py-1.5 z-40 text-xs animate-in fade-in zoom-in-95 ${
+                openUpward ? 'bottom-full mb-2' : 'top-full mt-2'
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => {
                   setMenuOpen(false);
                   onOpenIdCard(student);
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-ink dark:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#202020] text-left"
+                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-ink dark:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#202020] text-left cursor-pointer"
               >
-                <CreditCard className="w-3.5 h-3.5 text-primary shrink-0" />
+                <CreditCard className="w-4 h-4 text-primary shrink-0" />
                 <span>Print ID Card</span>
               </button>
 
@@ -213,27 +234,27 @@ const StudentMobileCard = ({
                   setMenuOpen(false);
                   onOpenAdmissionLetter(student);
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-ink dark:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#202020] text-left"
+                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-ink dark:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#202020] text-left cursor-pointer"
               >
-                <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
+                <FileText className="w-4 h-4 text-primary shrink-0" />
                 <span>Admission Letter</span>
               </button>
 
               <Link
                 to={`/admin/reports/report-cards?studentId=${student._id}`}
                 onClick={() => setMenuOpen(false)}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-ink dark:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#202020] text-left"
+                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-ink dark:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#202020] text-left cursor-pointer"
               >
-                <Award className="w-3.5 h-3.5 text-primary shrink-0" />
+                <Award className="w-4 h-4 text-primary shrink-0" />
                 <span>Report Card</span>
               </Link>
 
               <Link
                 to={`/admin/certificates?studentId=${student._id}`}
                 onClick={() => setMenuOpen(false)}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-ink dark:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#202020] text-left"
+                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-ink dark:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#202020] text-left cursor-pointer"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>Certificate</span>
               </Link>
 
@@ -246,9 +267,9 @@ const StudentMobileCard = ({
                       setMenuOpen(false);
                       onDelete(student);
                     }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-bad hover:bg-bad-soft dark:hover:bg-bad/20 text-left font-semibold"
+                    className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-bad hover:bg-bad-soft dark:hover:bg-bad/20 text-left font-semibold cursor-pointer"
                   >
-                    <Trash2 className="w-3.5 h-3.5 shrink-0" />
+                    <Trash2 className="w-4 h-4 shrink-0" />
                     <span>Delete Student</span>
                   </button>
                 </>

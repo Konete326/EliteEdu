@@ -12,7 +12,7 @@ const getBaseUrl = () => {
 
 const api = axios.create({
   baseURL: getBaseUrl(),
-  timeout: 15000
+  timeout: 35000
 });
 
 api.interceptors.request.use((config) => {
@@ -41,6 +41,11 @@ api.interceptors.response.use(
       reportNetworkError(error);
     } catch {}
     const method = error.config?.method?.toLowerCase();
+    const isTimeout = error.code === 'ECONNABORTED' || (error.message && error.message.toLowerCase().includes('timeout'));
+    if (isTimeout && method === 'get' && error.config && !error.config._retryCount) {
+      error.config._retryCount = 1;
+      return new Promise((resolve) => setTimeout(resolve, 600)).then(() => api(error.config));
+    }
     if (['post', 'put', 'patch', 'delete'].includes(method)) {
       const msg = error.response?.data?.message || error.message || 'Operation failed';
       emitToastError(msg, 'Request Failed');
