@@ -7,7 +7,15 @@ import StudentCardEditModal from '../../components/admin/students/idcards/Studen
 import { useIdCardsData } from '../../components/admin/students/idcards/useIdCardsData';
 import { exportStudentCardsPdf } from '../../utils/pdf/studentCardPdfExporter';
 import { exportStudentCardsZip } from '../../utils/pdf/studentCardZipExporter';
-import { GraduationCap, Sparkles, CheckCircle2 } from 'lucide-react';
+import {
+  GraduationCap,
+  Sparkles,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight
+} from 'lucide-react';
 
 const StudentIdCardsPage = () => {
   const [searchParams] = useSearchParams();
@@ -46,9 +54,12 @@ const StudentIdCardsPage = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [isExportingZip, setIsExportingZip] = useState(false);
   const [exportNotice, setExportNotice] = useState('');
+  const [activeSheetIndex, setActiveSheetIndex] = useState(0);
+  const [viewMode, setViewMode] = useState('sheet');
 
   const handleSelectSpecificStudent = (sId) => {
     setSelectedStudentId(sId);
+    setActiveSheetIndex(0);
     if (sId === 'all') {
       setSelectedIds(filteredStudents.map((s) => s._id));
     } else {
@@ -64,6 +75,8 @@ const StudentIdCardsPage = () => {
     }
     return list;
   }, [selectedStudents, chunkSize]);
+
+  const safeSheetIndex = Math.min(activeSheetIndex, Math.max(0, chunks.length - 1));
 
   const handleExportPdf = async () => {
     try {
@@ -106,7 +119,7 @@ const StudentIdCardsPage = () => {
   const singleSelectedStudent = selectedStudents.length === 1 ? selectedStudents[0] : null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <StudentIdCardModernToolbar
         template={template}
         onTemplateChange={setTemplate}
@@ -197,6 +210,106 @@ const StudentIdCardsPage = () => {
         </div>
       )}
 
+      {chunks.length > 1 && (
+        <div className="print:hidden flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-surface dark:bg-[#111114] border border-line dark:border-white/10 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <span className="w-7 h-7 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-black text-xs border border-primary/20">
+              {safeSheetIndex + 1}
+            </span>
+            <div>
+              <p className="text-xs font-bold text-ink dark:text-white">
+                Sheet {safeSheetIndex + 1} of {chunks.length}
+              </p>
+              <p className="text-[11px] text-ink-muted">
+                {chunks[safeSheetIndex]?.length || 0} cards on this sheet • {selectedStudents.length} total selected
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center flex-wrap gap-2">
+            <div className="flex items-center bg-surface-secondary dark:bg-[#181818] p-1 rounded-xl border border-line dark:border-white/10 text-xs">
+              <button
+                type="button"
+                onClick={() => setViewMode('sheet')}
+                className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                  viewMode === 'sheet'
+                    ? 'bg-surface dark:bg-[#222222] text-primary dark:text-white shadow-2xs'
+                    : 'text-ink-muted hover:text-ink'
+                }`}
+              >
+                Fast Sheet View
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('all')}
+                className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                  viewMode === 'all'
+                    ? 'bg-surface dark:bg-[#222222] text-primary dark:text-white shadow-2xs'
+                    : 'text-ink-muted hover:text-ink'
+                }`}
+                title="Render all sheets simultaneously"
+              >
+                View All ({chunks.length})
+              </button>
+            </div>
+
+            {viewMode === 'sheet' && (
+              <div className="flex items-center gap-1 bg-surface-secondary dark:bg-[#181818] p-1 rounded-xl border border-line dark:border-white/10">
+                <button
+                  type="button"
+                  disabled={safeSheetIndex === 0}
+                  onClick={() => setActiveSheetIndex(0)}
+                  title="First Sheet"
+                  className="p-1 rounded-lg text-ink-muted hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  <ChevronsLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  disabled={safeSheetIndex === 0}
+                  onClick={() => setActiveSheetIndex((prev) => Math.max(0, prev - 1))}
+                  title="Previous Sheet"
+                  className="p-1 rounded-lg text-ink-muted hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+
+                <select
+                  value={safeSheetIndex}
+                  onChange={(e) => setActiveSheetIndex(Number(e.target.value))}
+                  className="px-2 py-0.5 text-xs font-bold bg-surface dark:bg-[#222222] text-ink dark:text-white rounded-lg border border-line dark:border-white/10 outline-none cursor-pointer"
+                >
+                  {chunks.map((_, i) => (
+                    <option key={i} value={i}>
+                      Sheet {i + 1} of {chunks.length}
+                    </option>
+                  ))}
+                </select>
+
+                <button
+                  type="button"
+                  disabled={safeSheetIndex >= chunks.length - 1}
+                  onClick={() => setActiveSheetIndex((prev) => Math.min(chunks.length - 1, prev + 1))}
+                  title="Next Sheet"
+                  className="p-1 rounded-lg text-ink-muted hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  disabled={safeSheetIndex >= chunks.length - 1}
+                  onClick={() => setActiveSheetIndex(chunks.length - 1)}
+                  title="Last Sheet"
+                  className="p-1 rounded-lg text-ink-muted hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  <ChevronsRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <StudentCardEditModal
         isOpen={Boolean(editingStudent)}
         student={editingStudent}
@@ -219,24 +332,64 @@ const StudentIdCardsPage = () => {
           </p>
         </div>
       ) : (
-        <div className="space-y-8">
-          {chunks.map((chunk, idx) => (
-            <UniversalIdCardSheet
-              key={idx}
-              holders={chunk}
-              holderType="student"
-              template={template}
-              orientation={orientation}
-              accentColor={accentColor}
-              sideMode={sideMode}
-              selectedIds={selectedIds}
-              onToggleSelect={handleToggleSelect}
-              institution={institution}
-              pageIndex={idx}
-              totalSheets={chunks.length}
-            />
-          ))}
-        </div>
+        <>
+          <div className="space-y-8 print:hidden">
+            {viewMode === 'sheet' ? (
+              chunks[safeSheetIndex] && (
+                <UniversalIdCardSheet
+                  key={safeSheetIndex}
+                  holders={chunks[safeSheetIndex]}
+                  holderType="student"
+                  template={template}
+                  orientation={orientation}
+                  accentColor={accentColor}
+                  sideMode={sideMode}
+                  selectedIds={selectedIds}
+                  onToggleSelect={handleToggleSelect}
+                  institution={institution}
+                  pageIndex={safeSheetIndex}
+                  totalSheets={chunks.length}
+                />
+              )
+            ) : (
+              chunks.map((chunk, idx) => (
+                <UniversalIdCardSheet
+                  key={idx}
+                  holders={chunk}
+                  holderType="student"
+                  template={template}
+                  orientation={orientation}
+                  accentColor={accentColor}
+                  sideMode={sideMode}
+                  selectedIds={selectedIds}
+                  onToggleSelect={handleToggleSelect}
+                  institution={institution}
+                  pageIndex={idx}
+                  totalSheets={chunks.length}
+                />
+              ))
+            )}
+          </div>
+
+          <div className="hidden print:block space-y-8">
+            {chunks.map((chunk, idx) => (
+              <UniversalIdCardSheet
+                key={`print-${idx}`}
+                holders={chunk}
+                holderType="student"
+                template={template}
+                orientation={orientation}
+                accentColor={accentColor}
+                sideMode={sideMode}
+                selectedIds={selectedIds}
+                onToggleSelect={handleToggleSelect}
+                institution={institution}
+                pageIndex={idx}
+                totalSheets={chunks.length}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
