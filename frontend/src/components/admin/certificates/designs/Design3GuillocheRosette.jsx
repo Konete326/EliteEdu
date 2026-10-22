@@ -43,7 +43,7 @@ const Design3GuillocheRosette = ({
             <img
               src={logo}
               alt="School Logo"
-              className="w-11 h-11 object-contain rounded-full border-2 border-[#8c3b32]/40 p-0.5 bg-white shadow-2xs shrink-0"
+              className="w-12 h-12 object-contain shrink-0"
             />
             <div className="text-left">
               <h2 className="text-sm font-black tracking-wider uppercase text-slate-900 leading-tight">

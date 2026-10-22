@@ -52,7 +52,7 @@ const Design4NavyRibbonHalftone = ({
             <img
               src={logo}
               alt="School Logo"
-              className="w-10 h-10 object-contain rounded-full border-2 border-[#051937] p-0.5 bg-white shadow-2xs shrink-0"
+              className="w-11 h-11 object-contain shrink-0"
             />
             <div className="text-left">
               <h2 className="text-sm font-black tracking-wider uppercase text-[#051937] leading-tight">

@@ -42,8 +42,8 @@ const Design1AcademicGoldHatch = ({
           <div className="flex items-center justify-center gap-2.5 mb-0.5">
             <img
               src={logo}
-              alt="Logo"
-              className="w-11 h-11 object-contain rounded-full border-2 border-[#b59449]/40 p-0.5 bg-white shadow-2xs shrink-0"
+              alt="School Logo"
+              className="w-12 h-12 object-contain shrink-0"
             />
             <div className="text-left">
               <h2 className="text-sm font-black tracking-wider uppercase text-slate-900 leading-tight">

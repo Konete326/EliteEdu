@@ -52,8 +52,8 @@ const Design5SlateMultiBorder = ({
           <div className="flex items-center justify-center gap-2.5 pb-0.5">
             <img
               src={logo}
-              alt="Logo"
-              className="w-10 h-10 object-contain rounded-full border border-slate-300 p-0.5 bg-white shadow-2xs shrink-0"
+              alt="School Logo"
+              className="w-11 h-11 object-contain shrink-0"
             />
             <div className="text-left">
               <h2 className="text-xs font-bold tracking-wider uppercase text-slate-900 font-sans leading-tight">

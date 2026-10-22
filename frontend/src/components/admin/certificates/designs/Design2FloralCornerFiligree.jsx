@@ -37,13 +37,13 @@ const Design2FloralCornerFiligree = ({
       <div className="absolute inset-1.5 border border-[#1e293b]/20 pointer-events-none" />
       <CornerFiligrees size={isPortrait ? 76 : 84} />
 
-      <div className="relative z-10 w-full h-full flex flex-col justify-between text-center px-8 py-1 box-border overflow-hidden">
+      <div className="relative z-10 w-full h-full flex flex-col justify-between text-center px-12 py-1 box-border overflow-hidden">
         <div className="space-y-0.5 pt-0.5">
           <div className="flex items-center justify-center gap-2.5 border-b border-[#f59e0b]/30 pb-1">
             <img
               src={logo}
               alt="School Logo"
-              className="w-11 h-11 object-contain rounded-full border-2 border-[#f59e0b]/40 p-0.5 bg-white shadow-2xs shrink-0"
+              className="w-12 h-12 object-contain shrink-0"
             />
             <div className="text-left">
               <h2 className="text-sm font-black tracking-wider uppercase text-slate-950 font-sans leading-tight">
