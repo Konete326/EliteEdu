@@ -52,6 +52,12 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
+const roleMiddleware = require('./roleMiddleware');
+
 authMiddleware.protect = authMiddleware;
+authMiddleware.authMiddleware = authMiddleware;
+authMiddleware.roleMiddleware = roleMiddleware;
 module.exports = authMiddleware;
 module.exports.protect = authMiddleware;
+module.exports.authMiddleware = authMiddleware;
+module.exports.roleMiddleware = roleMiddleware;
