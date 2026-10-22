@@ -2,11 +2,22 @@ import { Link } from 'react-router-dom';
 import { FileText, Calendar, Pencil, Trash2, Eye, CreditCard, Award, ShieldCheck } from 'lucide-react';
 import usePermissions from '../../../hooks/usePermissions';
 
-const StudentTableRow = ({ student, onEdit, onDelete, onView, onOpenLedger, onOpenAttendance, onOpenAdmissionLetter, onOpenIdCard }) => {
+const StudentTableRow = ({
+  student,
+  onToggleStatus,
+  onEdit,
+  onDelete,
+  onView,
+  onOpenLedger,
+  onOpenAttendance,
+  onOpenAdmissionLetter,
+  onOpenIdCard
+}) => {
   const { canDelete } = usePermissions();
   const hasDelete = canDelete('students');
   const initials = student.name ? student.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) : 'ST';
   const admissionDateStr = student.admission_date ? new Date(student.admission_date).toLocaleDateString() : '—';
+  const isActive = student.status === 'Active';
 
   return (
     <tr className="hover:bg-surface-secondary/40 dark:hover:bg-[#141414] transition-colors">
@@ -54,9 +65,27 @@ const StudentTableRow = ({ student, onEdit, onDelete, onView, onOpenLedger, onOp
         Rs. {(student.monthly_fee || 0).toLocaleString()}
       </td>
       <td className="px-5 py-3.5">
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${student.status === 'Active' ? 'bg-good-soft dark:bg-good/20 text-good dark:text-good-dark border border-good/30' : 'bg-bad-soft dark:bg-bad/20 text-bad dark:text-bad-dark border border-bad/30'}`}>
-          {student.status || 'Active'}
-        </span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            role="switch"
+            aria-checked={isActive}
+            onClick={() => onToggleStatus && onToggleStatus(student._id, student.status)}
+            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
+              isActive ? 'bg-primary dark:bg-primary-dark' : 'bg-bad/70'
+            }`}
+            title={`Status: ${student.status || 'Active'}. Click to toggle.`}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition ${
+                isActive ? 'translate-x-4' : 'translate-x-0'
+              }`}
+            />
+          </button>
+          <span className={`text-[11px] font-semibold ${isActive ? 'text-good dark:text-good-dark' : 'text-bad dark:text-bad-dark'}`}>
+            {student.status || 'Active'}
+          </span>
+        </div>
       </td>
       <td className="px-5 py-3.5">
         <button

@@ -50,8 +50,15 @@ const getStudents = async (req, res) => {
         .populate('current_grade', 'name sections');
     }
 
-    const [totalCount, students] = await Promise.all([
+    const baseScope = { school_id: schoolId };
+    if (campus_id && campus_id !== 'all' && mongoose.Types.ObjectId.isValid(campus_id)) baseScope.campus_id = campus_id;
+    if (grade_id && grade_id !== 'all' && mongoose.Types.ObjectId.isValid(grade_id)) baseScope.current_grade = grade_id;
+
+    const [totalCount, activeCount, leftCount, discountCount, students] = await Promise.all([
       Student.countDocuments(filter),
+      Student.countDocuments({ ...baseScope, status: { $regex: '^active$', $options: 'i' } }),
+      Student.countDocuments({ ...baseScope, status: { $in: [/^inactive$/i, /^suspended$/i, /^left$/i, 'Inactive', 'Suspended', 'Left'] } }),
+      Student.countDocuments({ ...baseScope, discount: { $gt: 0 } }),
       query.lean()
     ]);
 
@@ -62,6 +69,12 @@ const getStudents = async (req, res) => {
       totalCount,
       totalPages,
       currentPage: pageNum,
+      kpis: {
+        total: totalCount,
+        active: activeCount,
+        left: leftCount,
+        withDiscount: discountCount
+      },
       pagination: { total: totalCount, totalPages, page: pageNum, limit: limitNum }
     });
   } catch (error) {

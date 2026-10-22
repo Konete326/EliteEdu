@@ -11,6 +11,8 @@ export const useStudentsList = () => {
   const [grades, setGrades] = useState(cachedGrades || []);
   const [selectedCampus, setSelectedCampus] = useState('all');
   const [selectedGrade, setSelectedGrade] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [kpis, setKpis] = useState({ total: 0, active: 0, left: 0, withDiscount: 0 });
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(!studentCache.size);
   const [error, setError] = useState('');
@@ -39,13 +41,14 @@ export const useStudentsList = () => {
   };
 
   const fetchStudents = useCallback(async () => {
-    const cacheKey = `${selectedCampus}_${selectedGrade}_${searchQuery}_${page}_${limit}`;
+    const cacheKey = `${selectedCampus}_${selectedGrade}_${selectedStatus}_${searchQuery}_${page}_${limit}`;
     const cached = studentCache.get(cacheKey);
 
     if (cached) {
       setStudents(cached.students);
       setTotalPages(cached.totalPages);
       setTotalStudents(cached.totalStudents);
+      if (cached.kpis) setKpis(cached.kpis);
       setLoading(false);
     } else {
       setLoading(true);
@@ -56,15 +59,18 @@ export const useStudentsList = () => {
       const params = { page, limit, search: searchQuery };
       if (selectedCampus !== 'all') params.campus_id = selectedCampus;
       if (selectedGrade !== 'all') params.grade_id = selectedGrade;
+      if (selectedStatus !== 'all') params.status = selectedStatus;
       const res = await api.get('/students', { params });
       const nextStudents = res.data.students || [];
       const total = res.data.totalCount ?? res.data.pagination?.total ?? res.data.total ?? 0;
       const pages = res.data.totalPages ?? res.data.pagination?.totalPages ?? 1;
+      const nextKpis = res.data.kpis || { total, active: 0, left: 0, withDiscount: 0 };
 
-      studentCache.set(cacheKey, { students: nextStudents, totalPages: pages, totalStudents: total });
+      studentCache.set(cacheKey, { students: nextStudents, totalPages: pages, totalStudents: total, kpis: nextKpis });
       setStudents(nextStudents);
       setTotalPages(pages);
       setTotalStudents(total);
+      if (res.data.kpis) setKpis(res.data.kpis);
     } catch (err) {
       if (!cached) {
         setError(err.response?.data?.message || 'Failed to load students');
@@ -72,7 +78,7 @@ export const useStudentsList = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, limit, selectedCampus, selectedGrade, searchQuery]);
+  }, [page, limit, selectedCampus, selectedGrade, selectedStatus, searchQuery]);
 
   useEffect(() => {
     fetchFilters();
@@ -131,6 +137,12 @@ export const useStudentsList = () => {
       setSelectedGrade(g);
       setPage(1);
     },
+    selectedStatus,
+    setSelectedStatus: (s) => {
+      setSelectedStatus(s);
+      setPage(1);
+    },
+    kpis,
     searchQuery,
     setSearchQuery: (q) => {
       setSearchQuery(q);
