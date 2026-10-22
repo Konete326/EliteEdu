@@ -2,7 +2,7 @@ import { PDFDocument, StandardFonts } from 'pdf-lib';
 import QRCode from 'qrcode';
 import { A4_WIDTH, A4_HEIGHT, getCardCoordinates, getMirroredBackCoordinates, chunkArray } from './teacherCardPdfLayout';
 import { drawStudentCard } from './studentCardPdfRenderer';
-import { drawTeacherCardBack } from './teacherCardBackPdf';
+import { drawStudentCardBack } from './studentCardBackPdf';
 import { generateStudentVerifyUrl } from '../idCardCodeGenerator';
 
 const generateQrPng = async (url) => {
@@ -82,7 +82,7 @@ export const generateStudentCardsPdfBytes = async (students, options = {}) => {
         const coords = sideMode === 'both'
           ? getMirroredBackCoordinates(idx, orientation)
           : getCardCoordinates(idx, orientation);
-        drawTeacherCardBack(backPage, coords, student, fonts, qrImages[idx], {
+        drawStudentCardBack(backPage, coords, student, fonts, qrImages[idx], {
           style,
           orientation,
           accentColor,

@@ -3,7 +3,7 @@ import { PDFDocument, StandardFonts } from 'pdf-lib';
 import QRCode from 'qrcode';
 import { generateStudentCardsPdfBytes } from './studentCardPdfExporter';
 import { drawStudentCard } from './studentCardPdfRenderer';
-import { drawTeacherCardBack } from './teacherCardBackPdf';
+import { drawStudentCardBack } from './studentCardBackPdf';
 import { generateStudentVerifyUrl } from '../idCardCodeGenerator';
 
 const generateQrPng = async (url) => {
@@ -74,7 +74,7 @@ export const exportStudentCardsZip = async (students, options = {}) => {
 
     if (sideMode === 'both' || sideMode === 'back') {
       const backPage = doc.addPage([cardWidth, cardHeight]);
-      drawTeacherCardBack(backPage, { x: 0, y: 0, width: cardWidth, height: cardHeight }, student, fonts, qrImage, {
+      drawStudentCardBack(backPage, { x: 0, y: 0, width: cardWidth, height: cardHeight }, student, fonts, qrImage, {
         style,
         orientation,
         accentColor,

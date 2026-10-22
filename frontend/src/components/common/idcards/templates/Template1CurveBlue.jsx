@@ -5,20 +5,22 @@ import IdCardDataRows from '../IdCardDataRows.jsx';
 import IdCardInstHeader from '../IdCardInstHeader.jsx';
 
 const fmtDate = (d) => {
-  if (!d) return '';
+  if (!d) return '—';
   const dt = new Date(d);
-  return isNaN(dt) ? d : `${String(dt.getMonth() + 1).padStart(2, '0')}/${dt.getFullYear()}`;
+  return isNaN(dt) ? String(d) : `${String(dt.getMonth() + 1).padStart(2, '0')}/${dt.getFullYear()}`;
 };
 
-const resolveEmergency = (em) => {
-  if (!em) return '';
-  if (typeof em === 'object') return em.phone || em.name || '';
-  return String(em);
+const resolveEmergency = (holder) => {
+  if (holder.emergency_contact_no) return String(holder.emergency_contact_no);
+  if (typeof holder.emergency_contact === 'object') {
+    return holder.emergency_contact?.phone || holder.emergency_contact?.name || '';
+  }
+  return holder.emergency_contact || holder.parent_phone || holder.contact_number || '—';
 };
 
 const Template1CurveBlue = ({
   holder = {},
-  holderType = 'teacher',
+  holderType = 'student',
   orientation = 'vertical',
   accentColor = '#003B73',
   institution = {},
@@ -27,33 +29,55 @@ const Template1CurveBlue = ({
   sideMode = 'front'
 }) => {
   const isStudent = holderType === 'student';
-  const codeVal = isStudent ? holder.gr_number : (holder.employee_code || holder.personal_id || 'EMP-001');
+  const codeVal = isStudent ? (holder.gr_number || 'STU-001') : (holder.employee_code || holder.personal_id || 'EMP-001');
   const verifyUrl = isStudent ? generateStudentVerifyUrl(holder) : generateStaffVerifyUrl(holder);
   const isFrontOnly = sideMode === 'front';
 
+  const fatherName = holder.father_name || '';
+  const gradeName = holder.current_grade?.name || holder.grade_name || 'Class N/A';
+  const secName = holder.current_section || holder.section || '';
+  const classWithSec = secName ? `${gradeName} (${secName})` : gradeName;
+  const rollNo = holder.roll_number || holder.roll_no || '';
+  const bform = holder.b_form || holder.cnic || '';
+  const blood = holder.blood_group || '';
+  const emergencyPhone = resolveEmergency(holder);
+  const transport = holder.transport_route || '';
+
   const rows = isStudent
-    ? [
-        { label: 'GR NO', value: holder.gr_number },
-        { label: 'CLASS', value: holder.current_grade?.name },
-        { label: 'ADMISSION', value: fmtDate(holder.date_of_admission) },
-        { label: 'PHONE', value: holder.parent_phone },
-        ...(isFrontOnly ? [{ label: 'BLOOD', value: holder.blood_group }, { label: 'EMERGENCY', value: resolveEmergency(holder.emergency_contact) }] : [])
-      ]
+    ? (isFrontOnly
+        ? [
+            { label: 'GR NO', value: holder.gr_number || '—' },
+            { label: 'CLASS', value: classWithSec },
+            { label: 'FATHER', value: fatherName ? `S/O ${fatherName}` : '—' },
+            { label: 'ROLL NO', value: rollNo || '—' },
+            { label: 'DOB', value: fmtDate(holder.dob) },
+            { label: 'BLOOD', value: blood || '—' },
+            { label: 'B-FORM', value: bform || '—' },
+            { label: 'EMERGENCY', value: emergencyPhone },
+            ...(transport ? [{ label: 'ROUTE', value: transport }] : [])
+          ]
+        : [
+            { label: 'GR NO', value: holder.gr_number || '—' },
+            { label: 'CLASS', value: classWithSec },
+            { label: 'FATHER', value: fatherName ? `S/O ${fatherName}` : '—' },
+            { label: 'ROLL NO', value: rollNo || '—' },
+            { label: 'SESSION', value: fmtDate(holder.date_of_admission || holder.admission_date) }
+          ])
     : [
-        { label: 'STAFF ID', value: holder.employee_code || holder.personal_id },
+        { label: 'STAFF ID', value: holder.employee_code || holder.personal_id || '—' },
         { label: 'ROLE', value: `${holder.designation || 'Faculty'}${holder.bps_grade ? ` (BPS-${holder.bps_grade})` : ''}` },
         { label: 'DEPT', value: holder.department || 'Academics' },
         { label: 'JOINED', value: fmtDate(holder.date_of_joining || holder.joining_date) },
         ...(isFrontOnly
           ? [
-              { label: 'CNIC', value: holder.cnic },
-              { label: 'BLOOD', value: holder.blood_group },
-              { label: 'PHONE', value: holder.contact_number || holder.whatsapp_number }
+              { label: 'CNIC', value: holder.cnic || '—' },
+              { label: 'BLOOD', value: holder.blood_group || '—' },
+              { label: 'PHONE', value: holder.contact_number || holder.whatsapp_number || '—' }
             ]
           : [])
       ];
 
-  const badge = isStudent ? 'STUDENT' : (holder.designation || 'FACULTY').toUpperCase();
+  const badge = isStudent ? 'STUDENT IDENTITY' : (holder.designation || 'FACULTY MEMBER').toUpperCase();
 
   if (orientation === 'horizontal') {
     return (
@@ -74,18 +98,23 @@ const Template1CurveBlue = ({
           </span>
         </div>
 
-        <div className="flex flex-1 px-3.5 py-1.5 gap-3 items-center">
+        <div className="flex flex-1 px-3 py-1.5 gap-3 items-center">
           <div className="flex flex-col items-center justify-center shrink-0">
             <IdCardPhotoAvatar
               photoUrl={holder.photo_url}
               name={holder.name}
-              size={isFrontOnly ? 72 : 78}
+              size={isFrontOnly ? 68 : 74}
               ringColor={accentColor}
               ringWidth={2.5}
             />
+            {blood && (
+              <span className="mt-1 px-1.5 py-0.2 rounded bg-red-50 text-red-600 border border-red-200 text-[6.5px] font-bold">
+                {blood}
+              </span>
+            )}
           </div>
 
-          <div className="flex flex-col flex-1 min-w-0 gap-1">
+          <div className="flex flex-col flex-1 min-w-0 gap-0.5">
             <div className="border-b border-slate-100 pb-0.5">
               <span
                 className="font-black text-[11px] uppercase tracking-wide truncate block"
@@ -93,30 +122,29 @@ const Template1CurveBlue = ({
               >
                 {holder.name}
               </span>
-              <span className="text-[8px] font-bold text-slate-500 block truncate">
-                {holder.designation || 'Faculty Member'} {holder.bps_grade ? `• BPS-${holder.bps_grade}` : ''}
+              <span className="text-[7.5px] font-bold text-slate-600 block truncate">
+                {isStudent ? `${classWithSec} ${rollNo ? '• Roll: ' + rollNo : ''}` : (holder.designation || 'Staff')}
               </span>
             </div>
 
             <div className="w-full">
-              <IdCardDataRows rows={rows} layout={isFrontOnly ? 'grid' : 'single'} fontSize="text-[7px]" />
+              <IdCardDataRows rows={rows} layout={isFrontOnly ? 'grid' : 'single'} fontSize="text-[6.8px]" />
             </div>
 
             <div className="w-full flex justify-center py-0.5" style={{ color: accentColor }}>
-              {renderSvgBarcode(codeVal, 160, 16)}
+              {renderSvgBarcode(codeVal, 150, 14)}
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-3.5 py-1 border-t border-slate-200 mt-auto bg-slate-50/80">
-          <OfficialSignatureStampBlock compact={true} signatureTitle="Authorized Signatory" />
+        <div className="flex items-center justify-between px-3 py-1 border-t border-slate-200 mt-auto bg-slate-50/80">
+          <OfficialSignatureStampBlock compact={true} signatureTitle={isStudent ? 'Principal Signature' : 'Authorized Signatory'} />
           <div className="shrink-0 flex items-center gap-1.5">
-            {isFrontOnly && (
-              <span className="text-[6px] text-slate-400 font-bold text-right leading-tight">
-                VERIFIED<br />FACULTY
-              </span>
-            )}
-            {renderSvgQrCode(verifyUrl, 32)}
+            <div className="text-right">
+              <span className="text-[5.5px] block font-bold text-slate-400">OFFICIAL PVC</span>
+              <span className="text-[6.5px] block font-mono font-bold text-slate-700">{codeVal}</span>
+            </div>
+            {renderSvgQrCode(verifyUrl, 30)}
           </div>
         </div>
       </div>
@@ -131,9 +159,9 @@ const Template1CurveBlue = ({
         isSelected ? 'shadow-xl' : ''
       }`}
     >
-      <div className="relative shrink-0 h-[96px] overflow-hidden">
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 248 96" preserveAspectRatio="none">
-          <path d="M0,0 L248,0 L248,70 Q124,96 0,70 Z" fill={accentColor} />
+      <div className="relative shrink-0 h-[92px] overflow-hidden">
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 248 92" preserveAspectRatio="none">
+          <path d="M0,0 L248,0 L248,68 Q124,94 0,68 Z" fill={accentColor} />
         </svg>
 
         <div className="relative z-10 pt-1">
@@ -144,14 +172,14 @@ const Template1CurveBlue = ({
           <IdCardPhotoAvatar
             photoUrl={holder.photo_url}
             name={holder.name}
-            size={isFrontOnly ? 72 : 78}
+            size={isFrontOnly ? 68 : 74}
             ringColor="#ffffff"
             ringWidth={3}
           />
         </div>
       </div>
 
-      <div className="flex flex-col items-center px-3 pt-9 pb-1.5 gap-1 flex-1 text-center">
+      <div className="flex flex-col items-center px-3 pt-8 pb-1 gap-1 flex-1 text-center">
         <span
           className="font-black text-[11px] uppercase tracking-wide truncate max-w-[220px]"
           style={{ color: accentColor }}
@@ -166,18 +194,18 @@ const Template1CurveBlue = ({
           {badge}
         </span>
 
-        <div className="w-full mt-1.5 text-left">
-          <IdCardDataRows rows={rows} layout={isFrontOnly ? 'grid' : 'single'} fontSize="text-[7.5px]" />
+        <div className="w-full mt-1 text-left">
+          <IdCardDataRows rows={rows} layout={isFrontOnly ? 'grid' : 'single'} fontSize="text-[7.2px]" />
         </div>
 
         <div className="mt-1 w-full flex justify-center" style={{ color: accentColor }}>
-          {renderSvgBarcode(codeVal, 190, 20)}
+          {renderSvgBarcode(codeVal, 180, 18)}
         </div>
       </div>
 
-      <div className="px-3 py-1.5 border-t border-slate-100 bg-slate-50/70 flex items-center justify-between">
-        <OfficialSignatureStampBlock compact={true} signatureTitle="Authorized Signatory" />
-        <div className="shrink-0">{renderSvgQrCode(verifyUrl, 32)}</div>
+      <div className="px-3 py-1 border-t border-slate-100 bg-slate-50/70 flex items-center justify-between">
+        <OfficialSignatureStampBlock compact={true} signatureTitle={isStudent ? 'Principal Signature' : 'Authorized Signatory'} />
+        <div className="shrink-0">{renderSvgQrCode(verifyUrl, 30)}</div>
       </div>
     </div>
   );
