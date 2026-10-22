@@ -93,7 +93,12 @@ export const useIdCardsData = (initialStudentId) => {
     }
   };
 
+  const updateStudentInList = (updatedStudent) => {
+    setStudents((prev) => prev.map((s) => (s._id === updatedStudent._id ? { ...s, ...updatedStudent } : s)));
+  };
+
   return {
+    students,
     campuses,
     grades,
     loading,
@@ -104,9 +109,11 @@ export const useIdCardsData = (initialStudentId) => {
     selectedGrade,
     setSelectedGrade,
     selectedIds,
+    setSelectedIds,
     filteredStudents,
     selectedStudents,
     handleToggleSelect,
     handleToggleSelectAll,
+    updateStudentInList,
   };
 };

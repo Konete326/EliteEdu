@@ -1,10 +1,13 @@
 import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import UniversalIdCardToolbar from '../../components/common/idcards/UniversalIdCardToolbar';
+import StudentIdCardModernToolbar from '../../components/admin/students/idcards/StudentIdCardModernToolbar';
 import UniversalIdCardSheet from '../../components/common/idcards/UniversalIdCardSheet';
 import useIdCardInstitution from '../../components/common/idcards/useIdCardInstitution';
+import StudentCardEditModal from '../../components/admin/students/idcards/StudentCardEditModal';
 import { useIdCardsData } from '../../components/admin/students/idcards/useIdCardsData';
 import { exportStudentCardsPdf } from '../../utils/pdf/studentCardPdfExporter';
+import { exportStudentCardsZip } from '../../utils/pdf/studentCardZipExporter';
+import { GraduationCap, Sparkles, CheckCircle2 } from 'lucide-react';
 
 const StudentIdCardsPage = () => {
   const [searchParams] = useSearchParams();
@@ -21,10 +24,12 @@ const StudentIdCardsPage = () => {
     selectedGrade,
     setSelectedGrade,
     selectedIds,
+    setSelectedIds,
     filteredStudents,
     selectedStudents,
     handleToggleSelect,
-    handleToggleSelectAll
+    handleToggleSelectAll,
+    updateStudentInList
   } = useIdCardsData(initialStudentId);
 
   const institution = useIdCardInstitution(selectedCampus);
@@ -33,7 +38,20 @@ const StudentIdCardsPage = () => {
   const [orientation, setOrientation] = useState('vertical');
   const [accentColor, setAccentColor] = useState('#003B73');
   const [sideMode, setSideMode] = useState('front');
+  const [selectedStudentId, setSelectedStudentId] = useState(initialStudentId || 'all');
+  const [editingStudent, setEditingStudent] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [isExportingZip, setIsExportingZip] = useState(false);
+  const [exportNotice, setExportNotice] = useState('');
+
+  const handleSelectSpecificStudent = (sId) => {
+    setSelectedStudentId(sId);
+    if (sId === 'all') {
+      setSelectedIds(filteredStudents.map((s) => s._id));
+    } else {
+      setSelectedIds([sId]);
+    }
+  };
 
   const chunkSize = orientation === 'horizontal' ? 6 : 3;
   const chunks = useMemo(() => {
@@ -52,8 +70,10 @@ const StudentIdCardsPage = () => {
         style: template,
         orientation,
         accentColor,
-        institution,
+        institution
       });
+      setExportNotice(`Exported ${selectedStudents.length} card(s) successfully!`);
+      setTimeout(() => setExportNotice(''), 4000);
     } catch (e) {
       console.error(e);
     } finally {
@@ -61,9 +81,30 @@ const StudentIdCardsPage = () => {
     }
   };
 
+  const handleExportZip = async () => {
+    try {
+      setIsExportingZip(true);
+      await exportStudentCardsZip(selectedStudents, {
+        sideMode,
+        style: template,
+        orientation,
+        accentColor,
+        institution
+      });
+      setExportNotice(`Vendor package exported! ${selectedStudents.length} card(s) saved in ZIP archive.`);
+      setTimeout(() => setExportNotice(''), 5000);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsExportingZip(false);
+    }
+  };
+
+  const singleSelectedStudent = selectedStudents.length === 1 ? selectedStudents[0] : null;
+
   return (
     <div className="space-y-6">
-      <UniversalIdCardToolbar
+      <StudentIdCardModernToolbar
         template={template}
         onTemplateChange={setTemplate}
         orientation={orientation}
@@ -80,18 +121,89 @@ const StudentIdCardsPage = () => {
         grades={grades}
         selectedGrade={selectedGrade}
         onGradeChange={setSelectedGrade}
+        students={filteredStudents}
+        selectedStudentId={selectedStudentId}
+        onSelectSpecificStudent={handleSelectSpecificStudent}
         selectedCount={selectedStudents.length}
         totalCount={filteredStudents.length}
         onToggleSelectAll={handleToggleSelectAll}
         onExportPdf={handleExportPdf}
         isExporting={isExporting}
+        onExportZip={handleExportZip}
+        isExportingZip={isExportingZip}
+      />
+
+      {exportNotice && (
+        <div className="p-3.5 rounded-xl bg-good/10 text-good border border-good/20 text-xs flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <span>{exportNotice}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setExportNotice('')}
+            className="underline font-bold cursor-pointer"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {singleSelectedStudent && (
+        <div className="print:hidden p-3 rounded-2xl bg-primary/10 border border-primary/20 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-primary text-white flex items-center justify-center font-bold">
+              <GraduationCap className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="font-bold text-ink dark:text-white">
+                Individual Print Mode: <span className="text-primary">{singleSelectedStudent.name}</span>
+              </p>
+              <p className="text-[11px] text-ink-muted">
+                Class: {singleSelectedStudent.current_grade?.name || '—'} • GR: {singleSelectedStudent.gr_number || '—'} • S/D of {singleSelectedStudent.father_name || '—'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => handleSelectSpecificStudent('all')}
+              className="px-3 py-1.5 rounded-xl border border-primary/30 text-primary hover:bg-primary/15 font-bold transition-all cursor-pointer text-xs"
+            >
+              Show All Students ({filteredStudents.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setEditingStudent(singleSelectedStudent)}
+              className="px-3 py-1.5 rounded-xl bg-primary text-white hover:bg-primary-hover font-bold transition-all cursor-pointer text-xs"
+            >
+              Edit Card Data
+            </button>
+          </div>
+        </div>
+      )}
+
+      <StudentCardEditModal
+        isOpen={Boolean(editingStudent)}
+        student={editingStudent}
+        onClose={() => setEditingStudent(null)}
+        onSaveSuccess={(updated) => updateStudentInList(updated)}
       />
 
       {loading ? (
-        <div className="text-center py-16 text-xs text-ink-muted">Loading student directory & generating cards...</div>
+        <div className="text-center py-16 text-xs text-ink-muted">
+          Loading student directory &amp; generating cards...
+        </div>
       ) : chunks.length === 0 ? (
-        <div className="bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark rounded-2xl p-12 text-center text-xs text-ink-muted">
-          No students selected or found matching criteria.
+        <div className="bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark rounded-2xl p-12 text-center text-xs text-ink-muted space-y-2">
+          <Sparkles className="w-8 h-8 text-primary mx-auto opacity-40" />
+          <p className="font-bold text-sm text-ink dark:text-white">No student cards selected</p>
+          <p className="max-w-sm mx-auto text-ink-muted">
+            {searchQuery
+              ? `No student matched "${searchQuery}".`
+              : 'Pick a student from the dropdown or click "Select All" to preview ID cards.'}
+          </p>
         </div>
       ) : (
         <div className="space-y-8">

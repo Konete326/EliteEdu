@@ -13,16 +13,16 @@ const generateQrPng = async (url) => {
   }
 };
 
-export const exportStudentCardsPdf = async (students, options = {}) => {
+export const generateStudentCardsPdfBytes = async (students, options = {}) => {
   const {
     sideMode = 'front',
     style = 'template_1_curve_blue',
     orientation = 'vertical',
     accentColor = '#003B73',
-    institution = {},
+    institution = {}
   } = options;
 
-  if (!students || students.length === 0) return false;
+  if (!students || students.length === 0) return null;
 
   const pdfDoc = await PDFDocument.create();
   const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
@@ -71,7 +71,7 @@ export const exportStudentCardsPdf = async (students, options = {}) => {
           orientation,
           accentColor,
           institution,
-          photoImage: photoImages[idx],
+          photoImage: photoImages[idx]
         });
       });
     }
@@ -86,13 +86,19 @@ export const exportStudentCardsPdf = async (students, options = {}) => {
           style,
           orientation,
           accentColor,
-          institution,
+          institution
         });
       });
     }
   }
 
-  const pdfBytes = await pdfDoc.save();
+  return await pdfDoc.save();
+};
+
+export const exportStudentCardsPdf = async (students, options = {}) => {
+  const pdfBytes = await generateStudentCardsPdfBytes(students, options);
+  if (!pdfBytes) return false;
+  const orientation = options.orientation || 'vertical';
   const blob = new Blob([pdfBytes], { type: 'application/pdf' });
   const downloadUrl = URL.createObjectURL(blob);
   const a = document.createElement('a');
