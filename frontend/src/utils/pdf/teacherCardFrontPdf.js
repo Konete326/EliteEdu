@@ -71,7 +71,7 @@ const drawPhoto = (page, { x, y, width, height, photoImage, name, ringColor, rin
   } else {
     page.drawRectangle({
       x, y, width, height,
-      color: rgb(0.8, 0.84, 0.88),
+      color: rgb(0.94, 0.96, 0.98),
       borderColor: ringColor || rgb(0.6, 0.65, 0.7),
       borderWidth: ringWidth,
     });
@@ -81,12 +81,14 @@ const drawPhoto = (page, { x, y, width, height, photoImage, name, ringColor, rin
       .slice(0, 2)
       .map((w) => w[0]?.toUpperCase() || '')
       .join('') || 'TC';
+    const fontSize = 13;
+    const textWidth = fonts.bold.widthOfTextAtSize(initials, fontSize);
     page.drawText(initials, {
-      x: x + (width / 2) - (initials.length * 4.5),
-      y: y + (height / 2) - 4,
-      size: 11,
+      x: x + (width - textWidth) / 2,
+      y: y + (height / 2) - (fontSize / 3),
+      size: fontSize,
       font: fonts.bold,
-      color: rgb(0.25, 0.3, 0.38),
+      color: ringColor || rgb(0.12, 0.22, 0.42),
     });
   }
 };

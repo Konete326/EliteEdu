@@ -10,7 +10,9 @@ import {
   Palette,
   Archive,
   GraduationCap,
-  BookOpen
+  BookOpen,
+  Camera,
+  UserX
 } from 'lucide-react';
 import SearchableSelect from '../../../common/SearchableSelect';
 
@@ -51,6 +53,9 @@ const StudentIdCardModernToolbar = ({
   students = [],
   selectedStudentId = 'all',
   onSelectSpecificStudent,
+  photoFilter = 'all',
+  onPhotoFilterChange,
+  photoCounts = { withPhoto: 0, withoutPhoto: 0, total: 0 },
   selectedCount = 0,
   totalCount = 0,
   onToggleSelectAll,
@@ -275,6 +280,46 @@ const StudentIdCardModernToolbar = ({
         </div>
 
         <div className="flex items-center flex-wrap gap-2.5">
+          <div className="flex items-center bg-surface-secondary dark:bg-[#181818] p-1 rounded-xl border border-line dark:border-white/10 text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => onPhotoFilterChange('all')}
+              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                photoFilter === 'all'
+                  ? 'bg-surface dark:bg-[#222222] text-ink dark:text-white font-bold shadow-2xs'
+                  : 'text-ink-muted hover:text-ink'
+              }`}
+            >
+              All ({photoCounts.total || 0})
+            </button>
+            <button
+              type="button"
+              onClick={() => onPhotoFilterChange('with_photo')}
+              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                photoFilter === 'with_photo'
+                  ? 'bg-surface dark:bg-[#222222] text-primary dark:text-primary-dark font-bold shadow-2xs'
+                  : 'text-ink-muted hover:text-ink'
+              }`}
+              title="Only show students with photo uploaded"
+            >
+              <Camera className="w-3.5 h-3.5" />
+              <span>With Photo ({photoCounts.withPhoto || 0})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onPhotoFilterChange('without_photo')}
+              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                photoFilter === 'without_photo'
+                  ? 'bg-surface dark:bg-[#222222] text-amber-600 dark:text-amber-400 font-bold shadow-2xs'
+                  : 'text-ink-muted hover:text-ink'
+              }`}
+              title="Show students missing profile photo"
+            >
+              <UserX className="w-3.5 h-3.5" />
+              <span>Missing Photo ({photoCounts.withoutPhoto || 0})</span>
+            </button>
+          </div>
+
           <div className="flex items-center bg-surface-secondary dark:bg-[#181818] p-1 rounded-xl border border-line dark:border-white/10 text-xs font-semibold">
             <button
               type="button"

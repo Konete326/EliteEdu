@@ -23,6 +23,9 @@ const StudentIdCardsPage = () => {
     setSelectedCampus,
     selectedGrade,
     setSelectedGrade,
+    photoFilter,
+    handlePhotoFilterChange,
+    photoCounts,
     selectedIds,
     setSelectedIds,
     filteredStudents,
@@ -124,6 +127,9 @@ const StudentIdCardsPage = () => {
         students={filteredStudents}
         selectedStudentId={selectedStudentId}
         onSelectSpecificStudent={handleSelectSpecificStudent}
+        photoFilter={photoFilter}
+        onPhotoFilterChange={handlePhotoFilterChange}
+        photoCounts={photoCounts}
         selectedCount={selectedStudents.length}
         totalCount={filteredStudents.length}
         onToggleSelectAll={handleToggleSelectAll}
@@ -156,9 +162,16 @@ const StudentIdCardsPage = () => {
               <GraduationCap className="w-4 h-4" />
             </div>
             <div>
-              <p className="font-bold text-ink dark:text-white">
-                Individual Print Mode: <span className="text-primary">{singleSelectedStudent.name}</span>
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="font-bold text-ink dark:text-white">
+                  Individual Print Mode: <span className="text-primary">{singleSelectedStudent.name}</span>
+                </p>
+                {!singleSelectedStudent.photo_url && (
+                  <span className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold text-[10px] border border-amber-500/20">
+                    No Photo (Monogram Avatar)
+                  </span>
+                )}
+              </div>
               <p className="text-[11px] text-ink-muted">
                 Class: {singleSelectedStudent.current_grade?.name || '—'} • GR: {singleSelectedStudent.gr_number || '—'} • S/D of {singleSelectedStudent.father_name || '—'}
               </p>
