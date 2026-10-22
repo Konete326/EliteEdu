@@ -226,12 +226,23 @@ const drawVerticalStudentCard = (page, coords, student, fonts, opts) => {
   const rowStartY = nameY - 14;
   const gradeName = student?.current_grade?.name || student?.grade_name || 'Class N/A';
   const secName = student?.current_section ? ` (${student.current_section})` : '';
-  const rows = [
-    { label: 'GR #', val: student?.gr_number || '—' },
-    { label: 'Class', val: `${gradeName.replace(/^class\s*/i, '')}${secName}`.slice(0, 20) },
-    { label: 'DOA', val: fmtDate(student?.admission_date || student?.date_of_admission) },
-    { label: 'Phone', val: student?.parent_phone || student?.contact_number || '—' },
-  ];
+  const fatherVal = student?.father_name ? `S/O ${student.father_name}` : '—';
+  const bloodVal = student?.blood_group || '—';
+  const rows = (opts.sideMode === 'front')
+    ? [
+        { label: 'GR #', val: student?.gr_number || '—' },
+        { label: 'Class', val: `${gradeName.replace(/^class\s*/i, '')}${secName}`.slice(0, 18) },
+        { label: 'Father', val: fatherVal.slice(0, 18) },
+        { label: 'DOB', val: fmtDate(student?.dob) },
+        { label: 'Blood', val: bloodVal },
+        { label: 'Phone', val: (student?.contact_number || student?.emergency_contact_no || student?.parent_phone || '—').slice(0, 16) },
+      ]
+    : [
+        { label: 'GR #', val: student?.gr_number || '—' },
+        { label: 'Class', val: `${gradeName.replace(/^class\s*/i, '')}${secName}`.slice(0, 18) },
+        { label: 'Father', val: fatherVal.slice(0, 18) },
+        { label: 'Blood', val: bloodVal },
+      ];
 
   rows.forEach((r, idx) => {
     const ry = rowStartY - idx * 13;
@@ -412,12 +423,20 @@ const drawHorizontalStudentCard = (page, coords, student, fonts, opts) => {
   const rowStartY = nameY - 14;
   const gradeName = student?.current_grade?.name || student?.grade_name || 'Class N/A';
   const secName = student?.current_section ? ` (${student.current_section})` : '';
-  const rows = [
-    { label: 'GR #', val: student?.gr_number || '—' },
-    { label: 'Class', val: `${gradeName.replace(/^class\s*/i, '')}${secName}`.slice(0, 24) },
-    { label: 'Father', val: (student?.father_name || '—').slice(0, 24) },
-    { label: 'Phone', val: student?.parent_phone || student?.contact_number || '—' },
-  ];
+  const rows = (opts.sideMode === 'front')
+    ? [
+        { label: 'GR #', val: student?.gr_number || '—' },
+        { label: 'Class', val: `${gradeName.replace(/^class\s*/i, '')}${secName}`.slice(0, 22) },
+        { label: 'Father', val: (student?.father_name || '—').slice(0, 22) },
+        { label: 'DOB / Blood', val: `${fmtDate(student?.dob)} • ${student?.blood_group || '—'}` },
+        { label: 'Emergency', val: (student?.emergency_contact_no || student?.parent_phone || student?.contact_number || '—').slice(0, 18) },
+      ]
+    : [
+        { label: 'GR #', val: student?.gr_number || '—' },
+        { label: 'Class', val: `${gradeName.replace(/^class\s*/i, '')}${secName}`.slice(0, 24) },
+        { label: 'Father', val: (student?.father_name || '—').slice(0, 24) },
+        { label: 'Blood', val: student?.blood_group || '—' },
+      ];
 
   rows.forEach((r, idx) => {
     const ry = rowStartY - idx * 11;

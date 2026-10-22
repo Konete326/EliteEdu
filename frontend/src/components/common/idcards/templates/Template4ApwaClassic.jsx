@@ -3,64 +3,89 @@ import OfficialSignatureStampBlock from '../../OfficialSignatureStampBlock.jsx';
 import IdCardPhotoAvatar from '../IdCardPhotoAvatar.jsx';
 import IdCardDataRows from '../IdCardDataRows.jsx';
 import IdCardInstHeader from '../IdCardInstHeader.jsx';
+import { ShieldCheck } from 'lucide-react';
 
 const fmtDate = (d) => {
-  if (!d) return '';
+  if (!d) return '—';
   const dt = new Date(d);
-  return isNaN(dt) ? d : `${String(dt.getMonth() + 1).padStart(2, '0')}/${dt.getFullYear()}`;
+  return isNaN(dt) ? String(d) : `${String(dt.getMonth() + 1).padStart(2, '0')}/${dt.getFullYear()}`;
 };
 
-const resolveEmergency = (em) => {
-  if (!em) return '';
-  if (typeof em === 'object') return em.phone || em.name || '';
-  return String(em);
+const resolveEmergency = (holder) => {
+  if (holder.emergency_contact_no) return String(holder.emergency_contact_no);
+  if (typeof holder.emergency_contact === 'object') {
+    return holder.emergency_contact?.phone || holder.emergency_contact?.name || '';
+  }
+  return holder.emergency_contact || holder.parent_phone || holder.contact_number || '—';
 };
 
 const Template4ApwaClassic = ({
   holder = {},
-  holderType = 'teacher',
+  holderType = 'student',
   orientation = 'vertical',
-  accentColor = '#003B73',
+  accentColor = '#065F46',
   institution = {},
   isSelected,
   onToggleSelect,
   sideMode = 'front'
 }) => {
   const isStudent = holderType === 'student';
-  const codeVal = isStudent ? holder.gr_number : (holder.employee_code || holder.personal_id || 'EMP-001');
+  const codeVal = isStudent ? (holder.gr_number || 'STU-001') : (holder.employee_code || holder.personal_id || 'EMP-001');
   const verifyUrl = isStudent ? generateStudentVerifyUrl(holder) : generateStaffVerifyUrl(holder);
   const isFrontOnly = sideMode === 'front';
 
+  const fatherName = holder.father_name || '';
+  const gradeName = holder.current_grade?.name || holder.grade_name || 'Class N/A';
+  const secName = holder.current_section || holder.section || '';
+  const classWithSec = secName ? `${gradeName} (${secName})` : gradeName;
+  const rollNo = holder.roll_number || holder.roll_no || '';
+  const bform = holder.b_form || holder.cnic || '';
+  const blood = holder.blood_group || '';
+  const emergencyPhone = resolveEmergency(holder);
+  const transport = holder.transport_route || '';
+
   const rows = isStudent
-    ? [
-        { label: 'GR NO', value: holder.gr_number },
-        { label: 'CLASS', value: holder.current_grade?.name },
-        { label: 'ADMISSION', value: fmtDate(holder.date_of_admission) },
-        { label: 'PHONE', value: holder.parent_phone },
-        ...(isFrontOnly ? [{ label: 'BLOOD', value: holder.blood_group }, { label: 'EMERGENCY', value: resolveEmergency(holder.emergency_contact) }] : [])
-      ]
+    ? (isFrontOnly
+        ? [
+            { label: 'GR NUMBER', value: holder.gr_number || '—' },
+            { label: 'CLASS / SEC', value: classWithSec },
+            { label: 'FATHER NAME', value: fatherName ? `S/O ${fatherName}` : '—' },
+            { label: 'ROLL NUMBER', value: rollNo || '—' },
+            { label: 'DATE OF BIRTH', value: fmtDate(holder.dob) },
+            { label: 'BLOOD GROUP', value: blood || '—' },
+            { label: 'B-FORM / CNIC', value: bform || '—' },
+            { label: 'EMERGENCY PH', value: emergencyPhone },
+            ...(transport ? [{ label: 'TRANSPORT', value: transport }] : [])
+          ]
+        : [
+            { label: 'GR NUMBER', value: holder.gr_number || '—' },
+            { label: 'CLASS / SEC', value: classWithSec },
+            { label: 'FATHER NAME', value: fatherName ? `S/O ${fatherName}` : '—' },
+            { label: 'ROLL NUMBER', value: rollNo || '—' },
+            { label: 'ENROLLMENT', value: fmtDate(holder.date_of_admission || holder.admission_date) }
+          ])
     : [
-        { label: 'STAFF ID', value: holder.employee_code || holder.personal_id },
-        { label: 'ROLE', value: `${holder.designation || 'Faculty'}${holder.bps_grade ? ` (BPS-${holder.bps_grade})` : ''}` },
-        { label: 'DEPT', value: holder.department || 'Academics' },
-        { label: 'JOINED', value: fmtDate(holder.date_of_joining || holder.joining_date) },
+        { label: 'STAFF REG ID', value: holder.employee_code || holder.personal_id || '—' },
+        { label: 'DESIGNATION', value: `${holder.designation || 'Faculty'}${holder.bps_grade ? ` (BPS-${holder.bps_grade})` : ''}` },
+        { label: 'DEPARTMENT', value: holder.department || 'Academics' },
+        { label: 'JOINED DATE', value: fmtDate(holder.date_of_joining || holder.joining_date) },
         ...(isFrontOnly
           ? [
-              { label: 'CNIC', value: holder.cnic },
-              { label: 'BLOOD', value: holder.blood_group },
-              { label: 'PHONE', value: holder.contact_number || holder.whatsapp_number }
+              { label: 'NATIONAL CNIC', value: holder.cnic || '—' },
+              { label: 'BLOOD GROUP', value: holder.blood_group || '—' },
+              { label: 'CONTACT NO', value: holder.contact_number || holder.whatsapp_number || '—' }
             ]
           : [])
       ];
 
-  const badge = isStudent ? 'STUDENT' : (holder.designation || 'FACULTY').toUpperCase();
+  const badge = isStudent ? 'OFFICIAL STUDENT CARD' : (holder.designation || 'STAFF SERVICE CARD').toUpperCase();
 
   if (orientation === 'horizontal') {
     return (
       <div
         onClick={onToggleSelect}
         style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
-        className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[380px] h-[235px] shrink-0 bg-[#F8FAFC] select-none border border-slate-300 ${
+        className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[380px] h-[235px] shrink-0 bg-[#FAFAFA] select-none border-2 border-slate-300 ${
           isSelected ? 'shadow-xl' : ''
         }`}
       >
@@ -69,12 +94,15 @@ const Template4ApwaClassic = ({
           style={{ borderBottomColor: accentColor }}
         >
           <IdCardInstHeader {...institution} textColor="#0f172a" compact={true} bgColor="transparent" />
-          <span
-            className="text-[7.5px] font-black px-2.5 py-0.5 rounded-full text-white uppercase tracking-wider shrink-0"
-            style={{ background: accentColor }}
-          >
-            {badge}
-          </span>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <ShieldCheck className="w-3.5 h-3.5" style={{ color: accentColor }} />
+            <span
+              className="text-[7.5px] font-black px-2.5 py-0.5 rounded-full text-white uppercase tracking-wider"
+              style={{ background: accentColor }}
+            >
+              {badge}
+            </span>
+          </div>
         </div>
 
         <div className="flex flex-1 px-3.5 py-1.5 gap-3 items-center">
@@ -82,40 +110,47 @@ const Template4ApwaClassic = ({
             <IdCardPhotoAvatar
               photoUrl={holder.photo_url}
               name={holder.name}
-              size={isFrontOnly ? 72 : 78}
+              size={isFrontOnly ? 68 : 74}
               ringColor={accentColor}
               ringWidth={2}
-              shape="square"
+              shape="rounded"
             />
+            <span
+              className="mt-1 text-[6.5px] font-black px-2 py-0.2 rounded-sm text-white uppercase tracking-wider"
+              style={{ background: accentColor }}
+            >
+              OFFICIAL
+            </span>
           </div>
 
-          <div className="flex flex-col flex-1 min-w-0 gap-1">
+          <div className="flex flex-col flex-1 min-w-0 gap-0.5">
             <div className="border-b border-slate-200 pb-0.5">
-              <span
-                className="font-black text-[11px] uppercase tracking-wide truncate block"
-                style={{ color: accentColor }}
-              >
+              <span className="font-serif font-black text-[11px] uppercase tracking-wide truncate block text-slate-900">
                 {holder.name}
               </span>
-              <span className="text-[8px] font-bold text-slate-600 block truncate">
-                {holder.designation || 'Faculty Member'} {holder.bps_grade ? `• BPS-${holder.bps_grade}` : ''}
+              <span className="text-[7.5px] font-bold text-slate-600 block truncate">
+                {isStudent ? `${classWithSec} ${rollNo ? '• Roll: ' + rollNo : ''}` : (holder.designation || 'Staff')}
               </span>
             </div>
 
             <div className="w-full">
-              <IdCardDataRows rows={rows} layout={isFrontOnly ? 'grid' : 'single'} fontSize="text-[7px]" />
+              <IdCardDataRows rows={rows} layout={isFrontOnly ? 'grid' : 'single'} fontSize="text-[6.8px]" />
             </div>
 
-            <div className="w-full flex justify-center py-0.5" style={{ color: accentColor }}>
-              {renderSvgBarcode(codeVal, 160, 16)}
+            <div className="w-full flex justify-center py-0.5 text-slate-900">
+              {renderSvgBarcode(codeVal, 150, 14)}
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-3.5 py-1 border-t border-slate-200 mt-auto bg-white">
-          <OfficialSignatureStampBlock compact={true} signatureTitle="Authorized Signatory" />
+        <div className="flex items-center justify-between px-3 py-1 border-t border-slate-300 mt-auto bg-white">
+          <OfficialSignatureStampBlock compact={true} signatureTitle="Head of Institution" />
           <div className="shrink-0 flex items-center gap-1.5">
-            {renderSvgQrCode(verifyUrl, 32)}
+            <div className="text-right">
+              <span className="text-[5.5px] block font-bold text-slate-400">APWA ARCHIVE</span>
+              <span className="text-[6.5px] block font-mono font-bold text-slate-800">{codeVal}</span>
+            </div>
+            {renderSvgQrCode(verifyUrl, 30)}
           </div>
         </div>
       </div>
@@ -126,54 +161,54 @@ const Template4ApwaClassic = ({
     <div
       onClick={onToggleSelect}
       style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
-      className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[248px] min-h-[390px] bg-[#F8FAFC] border border-slate-300 select-none ${
+      className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[248px] min-h-[390px] bg-[#FAFAFA] border-2 border-slate-300 select-none ${
         isSelected ? 'shadow-xl' : ''
       }`}
     >
       <div
-        className="relative shrink-0 pt-2 pb-1 bg-white border-b-2"
+        className="relative px-3 pt-2 pb-2 bg-white border-b-2 text-center"
         style={{ borderBottomColor: accentColor }}
       >
         <IdCardInstHeader {...institution} textColor="#0f172a" compact={true} bgColor="transparent" />
+        <span
+          className="inline-block mt-1 text-[7px] font-black px-2.5 py-0.5 rounded-full text-white uppercase tracking-wider"
+          style={{ background: accentColor }}
+        >
+          {badge}
+        </span>
       </div>
 
-      <div className="flex flex-col items-center px-3 pt-3 pb-1.5 gap-1.5 flex-1 text-center">
+      <div className="relative pt-2 flex justify-center z-10">
         <IdCardPhotoAvatar
           photoUrl={holder.photo_url}
           name={holder.name}
-          size={isFrontOnly ? 72 : 78}
+          size={isFrontOnly ? 68 : 74}
           ringColor={accentColor}
-          ringWidth={2.5}
-          shape="square"
+          ringWidth={2}
+          shape="rounded"
         />
+      </div>
 
-        <div className="border-b border-slate-200/80 pb-1 w-full">
-          <span
-            className="font-black text-[11px] uppercase tracking-wide truncate block max-w-[220px]"
-            style={{ color: accentColor }}
-          >
-            {holder.name}
-          </span>
-          <span
-            className="text-[7.5px] font-black px-2.5 py-0.5 rounded-full text-white tracking-wider inline-block mt-0.5"
-            style={{ background: accentColor }}
-          >
-            {badge}
-          </span>
+      <div className="flex flex-col items-center px-3 pt-1 pb-1 gap-1 flex-1 text-center">
+        <span className="font-serif font-black text-[11px] uppercase tracking-wide truncate max-w-[215px] text-slate-900">
+          {holder.name}
+        </span>
+        <span className="text-[7.5px] font-bold text-slate-600 -mt-0.5">
+          {isStudent ? `${classWithSec} ${rollNo ? '• Roll: ' + rollNo : ''}` : (holder.designation || 'Staff')}
+        </span>
+
+        <div className="w-full mt-1 text-left">
+          <IdCardDataRows rows={rows} layout={isFrontOnly ? 'grid' : 'single'} fontSize="text-[7.2px]" />
         </div>
 
-        <div className="w-full text-left">
-          <IdCardDataRows rows={rows} layout={isFrontOnly ? 'grid' : 'single'} fontSize="text-[7.5px]" />
-        </div>
-
-        <div className="mt-1 w-full flex justify-center" style={{ color: accentColor }}>
-          {renderSvgBarcode(codeVal, 190, 20)}
+        <div className="mt-1 w-full flex justify-center text-slate-900">
+          {renderSvgBarcode(codeVal, 175, 18)}
         </div>
       </div>
 
-      <div className="px-3 py-1.5 border-t border-slate-200 bg-white flex items-center justify-between">
-        <OfficialSignatureStampBlock compact={true} signatureTitle="Authorized Signatory" />
-        <div className="shrink-0">{renderSvgQrCode(verifyUrl, 32)}</div>
+      <div className="px-3 py-1 border-t border-slate-300 bg-white flex items-center justify-between">
+        <OfficialSignatureStampBlock compact={true} signatureTitle="Head of Institution" />
+        <div className="shrink-0">{renderSvgQrCode(verifyUrl, 30)}</div>
       </div>
     </div>
   );
