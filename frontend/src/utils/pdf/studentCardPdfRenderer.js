@@ -100,49 +100,17 @@ const drawPhoto = (page, { x, y, width, height, photoImage, name, ringColor, rin
 
     page.drawCircle({
       x: x + width / 2,
-      y: y + height / 2 + 5,
-      size: Math.min(width, height) * 0.18,
+      y: y + height * 0.58,
+      size: Math.min(width, height) * 0.22,
       color: rgb(0.78, 0.82, 0.88),
     });
 
     page.drawEllipse({
       x: x + width / 2,
-      y: y + 9,
-      xScale: width * 0.34,
-      yScale: height * 0.18,
+      y: y + height * 0.16,
+      xScale: width * 0.38,
+      yScale: height * 0.22,
       color: rgb(0.78, 0.82, 0.88),
-    });
-
-    const initials = (name || 'ST')
-      .split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((w) => w[0]?.toUpperCase() || '')
-      .join('') || 'ST';
-
-    const fontSize = 7;
-    const textWidth = fonts.bold.widthOfTextAtSize(initials, fontSize);
-    const badgeW = Math.min(width - 8, Math.max(22, textWidth + 8));
-    const badgeH = 10;
-    const badgeX = x + (width - badgeW) / 2;
-    const badgeY = y + 4;
-    const isLightRing = !ringColor || (ringColor.red > 0.9 && ringColor.green > 0.9 && ringColor.blue > 0.9);
-    const textCol = isLightRing ? rgb(0.08, 0.18, 0.38) : ringColor;
-
-    page.drawRectangle({
-      x: badgeX,
-      y: badgeY,
-      width: badgeW,
-      height: badgeH,
-      color: textCol,
-    });
-
-    page.drawText(initials, {
-      x: badgeX + (badgeW - textWidth) / 2,
-      y: badgeY + 2.5,
-      size: fontSize,
-      font: fonts.bold,
-      color: rgb(1, 1, 1),
     });
   }
 };
