@@ -110,11 +110,12 @@ const drawVerticalStudentCard = (page, coords, student, fonts, opts) => {
   const { x, y, width, height } = coords;
   const { style, accentColor, institution, qrImage, photoImage } = opts;
   const accent = parseColor(accentColor);
-  const gold = rgb(0.96, 0.65, 0.14);
+  const gold = rgb(0.85, 0.55, 0.05);
   const inst = getInstInfo(student, institution);
   const isGoldTemplate = style === 'template_2_gold_blue';
   const isApwa = style === 'template_4_apwa_classic';
   const isWave = style === 'template_3_wave_ribbon';
+  const isCurve = !isGoldTemplate && !isApwa && !isWave;
 
   page.drawRectangle({
     x,
@@ -126,22 +127,44 @@ const drawVerticalStudentCard = (page, coords, student, fonts, opts) => {
     borderWidth: isGoldTemplate ? 2 : 0.8,
   });
 
-  const headerH = 54;
-  page.drawRectangle({
-    x: x + 1,
-    y: y + height - headerH,
-    width: width - 2,
-    height: headerH - 1,
-    color: isApwa ? rgb(0.12, 0.22, 0.32) : accent,
-  });
-
-  if (isWave) {
+  if (isCurve) {
+    page.drawSvgPath(`M 0 0 L ${width} 0 L ${width} 38 Q ${width / 2} 52 0 38 Z`, {
+      x,
+      y: y + height,
+      color: accent,
+    });
+  } else if (isGoldTemplate) {
     page.drawRectangle({
       x: x + 1,
-      y: y + height - headerH,
+      y: y + height - 50,
       width: width - 2,
-      height: 5,
+      height: 49,
+      color: rgb(0.06, 0.09, 0.16),
+    });
+  } else if (isWave) {
+    page.drawRectangle({
+      x: x + 1,
+      y: y + height - 48,
+      width: width - 2,
+      height: 47,
+      color: rgb(0.06, 0.09, 0.16),
+    });
+    page.drawRectangle({
+      x: x + 1,
+      y: y + height - 48,
+      width: width - 2,
+      height: 4,
       color: rgb(0.3, 0.65, 0.95),
+    });
+  } else if (isApwa) {
+    page.drawRectangle({
+      x: x + 1,
+      y: y + height - 44,
+      width: width - 2,
+      height: 43,
+      color: rgb(0.98, 0.98, 0.98),
+      borderColor: accent,
+      borderWidth: 1,
     });
   }
 
@@ -149,26 +172,26 @@ const drawVerticalStudentCard = (page, coords, student, fonts, opts) => {
   const instNameW = fonts.bold.widthOfTextAtSize(instNameText, 7.5);
   page.drawText(instNameText, {
     x: x + (width - instNameW) / 2,
-    y: y + height - 16,
+    y: y + height - 15,
     size: 7.5,
     font: fonts.bold,
-    color: rgb(1, 1, 1),
+    color: isApwa ? rgb(0.1, 0.15, 0.25) : rgb(1, 1, 1),
   });
 
   const subLine = (inst.area ? `${inst.area} ` : '') + (inst.semis ? `| SEMIS: ${inst.semis}` : inst.slogan.slice(0, 22));
-  const subLineW = fonts.regular.widthOfTextAtSize(subLine.slice(0, 30), 5.2);
+  const subLineW = fonts.regular.widthOfTextAtSize(subLine.slice(0, 30), 5);
   page.drawText(subLine.slice(0, 30), {
     x: x + (width - subLineW) / 2,
-    y: y + height - 26,
-    size: 5.2,
+    y: y + height - 24,
+    size: 5,
     font: fonts.regular,
-    color: rgb(0.9, 0.93, 0.98),
+    color: isApwa ? rgb(0.4, 0.45, 0.55) : rgb(0.9, 0.93, 0.98),
   });
 
-  const photoW = 50;
-  const photoH = 54;
+  const photoW = 46;
+  const photoH = 50;
   const photoX = x + (width - photoW) / 2;
-  const photoY = y + height - headerH - photoH / 2;
+  const photoY = y + height - 28 - photoH;
 
   drawPhoto(page, {
     x: photoX,
@@ -177,7 +200,7 @@ const drawVerticalStudentCard = (page, coords, student, fonts, opts) => {
     height: photoH,
     photoImage,
     name: student?.name,
-    ringColor: isGoldTemplate ? gold : rgb(1, 1, 1),
+    ringColor: isGoldTemplate ? gold : (isApwa ? accent : rgb(1, 1, 1)),
     ringWidth: 2.5,
     fonts,
   });
@@ -187,16 +210,16 @@ const drawVerticalStudentCard = (page, coords, student, fonts, opts) => {
   const nameW = fonts.bold.widthOfTextAtSize(studentName, nameSize);
   page.drawText(studentName, {
     x: x + (width - nameW) / 2,
-    y: photoY - 14,
+    y: photoY - 11,
     size: nameSize,
     font: fonts.bold,
     color: isGoldTemplate ? rgb(0.12, 0.15, 0.2) : accent,
   });
 
-  const badgeW = 54;
-  const badgeH = 10;
+  const badgeW = 62;
+  const badgeH = 8.5;
   const badgeX = x + (width - badgeW) / 2;
-  const badgeY = photoY - 26;
+  const badgeY = photoY - 22;
   page.drawRectangle({
     x: badgeX,
     y: badgeY,
@@ -204,12 +227,12 @@ const drawVerticalStudentCard = (page, coords, student, fonts, opts) => {
     height: badgeH,
     color: isGoldTemplate ? gold : accent,
   });
-  const badgeTxt = 'STUDENT';
-  const badgeTxtW = fonts.bold.widthOfTextAtSize(badgeTxt, 5.5);
+  const badgeTxt = 'STUDENT IDENTITY';
+  const badgeTxtW = fonts.bold.widthOfTextAtSize(badgeTxt, 4.8);
   page.drawText(badgeTxt, {
     x: badgeX + (badgeW - badgeTxtW) / 2,
-    y: badgeY + 2.5,
-    size: 5.5,
+    y: badgeY + 2,
+    size: 4.8,
     font: fonts.bold,
     color: isGoldTemplate ? rgb(0.1, 0.1, 0.1) : rgb(1, 1, 1),
   });
@@ -217,52 +240,60 @@ const drawVerticalStudentCard = (page, coords, student, fonts, opts) => {
   const gradeName = student?.current_grade?.name || student?.grade_name || 'Class';
   const secName = student?.current_section ? ` (${student.current_section})` : '';
   const classText = `${gradeName.replace(/^class\s*/i, '')}${secName}`;
-  const classW = fonts.bold.widthOfTextAtSize(classText, 6.5);
-  page.drawText(classText, {
-    x: x + (width - classW) / 2,
-    y: badgeY - 10,
-    size: 6.5,
-    font: fonts.bold,
-    color: rgb(0.3, 0.35, 0.42),
-  });
-
   const fatherVal = student?.father_name ? `S/O ${student.father_name}` : '—';
   const bloodVal = student?.blood_group || '—';
-  const rows = [
-    { label: 'GR #', val: student?.gr_number || '—' },
-    { label: 'Father', val: fatherVal.slice(0, 18) },
-    { label: 'DOB', val: fmtDate(student?.dob) },
-    { label: 'Blood', val: bloodVal },
-    { label: 'Phone', val: (student?.contact_number || student?.emergency_contact_no || student?.parent_phone || '—').slice(0, 16) },
+  const rollVal = student?.roll_number || '—';
+  const bformVal = student?.b_form || student?.cnic || '—';
+  const phoneVal = student?.contact_number || student?.emergency_contact_no || student?.parent_phone || '—';
+
+  const gridRows = [
+    { c1Label: 'GR NO:', c1Val: String(student?.gr_number || '—'), c2Label: 'CLASS:', c2Val: classText.slice(0, 13) },
+    { c1Label: 'FATHER:', c1Val: fatherVal.slice(0, 13), c2Label: 'ROLL NO:', c2Val: String(rollVal).slice(0, 10) },
+    { c1Label: 'DOB:', c1Val: fmtDate(student?.dob), c2Label: 'BLOOD:', c2Val: String(bloodVal).slice(0, 8) },
+    { c1Label: 'B-FORM:', c1Val: String(bformVal).slice(0, 12), c2Label: 'EMERGENCY:', c2Val: String(phoneVal).slice(0, 11) },
   ];
 
-  const rowStartY = badgeY - 22;
-  rows.forEach((r, idx) => {
-    const ry = rowStartY - idx * 11;
-    page.drawText(r.label, {
-      x: x + 14,
+  const gridStartY = badgeY - 14;
+  gridRows.forEach((row, idx) => {
+    const ry = gridStartY - idx * 11;
+    page.drawText(row.c1Label, {
+      x: x + 8,
       y: ry,
-      size: 5.2,
+      size: 4.6,
       font: fonts.bold,
       color: rgb(0.45, 0.5, 0.55),
     });
-    page.drawText(String(r.val), {
-      x: x + 44,
+    page.drawText(row.c1Val, {
+      x: x + 38,
       y: ry,
-      size: 5.2,
+      size: 4.6,
       font: fonts.regular,
-      color: rgb(0.15, 0.2, 0.25),
+      color: rgb(0.12, 0.16, 0.22),
+    });
+    page.drawText(row.c2Label, {
+      x: x + 88,
+      y: ry,
+      size: 4.6,
+      font: fonts.bold,
+      color: rgb(0.45, 0.5, 0.55),
+    });
+    page.drawText(row.c2Val, {
+      x: x + 128,
+      y: ry,
+      size: 4.6,
+      font: fonts.regular,
+      color: rgb(0.12, 0.16, 0.22),
     });
     page.drawLine({
-      start: { x: x + 14, y: ry - 2 },
-      end: { x: x + width - 14, y: ry - 2 },
-      thickness: 0.3,
-      color: rgb(0.9, 0.92, 0.95),
+      start: { x: x + 8, y: ry - 2 },
+      end: { x: x + width - 8, y: ry - 2 },
+      thickness: 0.25,
+      color: rgb(0.92, 0.94, 0.96),
     });
   });
 
-  const barcodeY = rowStartY - 54;
-  drawBarcode(page, x + 16, barcodeY, width - 32, 11, accent);
+  const barcodeY = gridStartY - 54;
+  drawBarcode(page, x + 18, barcodeY, width - 36, 11, accent);
   const codeVal = student?.gr_number || '123456';
   const codeW = fonts.regular.widthOfTextAtSize(String(codeVal), 4.8);
   page.drawText(String(codeVal), {
@@ -273,27 +304,27 @@ const drawVerticalStudentCard = (page, coords, student, fonts, opts) => {
     color: rgb(0.4, 0.45, 0.5),
   });
 
-  const footerY = y + 8;
+  const footerY = y + 7;
   page.drawLine({
-    start: { x: x + 12, y: footerY + 12 },
-    end: { x: x + 64, y: footerY + 12 },
+    start: { x: x + 10, y: footerY + 13 },
+    end: { x: x + 62, y: footerY + 13 },
     thickness: 0.5,
     color: rgb(0.65, 0.7, 0.75),
   });
-  page.drawText('Principal Sign', {
-    x: x + 14,
-    y: footerY + 4,
-    size: 4.8,
+  page.drawText('Principal Signature', {
+    x: x + 10,
+    y: footerY + 5,
+    size: 4.6,
     font: fonts.bold,
     color: accent,
   });
 
   if (qrImage) {
     page.drawImage(qrImage, {
-      x: x + width - 36,
+      x: x + width - 29,
       y: footerY,
-      width: 24,
-      height: 24,
+      width: 21,
+      height: 21,
     });
   }
 };
@@ -302,7 +333,7 @@ const drawHorizontalStudentCard = (page, coords, student, fonts, opts) => {
   const { x, y, width, height } = coords;
   const { style, accentColor, institution, qrImage, photoImage } = opts;
   const accent = parseColor(accentColor);
-  const gold = rgb(0.96, 0.65, 0.14);
+  const gold = rgb(0.85, 0.55, 0.05);
   const inst = getInstInfo(student, institution);
   const isGoldTemplate = style === 'template_2_gold_blue';
   const isWave = style === 'template_3_wave_ribbon';
@@ -317,13 +348,13 @@ const drawHorizontalStudentCard = (page, coords, student, fonts, opts) => {
     borderWidth: isGoldTemplate ? 2 : 0.8,
   });
 
-  const topH = 34;
+  const topH = 26;
   page.drawRectangle({
     x: x + 1,
     y: y + height - topH,
     width: width - 2,
     height: topH - 1,
-    color: accent,
+    color: isGoldTemplate ? rgb(0.06, 0.09, 0.16) : accent,
   });
 
   if (isWave) {
@@ -331,31 +362,52 @@ const drawHorizontalStudentCard = (page, coords, student, fonts, opts) => {
       x: x + 1,
       y: y + height - topH,
       width: width - 2,
-      height: 4,
+      height: 3.5,
       color: rgb(0.3, 0.65, 0.95),
     });
   }
 
-  page.drawText(inst.name.slice(0, 32), {
-    x: x + 12,
-    y: y + height - 15,
-    size: 8,
+  page.drawText(inst.name.slice(0, 28), {
+    x: x + 10,
+    y: y + height - 12,
+    size: 7.5,
     font: fonts.bold,
     color: rgb(1, 1, 1),
   });
 
-  const subLine = (inst.area ? `${inst.area} ` : '') + (inst.semis ? `| SEMIS: ${inst.semis}` : inst.slogan.slice(0, 28));
-  page.drawText(subLine.slice(0, 38), {
-    x: x + 12,
-    y: y + height - 25,
-    size: 5.5,
+  const subLine = (inst.area ? `${inst.area} ` : '') + (inst.semis ? `| SEMIS: ${inst.semis}` : inst.slogan.slice(0, 24));
+  page.drawText(subLine.slice(0, 32), {
+    x: x + 10,
+    y: y + height - 21,
+    size: 4.8,
     font: fonts.regular,
     color: rgb(0.9, 0.93, 0.98),
   });
 
-  const photoW = 54;
-  const photoH = 60;
-  const photoX = x + 12;
+  const badgeW = 60;
+  const badgeH = 11;
+  const badgeX = x + width - badgeW - 10;
+  const badgeY = y + height - topH + (topH - badgeH) / 2;
+  page.drawRectangle({
+    x: badgeX,
+    y: badgeY,
+    width: badgeW,
+    height: badgeH,
+    color: isGoldTemplate ? gold : rgb(1, 1, 1),
+  });
+  const badgeTxt = 'STUDENT IDENTITY';
+  const badgeTxtW = fonts.bold.widthOfTextAtSize(badgeTxt, 4.6);
+  page.drawText(badgeTxt, {
+    x: badgeX + (badgeW - badgeTxtW) / 2,
+    y: badgeY + 3,
+    size: 4.6,
+    font: fonts.bold,
+    color: isGoldTemplate ? rgb(0.1, 0.1, 0.1) : accent,
+  });
+
+  const photoW = 50;
+  const photoH = 54;
+  const photoX = x + 10;
   const photoY = y + 42;
 
   drawPhoto(page, {
@@ -373,20 +425,20 @@ const drawHorizontalStudentCard = (page, coords, student, fonts, opts) => {
   const bloodVal = student?.blood_group;
   if (bloodVal) {
     const bW = 28;
-    const bH = 9;
+    const bH = 8.5;
     page.drawRectangle({
       x: photoX + (photoW - bW) / 2,
-      y: photoY - 11,
+      y: photoY - 10,
       width: bW,
       height: bH,
-      color: rgb(0.95, 0.9, 0.9),
+      color: rgb(0.98, 0.92, 0.92),
       borderColor: rgb(0.85, 0.3, 0.3),
       borderWidth: 0.5,
     });
     page.drawText(bloodVal, {
       x: photoX + (photoW - bW) / 2 + 5,
-      y: photoY - 9,
-      size: 5.2,
+      y: photoY - 8.5,
+      size: 5,
       font: fonts.bold,
       color: rgb(0.75, 0.15, 0.15),
     });
@@ -396,68 +448,104 @@ const drawHorizontalStudentCard = (page, coords, student, fonts, opts) => {
   const studentName = (student?.name || 'STUDENT NAME').toUpperCase().slice(0, 24);
   page.drawText(studentName, {
     x: contentX,
-    y: y + height - topH - 14,
+    y: y + height - topH - 13,
     size: 9,
     font: fonts.bold,
-    color: accent,
+    color: isGoldTemplate ? rgb(0.12, 0.15, 0.2) : accent,
   });
 
   const gradeName = student?.current_grade?.name || student?.grade_name || 'Class';
   const secName = student?.current_section ? ` (${student.current_section})` : '';
   const roll = student?.roll_number ? ` • Roll: ${student.roll_number}` : '';
-  const classInfo = `${gradeName}${secName}${roll}`.slice(0, 26);
+  const classInfo = `${gradeName}${secName}${roll}`.slice(0, 28);
   page.drawText(classInfo, {
     x: contentX,
-    y: y + height - topH - 24,
-    size: 6,
+    y: y + height - topH - 22,
+    size: 5.8,
     font: fonts.bold,
     color: rgb(0.35, 0.4, 0.46),
   });
 
   const fatherVal = student?.father_name ? `S/O ${student.father_name}` : '—';
-  const rows = [
-    { label: 'GR #', val: student?.gr_number || '—' },
-    { label: 'Father', val: fatherVal.slice(0, 20) },
-    { label: 'DOB', val: fmtDate(student?.dob) },
-    { label: 'Phone', val: (student?.contact_number || student?.emergency_contact_no || student?.parent_phone || '—').slice(0, 16) },
+  const phoneVal = student?.contact_number || student?.emergency_contact_no || student?.parent_phone || '—';
+
+  const gridRows = [
+    { c1Label: 'GR NO:', c1Val: String(student?.gr_number || '—'), c2Label: 'ROLL NO:', c2Val: String(student?.roll_number || '—').slice(0, 8) },
+    { c1Label: 'FATHER:', c1Val: fatherVal.slice(0, 14), c2Label: 'BLOOD:', c2Val: String(bloodVal || '—') },
+    { c1Label: 'DOB:', c1Val: fmtDate(student?.dob), c2Label: 'EMERGENCY:', c2Val: String(phoneVal).slice(0, 12) },
   ];
 
-  const rowY = y + height - topH - 36;
-  rows.forEach((r, idx) => {
-    const ry = rowY - idx * 11;
-    page.drawText(r.label, {
+  const rowStartY = y + height - topH - 34;
+  gridRows.forEach((row, idx) => {
+    const ry = rowStartY - idx * 10.5;
+    page.drawText(row.c1Label, {
       x: contentX,
       y: ry,
-      size: 5.5,
+      size: 5,
       font: fonts.bold,
       color: rgb(0.45, 0.5, 0.55),
     });
-    page.drawText(String(r.val), {
-      x: contentX + 38,
+    page.drawText(row.c1Val, {
+      x: contentX + 34,
       y: ry,
-      size: 5.5,
+      size: 5,
       font: fonts.regular,
-      color: rgb(0.15, 0.2, 0.25),
+      color: rgb(0.12, 0.16, 0.22),
+    });
+    page.drawText(row.c2Label, {
+      x: contentX + 96,
+      y: ry,
+      size: 5,
+      font: fonts.bold,
+      color: rgb(0.45, 0.5, 0.55),
+    });
+    page.drawText(row.c2Val, {
+      x: contentX + 138,
+      y: ry,
+      size: 5,
+      font: fonts.regular,
+      color: rgb(0.12, 0.16, 0.22),
+    });
+    page.drawLine({
+      start: { x: contentX, y: ry - 2 },
+      end: { x: x + width - 10, y: ry - 2 },
+      thickness: 0.25,
+      color: rgb(0.92, 0.94, 0.96),
     });
   });
 
-  const barcodeY = y + 12;
-  drawBarcode(page, contentX, barcodeY + 4, 90, 10, accent);
+  const barcodeY = y + 10;
+  drawBarcode(page, contentX, barcodeY + 4, 100, 10, accent);
   const codeVal = student?.gr_number || '123456';
   page.drawText(String(codeVal), {
-    x: contentX + 30,
-    y: barcodeY - 3,
-    size: 5,
+    x: contentX + 35,
+    y: barcodeY - 4,
+    size: 4.8,
     font: fonts.regular,
     color: rgb(0.4, 0.45, 0.5),
   });
 
+  const footerY = y + 7;
+  page.drawLine({
+    start: { x: x + 10, y: footerY + 13 },
+    end: { x: x + 56, y: footerY + 13 },
+    thickness: 0.5,
+    color: rgb(0.65, 0.7, 0.75),
+  });
+  page.drawText('Principal Signature', {
+    x: x + 10,
+    y: footerY + 5,
+    size: 4.6,
+    font: fonts.bold,
+    color: accent,
+  });
+
   if (qrImage) {
     page.drawImage(qrImage, {
-      x: x + width - 34,
-      y: y + 8,
-      width: 24,
-      height: 24,
+      x: x + width - 30,
+      y: footerY,
+      width: 22,
+      height: 22,
     });
   }
 };

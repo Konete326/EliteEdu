@@ -22,6 +22,12 @@ export const STYLE_OPTIONS = [
     label: '4. Navy Ribbon & Champion',
     description: 'Navy Swallowtail Header, Left Ribbon with Champion 3-Star Badge',
     color: '#051937'
+  },
+  {
+    id: 'classic_slate_multiborder',
+    label: '5. Slate Multi-Border Completion',
+    description: 'Dual Inset White Borders, Slate Blue Backdrop & Classic Underline Signatures',
+    color: '#618597'
   }
 ];
 
@@ -40,6 +46,10 @@ export const normalizeDesignStyle = (style) => {
     case 'navy_ribbon_halftone':
     case 'ribbon_prestigious':
       return 'navy_ribbon_halftone';
+    case 'classic_slate_multiborder':
+    case 'pm_certificate':
+    case 'slate_completion':
+      return 'classic_slate_multiborder';
     default:
       return 'academic_gold_hatch';
   }

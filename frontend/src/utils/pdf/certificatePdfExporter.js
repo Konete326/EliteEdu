@@ -71,56 +71,88 @@ export const generateCertificatePdfBytes = async (data = {}) => {
   const fontTimesBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
   const fontTimesItalic = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
 
-  const themeRgb = parseHexColor(accentColor, { r: 0.71, g: 0.58, b: 0.29 });
+  const isSlateStyle = designStyle === 'classic_slate_multiborder';
+  const themeRgb = isSlateStyle ? rgb(0.38, 0.52, 0.59) : parseHexColor(accentColor, { r: 0.71, g: 0.58, b: 0.29 });
   const darkRgb = rgb(0.1, 0.12, 0.15);
   const mutedRgb = rgb(0.38, 0.42, 0.48);
-  const borderBgRgb = rgb(0.99, 0.99, 0.99);
 
-  page.drawRectangle({
-    x: 0,
-    y: 0,
-    width,
-    height,
-    color: borderBgRgb
-  });
-
-  const m1 = 18;
-  page.drawRectangle({
-    x: m1,
-    y: m1,
-    width: width - m1 * 2,
-    height: height - m1 * 2,
-    borderColor: themeRgb,
-    borderWidth: 4,
-    color: rgb(1, 1, 1)
-  });
-
-  const m2 = 24;
-  page.drawRectangle({
-    x: m2,
-    y: m2,
-    width: width - m2 * 2,
-    height: height - m2 * 2,
-    borderColor: themeRgb,
-    borderWidth: 1
-  });
-
-  const cornerSize = 14;
-  const corners = [
-    { x: m2, y: m2 },
-    { x: width - m2 - cornerSize, y: m2 },
-    { x: m2, y: height - m2 - cornerSize },
-    { x: width - m2 - cornerSize, y: height - m2 - cornerSize }
-  ];
-  corners.forEach((c) => {
+  if (isSlateStyle) {
     page.drawRectangle({
-      x: c.x,
-      y: c.y,
-      width: cornerSize,
-      height: cornerSize,
-      color: themeRgb
+      x: 0,
+      y: 0,
+      width,
+      height,
+      color: rgb(0.38, 0.52, 0.59)
     });
-  });
+    page.drawRectangle({
+      x: 8,
+      y: 8,
+      width: width - 16,
+      height: height - 16,
+      borderColor: rgb(1, 1, 1),
+      borderWidth: 2
+    });
+    page.drawRectangle({
+      x: 16,
+      y: 16,
+      width: width - 32,
+      height: height - 32,
+      borderColor: rgb(1, 1, 1),
+      borderWidth: 1.5
+    });
+    page.drawRectangle({
+      x: 24,
+      y: 24,
+      width: width - 48,
+      height: height - 48,
+      color: rgb(1, 1, 1),
+      borderColor: rgb(0.88, 0.9, 0.94),
+      borderWidth: 1
+    });
+  } else {
+    page.drawRectangle({
+      x: 0,
+      y: 0,
+      width,
+      height,
+      color: rgb(0.99, 0.99, 0.99)
+    });
+    const m1 = 18;
+    page.drawRectangle({
+      x: m1,
+      y: m1,
+      width: width - m1 * 2,
+      height: height - m1 * 2,
+      borderColor: themeRgb,
+      borderWidth: 4,
+      color: rgb(1, 1, 1)
+    });
+    const m2 = 24;
+    page.drawRectangle({
+      x: m2,
+      y: m2,
+      width: width - m2 * 2,
+      height: height - m2 * 2,
+      borderColor: themeRgb,
+      borderWidth: 1
+    });
+    const cornerSize = 14;
+    const corners = [
+      { x: m2, y: m2 },
+      { x: width - m2 - cornerSize, y: m2 },
+      { x: m2, y: height - m2 - cornerSize },
+      { x: width - m2 - cornerSize, y: height - m2 - cornerSize }
+    ];
+    corners.forEach((c) => {
+      page.drawRectangle({
+        x: c.x,
+        y: c.y,
+        width: cornerSize,
+        height: cornerSize,
+        color: themeRgb
+      });
+    });
+  }
 
   let topCursor = height - 60;
 

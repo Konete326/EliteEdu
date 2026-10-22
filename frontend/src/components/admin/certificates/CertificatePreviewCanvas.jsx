@@ -5,6 +5,7 @@ import Design1AcademicGoldHatch from './designs/Design1AcademicGoldHatch';
 import Design2FloralCornerFiligree from './designs/Design2FloralCornerFiligree';
 import Design3GuillocheRosette from './designs/Design3GuillocheRosette';
 import Design4NavyRibbonHalftone from './designs/Design4NavyRibbonHalftone';
+import Design5SlateMultiBorder from './designs/Design5SlateMultiBorder';
 
 const CertificatePreviewCanvas = ({
   certificateNo = 'CERT-2026-0001',
@@ -122,6 +123,8 @@ const CertificatePreviewCanvas = ({
     };
 
     switch (normStyle) {
+      case 'classic_slate_multiborder':
+        return <Design5SlateMultiBorder {...commonProps} />;
       case 'floral_corner_filigree':
         return <Design2FloralCornerFiligree {...commonProps} />;
       case 'guilloche_rosette_burgundy':
@@ -289,7 +292,7 @@ const CertificatePreviewCanvas = ({
             height: `${scaledHeight}px`,
             position: 'relative'
           }}
-          className="shrink-0 transition-[width,height] duration-150 rounded-2xl shadow-xl overflow-hidden border border-slate-300 dark:border-slate-800 bg-white"
+          className="shrink-0 transition-[width,height] duration-150 rounded-none shadow-2xl overflow-hidden border border-slate-300 dark:border-slate-800 bg-white"
         >
           <div
             id="printable-certificate"
@@ -302,6 +305,7 @@ const CertificatePreviewCanvas = ({
               top: 0,
               left: 0
             }}
+            className="rounded-none overflow-hidden"
           >
             {renderDesign()}
           </div>
@@ -348,7 +352,7 @@ const CertificatePreviewCanvas = ({
               height: `${Math.round(baseHeight * fullscreenScale)}px`,
               position: 'relative'
             }}
-            className="rounded-2xl shadow-2xl overflow-hidden border border-white/20 bg-white"
+            className="rounded-none shadow-2xl overflow-hidden border border-white/20 bg-white"
           >
             <div
               style={{
@@ -360,6 +364,7 @@ const CertificatePreviewCanvas = ({
                 top: 0,
                 left: 0
               }}
+              className="rounded-none overflow-hidden"
             >
               {renderDesign()}
             </div>

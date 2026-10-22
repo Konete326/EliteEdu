@@ -15,6 +15,7 @@ const certificateTemplateSchema = new mongoose.Schema(
         'floral_corner_filigree',
         'guilloche_rosette_burgundy',
         'navy_ribbon_halftone',
+        'classic_slate_multiborder',
         'royal_gold',
         'emerald_modern',
         'classic_academic',

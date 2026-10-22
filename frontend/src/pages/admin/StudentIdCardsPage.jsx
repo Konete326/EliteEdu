@@ -86,7 +86,7 @@ const StudentIdCardsPage = () => {
     if (!currentSheetStudents.length) return;
     try {
       setIsExportingSheet(true);
-      await exportStudentCardsPdf(currentSheet, {
+      await exportStudentCardsPdf(currentSheetStudents, {
         sideMode,
         style: template,
         orientation,
@@ -94,7 +94,7 @@ const StudentIdCardsPage = () => {
         institution,
         filename: `Student_ID_Cards_Sheet_${safeSheetIndex + 1}_${orientation}.pdf`
       });
-      setExportNotice(`Exported Sheet ${safeSheetIndex + 1} (${currentSheet.length} card(s)) successfully!`);
+      setExportNotice(`Exported Sheet ${safeSheetIndex + 1} (${currentSheetStudents.length} card(s)) successfully!`);
       setTimeout(() => setExportNotice(''), 4000);
     } catch (e) {
       console.error(e);

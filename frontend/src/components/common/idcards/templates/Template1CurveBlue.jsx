@@ -159,27 +159,30 @@ const Template1CurveBlue = ({
         isSelected ? 'shadow-xl' : ''
       }`}
     >
-      <div className="relative shrink-0 h-[92px] overflow-hidden">
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 248 92" preserveAspectRatio="none">
-          <path d="M0,0 L248,0 L248,68 Q124,94 0,68 Z" fill={accentColor} />
-        </svg>
-
-        <div className="relative z-10 pt-1">
-          <IdCardInstHeader {...institution} textColor="white" compact={true} bgColor="transparent" />
+      <div className="relative shrink-0 h-[82px]">
+        <div className="absolute inset-0 overflow-hidden rounded-t-2xl">
+          <svg className="w-full h-full" viewBox="0 0 248 82" preserveAspectRatio="none">
+            <path d="M0,0 L248,0 L248,58 Q124,82 0,58 Z" fill={accentColor} />
+          </svg>
         </div>
 
-        <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 z-20">
-          <IdCardPhotoAvatar
-            photoUrl={holder.photo_url}
-            name={holder.name}
-            size={isFrontOnly ? 68 : 74}
-            ringColor="#ffffff"
-            ringWidth={3}
-          />
+        <div className="relative z-10 pt-1.5">
+          <IdCardInstHeader {...institution} textColor="white" compact={true} bgColor="transparent" />
         </div>
       </div>
 
-      <div className="flex flex-col items-center px-3 pt-8 pb-1 gap-1 flex-1 text-center">
+      <div className="relative -mt-9 flex justify-center z-20 shrink-0">
+        <IdCardPhotoAvatar
+          photoUrl={holder.photo_url}
+          name={holder.name}
+          size={isFrontOnly ? 68 : 74}
+          ringColor="#ffffff"
+          ringWidth={3}
+          fit="cover"
+        />
+      </div>
+
+      <div className="flex flex-col items-center px-3 pt-1 pb-1 gap-1 flex-1 text-center">
         <span
           className="font-black text-[11px] uppercase tracking-wide truncate max-w-[220px]"
           style={{ color: accentColor }}
