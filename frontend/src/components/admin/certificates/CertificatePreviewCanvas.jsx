@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { ZoomIn, ZoomOut, Maximize2, X, Copy, Check, Printer, Download, Eye } from 'lucide-react';
 import { normalizeDesignStyle } from './CertificateDesigns';
 import Design1AcademicGoldHatch from './designs/Design1AcademicGoldHatch';
 import Design2FloralCornerFiligree from './designs/Design2FloralCornerFiligree';
@@ -17,12 +18,33 @@ const CertificatePreviewCanvas = ({
   recipientType = 'Student',
   customText = '',
   customHeading = '',
+  subHeading = '',
+  customSlogan = '',
   customBody = '',
   resolvedBody = '',
-  issueDate = new Date().toISOString().split('T')[0]
+  issueDate = new Date().toISOString().split('T')[0],
+  signatoryTitle1 = 'Teacher In-Charge',
+  signatoryTitle2 = 'Principal / Head of Institution',
+  showStamp = true,
+  showQr = true,
+  onPrint,
+  onDownloadPdf
 }) => {
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
   const normStyle = normalizeDesignStyle(style || template.design_style);
   const isPortrait = orientation === 'portrait';
+  const verifyUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/verify/certificate/${certificateNo}`;
+
+  const handleCopyLink = () => {
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(verifyUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const renderDesign = () => {
     const commonProps = {
@@ -34,11 +56,18 @@ const CertificatePreviewCanvas = ({
       recipientType,
       customText,
       customHeading,
+      subHeading,
+      customSlogan,
       customBody,
       resolvedBody: customBody || resolvedBody,
       issueDate,
-      orientation
+      orientation,
+      signatoryTitle1,
+      signatoryTitle2,
+      showStamp,
+      showQr
     };
+
     switch (normStyle) {
       case 'floral_corner_filigree':
         return <Design2FloralCornerFiligree {...commonProps} />;
@@ -53,7 +82,7 @@ const CertificatePreviewCanvas = ({
   };
 
   return (
-    <div className="w-full flex flex-col items-center">
+    <div className="w-full flex flex-col items-center space-y-3">
       <style>{`
         @media print {
           @page {
@@ -88,14 +117,150 @@ const CertificatePreviewCanvas = ({
           }
         }
       `}</style>
-      <div
-        id="printable-certificate"
-        className={`w-full overflow-hidden transition-all duration-200 rounded-2xl shadow-xl border border-slate-300 dark:border-slate-800 print:shadow-none print:m-0 print:rounded-none ${
-          isPortrait ? 'max-w-[680px] aspect-[1/1.414]' : 'max-w-[960px] aspect-[1.414/1]'
-        }`}
-      >
-        {renderDesign()}
+
+      <div className="w-full flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-2xs print:hidden text-xs">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-ink dark:text-ink-dark flex items-center gap-1.5">
+            <Eye size={13} className="text-primary" />
+            <span>A4 Preview Canvas</span>
+          </span>
+          <span className="px-2 py-0.5 rounded-md bg-surface-secondary text-[10px] font-mono text-ink-muted uppercase">
+            {isPortrait ? 'Portrait (210×297mm)' : 'Landscape (297×210mm)'}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <div className="flex items-center rounded-lg border border-line p-0.5 bg-surface-secondary/40">
+            <button
+              type="button"
+              onClick={() => setZoomLevel((z) => Math.max(0.65, Number((z - 0.1).toFixed(2))))}
+              className="p-1 rounded text-ink-muted hover:text-ink cursor-pointer"
+              title="Zoom Out"
+            >
+              <ZoomOut size={13} />
+            </button>
+            <span className="px-1.5 text-[10px] font-mono font-bold text-ink">
+              {Math.round(zoomLevel * 100)}%
+            </span>
+            <button
+              type="button"
+              onClick={() => setZoomLevel((z) => Math.min(1.4, Number((z + 0.1).toFixed(2))))}
+              className="p-1 rounded text-ink-muted hover:text-ink cursor-pointer"
+              title="Zoom In"
+            >
+              <ZoomIn size={13} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setZoomLevel(1)}
+              className="px-1.5 py-0.5 text-[10px] font-bold text-ink-muted hover:text-primary cursor-pointer border-l border-line"
+              title="Reset Zoom"
+            >
+              Fit
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            className="p-1.5 rounded-lg border border-line hover:bg-surface-secondary text-ink-muted hover:text-ink transition-colors cursor-pointer"
+            title="Copy Public Verification Link"
+          >
+            {copied ? <Check size={13} className="text-emerald-500" /> : <Copy size={13} />}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsFullscreen(true)}
+            className="p-1.5 rounded-lg border border-line hover:bg-surface-secondary text-ink-muted hover:text-ink transition-colors cursor-pointer"
+            title="Fullscreen Preview"
+          >
+            <Maximize2 size={13} />
+          </button>
+
+          {onDownloadPdf && (
+            <button
+              type="button"
+              onClick={onDownloadPdf}
+              className="p-1.5 rounded-lg border border-primary/30 bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all cursor-pointer"
+              title="Download High-Res PDF"
+            >
+              <Download size={13} />
+            </button>
+          )}
+
+          {onPrint && (
+            <button
+              type="button"
+              onClick={onPrint}
+              className="p-1.5 rounded-lg border border-line hover:bg-surface-secondary text-ink-muted hover:text-ink transition-colors cursor-pointer"
+              title="Print Certificate"
+            >
+              <Printer size={13} />
+            </button>
+          )}
+        </div>
       </div>
+
+      <div className="w-full flex justify-center overflow-hidden p-1">
+        <div
+          style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
+          className="transition-transform duration-150 w-full flex justify-center"
+        >
+          <div
+            id="printable-certificate"
+            className={`w-full overflow-hidden transition-all duration-200 rounded-2xl shadow-xl border border-slate-300 dark:border-slate-800 print:shadow-none print:m-0 print:rounded-none ${
+              isPortrait ? 'max-w-[660px] aspect-[1/1.414]' : 'max-w-[940px] aspect-[1.414/1]'
+            }`}
+          >
+            {renderDesign()}
+          </div>
+        </div>
+      </div>
+
+      {isFullscreen && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm p-4 sm:p-8">
+          <div className="w-full max-w-6xl flex items-center justify-between pb-3 text-white">
+            <span className="font-bold text-sm">
+              Fullscreen Preview — {certificateNo}
+            </span>
+            <div className="flex items-center gap-2">
+              {onDownloadPdf && (
+                <button
+                  type="button"
+                  onClick={onDownloadPdf}
+                  className="px-3 py-1.5 rounded-xl bg-primary text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Download size={13} /> Download PDF
+                </button>
+              )}
+              {onPrint && (
+                <button
+                  type="button"
+                  onClick={onPrint}
+                  className="px-3 py-1.5 rounded-xl border border-white/20 hover:bg-white/10 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Printer size={13} /> Print
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setIsFullscreen(false)}
+                className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          </div>
+          <div
+            className={`w-full max-h-[85vh] overflow-auto flex items-center justify-center p-2 rounded-2xl shadow-2xl ${
+              isPortrait ? 'max-w-[620px] aspect-[1/1.414]' : 'max-w-[980px] aspect-[1.414/1]'
+            }`}
+          >
+            {renderDesign()}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

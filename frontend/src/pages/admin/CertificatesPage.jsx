@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Award } from 'lucide-react';
+import { Award, Layers, Sparkles } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useCampus } from '../../context/CampusContext';
@@ -9,6 +9,7 @@ import CertificatePreviewCanvas from '../../components/admin/certificates/Certif
 import SavedCertificatesTable from '../../components/admin/certificates/SavedCertificatesTable';
 import CertificateTemplatesManager from '../../components/admin/certificates/CertificateTemplatesManager';
 import { resolvePlaceholders } from '../../utils/certificatePlaceholderResolver';
+import { exportCertificatePdf } from '../../utils/pdf/certificatePdfExporter';
 
 const CertificatesPage = ({ defaultTab = 'generate' }) => {
   const [searchParams] = useSearchParams();
@@ -25,7 +26,11 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
   const [recipientFilter, setRecipientFilter] = useState('all');
   const [page, setPage] = useState(1);
   const [generating, setGenerating] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [schoolData, setSchoolData] = useState({});
+
+  const defaultSlogan = activeCampus?.motto || schoolData.slogan || user?.school_slogan || 'Excellence in Education';
+
   const [form, setForm] = useState({
     template_id: '',
     recipient_type: initialStaffId ? 'Staff' : 'Student',
@@ -33,9 +38,15 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
     design_style: 'academic_gold_hatch',
     orientation: 'landscape',
     custom_heading: '',
+    sub_heading: '',
+    custom_slogan: '',
     custom_body: '',
     custom_text: 'outstanding performance',
-    issue_date: new Date().toISOString().split('T')[0]
+    issue_date: new Date().toISOString().split('T')[0],
+    signatory_title_1: 'Teacher In-Charge',
+    signatory_title_2: 'Principal / Headmaster',
+    show_stamp: true,
+    show_qr: true
   });
 
   const loadData = async () => {
@@ -56,8 +67,10 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
           ...p,
           template_id: tmps[0]._id,
           design_style: tmps[0].design_style || 'academic_gold_hatch',
-          orientation: 'landscape',
-          custom_heading: tmps[0].heading || ''
+          orientation: tmps[0].orientation || 'landscape',
+          custom_heading: tmps[0].heading || '',
+          sub_heading: tmps[0].sub_heading || 'THIS CERTIFICATE IS PRESENTED TO',
+          custom_body: tmps[0].body_template || ''
         }));
       }
     } catch {}
@@ -70,25 +83,40 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
     } catch {}
   };
 
-  useEffect(() => { loadData(); }, []);
-  useEffect(() => { loadIssued(); }, [page, search, recipientFilter]);
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    loadIssued();
+  }, [page, search, recipientFilter]);
 
   const activeTemplate = templates.find((t) => t._id === form.template_id) || templates[0] || {};
   const activeRecipient = form.recipient_type === 'Student'
     ? students.find((s) => s._id === form.recipient_id) || {}
     : teachers.find((t) => t._id === form.recipient_id) || {};
 
+  const effectiveSlogan = form.custom_slogan !== undefined && form.custom_slogan !== ''
+    ? form.custom_slogan
+    : defaultSlogan;
+
   const resolvedTemplateBody = resolvePlaceholders(
     activeTemplate.body_template,
     activeRecipient,
     form.recipient_type,
     form.custom_text,
-    schoolData.name || user?.school_name
+    schoolData.name || user?.school_name,
+    effectiveSlogan,
+    activeCampus?.name
   );
 
   const effectiveHeading = form.custom_heading !== undefined && form.custom_heading !== ''
     ? form.custom_heading
-    : (activeTemplate.heading || '');
+    : (activeTemplate.heading || 'CERTIFICATE OF MERIT');
+
+  const effectiveSubHeading = form.sub_heading !== undefined && form.sub_heading !== ''
+    ? form.sub_heading
+    : (activeTemplate.sub_heading || 'THIS IS TO CERTIFY THAT');
 
   const effectiveBody = form.custom_body !== undefined && form.custom_body !== ''
     ? form.custom_body
@@ -100,14 +128,75 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
       await api.post('/certificates/generate', {
         ...form,
         custom_heading: effectiveHeading,
+        sub_heading: effectiveSubHeading,
+        custom_slogan: effectiveSlogan,
         custom_body: effectiveBody
       });
       loadIssued();
-    } catch {} finally { setGenerating(false); }
+    } catch {} finally {
+      setGenerating(false);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    try {
+      setDownloading(true);
+      await exportCertificatePdf({
+        certificateNo: 'DRAFT-PREVIEW',
+        heading: effectiveHeading,
+        subHeading: effectiveSubHeading,
+        schoolName: schoolData.name || user?.school_name || activeCampus?.name || 'Elite Educational System',
+        slogan: effectiveSlogan,
+        campusName: activeCampus?.name || '',
+        recipientName: activeRecipient?.name || 'Recipient Name',
+        fatherName: activeRecipient?.father_name || '',
+        identifierCode: activeRecipient?.gr_number || activeRecipient?.employee_code || '',
+        classOrDesignation: form.recipient_type === 'Student'
+          ? `${activeRecipient?.current_grade?.name || 'Class'} (${activeRecipient?.current_section || 'A'})`
+          : (activeRecipient?.designation || 'Staff'),
+        bodyText: effectiveBody,
+        issueDate: form.issue_date,
+        orientation: form.orientation || 'landscape',
+        designStyle: form.design_style,
+        accentColor: activeTemplate.accent_color || '#b59449',
+        signatoryTitle1: form.signatory_title_1 || 'Teacher In-Charge',
+        signatoryTitle2: form.signatory_title_2 || 'Principal / Headmaster',
+        showStamp: form.show_stamp !== false,
+        showQr: form.show_qr !== false,
+        verifyUrl: `${typeof window !== 'undefined' ? window.location.origin : ''}/verify/certificate/PREVIEW`
+      });
+    } catch {} finally {
+      setDownloading(false);
+    }
+  };
+
+  const handleDownloadRow = async (c) => {
+    await exportCertificatePdf({
+      certificateNo: c.certificate_no,
+      heading: c.heading || c.template_name,
+      subHeading: c.sub_heading || 'THIS IS TO CERTIFY THAT',
+      schoolName: schoolData.name || user?.school_name || activeCampus?.name || 'Elite Educational System',
+      slogan: c.custom_slogan || defaultSlogan,
+      campusName: c.campus_id?.name || activeCampus?.name || '',
+      recipientName: c.recipient_name,
+      fatherName: c.father_name || '',
+      identifierCode: c.identifier_code || '',
+      classOrDesignation: c.class_or_designation || '',
+      bodyText: c.resolved_body,
+      issueDate: c.issue_date ? c.issue_date.split('T')[0] : new Date().toISOString().split('T')[0],
+      orientation: c.orientation || 'landscape',
+      designStyle: c.design_style,
+      accentColor: c.accent_color || '#b59449',
+      signatoryTitle1: c.signatory_title_1 || 'Teacher In-Charge',
+      signatoryTitle2: c.signatory_title_2 || 'Principal / Headmaster',
+      showStamp: c.show_stamp !== false,
+      showQr: c.show_qr !== false,
+      verifyUrl: `${typeof window !== 'undefined' ? window.location.origin : ''}/verify/certificate/${c.certificate_no}`
+    });
   };
 
   const prereqs = [
-    { name: 'Templates', count: templates.length, addPath: '/admin/certificates/templates', label: 'Add Template' },
+    { name: 'Templates', count: templates.length, addPath: '/admin/certificates?tab=templates', label: 'Add Template' },
     { name: 'Students', count: students.length, addPath: '/admin/students/new', label: 'Add Student' }
   ];
 
@@ -116,15 +205,34 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
       <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8 mb-6 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 print:hidden">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-ink dark:text-ink-dark flex items-center gap-2">
-            <Award className="w-6 h-6 text-primary" /> {tab === 'templates' ? 'Certificate Templates Studio' : 'Certificate Generator Studio'}
+            <Award className="w-6 h-6 text-primary" />
+            <span>{tab === 'templates' ? 'Certificate Templates Studio' : 'Certificate Generator Studio'}</span>
           </h1>
           <p className="text-xs font-semibold text-ink-muted">
-            {tab === 'templates' ? 'Manage institutional templates, award wording, and placeholder tags' : 'Design, issue, and print verifiable student and staff institutional credentials'}
+            {tab === 'templates'
+              ? 'Manage institutional templates, award wording, and placeholder tags'
+              : 'Design, issue, and print verifiable student and staff institutional credentials'}
           </p>
         </div>
         <div className="flex rounded-xl border border-line p-0.5 bg-surface-secondary/40 text-xs font-bold">
-          <button onClick={() => setTab('generate')} className={`px-4 py-1.5 rounded-lg transition-colors cursor-pointer ${tab === 'generate' ? 'bg-primary text-white shadow-2xs' : 'text-ink-muted'}`}>Generate Certificate</button>
-          <button onClick={() => setTab('templates')} className={`px-4 py-1.5 rounded-lg transition-colors cursor-pointer ${tab === 'templates' ? 'bg-primary text-white shadow-2xs' : 'text-ink-muted'}`}>Certificate Templates</button>
+          <button
+            type="button"
+            onClick={() => setTab('generate')}
+            className={`px-4 py-1.5 rounded-lg transition-colors cursor-pointer ${
+              tab === 'generate' ? 'bg-primary text-white shadow-2xs' : 'text-ink-muted hover:text-ink'
+            }`}
+          >
+            Generate Certificate
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('templates')}
+            className={`px-4 py-1.5 rounded-lg transition-colors cursor-pointer ${
+              tab === 'templates' ? 'bg-primary text-white shadow-2xs' : 'text-ink-muted hover:text-ink'
+            }`}
+          >
+            Certificate Templates
+          </button>
         </div>
       </div>
 
@@ -141,34 +249,55 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
                 form={{
                   ...form,
                   custom_heading: effectiveHeading,
+                  sub_heading: effectiveSubHeading,
+                  custom_slogan: effectiveSlogan,
                   custom_body: effectiveBody
                 }}
+                defaultSlogan={defaultSlogan}
                 onChange={(f, v) => setForm((p) => ({ ...p, [f]: v }))}
                 onGenerate={handleGenerate}
                 onPrint={() => window.print()}
+                onDownloadPdf={handleDownloadPdf}
                 generating={generating}
+                downloading={downloading}
                 prereqs={prereqs}
                 onRefreshPrereqs={loadData}
               />
             </div>
+
             <div className="xl:col-span-7 flex justify-center">
               <CertificatePreviewCanvas
+                certificateNo="CERT-2026-0001"
                 template={activeTemplate}
                 style={form.design_style}
                 orientation={form.orientation || 'landscape'}
                 accentColor={activeTemplate.accent_color}
-                school={{ name: schoolData.name || user?.school_name || activeCampus?.name || 'Elite Educational System', slogan: schoolData.slogan || user?.school_slogan, logo_url: schoolData.logo_url || user?.school_logo || activeCampus?.logo, address: schoolData.address || activeCampus?.address }}
+                school={{
+                  name: schoolData.name || user?.school_name || activeCampus?.name || 'Elite Educational System',
+                  slogan: effectiveSlogan,
+                  logo_url: schoolData.logo_url || user?.school_logo || activeCampus?.logo,
+                  address: schoolData.address || activeCampus?.address
+                }}
                 campus={activeCampus || {}}
                 recipient={activeRecipient}
                 recipientType={form.recipient_type}
                 customText={form.custom_text}
                 customHeading={effectiveHeading}
+                subHeading={effectiveSubHeading}
+                customSlogan={effectiveSlogan}
                 customBody={effectiveBody}
                 resolvedBody={resolvedTemplateBody}
                 issueDate={form.issue_date}
+                signatoryTitle1={form.signatory_title_1 || 'Teacher In-Charge'}
+                signatoryTitle2={form.signatory_title_2 || 'Principal / Headmaster'}
+                showStamp={form.show_stamp !== false}
+                showQr={form.show_qr !== false}
+                onPrint={() => window.print()}
+                onDownloadPdf={handleDownloadPdf}
               />
             </div>
           </div>
+
           <div className="print:hidden">
             <SavedCertificatesTable
               certificates={issuedData.certificates}
@@ -180,19 +309,32 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
               onSearchChange={setSearch}
               onRecipientTypeChange={setRecipientFilter}
               onPageChange={setPage}
-              onPreview={(c) => setForm({
-                template_id: c.template_id,
-                recipient_type: c.recipient_type,
-                recipient_id: c.student_id?._id || c.staff_id?._id || '',
-                design_style: c.design_style,
-                orientation: c.orientation || 'landscape',
-                custom_heading: c.heading || '',
-                custom_body: c.resolved_body || '',
-                custom_text: c.custom_text,
-                issue_date: c.issue_date?.split('T')[0]
-              })}
+              onPreview={(c) => {
+                setForm({
+                  template_id: c.template_id,
+                  recipient_type: c.recipient_type,
+                  recipient_id: c.student_id?._id || c.staff_id?._id || '',
+                  design_style: c.design_style,
+                  orientation: c.orientation || 'landscape',
+                  custom_heading: c.heading || '',
+                  sub_heading: c.sub_heading || '',
+                  custom_slogan: c.custom_slogan || defaultSlogan,
+                  custom_body: c.resolved_body || '',
+                  custom_text: c.custom_text,
+                  issue_date: c.issue_date?.split('T')[0] || new Date().toISOString().split('T')[0],
+                  signatory_title_1: c.signatory_title_1 || 'Teacher In-Charge',
+                  signatory_title_2: c.signatory_title_2 || 'Principal / Headmaster',
+                  show_stamp: c.show_stamp !== false,
+                  show_qr: c.show_qr !== false
+                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               onPrintRow={() => window.print()}
-              onDelete={async (id) => { await api.delete(`/certificates/issued/${id}`); loadIssued(); }}
+              onDownloadRow={handleDownloadRow}
+              onDelete={async (id) => {
+                await api.delete(`/certificates/issued/${id}`);
+                loadIssued();
+              }}
             />
           </div>
         </div>

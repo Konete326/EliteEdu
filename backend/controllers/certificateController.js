@@ -36,7 +36,12 @@ const getIssuedCertificates = async (req, res) => {
 
 const generateCertificate = async (req, res) => {
   try {
-    const { template_id, recipient_type, recipient_id, custom_text = '', custom_heading = '', custom_body = '', design_style, orientation, accent_color, issue_date } = req.body;
+    const {
+      template_id, recipient_type, recipient_id, custom_text = '', custom_heading = '',
+      custom_body = '', design_style, orientation, accent_color, issue_date,
+      sub_heading = '', custom_slogan = '', signatory_title_1, signatory_title_2,
+      show_stamp, show_qr
+    } = req.body;
     const schoolId = req.user.school_id;
     const [template, school] = await Promise.all([
       CertificateTemplate.findById(template_id),
@@ -51,6 +56,7 @@ const generateCertificate = async (req, res) => {
       ? custom_body.trim()
       : resolvePlaceholders(template.body_template, rec.entity, recipient_type, custom_text, school?.name);
     const heading = custom_heading && custom_heading.trim() ? custom_heading.trim() : template.heading;
+    const subHeading = sub_heading && sub_heading.trim() ? sub_heading.trim() : (template.sub_heading || '');
     const certNo = await getNextCertificateNumber(schoolId);
 
     const certificate = await IssuedCertificate.create({
@@ -60,6 +66,8 @@ const generateCertificate = async (req, res) => {
       template_id: template._id,
       template_name: template.name,
       heading,
+      sub_heading: subHeading,
+      custom_slogan,
       design_style: design_style || template.design_style || 'academic_gold_hatch',
       orientation: orientation || template.orientation || 'landscape',
       accent_color: accent_color || template.accent_color || '#b59449',
@@ -72,6 +80,10 @@ const generateCertificate = async (req, res) => {
       class_or_designation: rec.classOrDesig,
       custom_text,
       resolved_body: resolvedBody,
+      signatory_title_1: signatory_title_1 || 'Teacher In-Charge',
+      signatory_title_2: signatory_title_2 || 'Principal / Head of School',
+      show_stamp: show_stamp !== false,
+      show_qr: show_qr !== false,
       issue_date: issue_date ? new Date(issue_date) : new Date(),
       issued_by: req.user._id
     });
@@ -100,9 +112,4 @@ const deleteIssuedCertificate = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to delete certificate', error: err.message });
   }
 };
-
-module.exports = {
-  getIssuedCertificates,
-  generateCertificate,
-  deleteIssuedCertificate
-};
+module.exports = { getIssuedCertificates, generateCertificate, deleteIssuedCertificate };

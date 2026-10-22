@@ -7,7 +7,7 @@ const formatDate = (d) => {
   }
 };
 
-export const resolvePlaceholders = (templateStr = '', entity = {}, recipientType = 'Student', customText = '', schoolName = '') => {
+export const resolvePlaceholders = (templateStr = '', entity = {}, recipientType = 'Student', customText = '', schoolName = '', slogan = '', campusName = '') => {
   if (!templateStr) return '';
   const isStudent = recipientType === 'Student';
   const map = {
@@ -23,7 +23,10 @@ export const resolvePlaceholders = (templateStr = '', entity = {}, recipientType
     '{{bps_grade}}': !isStudent ? (entity.bps_grade ? `BPS-${entity.bps_grade}` : '') : '',
     '{{employee_code}}': !isStudent ? (entity.employee_code || entity.personal_id || '—') : '',
     '{{date}}': formatDate(new Date()),
-    '{{school_name}}': schoolName || 'Our Institution'
+    '{{school_name}}': schoolName || 'Our Institution',
+    '{{campus_name}}': campusName || '',
+    '{{slogan}}': slogan || 'Excellence in Education',
+    '{{school_slogan}}': slogan || 'Excellence in Education'
   };
 
   let resolved = templateStr;
