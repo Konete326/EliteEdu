@@ -17,6 +17,7 @@ const DEFAULT_SETTINGS = {
   established_year: '',
   principal_name: '',
   principal_signature_url: '',
+  teacher_signature_url: '',
   currency: 'PKR'
 };
 

@@ -53,7 +53,7 @@ export const LaurelMedal = ({ year = '2026', title = 'AWARD', size = 78 }) => (
   </div>
 );
 
-export const ChampionBadge = ({ size = 96 }) => (
+export const ChampionBadge = ({ size = 96, logoUrl = '' }) => (
   <div className="relative inline-flex flex-col items-center shrink-0 drop-shadow-md select-none" style={{ width: size, height: size * 1.15 }}>
     <svg viewBox="0 0 100 115" className="w-full h-full">
       <defs>
@@ -61,21 +61,38 @@ export const ChampionBadge = ({ size = 96 }) => (
           <stop offset="0%" stopColor="#fde047" />
           <stop offset="100%" stopColor="#b45309" />
         </linearGradient>
+        <clipPath id="champBadgeCircleClip">
+          <circle cx="50" cy="52" r="29" />
+        </clipPath>
       </defs>
       <polygon points="32,70 32,112 43,103 48,112 48,70" fill="url(#goldRibbonGrad)" stroke="#78350f" strokeWidth="0.8" />
       <polygon points="52,70 52,112 57,103 68,112 68,70" fill="url(#goldRibbonGrad)" stroke="#78350f" strokeWidth="0.8" />
       <polygon points="50,6 59,25 79,15 75,36 94,37 81,52 94,67 74,68 78,89 59,79 50,97 41,79 22,89 26,68 6,67 19,52 6,37 25,36 21,15 41,25" fill="url(#goldRibbonGrad)" stroke="#78350f" strokeWidth="1" />
       <circle cx="50" cy="52" r="37" fill="#051937" stroke="#eab308" strokeWidth="2.5" />
       <circle cx="50" cy="52" r="31" fill="#ffffff" stroke="#051937" strokeWidth="1.2" />
-      <path id="champArc" d="M 24,52 A 26,26 0 1,1 76,52" fill="none" />
-      <text fill="#051937" fontSize="4.8" fontWeight="900" letterSpacing="0.8">
-        <textPath href="#champArc" startOffset="10%">YOU ARE THE BEST</textPath>
-      </text>
-      <polygon points="50,39 52,44 57,44 53,47 55,52 50,49 45,52 47,47 43,44 48,44" fill="#051937" />
-      <polygon points="41,43 42,46 45,46 43,48 44,51 41,49 38,51 39,48 37,46 40,46" fill="#051937" />
-      <polygon points="59,43 60,46 63,46 61,48 62,51 59,49 56,51 57,48 55,46 58,46" fill="#051937" />
-      <text x="50" y="61" textAnchor="middle" fill="#051937" fontSize="5.5" fontWeight="900" letterSpacing="0.6">CHAMPION</text>
-      <text x="50" y="67" textAnchor="middle" fill="#051937" fontSize="4.5" fontWeight="800" letterSpacing="0.4">PRIZE</text>
+      {logoUrl ? (
+        <image
+          href={logoUrl}
+          x="22"
+          y="24"
+          width="56"
+          height="56"
+          preserveAspectRatio="xMidYMid meet"
+          clipPath="url(#champBadgeCircleClip)"
+        />
+      ) : (
+        <>
+          <path id="champArc" d="M 24,52 A 26,26 0 1,1 76,52" fill="none" />
+          <text fill="#051937" fontSize="4.8" fontWeight="900" letterSpacing="0.8">
+            <textPath href="#champArc" startOffset="10%">YOU ARE THE BEST</textPath>
+          </text>
+          <polygon points="50,39 52,44 57,44 53,47 55,52 50,49 45,52 47,47 43,44 48,44" fill="#051937" />
+          <polygon points="41,43 42,46 45,46 43,48 44,51 41,49 38,51 39,48 37,46 40,46" fill="#051937" />
+          <polygon points="59,43 60,46 63,46 61,48 62,51 59,49 56,51 57,48 55,46 58,46" fill="#051937" />
+          <text x="50" y="61" textAnchor="middle" fill="#051937" fontSize="5.5" fontWeight="900" letterSpacing="0.6">CHAMPION</text>
+          <text x="50" y="67" textAnchor="middle" fill="#051937" fontSize="4.5" fontWeight="800" letterSpacing="0.4">PRIZE</text>
+        </>
+      )}
     </svg>
   </div>
 );

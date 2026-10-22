@@ -38,17 +38,15 @@ const Design4NavyRibbonHalftone = ({
         className="absolute top-0 right-0 w-64 h-64 opacity-25 pointer-events-none"
         style={{ backgroundImage: 'radial-gradient(#64748b 1px, transparent 1px)', backgroundSize: '8px 8px' }}
       />
-      <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[#051937] rotate-45 border-t-4 border-[#d97706] pointer-events-none" />
-
-      <div className="absolute top-0 left-4 w-12 bottom-0 bg-[#051937] flex flex-col items-center justify-between py-4 z-20">
-        <div className="w-full h-6 bg-[#051937]" />
-        <div className="relative -mx-8 my-auto">
-          <ChampionBadge size={isPortrait ? 64 : 74} />
+      <div className="absolute top-0 left-3 w-14 bottom-0 bg-[#051937] flex flex-col items-center justify-between py-3 z-20">
+        <div className="w-full h-8 bg-[#051937]" />
+        <div className="relative -mx-10 my-auto">
+          <ChampionBadge size={isPortrait ? 88 : 102} logoUrl={logo} />
         </div>
-        <div className="w-full h-6 bg-[#051937]" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 50% 65%, 0 100%)' }} />
+        <div className="w-full h-8 bg-[#051937]" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 50% 65%, 0 100%)' }} />
       </div>
 
-      <div className="relative z-10 w-full h-full flex flex-col justify-between pl-18 pr-4 py-1 box-border overflow-hidden">
+      <div className="relative z-10 w-full h-full flex flex-col justify-between pl-24 pr-4 py-1 box-border overflow-hidden">
         <div className="relative w-full text-center space-y-0.5">
           <div className="flex items-center justify-center gap-2.5 border-b border-slate-200 pb-1">
             <img
@@ -97,6 +95,7 @@ const Design4NavyRibbonHalftone = ({
         <CertificateFooterBlock
           signatoryTitle1={signatoryTitle1}
           signatoryTitle2={signatoryTitle2}
+          teacherSignatureUrl={school.teacher_signature_url}
           principalSignatureUrl={school.principal_signature_url}
           showStamp={showStamp}
           showQr={showQr}

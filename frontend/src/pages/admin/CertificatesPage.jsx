@@ -52,17 +52,26 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
 
   const loadData = async () => {
     try {
-      const [tRes, sRes, fRes, scRes] = await Promise.all([
+      const [tRes, sRes, fRes, scRes, sigRes] = await Promise.all([
         api.get('/certificates/templates'),
         api.get('/students?limit=250'),
         api.get('/teachers?limit=250'),
-        api.get('/schools/general-settings').catch(() => ({ data: {} }))
+        api.get('/schools/general-settings').catch(() => ({ data: {} })),
+        api.get('/signatures?is_stamp=false').catch(() => ({ data: { data: [] } }))
       ]);
       const tmps = tRes.data.templates || [];
       setTemplates(tmps);
       setStudents(sRes.data.students || []);
       setTeachers(fRes.data.teachers || []);
-      if (scRes.data?.school) setSchoolData(scRes.data.school);
+      const schoolObj = scRes.data?.school ? { ...scRes.data.school } : {};
+      const sigList = sigRes.data?.data || [];
+      if (!schoolObj.principal_signature_url && sigList.length > 0) {
+        schoolObj.principal_signature_url = sigList[0]?.image_url || '';
+      }
+      if (!schoolObj.teacher_signature_url && sigList.length > 1) {
+        schoolObj.teacher_signature_url = sigList[1]?.image_url || '';
+      }
+      setSchoolData(schoolObj);
       if (tmps.length > 0 && !form.template_id) {
         setForm((p) => ({
           ...p,
@@ -162,6 +171,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
         accentColor: activeTemplate.accent_color || '#b59449',
         signatoryTitle1: form.signatory_title_1 || 'Teacher In-Charge',
         signatoryTitle2: form.signatory_title_2 || 'Principal / Headmaster',
+        teacherSignatureUrl: schoolData.teacher_signature_url || '',
         principalSignatureUrl: schoolData.principal_signature_url || '',
         showStamp: form.show_stamp !== false,
         showQr: form.show_qr !== false,
@@ -191,6 +201,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
       accentColor: c.accent_color || '#b59449',
       signatoryTitle1: c.signatory_title_1 || 'Teacher In-Charge',
       signatoryTitle2: c.signatory_title_2 || 'Principal / Headmaster',
+      teacherSignatureUrl: schoolData.teacher_signature_url || '',
       principalSignatureUrl: schoolData.principal_signature_url || '',
       showStamp: c.show_stamp !== false,
       showQr: c.show_qr !== false,
@@ -316,6 +327,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
                   name: schoolData.name || user?.school_name || activeCampus?.name || 'Elite Educational System',
                   slogan: effectiveSlogan,
                   logo_url: schoolData.logo_url || user?.school_logo || activeCampus?.logo,
+                  teacher_signature_url: schoolData.teacher_signature_url || '',
                   principal_signature_url: schoolData.principal_signature_url || '',
                   address: schoolData.address || activeCampus?.address
                 }}

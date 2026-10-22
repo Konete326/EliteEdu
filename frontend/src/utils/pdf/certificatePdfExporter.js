@@ -52,6 +52,7 @@ export const generateCertificatePdfBytes = async (data = {}) => {
     accentColor = '#b59449',
     signatoryTitle1 = 'Teacher In-Charge',
     signatoryTitle2 = 'Principal / Head of Institution',
+    teacherSignatureUrl = '',
     principalSignatureUrl = '',
     showStamp = true,
     showQr = true,
@@ -263,19 +264,42 @@ export const generateCertificatePdfBytes = async (data = {}) => {
   const bottomY = 70;
 
   const dateBlockX = 60;
+  if (teacherSignatureUrl) {
+    try {
+      let sigBytes = null;
+      if (teacherSignatureUrl.startsWith('data:image/')) {
+        const base64 = teacherSignatureUrl.split(',')[1];
+        sigBytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+      } else {
+        const res = await fetch(teacherSignatureUrl);
+        const arrayBuf = await res.arrayBuffer();
+        sigBytes = new Uint8Array(arrayBuf);
+      }
+      if (sigBytes) {
+        let sigImg = null;
+        try {
+          sigImg = await pdfDoc.embedPng(sigBytes);
+        } catch {
+          sigImg = await pdfDoc.embedJpg(sigBytes);
+        }
+        if (sigImg) {
+          const sigW = 90;
+          const sigH = (sigImg.height / sigImg.width) * sigW;
+          page.drawImage(sigImg, {
+            x: dateBlockX + 20,
+            y: bottomY + 16,
+            width: sigW,
+            height: Math.min(sigH, 30)
+          });
+        }
+      }
+    } catch {}
+  }
   page.drawLine({
     start: { x: dateBlockX, y: bottomY + 14 },
     end: { x: dateBlockX + 130, y: bottomY + 14 },
     thickness: 1,
     color: mutedRgb
-  });
-  const dateTxt = `Date: ${issueDate}`;
-  page.drawText(dateTxt, {
-    x: dateBlockX,
-    y: bottomY + 20,
-    size: 10,
-    font: fontBold,
-    color: darkRgb
   });
   page.drawText(signatoryTitle1.toUpperCase(), {
     x: dateBlockX,
@@ -393,6 +417,16 @@ export const generateCertificatePdfBytes = async (data = {}) => {
     size: 8,
     font: fontBold,
     color: themeRgb
+  });
+
+  const issueDateTxt = `Date of Issuance: ${issueDate}`;
+  const dateW = fontBold.widthOfTextAtSize(issueDateTxt, 8);
+  page.drawText(issueDateTxt, {
+    x: (width - dateW) / 2,
+    y: 32,
+    size: 8,
+    font: fontBold,
+    color: darkRgb
   });
 
   const footerBrand = 'Powered by EliteEdu Institutional System';

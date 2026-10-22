@@ -5,6 +5,7 @@ import { renderSvgQrCode } from '../../../utils/idCardCodeGenerator';
 const CertificateFooterBlock = ({
   signatoryTitle1 = 'Teacher In-Charge',
   signatoryTitle2 = 'Principal / Headmaster',
+  teacherSignatureUrl = '',
   principalSignatureUrl = '',
   showStamp = true,
   showQr = true,
@@ -18,7 +19,16 @@ const CertificateFooterBlock = ({
     <div className={`space-y-1 pt-1.5 border-t ${borderClass} w-full shrink-0 select-none`}>
       <div className="grid grid-cols-3 items-end gap-2 px-2 text-center">
         <div className="flex flex-col items-center justify-end text-center">
-          <div className="w-32 border-b-2 border-slate-700 mb-1 h-6 flex items-end justify-center pb-0.5" />
+          {teacherSignatureUrl ? (
+            <img
+              src={teacherSignatureUrl}
+              alt={signatoryTitle1}
+              className="h-6 max-w-[110px] object-contain mb-0.5 drop-shadow-2xs"
+            />
+          ) : (
+            <div className="h-6" />
+          )}
+          <div className="w-32 border-b-2 border-slate-700 mb-1" />
           <p className="text-[10px] font-bold uppercase tracking-wider text-slate-800 leading-tight">
             {signatoryTitle1}
           </p>

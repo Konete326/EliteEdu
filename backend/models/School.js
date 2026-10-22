@@ -71,6 +71,11 @@ const schoolSchema = new mongoose.Schema(
       trim: true,
       default: ''
     },
+    teacher_signature_url: {
+      type: String,
+      trim: true,
+      default: ''
+    },
     currency: {
       type: String,
       trim: true,

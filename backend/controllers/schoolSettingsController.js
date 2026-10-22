@@ -16,6 +16,7 @@ const formatSchool = (school) => ({
   established_year: school.established_year || '',
   principal_name: school.principal_name || '',
   principal_signature_url: school.principal_signature_url || '',
+  teacher_signature_url: school.teacher_signature_url || '',
   currency: school.currency || 'PKR',
   is_active: school.is_active
 });
@@ -42,7 +43,7 @@ const updateSchoolGeneralSettings = async (req, res) => {
     const fields = [
       'name', 'board', 'address', 'contact_number', 'email', 'logo_url',
       'slogan', 'website', 'affiliation_number', 'established_year',
-      'principal_name', 'principal_signature_url', 'currency'
+      'principal_name', 'principal_signature_url', 'teacher_signature_url', 'currency'
     ];
 
     if (req.body.name !== undefined && !req.body.name.trim()) {

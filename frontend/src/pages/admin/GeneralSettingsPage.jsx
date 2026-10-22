@@ -4,6 +4,7 @@ import SchoolBasicInfoCard from '../../components/admin/settings/SchoolBasicInfo
 import SchoolContactAndPdfCard from '../../components/admin/settings/SchoolContactAndPdfCard';
 import SchoolLogoUploadCard from '../../components/admin/settings/SchoolLogoUploadCard';
 import SchoolPrincipalSignatureCard from '../../components/admin/settings/SchoolPrincipalSignatureCard';
+import SchoolTeacherSignatureCard from '../../components/admin/settings/SchoolTeacherSignatureCard';
 import LiveDocumentHeaderPreview from '../../components/admin/settings/LiveDocumentHeaderPreview';
 import SettingsFeedbackModal from '../../components/admin/settings/SettingsFeedbackModal';
 
@@ -66,6 +67,10 @@ const GeneralSettingsPage = () => {
           <SchoolPrincipalSignatureCard
             signatureUrl={settings.principal_signature_url}
             onSignatureChange={(val) => handleChange('principal_signature_url', val)}
+          />
+          <SchoolTeacherSignatureCard
+            signatureUrl={settings.teacher_signature_url}
+            onSignatureChange={(val) => handleChange('teacher_signature_url', val)}
           />
           <LiveDocumentHeaderPreview settings={settings} />
         </div>

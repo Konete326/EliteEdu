@@ -76,6 +76,7 @@ const Design2FloralCornerFiligree = ({
         <CertificateFooterBlock
           signatoryTitle1={signatoryTitle1}
           signatoryTitle2={signatoryTitle2}
+          teacherSignatureUrl={school.teacher_signature_url}
           principalSignatureUrl={school.principal_signature_url}
           showStamp={showStamp}
           showQr={showQr}
