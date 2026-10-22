@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import api from '../../../../services/api';
 import { renderSvgQrCode, generateStudentVerifyUrl } from '../../../../utils/idCardCodeGenerator';
 
-const AdmissionLetterSignatures = ({ student }) => {
+const AdmissionLetterSignatures = ({ student, template }) => {
   const [signature, setSignature] = useState(null);
   const [stamp, setStamp] = useState(null);
 
   const school = student?.school_id || {};
   const campus = student?.campus_id || {};
-  const schoolName = school.name || campus.name || 'Elite Education System';
+  const schoolName = school.name || campus.name || '';
   const verifyUrl = student ? generateStudentVerifyUrl(student) : 'https://elitedev-edu.vercel.app';
 
   useEffect(() => {
@@ -26,6 +26,10 @@ const AdmissionLetterSignatures = ({ student }) => {
     return () => { mounted = false; };
   }, []);
 
+  const sigImgUrl = signature?.image_url || school.principal_signature_url;
+  const signatoryName = template?.signatory_name || signature?.label || school.principal_name || '';
+  const signatoryTitle = template?.signatory_title || 'For: Admissions & Academic Directorate';
+
   return (
     <div className="pt-4 space-y-3 font-serif">
       <p className="text-xs font-bold text-black">Yours faithfully,</p>
@@ -33,10 +37,10 @@ const AdmissionLetterSignatures = ({ student }) => {
       <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end pt-2">
         <div className="sm:col-span-5 text-left space-y-1">
           <div className="min-h-[46px] flex items-end">
-            {signature?.image_url ? (
+            {sigImgUrl ? (
               <img
-                src={signature.image_url}
-                alt={signature.label || 'Signature'}
+                src={sigImgUrl}
+                alt={signatoryName || 'Signature'}
                 className="h-11 object-contain"
               />
             ) : (
@@ -44,15 +48,19 @@ const AdmissionLetterSignatures = ({ student }) => {
             )}
           </div>
           <div>
-            <p className="font-bold text-xs uppercase tracking-wide text-black">
-              {signature?.label || 'Prof. Muhammad Tariq (Principal)'}
-            </p>
+            {Boolean(signatoryName) && (
+              <p className="font-bold text-xs uppercase tracking-wide text-black">
+                {signatoryName}
+              </p>
+            )}
             <p className="text-[10px] text-black/80 italic font-medium">
-              For: Admissions &amp; Academic Directorate
+              {signatoryTitle}
             </p>
-            <p className="text-[10px] text-black/70 font-semibold uppercase">
-              {schoolName}
-            </p>
+            {Boolean(schoolName) && (
+              <p className="text-[10px] text-black/70 font-semibold uppercase">
+                {schoolName}
+              </p>
+            )}
           </div>
         </div>
 
@@ -61,15 +69,9 @@ const AdmissionLetterSignatures = ({ student }) => {
             <img
               src={stamp.image_url}
               alt="Official Seal"
-              className="w-18 h-18 object-contain -rotate-6 opacity-90 print:opacity-100"
+              className="w-18 h-18 object-contain -rotate-6 opacity-95 print:opacity-100"
             />
-          ) : (
-            <div className="w-16 h-16 rounded-full border-2 border-dashed border-black/30 flex items-center justify-center text-center p-1">
-              <span className="text-[8px] font-bold uppercase tracking-tighter text-black/40">
-                Official Seal
-              </span>
-            </div>
-          )}
+          ) : null}
         </div>
 
         <div className="sm:col-span-4 flex flex-col items-center sm:items-end justify-center">

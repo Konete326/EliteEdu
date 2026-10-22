@@ -17,52 +17,52 @@ const StudentLedgerModal = ({ isOpen, student, onClose }) => {
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-ink dark:text-ink-dark">Student Fee Ledger</h3>
+              <h3 className="text-lg font-bold text-ink dark:text-white">Student Fee Ledger</h3>
               <p className="text-xs text-ink-muted dark:text-ink-muted-dark">
                 {student.name} • GR #{student.gr_number}
               </p>
             </div>
           </div>
-          <button type="button" onClick={onClose} className="p-1 rounded-lg text-ink-muted hover:text-ink">
+          <button type="button" onClick={onClose} className="p-1 rounded-lg text-ink-muted hover:text-ink dark:hover:text-white hover:bg-surface-secondary dark:hover:bg-[#1a1a1a] cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="grid grid-cols-3 gap-3">
           <div className="p-3.5 rounded-xl bg-surface-secondary/70 dark:bg-[#141414] border border-line dark:border-white/10 text-center">
-            <p className="text-[11px] text-ink-muted">Gross Monthly Fee</p>
-            <p className="text-base font-bold text-ink dark:text-ink-dark mt-1">Rs. {fee.toLocaleString()}</p>
+            <p className="text-[11px] text-ink-muted dark:text-ink-muted-dark">Gross Monthly Fee</p>
+            <p className="text-base font-bold text-ink dark:text-white mt-1">Rs. {fee.toLocaleString()}</p>
           </div>
           <div className="p-3.5 rounded-xl bg-surface-secondary/70 dark:bg-[#141414] border border-line dark:border-white/10 text-center">
-            <p className="text-[11px] text-ink-muted">Fee Concession</p>
+            <p className="text-[11px] text-ink-muted dark:text-ink-muted-dark">Fee Concession</p>
             <p className="text-base font-bold text-warn mt-1">Rs. {discount.toLocaleString()}</p>
           </div>
           <div className="p-3.5 rounded-xl bg-surface-secondary/70 dark:bg-[#141414] border border-line dark:border-white/10 text-center">
-            <p className="text-[11px] text-ink-muted">Net Monthly Due</p>
+            <p className="text-[11px] text-ink-muted dark:text-ink-muted-dark">Net Monthly Due</p>
             <p className="text-base font-bold text-primary dark:text-primary-dark mt-1">Rs. {netFee.toLocaleString()}</p>
           </div>
         </div>
 
         <div className="space-y-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-ink-muted">Ledger Summary</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-ink-muted-dark">Ledger Summary</h4>
           <div className="p-4 rounded-xl bg-surface-secondary/50 dark:bg-[#141414] border border-line dark:border-white/10 space-y-2 text-xs">
             <div className="flex justify-between">
-              <span className="text-ink-muted">Enrolled Grade:</span>
-              <span className="font-semibold text-ink dark:text-ink-dark">{student.current_grade?.name || 'Class'}</span>
+              <span className="text-ink-muted dark:text-ink-muted-dark">Enrolled Grade:</span>
+              <span className="font-semibold text-ink dark:text-white">{student.current_grade?.name || 'Class'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-ink-muted">Section:</span>
-              <span className="font-semibold text-ink dark:text-ink-dark">{student.current_section || 'A'}</span>
+              <span className="text-ink-muted dark:text-ink-muted-dark">Section:</span>
+              <span className="font-semibold text-ink dark:text-white">{student.current_section || 'A'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-ink-muted">Admission Date:</span>
-              <span className="font-semibold text-ink dark:text-ink-dark">
+              <span className="text-ink-muted dark:text-ink-muted-dark">Admission Date:</span>
+              <span className="font-semibold text-ink dark:text-white">
                 {student.admission_date ? new Date(student.admission_date).toLocaleDateString() : 'N/A'}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-ink-muted">Billing Cycle:</span>
-              <span className="font-semibold text-good flex items-center gap-1">
+              <span className="text-ink-muted dark:text-ink-muted-dark">Billing Cycle:</span>
+              <span className="font-semibold text-good dark:text-good-dark flex items-center gap-1">
                 <CheckCircle className="w-3.5 h-3.5" /> 1st of every month
               </span>
             </div>
@@ -73,7 +73,7 @@ const StudentLedgerModal = ({ isOpen, student, onClose }) => {
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 rounded-xl border border-line dark:border-white/10 text-xs font-semibold hover:bg-surface-secondary transition-colors"
+            className="px-5 py-2 rounded-xl border border-line dark:border-white/10 text-xs font-semibold hover:bg-surface-secondary dark:hover:bg-[#1a1a1a] text-ink dark:text-white transition-colors cursor-pointer"
           >
             Close
           </button>

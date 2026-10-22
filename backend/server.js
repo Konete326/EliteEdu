@@ -24,6 +24,7 @@ const behaviorRoutes = require('./routes/behaviorRoutes'); const bulkMigrationRo
 const bulkImportRoutes = require('./routes/bulkImportRoutes'); const campusTransferRoutes = require('./routes/campusTransferRoutes');
 const transportRoutes = require('./routes/transportRoutes'); const studentPortalRoutes = require('./routes/studentPortalRoutes');
 const messengerRoutes = require('./routes/messengerRoutes'); const scannerRoutes = require('./routes/scannerRoutes'); const messagingRoutes = require('./routes/messagingRoutes'); const zoomRoutes = require('./routes/zoomRoutes');
+const admissionLetterTemplateRoutes = require('./routes/admissionLetterTemplateRoutes');
 const auditLogger = require('./middlewares/auditLogger');
 const sanitizePayload = require('./utils/sanitizePayload');
 const seedSuperAdmin = require('./utils/seedSuperAdmin');
@@ -84,7 +85,8 @@ const routes = [
   [['/api/bulk-import', '/bulk-import'], bulkImportRoutes], [['/api/campus-transfers', '/campus-transfers'], campusTransferRoutes],
   [['/api/transport', '/transport'], transportRoutes], [['/api/student-portal', '/student-portal'], studentPortalRoutes],
   [['/api/messenger', '/messenger'], messengerRoutes], [['/api/scanner', '/scanner'], scannerRoutes],
-  [['/api/messaging', '/messaging'], messagingRoutes], [['/api/zoom', '/zoom'], zoomRoutes]
+  [['/api/messaging', '/messaging'], messagingRoutes], [['/api/zoom', '/zoom'], zoomRoutes],
+  [['/api/admission-letter-templates', '/admission-letter-templates'], admissionLetterTemplateRoutes]
 ];
 routes.forEach(([paths, handler]) => app.use(paths, handler));
 
