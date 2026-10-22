@@ -165,11 +165,23 @@ const StudentIdCardModernToolbar = ({
               type="button"
               onClick={onExportZip}
               disabled={isExportingZip || selectedCount === 0}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#181818] hover:bg-surface-secondary text-ink dark:text-white text-xs font-bold transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
+              className="relative overflow-hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#181818] hover:bg-surface-secondary text-ink dark:text-white text-xs font-bold transition-all shadow-2xs disabled:opacity-80 cursor-pointer"
               title="Download ZIP package with individual printable cards + manifest for vendor"
             >
-              <Archive className="w-4 h-4" />
-              <span>{isExportingZip ? 'Packing ZIP...' : 'Export Vendor ZIP'}</span>
+              {isExportingZip && zipProgress && (
+                <div
+                  className="absolute inset-0 bg-primary/20 dark:bg-primary/30 transition-all duration-150 pointer-events-none"
+                  style={{ width: `${zipProgress.percent}%` }}
+                />
+              )}
+              <Archive className={`w-4 h-4 relative z-10 ${isExportingZip ? 'animate-pulse text-primary' : ''}`} />
+              <span className="relative z-10">
+                {isExportingZip
+                  ? zipProgress?.total
+                    ? `Packing ${zipProgress.current}/${zipProgress.total} (${zipProgress.percent}%)`
+                    : 'Packing ZIP...'
+                  : 'Export Vendor ZIP'}
+              </span>
             </button>
           )}
         </div>
