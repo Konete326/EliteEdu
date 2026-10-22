@@ -135,6 +135,7 @@ const Design4NavyRibbonHalftone = ({
                 showSignature={true}
                 showStamp={false}
                 signatureTitle={signatoryTitle2}
+                principalSignatureUrl={school.principal_signature_url}
                 compact={true}
                 hideControls={true}
               />

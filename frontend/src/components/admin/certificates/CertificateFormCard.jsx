@@ -33,8 +33,8 @@ const CertificateFormCard = ({
   };
 
   return (
-    <div className="bg-surface dark:bg-surface-dark p-4 sm:p-5 rounded-2xl border border-line dark:border-line-dark shadow-xs space-y-4 text-xs">
-      <div className="flex items-center justify-between pb-2 border-b border-line dark:border-line-dark">
+    <div className="bg-surface dark:bg-surface-dark p-3.5 sm:p-4 rounded-2xl border border-line dark:border-line-dark shadow-xs flex flex-col justify-between text-xs xl:h-[490px] xl:max-h-[490px]">
+      <div className="flex items-center justify-between pb-2 border-b border-line dark:border-line-dark shrink-0">
         <h3 className="font-bold text-sm text-slate-800 dark:text-white flex items-center gap-1.5">
           <Award className="w-4 h-4 text-primary" /> Certificate Configuration
         </h3>
@@ -43,7 +43,7 @@ const CertificateFormCard = ({
 
       <PrerequisiteGuardBanner prerequisites={prereqs} onRefresh={onRefreshPrereqs} />
 
-      <div className="space-y-3.5">
+      <div className="flex-1 overflow-y-auto pr-1 space-y-2.5 custom-scrollbar my-1.5">
         <div>
           <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1 flex items-center gap-1">
             <FileText size={12} className="text-primary" />
@@ -78,7 +78,7 @@ const CertificateFormCard = ({
         />
       </div>
 
-      <div className="pt-3 border-t border-line dark:border-line-dark space-y-2">
+      <div className="pt-2 border-t border-line dark:border-line-dark space-y-1.5 shrink-0 bg-surface dark:bg-surface-dark">
         <button
           type="button"
           onClick={onGenerate}

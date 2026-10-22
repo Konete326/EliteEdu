@@ -161,6 +161,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
         accentColor: activeTemplate.accent_color || '#b59449',
         signatoryTitle1: form.signatory_title_1 || 'Teacher In-Charge',
         signatoryTitle2: form.signatory_title_2 || 'Principal / Headmaster',
+        principalSignatureUrl: schoolData.principal_signature_url || '',
         showStamp: form.show_stamp !== false,
         showQr: form.show_qr !== false,
         verifyUrl: `${typeof window !== 'undefined' ? window.location.origin : ''}/verify/certificate/PREVIEW`
@@ -189,6 +190,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
       accentColor: c.accent_color || '#b59449',
       signatoryTitle1: c.signatory_title_1 || 'Teacher In-Charge',
       signatoryTitle2: c.signatory_title_2 || 'Principal / Headmaster',
+      principalSignatureUrl: schoolData.principal_signature_url || '',
       showStamp: c.show_stamp !== false,
       showQr: c.show_qr !== false,
       verifyUrl: `${typeof window !== 'undefined' ? window.location.origin : ''}/verify/certificate/${c.certificate_no}`
@@ -201,24 +203,24 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
   ];
 
   return (
-    <div className="w-full space-y-6">
-      <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8 mb-6 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 print:hidden">
+    <div className="w-full flex flex-col gap-2.5 xl:h-[calc(100vh-80px)] xl:max-h-[calc(100vh-80px)] xl:overflow-hidden">
+      <div className="px-3.5 py-2 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xs flex items-center justify-between gap-3 shrink-0 print:hidden">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-ink dark:text-ink-dark flex items-center gap-2">
-            <Award className="w-6 h-6 text-primary" />
+          <h1 className="text-base sm:text-lg font-bold text-ink dark:text-ink-dark flex items-center gap-2">
+            <Award className="w-5 h-5 text-primary" />
             <span>{tab === 'templates' ? 'Certificate Templates Studio' : 'Certificate Generator Studio'}</span>
           </h1>
-          <p className="text-xs font-semibold text-ink-muted">
+          <p className="text-[11px] font-semibold text-ink-muted hidden sm:block">
             {tab === 'templates'
               ? 'Manage institutional templates, award wording, and placeholder tags'
               : 'Design, issue, and print verifiable student and staff institutional credentials'}
           </p>
         </div>
-        <div className="flex rounded-xl border border-line p-0.5 bg-surface-secondary/40 text-xs font-bold">
+        <div className="flex rounded-xl border border-line p-0.5 bg-surface-secondary/40 text-xs font-bold shrink-0">
           <button
             type="button"
             onClick={() => setTab('generate')}
-            className={`px-4 py-1.5 rounded-lg transition-colors cursor-pointer ${
+            className={`px-3 py-1 rounded-lg transition-colors cursor-pointer ${
               tab === 'generate' ? 'bg-primary text-white shadow-2xs' : 'text-ink-muted hover:text-ink'
             }`}
           >
@@ -227,7 +229,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
           <button
             type="button"
             onClick={() => setTab('templates')}
-            className={`px-4 py-1.5 rounded-lg transition-colors cursor-pointer ${
+            className={`px-3 py-1 rounded-lg transition-colors cursor-pointer ${
               tab === 'templates' ? 'bg-primary text-white shadow-2xs' : 'text-ink-muted hover:text-ink'
             }`}
           >
@@ -237,11 +239,13 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
       </div>
 
       {tab === 'templates' ? (
-        <CertificateTemplatesManager templates={templates} onRefresh={loadData} />
+        <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
+          <CertificateTemplatesManager templates={templates} onRefresh={loadData} />
+        </div>
       ) : (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-            <div className="xl:col-span-5 print:hidden">
+        <div className="flex-1 flex flex-col gap-2.5 min-h-0">
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-2.5 items-stretch xl:h-[490px] xl:max-h-[490px] shrink-0">
+            <div className="xl:col-span-5 h-full min-h-0 print:hidden">
               <CertificateFormCard
                 templates={templates}
                 students={students}
@@ -265,7 +269,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
               />
             </div>
 
-            <div className="xl:col-span-7 flex justify-center">
+            <div className="xl:col-span-7 h-full min-h-0 flex justify-center">
               <CertificatePreviewCanvas
                 certificateNo="CERT-2026-0001"
                 template={activeTemplate}
@@ -276,6 +280,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
                   name: schoolData.name || user?.school_name || activeCampus?.name || 'Elite Educational System',
                   slogan: effectiveSlogan,
                   logo_url: schoolData.logo_url || user?.school_logo || activeCampus?.logo,
+                  principal_signature_url: schoolData.principal_signature_url || '',
                   address: schoolData.address || activeCampus?.address
                 }}
                 campus={activeCampus || {}}
@@ -298,7 +303,7 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
             </div>
           </div>
 
-          <div className="print:hidden">
+          <div className="xl:h-[205px] xl:max-h-[210px] shrink-0 print:hidden min-h-0">
             <SavedCertificatesTable
               certificates={issuedData.certificates}
               total={issuedData.total}
@@ -327,7 +332,6 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
                   show_stamp: c.show_stamp !== false,
                   show_qr: c.show_qr !== false
                 });
-                window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               onPrintRow={() => window.print()}
               onDownloadRow={handleDownloadRow}

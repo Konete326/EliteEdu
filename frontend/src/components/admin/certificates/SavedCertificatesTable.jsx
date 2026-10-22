@@ -32,40 +32,44 @@ const SavedCertificatesTable = ({
   };
 
   return (
-    <div className="bg-surface dark:bg-surface-dark rounded-2xl border border-line dark:border-line-dark shadow-xs p-4 sm:p-5 space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2 border-b border-line dark:border-line-dark">
+    <div className="bg-surface dark:bg-surface-dark rounded-2xl border border-line dark:border-line-dark shadow-xs p-3 sm:p-3.5 space-y-2 xl:h-[205px] xl:max-h-[210px] flex flex-col justify-between text-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-1.5 border-b border-line dark:border-line-dark shrink-0">
         <div>
-          <h3 className="font-bold text-sm text-slate-800 dark:text-white flex items-center gap-1.5">
-            <Award className="w-4 h-4 text-primary" /> Saved & Issued Certificates
+          <h3 className="font-bold text-xs sm:text-sm text-slate-800 dark:text-white flex items-center gap-1.5">
+            <Award className="w-3.5 h-3.5 text-primary" />
+            <span>Saved & Issued Certificates</span>
+            <span className="px-1.5 py-0.2 rounded-md bg-primary/10 text-primary text-[10px] font-mono">
+              {total}
+            </span>
           </h3>
-          <p className="text-xs text-slate-500">
-            History of all officially issued certificates with unique verifiable serials.
+          <p className="text-[10px] text-slate-500 hidden sm:block">
+            History of officially issued certificates with unique verifiable serials.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <div className="relative">
-            <Search size={14} className="absolute left-3 top-2.5 text-ink-muted" />
+            <Search size={13} className="absolute left-2.5 top-2 text-ink-muted" />
             <input
               type="text"
               value={search}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search serial or recipient..."
-              className="pl-8 pr-3 py-1.5 rounded-xl border border-line bg-transparent text-xs w-48 sm:w-60"
+              placeholder="Search serial or name..."
+              className="pl-7 pr-2.5 py-1 rounded-lg border border-line bg-transparent text-xs w-36 sm:w-52"
             />
           </div>
           <button
             type="button"
             onClick={() => setIsCameraOpen(true)}
-            className="px-3 py-1.5 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary hover:text-white text-primary text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
+            className="px-2.5 py-1 rounded-lg border border-primary/30 bg-primary/10 hover:bg-primary hover:text-white text-primary text-xs font-bold flex items-center gap-1 transition-all cursor-pointer shrink-0"
             title="Scan Certificate QR"
           >
-            <Camera size={13} />
+            <Camera size={12} />
             <span className="hidden sm:inline">Scan QR</span>
           </button>
           <select
             value={recipientType}
             onChange={(e) => onRecipientTypeChange(e.target.value)}
-            className="px-3 py-1.5 rounded-xl border border-line bg-transparent text-xs font-semibold"
+            className="px-2 py-1 rounded-lg border border-line bg-transparent text-xs font-semibold"
           >
             <option value="all">All Types</option>
             <option value="Student">Students</option>
@@ -74,32 +78,32 @@ const SavedCertificatesTable = ({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-line dark:border-line-dark">
+      <div className="flex-1 overflow-x-auto overflow-y-auto rounded-xl border border-line dark:border-line-dark relative custom-scrollbar">
         <table className="w-full text-left text-xs border-collapse">
-          <thead className="bg-surface-secondary/70 dark:bg-white/[0.03] border-b border-line text-[11px] font-bold text-ink-muted uppercase">
+          <thead className="sticky top-0 z-10 bg-surface dark:bg-surface-dark border-b border-line text-[10px] font-bold text-ink-muted uppercase shadow-2xs">
             <tr>
-              <th className="py-2.5 px-3">Serial</th>
-              <th className="py-2.5 px-3">Template</th>
-              <th className="py-2.5 px-3">Type</th>
-              <th className="py-2.5 px-3">Recipient</th>
-              <th className="py-2.5 px-3">Date</th>
-              <th className="py-2.5 px-3 text-right">Actions</th>
+              <th className="py-1.5 px-3">Serial</th>
+              <th className="py-1.5 px-3">Template</th>
+              <th className="py-1.5 px-3">Type</th>
+              <th className="py-1.5 px-3">Recipient</th>
+              <th className="py-1.5 px-3">Date</th>
+              <th className="py-1.5 px-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line dark:divide-line-dark">
             {certificates.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-xs text-ink-muted">
+                <td colSpan={6} className="py-6 text-center text-xs text-ink-muted">
                   No certificates generated yet.
                 </td>
               </tr>
             ) : (
               certificates.map((c) => (
                 <tr key={c._id} className="hover:bg-surface-secondary/40 transition-colors">
-                  <td className="py-2.5 px-3 font-mono font-bold text-primary">
+                  <td className="py-1.5 px-3 font-mono font-bold text-primary">
                     {c.certificate_no}
                   </td>
-                  <td className="py-2.5 px-3">
+                  <td className="py-1.5 px-3">
                     <span className="font-bold text-slate-800 dark:text-white block">
                       {c.template_name}
                     </span>
@@ -107,25 +111,25 @@ const SavedCertificatesTable = ({
                       {c.orientation || 'landscape'} • {c.design_style?.replace(/_/g, ' ')}
                     </span>
                   </td>
-                  <td className="py-2.5 px-3">
+                  <td className="py-1.5 px-3">
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary">
                       {c.recipient_type}
                     </span>
                   </td>
-                  <td className="py-2.5 px-3">
+                  <td className="py-1.5 px-3">
                     <span className="font-bold block text-slate-800 dark:text-white">
                       {c.recipient_name}
                     </span>
                     <span className="text-[10px] text-ink-muted">{c.class_or_designation}</span>
                   </td>
-                  <td className="py-2.5 px-3 font-mono text-ink-muted">
+                  <td className="py-1.5 px-3 font-mono text-ink-muted">
                     {new Date(c.issue_date || c.createdAt).toLocaleDateString('en-GB', {
                       day: '2-digit',
                       month: 'short',
                       year: 'numeric'
                     })}
                   </td>
-                  <td className="py-2.5 px-3 text-right">
+                  <td className="py-1.5 px-3 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button
                         type="button"

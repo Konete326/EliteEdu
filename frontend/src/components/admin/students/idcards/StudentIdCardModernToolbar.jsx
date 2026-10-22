@@ -67,7 +67,8 @@ const StudentIdCardModernToolbar = ({
   onExportPdf,
   isExporting = false,
   onExportZip,
-  isExportingZip = false
+  isExportingZip = false,
+  zipProgress = null
 }) => {
   const isAllSelected = totalCount > 0 && selectedCount === totalCount;
 

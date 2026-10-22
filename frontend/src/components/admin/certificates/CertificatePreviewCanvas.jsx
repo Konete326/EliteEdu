@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ZoomIn, ZoomOut, Maximize2, X, Copy, Check, Printer, Download, Eye } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2, X, Copy, Check, Printer, Download, Eye, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { normalizeDesignStyle } from './CertificateDesigns';
 import Design1AcademicGoldHatch from './designs/Design1AcademicGoldHatch';
 import Design2FloralCornerFiligree from './designs/Design2FloralCornerFiligree';
@@ -37,6 +37,17 @@ const CertificatePreviewCanvas = ({
   const normStyle = normalizeDesignStyle(style || template.design_style);
   const isPortrait = orientation === 'portrait';
   const verifyUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/verify/certificate/${certificateNo}`;
+
+  const missingFields = [];
+  if (recipientType === 'Student' && (recipient?._id || recipient?.name)) {
+    if (!recipient.father_name || !recipient.father_name.trim()) missingFields.push("Father's Name");
+    if (!recipient.dob && !recipient.date_of_birth) missingFields.push("Date of Birth");
+    if (!recipient.gr_number) missingFields.push("GR Number");
+    if (!recipient.current_grade) missingFields.push("Class Grade");
+  } else if (recipientType === 'Staff' && (recipient?._id || recipient?.name)) {
+    if (!recipient.designation) missingFields.push("Designation");
+    if (!recipient.employee_code && !recipient.personal_id) missingFields.push("Employee Code");
+  }
 
   const handleCopyLink = () => {
     if (navigator?.clipboard) {
@@ -118,7 +129,7 @@ const CertificatePreviewCanvas = ({
         }
       `}</style>
 
-      <div className="w-full flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-2xs print:hidden text-xs">
+      <div className="w-full flex flex-wrap items-center justify-between gap-2 px-3 py-1.5 rounded-xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-2xs print:hidden text-xs shrink-0">
         <div className="flex items-center gap-2">
           <span className="font-bold text-ink dark:text-ink-dark flex items-center gap-1.5">
             <Eye size={13} className="text-primary" />
@@ -202,7 +213,26 @@ const CertificatePreviewCanvas = ({
         </div>
       </div>
 
-      <div className="w-full flex justify-center overflow-hidden p-1">
+      {missingFields.length > 0 ? (
+        <div className="w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-[11px] font-medium print:hidden shrink-0">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <AlertTriangle size={13} className="text-amber-600 dark:text-amber-400 shrink-0" />
+            <span className="truncate">
+              <strong>Missing fields:</strong> {missingFields.join(', ')} — please update recipient record before physical printing.
+            </span>
+          </div>
+          <span className="text-[9.5px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded-md shrink-0">
+            Incomplete Record
+          </span>
+        </div>
+      ) : recipient && (recipient._id || recipient.name) ? (
+        <div className="w-full flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[10.5px] font-semibold print:hidden shrink-0">
+          <CheckCircle2 size={13} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+          <span>Profile verified. All essential credential variables are complete for physical printing.</span>
+        </div>
+      ) : null}
+
+      <div className="w-full flex justify-center items-center overflow-hidden p-0.5 flex-1 xl:max-h-[425px]">
         <div
           style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
           className="transition-transform duration-150 w-full flex justify-center"
@@ -210,7 +240,7 @@ const CertificatePreviewCanvas = ({
           <div
             id="printable-certificate"
             className={`w-full overflow-hidden transition-all duration-200 rounded-2xl shadow-xl border border-slate-300 dark:border-slate-800 print:shadow-none print:m-0 print:rounded-none ${
-              isPortrait ? 'max-w-[660px] aspect-[1/1.414]' : 'max-w-[940px] aspect-[1.414/1]'
+              isPortrait ? 'max-w-[390px] xl:max-w-[400px] aspect-[1/1.414]' : 'max-w-[590px] xl:max-w-[605px] aspect-[1.414/1]'
             }`}
           >
             {renderDesign()}

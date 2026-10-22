@@ -52,6 +52,7 @@ export const generateCertificatePdfBytes = async (data = {}) => {
     accentColor = '#b59449',
     signatoryTitle1 = 'Teacher In-Charge',
     signatoryTitle2 = 'Principal / Head of Institution',
+    principalSignatureUrl = '',
     showStamp = true,
     showQr = true,
     verifyUrl = ''
@@ -274,6 +275,37 @@ export const generateCertificatePdfBytes = async (data = {}) => {
   }
 
   const signBlockX = width - 190;
+  if (principalSignatureUrl) {
+    try {
+      let sigBytes = null;
+      if (principalSignatureUrl.startsWith('data:image/')) {
+        const base64 = principalSignatureUrl.split(',')[1];
+        sigBytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+      } else {
+        const res = await fetch(principalSignatureUrl);
+        const arrayBuf = await res.arrayBuffer();
+        sigBytes = new Uint8Array(arrayBuf);
+      }
+      if (sigBytes) {
+        let sigImg = null;
+        try {
+          sigImg = await pdfDoc.embedPng(sigBytes);
+        } catch {
+          sigImg = await pdfDoc.embedJpg(sigBytes);
+        }
+        if (sigImg) {
+          const sigW = 90;
+          const sigH = (sigImg.height / sigImg.width) * sigW;
+          page.drawImage(sigImg, {
+            x: signBlockX + 20,
+            y: bottomY + 16,
+            width: sigW,
+            height: Math.min(sigH, 30)
+          });
+        }
+      }
+    } catch {}
+  }
   page.drawLine({
     start: { x: signBlockX, y: bottomY + 14 },
     end: { x: signBlockX + 130, y: bottomY + 14 },

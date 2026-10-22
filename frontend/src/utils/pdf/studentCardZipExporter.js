@@ -54,10 +54,16 @@ export const exportStudentCardsZip = async (students, options = {}) => {
     style = 'template_1_curve_blue',
     orientation = 'vertical',
     accentColor = '#003B73',
-    institution = {}
+    institution = {},
+    onProgress
   } = options;
 
   if (!students || students.length === 0) return false;
+
+  const total = students.length;
+  if (onProgress) {
+    onProgress({ current: 0, total, percent: 3, stage: 'photos' });
+  }
 
   const zip = new JSZip();
   const individualFolder = zip.folder('Individual_Cards_PDF');
@@ -72,7 +78,11 @@ export const exportStudentCardsZip = async (students, options = {}) => {
     })
   );
 
-  for (let i = 0; i < students.length; i++) {
+  if (onProgress) {
+    onProgress({ current: 0, total, percent: 8, stage: 'cards' });
+  }
+
+  for (let i = 0; i < total; i++) {
     const student = students[i];
     const doc = await PDFDocument.create();
     const bold = await doc.embedFont(StandardFonts.HelveticaBold);
@@ -121,11 +131,21 @@ export const exportStudentCardsZip = async (students, options = {}) => {
     const code = sanitize(student.gr_number || `STU_${i + 1}`);
     const name = sanitize(student.name || 'Student');
     individualFolder.file(`${code}_${name}_ID_Card.pdf`, cardBytes);
+
+    if (onProgress) {
+      const current = i + 1;
+      const percent = Math.min(92, Math.round(8 + (current / total) * 82));
+      onProgress({ current, total, percent, stage: 'cards' });
+    }
   }
 
   const batchPdfBytes = await generateStudentCardsPdfBytes(students, options);
   if (batchPdfBytes) {
     zip.file('All_Cards_A4_Batch_Print_Sheet.pdf', batchPdfBytes);
+  }
+
+  if (onProgress) {
+    onProgress({ current: total, total, percent: 93, stage: 'compressing' });
   }
 
   const instName = institution.institutionName || 'Elite Educational System';
@@ -163,7 +183,17 @@ export const exportStudentCardsZip = async (students, options = {}) => {
 
   zip.file('VENDOR_PRINT_MANIFEST.txt', manifest);
 
-  const zipBlob = await zip.generateAsync({ type: 'blob' });
+  const zipBlob = await zip.generateAsync({ type: 'blob' }, (metadata) => {
+    if (onProgress && metadata.percent) {
+      const p = Math.min(99, Math.round(93 + (metadata.percent / 100) * 6));
+      onProgress({ current: total, total, percent: p, stage: 'compressing' });
+    }
+  });
+
+  if (onProgress) {
+    onProgress({ current: total, total, percent: 100, stage: 'done' });
+  }
+
   const customName = options.filename;
   const filename = customName || `Student_ID_Cards_Vendor_Package_${Date.now()}.zip`;
   const downloadUrl = URL.createObjectURL(zipBlob);

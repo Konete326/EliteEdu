@@ -25,6 +25,7 @@ const OfficialSignatureStampBlock = ({
   showSignature = true,
   signatureTitle = 'Signature',
   stampTitle = 'Official Stamp',
+  principalSignatureUrl = '',
   compact = false,
   hideControls = false
 }) => {
@@ -108,12 +109,20 @@ const OfficialSignatureStampBlock = ({
       <div className={`w-full flex items-end justify-center gap-3 ${compact ? 'pt-0.5' : 'pt-2'}`}>
         {showSignature && (
           <div className="w-full max-w-[140px] text-center flex flex-col items-center">
-            {activeSig ? (
-              <img src={activeSig.image_url} alt={activeSig.label} className={`${compact ? 'h-6' : 'h-9'} max-w-full object-contain mb-0.5`} />
+            {activeSig?.image_url || principalSignatureUrl ? (
+              <img
+                src={activeSig?.image_url || principalSignatureUrl}
+                alt={activeSig?.label || signatureTitle}
+                className={`${compact ? 'h-6' : 'h-9'} max-w-full object-contain mb-0.5`}
+              />
             ) : (
               <div className={`${compact ? 'h-5 w-20' : 'h-6 w-28'} border-b border-slate-400 mb-1`} />
             )}
-            {signatureTitle && <span className="font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 text-[9px] block leading-tight">{signatureTitle}</span>}
+            {signatureTitle && (
+              <span className="font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 text-[9px] block leading-tight">
+                {signatureTitle}
+              </span>
+            )}
           </div>
         )}
 
