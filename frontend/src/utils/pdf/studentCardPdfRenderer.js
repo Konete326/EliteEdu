@@ -51,17 +51,17 @@ const drawBarcode = (page, x, y, width, height, barColor) => {
 };
 
 const drawPhoto = (page, { x, y, width, height, photoImage, name, ringColor, ringWidth = 2, fonts }) => {
-  page.drawRectangle({
-    x,
-    y,
-    width,
-    height,
-    color: rgb(1, 1, 1),
-    borderColor: ringColor || rgb(0.6, 0.65, 0.7),
-    borderWidth: ringWidth,
-  });
-
   if (photoImage) {
+    page.drawRectangle({
+      x,
+      y,
+      width,
+      height,
+      color: rgb(1, 1, 1),
+      borderColor: ringColor || rgb(0.6, 0.65, 0.7),
+      borderWidth: ringWidth,
+    });
+
     const imgW = photoImage.width;
     const imgH = photoImage.height;
     const aspect = imgW / imgH;
@@ -88,20 +88,61 @@ const drawPhoto = (page, { x, y, width, height, photoImage, name, ringColor, rin
       height: drawH,
     });
   } else {
+    page.drawRectangle({
+      x,
+      y,
+      width,
+      height,
+      color: rgb(0.94, 0.96, 0.98),
+      borderColor: ringColor || rgb(0.6, 0.65, 0.7),
+      borderWidth: ringWidth,
+    });
+
+    page.drawCircle({
+      x: x + width / 2,
+      y: y + height / 2 + 5,
+      size: Math.min(width, height) * 0.18,
+      color: rgb(0.78, 0.82, 0.88),
+    });
+
+    page.drawEllipse({
+      x: x + width / 2,
+      y: y + 9,
+      xScale: width * 0.34,
+      yScale: height * 0.18,
+      color: rgb(0.78, 0.82, 0.88),
+    });
+
     const initials = (name || 'ST')
       .split(' ')
       .filter(Boolean)
       .slice(0, 2)
       .map((w) => w[0]?.toUpperCase() || '')
       .join('') || 'ST';
-    const fontSize = 13;
+
+    const fontSize = 7;
     const textWidth = fonts.bold.widthOfTextAtSize(initials, fontSize);
+    const badgeW = Math.min(width - 8, Math.max(22, textWidth + 8));
+    const badgeH = 10;
+    const badgeX = x + (width - badgeW) / 2;
+    const badgeY = y + 4;
+    const isLightRing = !ringColor || (ringColor.red > 0.9 && ringColor.green > 0.9 && ringColor.blue > 0.9);
+    const textCol = isLightRing ? rgb(0.08, 0.18, 0.38) : ringColor;
+
+    page.drawRectangle({
+      x: badgeX,
+      y: badgeY,
+      width: badgeW,
+      height: badgeH,
+      color: textCol,
+    });
+
     page.drawText(initials, {
-      x: x + (width - textWidth) / 2,
-      y: y + (height / 2) - (fontSize / 3),
+      x: badgeX + (badgeW - textWidth) / 2,
+      y: badgeY + 2.5,
       size: fontSize,
       font: fonts.bold,
-      color: ringColor || rgb(0.12, 0.22, 0.42),
+      color: rgb(1, 1, 1),
     });
   }
 };
@@ -240,7 +281,7 @@ const drawVerticalStudentCard = (page, coords, student, fonts, opts) => {
   const gradeName = student?.current_grade?.name || student?.grade_name || 'Class';
   const secName = student?.current_section ? ` (${student.current_section})` : '';
   const classText = `${gradeName.replace(/^class\s*/i, '')}${secName}`;
-  const fatherVal = student?.father_name ? `S/O ${student.father_name}` : '—';
+  const fatherVal = student?.father_name || '—';
   const bloodVal = student?.blood_group || '—';
   const rollVal = student?.roll_number || '—';
   const bformVal = student?.b_form || student?.cnic || '—';
@@ -466,7 +507,7 @@ const drawHorizontalStudentCard = (page, coords, student, fonts, opts) => {
     color: rgb(0.35, 0.4, 0.46),
   });
 
-  const fatherVal = student?.father_name ? `S/O ${student.father_name}` : '—';
+  const fatherVal = student?.father_name || '—';
   const phoneVal = student?.contact_number || student?.emergency_contact_no || student?.parent_phone || '—';
 
   const gridRows = [

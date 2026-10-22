@@ -49,7 +49,7 @@ const Template3WaveRibbon = ({
         ? [
             { label: 'GR NUMBER', value: holder.gr_number || '—' },
             { label: 'CLASS / SEC', value: classWithSec },
-            { label: 'FATHER', value: fatherName ? `S/O ${fatherName}` : '—' },
+            { label: 'FATHER', value: fatherName || '—' },
             { label: 'ROLL NO', value: rollNo || '—' },
             { label: 'BIRTH DATE', value: fmtDate(holder.dob) },
             { label: 'BLOOD GRP', value: blood || '—' },
@@ -60,7 +60,7 @@ const Template3WaveRibbon = ({
         : [
             { label: 'GR NUMBER', value: holder.gr_number || '—' },
             { label: 'CLASS / SEC', value: classWithSec },
-            { label: 'FATHER', value: fatherName ? `S/O ${fatherName}` : '—' },
+            { label: 'FATHER', value: fatherName || '—' },
             { label: 'ROLL NO', value: rollNo || '—' },
             { label: 'SESSION', value: fmtDate(holder.date_of_admission || holder.admission_date) }
           ])

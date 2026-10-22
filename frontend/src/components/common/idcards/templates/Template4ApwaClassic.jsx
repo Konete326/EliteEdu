@@ -49,7 +49,7 @@ const Template4ApwaClassic = ({
         ? [
             { label: 'GR NUMBER', value: holder.gr_number || '—' },
             { label: 'CLASS / SEC', value: classWithSec },
-            { label: 'FATHER NAME', value: fatherName ? `S/O ${fatherName}` : '—' },
+            { label: 'FATHER NAME', value: fatherName || '—' },
             { label: 'ROLL NUMBER', value: rollNo || '—' },
             { label: 'DATE OF BIRTH', value: fmtDate(holder.dob) },
             { label: 'BLOOD GROUP', value: blood || '—' },
@@ -60,7 +60,7 @@ const Template4ApwaClassic = ({
         : [
             { label: 'GR NUMBER', value: holder.gr_number || '—' },
             { label: 'CLASS / SEC', value: classWithSec },
-            { label: 'FATHER NAME', value: fatherName ? `S/O ${fatherName}` : '—' },
+            { label: 'FATHER NAME', value: fatherName || '—' },
             { label: 'ROLL NUMBER', value: rollNo || '—' },
             { label: 'ENROLLMENT', value: fmtDate(holder.date_of_admission || holder.admission_date) }
           ])

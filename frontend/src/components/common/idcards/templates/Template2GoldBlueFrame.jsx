@@ -51,7 +51,7 @@ const Template2GoldBlueFrame = ({
         ? [
             { label: 'GR NUMBER', value: holder.gr_number || '—' },
             { label: 'CLASS / SEC', value: classWithSec },
-            { label: 'FATHER NAME', value: fatherName ? `S/O ${fatherName}` : '—' },
+            { label: 'FATHER NAME', value: fatherName || '—' },
             { label: 'ROLL NUMBER', value: rollNo || '—' },
             { label: 'DATE OF BIRTH', value: fmtDate(holder.dob) },
             { label: 'BLOOD GROUP', value: blood || '—' },
@@ -62,7 +62,7 @@ const Template2GoldBlueFrame = ({
         : [
             { label: 'GR NUMBER', value: holder.gr_number || '—' },
             { label: 'CLASS / SEC', value: classWithSec },
-            { label: 'FATHER NAME', value: fatherName ? `S/O ${fatherName}` : '—' },
+            { label: 'FATHER NAME', value: fatherName || '—' },
             { label: 'ROLL NUMBER', value: rollNo || '—' },
             { label: 'ADMISSION', value: fmtDate(holder.date_of_admission || holder.admission_date) }
           ])

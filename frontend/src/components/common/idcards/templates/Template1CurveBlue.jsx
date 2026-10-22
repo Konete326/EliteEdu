@@ -48,7 +48,7 @@ const Template1CurveBlue = ({
         ? [
             { label: 'GR NO', value: holder.gr_number || '—' },
             { label: 'CLASS', value: classWithSec },
-            { label: 'FATHER', value: fatherName ? `S/O ${fatherName}` : '—' },
+            { label: 'FATHER', value: fatherName || '—' },
             { label: 'ROLL NO', value: rollNo || '—' },
             { label: 'DOB', value: fmtDate(holder.dob) },
             { label: 'BLOOD', value: blood || '—' },
@@ -59,7 +59,7 @@ const Template1CurveBlue = ({
         : [
             { label: 'GR NO', value: holder.gr_number || '—' },
             { label: 'CLASS', value: classWithSec },
-            { label: 'FATHER', value: fatherName ? `S/O ${fatherName}` : '—' },
+            { label: 'FATHER', value: fatherName || '—' },
             { label: 'ROLL NO', value: rollNo || '—' },
             { label: 'SESSION', value: fmtDate(holder.date_of_admission || holder.admission_date) }
           ])

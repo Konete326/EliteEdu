@@ -87,7 +87,7 @@ const StudentIdCardModernToolbar = ({
     ...students.map((s) => ({
       value: s._id,
       label: `${s.name} (GR: ${s.gr_number || '—'})`,
-      subtext: `Class: ${s.current_grade?.name || '—'} • ${s.father_name ? 'S/D of ' + s.father_name : ''}`
+      subtext: `Class: ${s.current_grade?.name || '—'} • ${s.father_name ? 'Father: ' + s.father_name : ''}`
     }))
   ];
 

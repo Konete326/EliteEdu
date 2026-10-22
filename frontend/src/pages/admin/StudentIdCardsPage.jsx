@@ -58,7 +58,7 @@ const StudentIdCardsPage = () => {
   const [zipProgress, setZipProgress] = useState(null);
   const [exportNotice, setExportNotice] = useState('');
   const [activeSheetIndex, setActiveSheetIndex] = useState(0);
-  const [viewMode, setViewMode] = useState('sheet');
+  const [viewMode, setViewMode] = useState('all');
 
   const handleSelectSpecificStudent = (sId) => {
     setSelectedStudentId(sId);
@@ -242,7 +242,7 @@ const StudentIdCardsPage = () => {
                 )}
               </div>
               <p className="text-[11px] text-ink-muted">
-                Class: {singleSelectedStudent.current_grade?.name || '—'} • GR: {singleSelectedStudent.gr_number || '—'} • S/D of {singleSelectedStudent.father_name || '—'}
+                Class: {singleSelectedStudent.current_grade?.name || '—'} • GR: {singleSelectedStudent.gr_number || '—'} • Father: {singleSelectedStudent.father_name || '—'}
               </p>
             </div>
           </div>
