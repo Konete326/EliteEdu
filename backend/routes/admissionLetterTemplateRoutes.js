@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { authMiddleware, roleMiddleware } = require('../middleware/authMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware');
+const authorizeRoles = require('../middlewares/roleMiddleware');
 const {
   getTemplates,
   getTemplateById,
@@ -10,7 +11,7 @@ const {
 } = require('../controllers/admissionLetterTemplateController');
 
 router.use(authMiddleware);
-router.use(roleMiddleware(['Admin', 'SuperAdmin']));
+router.use(authorizeRoles(['Admin', 'SuperAdmin']));
 
 router.get('/', getTemplates);
 router.get('/:id', getTemplateById);
