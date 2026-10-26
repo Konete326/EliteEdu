@@ -7,7 +7,7 @@ const getSchoolTheme = async (req, res) => {
       return res.status(400).json({ message: 'No school associated with user' });
     }
 
-    const school = await School.findById(schoolId).select('theme_settings name');
+    const school = await School.findById(schoolId).select('theme_settings name').lean();
     if (!school) {
       return res.status(404).json({ message: 'School not found' });
     }

@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+require('./School');
+require('./Campus');
+require('./Grade');
 const {
   parentDetailsSchema,
   familyMemberSchema,
@@ -92,10 +95,33 @@ studentSchema.pre('validate', async function () {
 });
 
 studentSchema.index({ school_id: 1, gr_number: 1 });
+studentSchema.index({ school_id: 1, name: 1 });
+studentSchema.index({ school_id: 1, contact_number: 1 });
+studentSchema.index({ school_id: 1, b_form: 1 });
 studentSchema.index({ school_id: 1, current_grade: 1, campus_id: 1 });
 studentSchema.index({ school_id: 1, campus_id: 1, createdAt: -1 });
 studentSchema.index({ school_id: 1, current_grade: 1, createdAt: -1 });
 studentSchema.index({ school_id: 1, status: 1, createdAt: -1 });
 studentSchema.index({ school_id: 1, createdAt: -1 });
+studentSchema.index(
+  {
+    name: 'text',
+    father_name: 'text',
+    surname: 'text',
+    mother_guardian_name: 'text',
+    gr_number: 'text'
+  },
+  {
+    weights: {
+      name: 10,
+      father_name: 5,
+      gr_number: 3,
+      surname: 2,
+      mother_guardian_name: 1
+    },
+    name: 'StudentTextIndex'
+  }
+);
 
 module.exports = mongoose.model('Student', studentSchema);
+

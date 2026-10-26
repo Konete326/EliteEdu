@@ -13,13 +13,18 @@ const getStudents = async (req, res) => {
     if (status && status !== 'all') filter.status = status;
     if (search && search.trim()) {
       const q = search.trim();
-      filter.$or = [
-        { name: { $regex: q, $options: 'i' } },
-        { gr_number: { $regex: q, $options: 'i' } },
-        { contact_number: { $regex: q, $options: 'i' } },
-        { b_form: { $regex: q, $options: 'i' } },
-        { 'parents_cnic.father_cnic': { $regex: q, $options: 'i' } }
-      ];
+      if (req.query.textSearch === 'true') {
+        filter.$text = { $search: q };
+      } else {
+        const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        filter.$or = [
+          { name: { $regex: escaped, $options: 'i' } },
+          { gr_number: { $regex: `^${escaped}`, $options: 'i' } },
+          { contact_number: { $regex: `^${escaped}` } },
+          { b_form: { $regex: `^${escaped}` } },
+          { 'parents_cnic.father_cnic': { $regex: `^${escaped}` } }
+        ];
+      }
     }
 
     const pageNum = Math.max(1, parseInt(page, 10));
@@ -29,7 +34,8 @@ const getStudents = async (req, res) => {
     const isMinimal = req.query.minimal === 'true';
     const isCard = req.query.cardView === 'true';
     const isFull = req.query.full === 'true';
-    const query = Student.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limitNum);
+    const sortOrder = req.query.textSearch === 'true' && search?.trim() ? { score: { $meta: 'textScore' }, createdAt: -1 } : { createdAt: -1 };
+    const query = Student.find(filter).sort(sortOrder).skip(skip).limit(limitNum).lean();
 
     if (isMinimal) {
       query.select('name gr_number father_name current_grade current_section photo_url campus_id createdAt')
@@ -72,8 +78,8 @@ const getStudents = async (req, res) => {
 
     const [totalCount, activeCount, leftCount, discountCount, students] = await Promise.all([
       Student.countDocuments(filter),
-      Student.countDocuments({ ...baseScope, status: { $regex: '^active$', $options: 'i' } }),
-      Student.countDocuments({ ...baseScope, status: { $in: [/^inactive$/i, /^suspended$/i, /^left$/i, 'Inactive', 'Suspended', 'Left'] } }),
+      Student.countDocuments({ ...baseScope, status: 'Active' }),
+      Student.countDocuments({ ...baseScope, status: { $in: ['Inactive', 'Suspended', 'Left'] } }),
       Student.countDocuments({ ...baseScope, discount: { $gt: 0 } }),
       query.lean()
     ]);
@@ -106,7 +112,8 @@ const getStudentById = async (req, res) => {
       .populate('school_id', 'name school_type logo_url slogan contact_number address website affiliation_number')
       .populate('current_grade', 'name sections')
       .populate('grade_admitted', 'name sections')
-      .populate('subjects', 'name code');
+      .populate('subjects', 'name code')
+      .lean();
 
     if (!student) return res.status(404).json({ message: 'Student not found' });
     res.status(200).json({ success: true, student });

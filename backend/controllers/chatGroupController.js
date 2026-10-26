@@ -25,7 +25,8 @@ const createGroup = async (req, res) => {
       finalName = group_name || 'All Faculty & Staff Group';
       const staff = await User.find({ school_id: schoolId, status: { $ne: 'Inactive' }, _id: { $ne: req.user.id } })
         .select('name role designation photo_url')
-        .limit(200);
+        .limit(200)
+        .lean();
       staff.forEach((u) => {
         participants.push({
           user_id: u._id,
@@ -36,7 +37,7 @@ const createGroup = async (req, res) => {
         });
       });
     } else if (group_type === 'Class_Group') {
-      const gradeDoc = grade_id ? await Grade.findById(grade_id) : null;
+      const gradeDoc = grade_id ? await Grade.findById(grade_id).select('name').lean() : null;
       finalName = group_name || `Class Broadcast: ${gradeDoc?.name || 'Class'} ${section || ''}`.trim();
 
       const sQuery = {
@@ -64,7 +65,7 @@ const createGroup = async (req, res) => {
         sQuery.current_section = new RegExp(`^(${rawEsc}|Sec\\s*${secEsc}|${secEsc})$`, 'i');
       }
 
-      const students = await Student.find(sQuery).select('name photo_url current_section').limit(200);
+      const students = await Student.find(sQuery).select('name photo_url current_section').limit(200).lean();
       students.forEach((s) => {
         participants.push({
           user_id: s._id,

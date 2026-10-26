@@ -26,6 +26,36 @@ const resolveUser = (req) => {
   return null;
 };
 
+const logQueue = [];
+let flushTimer = null;
+
+const flushLogs = async () => {
+  if (logQueue.length === 0) return;
+  const batch = logQueue.splice(0, logQueue.length);
+  try {
+    await SystemLog.insertMany(batch, { ordered: false });
+  } catch (err) {
+    console.error('Audit log flush error:', err.message);
+  }
+};
+
+const queueLog = (entry) => {
+  logQueue.push(entry);
+  if (logQueue.length >= 25) {
+    if (flushTimer) clearTimeout(flushTimer);
+    flushTimer = null;
+    flushLogs();
+  } else if (!flushTimer) {
+    flushTimer = setTimeout(() => {
+      flushTimer = null;
+      flushLogs();
+    }, 4000);
+  }
+};
+
+process.on('SIGINT', flushLogs);
+process.on('SIGTERM', flushLogs);
+
 const auditLogger = (req, res, next) => {
   const method = req.method ? req.method.toUpperCase() : '';
   const isStateChanging = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
@@ -35,7 +65,7 @@ const auditLogger = (req, res, next) => {
     return next();
   }
 
-  res.on('finish', async () => {
+  res.on('finish', () => {
     try {
       const user = resolveUser(req);
       const statusCode = res.statusCode;
@@ -44,7 +74,7 @@ const auditLogger = (req, res, next) => {
       const severity = statusCode >= 500 ? 'CRITICAL' : isError ? 'ERROR' : 'INFO';
       const message = `${method} ${path} [Status: ${statusCode}]`;
 
-      await SystemLog.create({
+      queueLog({
         school_id: user?.school_id || null,
         school_name: user?.school_name || 'Global / System',
         user_id: user?.id || null,

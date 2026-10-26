@@ -1,4 +1,5 @@
 import { useState, useEffect, useId, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { X, QrCode, AlertCircle } from 'lucide-react';
 import { useCameraScanner } from '../../common/scanner/useCameraScanner';
 import CameraViewfinder from '../../common/scanner/CameraViewfinder';
@@ -7,6 +8,7 @@ import ScannerManualBar from './ScannerManualBar';
 import { playScanSuccessBeep, playScanErrorBeep } from '../../../utils/audioFeedback';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../services/api';
+import { TextScanner } from '@/components/ui/animated-text-10';
 
 const UniversalScannerModal = ({ isOpen, onClose }) => {
   const containerId = useId().replace(/:/g, '_') + '_univ_scanner';
@@ -38,16 +40,38 @@ const UniversalScannerModal = ({ isOpen, onClose }) => {
     }
   }, [loading]);
 
-  const { isReady, cameraError, restart } = useCameraScanner({
+  const { isReady, cameraError, restart, stopScanner } = useCameraScanner({
     containerId,
     onScan: handleLookup,
     isActive: isOpen && !resolvedData,
     continuous: false
   });
 
+  const handleClose = useCallback(async () => {
+    try {
+      await stopScanner();
+    } catch (_) {}
+    onClose?.();
+  }, [stopScanner, onClose]);
+
   useEffect(() => {
-    if (!isOpen) { setResolvedData(null); setError(''); setCode(''); }
-  }, [isOpen]);
+    if (!isOpen) {
+      stopScanner();
+      setResolvedData(null);
+      setError('');
+      setCode('');
+    }
+  }, [isOpen, stopScanner]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        handleClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, handleClose]);
 
   const handleMarkAttendance = async (status) => {
     if (!resolvedData?.record?._id) return;
@@ -71,22 +95,36 @@ const UniversalScannerModal = ({ isOpen, onClose }) => {
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === 'undefined') return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md bg-surface dark:bg-[#0c0c0c] border border-line dark:border-white/10 rounded-3xl p-5 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
+      onClick={handleClose}
+    >
+      <div
+        className="relative w-full max-w-md bg-surface dark:bg-[#0c0c0c] border border-line dark:border-white/10 rounded-3xl p-5 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between pb-3 border-b border-line dark:border-white/10">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-primary/10 text-primary">
               <QrCode className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-black text-ink dark:text-ink-dark uppercase tracking-wider">Universal Scanner</h3>
+              <TextScanner
+                text="UNIVERSAL SCANNER"
+                className="text-sm font-black uppercase tracking-wider"
+                accentColor="var(--color-primary, #0d9488)"
+              />
               <p className="text-[11px] text-ink-muted">Scan Student ID Card, Staff Badge or Barcode</p>
             </div>
           </div>
-          <button type="button" onClick={onClose} className="p-1.5 rounded-xl text-ink-muted hover:text-ink dark:hover:text-ink-dark">
+          <button
+            type="button"
+            onClick={handleClose}
+            className="p-1.5 rounded-xl text-ink-muted hover:text-ink dark:hover:text-ink-dark cursor-pointer"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -104,7 +142,7 @@ const UniversalScannerModal = ({ isOpen, onClose }) => {
             onMarkAttendance={handleMarkAttendance}
             marking={marking}
             onResetScan={() => { setResolvedData(null); setError(''); setCode(''); }}
-            onClose={onClose}
+            onClose={handleClose}
           />
         ) : (
           <div className="space-y-4">
@@ -118,7 +156,8 @@ const UniversalScannerModal = ({ isOpen, onClose }) => {
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

@@ -40,12 +40,15 @@ const IdCardPhotoAvatar = ({
         alignItems: 'center',
         justifyContent: 'center',
         background: showFallback ? '#F1F5F9' : '#ffffff',
-        boxShadow: '0 2px 6px rgba(0,0,0,0.12)'
+        boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+        aspectRatio: '1 / 1'
       }}
     >
       {!showFallback ? (
         <img
           src={photoUrl}
+          loading="lazy"
+          decoding="async"
           className={`w-full h-full ${fit === 'cover' ? 'object-cover' : 'object-contain'} bg-white`}
           alt={name}
           onError={() => setHasError(true)}

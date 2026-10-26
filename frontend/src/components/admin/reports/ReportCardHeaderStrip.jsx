@@ -1,16 +1,8 @@
-import { useEffect, useState } from 'react';
-import QRCode from 'qrcode';
 import { GraduationCap, User } from 'lucide-react';
+import { QRCode } from '@/components/ui/qr-code';
 
 const ReportCardHeaderStrip = ({ student = {}, header = {} }) => {
-  const [qrCodeUrl, setQrCodeUrl] = useState('');
-
-  useEffect(() => {
-    if (student._id) {
-      const verifyUrl = `${window.location.origin}/verify/student/${student._id}`;
-      QRCode.toDataURL(verifyUrl, { width: 80, margin: 1 }).then(setQrCodeUrl).catch(() => {});
-    }
-  }, [student._id]);
+  const verifyUrl = student._id ? `${window.location.origin}/verify/student/${student._id}` : '';
 
   return (
     <div className="space-y-4 pb-4 border-b-2 border-primary/30">
@@ -67,9 +59,16 @@ const ReportCardHeaderStrip = ({ student = {}, header = {} }) => {
         </div>
 
         <div className="col-span-2 flex flex-col items-center justify-center">
-          {qrCodeUrl && (
+          {verifyUrl && (
             <>
-              <img src={qrCodeUrl} alt="Verify QR" className="w-16 h-16 rounded border border-line shadow-2xs" />
+              <div className="p-1 bg-white rounded border border-line shadow-2xs">
+                <QRCode
+                  value={verifyUrl}
+                  size={58}
+                  fgColor="#0f172a"
+                  bgColor="#ffffff"
+                />
+              </div>
               <span className="text-[9px] text-ink-muted mt-1 uppercase font-bold tracking-widest">Verify Record</span>
             </>
           )}

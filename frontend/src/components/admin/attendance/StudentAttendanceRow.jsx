@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { QrCode } from 'lucide-react';
 
 const STATUS_OPTIONS = [
@@ -8,7 +9,7 @@ const STATUS_OPTIONS = [
   { code: 'HD', label: 'HD', activeClass: 'bg-purple-600 text-white shadow-xs' }
 ];
 
-const StudentAttendanceRow = ({ item, onStatusChange, onRemarksChange }) => {
+const StudentAttendanceRow = memo(({ item, onStatusChange, onRemarksChange }) => {
   const { student, status, marked_via, remarks } = item;
   const fullName = `${student.first_name || ''} ${student.last_name || ''}`.trim() || 'Student';
 

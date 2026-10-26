@@ -12,7 +12,7 @@ const getQuestions = async (req, res) => {
     if (difficulty) query.difficulty = difficulty;
     if (search) query.question_text = { $regex: search, $options: 'i' };
 
-    const questions = await QuestionBank.find(query).populate('chapter_id', 'chapter_no title').sort({ createdAt: -1 });
+    const questions = await QuestionBank.find(query).populate('chapter_id', 'chapter_no title').sort({ createdAt: -1 }).lean();
     res.json({ success: true, questions });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch questions', error: error.message });
@@ -45,7 +45,7 @@ const updateQuestion = async (req, res) => {
       { _id: id, school_id: req.user.school_id },
       req.body,
       { new: true }
-    );
+    ).lean();
     if (!question) return res.status(404).json({ message: 'Question not found' });
     res.json({ success: true, question });
   } catch (error) {

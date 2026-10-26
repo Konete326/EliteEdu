@@ -29,7 +29,7 @@ const PromoteStudentsPage = () => {
   };
 
   return (
-    <div className="w-full space-y-4 pb-12">
+    <div className="w-full space-y-2.5 pb-4 xl:pb-0 min-h-0">
       <PromotionHeaderBanner
         candidates={candidates}
         passThreshold={passThreshold}
@@ -41,19 +41,19 @@ const PromoteStudentsPage = () => {
       />
 
       {error && (
-        <div className="p-3 rounded-xl bg-bad/10 text-bad border border-bad/20 text-xs">
+        <div className="p-2.5 rounded-xl bg-bad/10 text-bad border border-bad/20 text-xs">
           {error}
         </div>
       )}
 
       {successMsg && (
-        <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-bold">
+        <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-bold">
           {successMsg}
         </div>
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 items-start">
-        <div className="xl:col-span-8">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-3 items-start min-h-0">
+        <div className="xl:col-span-8 min-w-0 min-h-0">
           <PromotionStudentGrid
             candidates={candidates}
             grades={grades}
@@ -76,7 +76,7 @@ const PromoteStudentsPage = () => {
           />
         </div>
 
-        <div className="xl:col-span-4">
+        <div className="xl:col-span-4 min-w-0">
           <PromotionPosDock
             candidates={candidates}
             grades={grades}

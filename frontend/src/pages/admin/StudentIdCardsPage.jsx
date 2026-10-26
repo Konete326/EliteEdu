@@ -1,22 +1,26 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import StudentIdCardModernToolbar from '../../components/admin/students/idcards/StudentIdCardModernToolbar';
-import UniversalIdCardSheet from '../../components/common/idcards/UniversalIdCardSheet';
+import UniversalIdCard from '../../components/common/idcards/UniversalIdCard';
 import useIdCardInstitution from '../../components/common/idcards/useIdCardInstitution';
 import StudentCardEditModal from '../../components/admin/students/idcards/StudentCardEditModal';
 import { useIdCardsData } from '../../components/admin/students/idcards/useIdCardsData';
+import {
+  exportStudentCardsPdfBackground,
+  exportStudentCardsZipBackground,
+  printStudentCardsBackground
+} from '../../services/idCardExportService';
 import { exportStudentCardsPdf } from '../../utils/pdf/studentCardPdfExporter';
-import { exportStudentCardsZip } from '../../utils/pdf/studentCardZipExporter';
+import { Masonry } from '../../components/ui/responsive-masonry-layout';
 import {
   GraduationCap,
   Sparkles,
   CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  Archive
+  Archive,
+  Printer
 } from 'lucide-react';
+
+const BATCH_SIZE = 24;
 
 const StudentIdCardsPage = () => {
   const [searchParams] = useSearchParams();
@@ -26,6 +30,9 @@ const StudentIdCardsPage = () => {
     campuses,
     grades,
     loading,
+    totalCount,
+    isAllSelected,
+    selectedCount,
     searchQuery,
     setSearchQuery,
     selectedCampus,
@@ -55,14 +62,37 @@ const StudentIdCardsPage = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [isExportingSheet, setIsExportingSheet] = useState(false);
   const [isExportingZip, setIsExportingZip] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
   const [zipProgress, setZipProgress] = useState(null);
   const [exportNotice, setExportNotice] = useState('');
   const [activeSheetIndex, setActiveSheetIndex] = useState(0);
-  const [viewMode, setViewMode] = useState('all');
+  const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
+
+  const sentinelRef = useRef(null);
+
+  useEffect(() => {
+    setVisibleCount(BATCH_SIZE);
+  }, [searchQuery, selectedCampus, selectedGrade, photoFilter, selectedStudentId]);
+
+  useEffect(() => {
+    const target = sentinelRef.current;
+    if (!target) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setVisibleCount((prev) => Math.min(prev + BATCH_SIZE, selectedStudents.length));
+        }
+      },
+      { rootMargin: '350px' }
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [selectedStudents.length, visibleCount]);
 
   const handleSelectSpecificStudent = (sId) => {
     setSelectedStudentId(sId);
     setActiveSheetIndex(0);
+    setVisibleCount(BATCH_SIZE);
     if (sId === 'all') {
       setSelectedIds(filteredStudents.map((s) => s._id));
     } else {
@@ -82,6 +112,77 @@ const StudentIdCardsPage = () => {
   const safeSheetIndex = Math.min(activeSheetIndex, Math.max(0, chunks.length - 1));
   const currentSheetStudents = chunks[safeSheetIndex] || [];
 
+  const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
+  const visibleStudents = useMemo(() => selectedStudents.slice(0, visibleCount), [selectedStudents, visibleCount]);
+
+  const masonryCols = useMemo(() => {
+    if (orientation === 'horizontal') {
+      if (sideMode === 'both') {
+        return 'columns-1 min-[1780px]:columns-2';
+      }
+      return 'columns-1 md:columns-2 xl:columns-3 2xl:columns-4';
+    }
+    if (sideMode === 'both') {
+      return 'columns-1 min-[1180px]:columns-2';
+    }
+    return 'columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6';
+  }, [orientation, sideMode]);
+
+  const handlePrintSheet = async (mode = 'current') => {
+    try {
+      setIsPrinting(true);
+      if (mode === 'current') {
+        if (!currentSheetStudents.length) return;
+        setExportNotice(`Preparing print for Sheet ${safeSheetIndex + 1}...`);
+        await printStudentCardsBackground({
+          mode: 'current',
+          currentSheetStudents,
+          exportOptions: {
+            sideMode,
+            style: template,
+            orientation,
+            accentColor,
+            institution
+          }
+        });
+        setExportNotice('Print dialog ready!');
+        setTimeout(() => setExportNotice(''), 3000);
+      } else {
+        setExportNotice(`Preparing high-resolution print stream for ${selectedCount} cards...`);
+        await printStudentCardsBackground({
+          mode: 'all',
+          filterParams: {
+            campusId: selectedCampus,
+            gradeId: selectedGrade,
+            searchQuery,
+            photoFilter,
+            selectedIds,
+            isAllSelected,
+            fallbackStudents: selectedStudents
+          },
+          exportOptions: {
+            sideMode,
+            style: template,
+            orientation,
+            accentColor,
+            institution
+          },
+          onProgress: (p) => {
+            setExportNotice(p.message);
+          }
+        });
+        setExportNotice('Print dialog ready!');
+        setTimeout(() => setExportNotice(''), 3000);
+      }
+    } catch (e) {
+      console.error(e);
+      setExportNotice(e.message || 'Print preparation failed');
+      setTimeout(() => setExportNotice(''), 4000);
+    } finally {
+      setIsPrinting(false);
+    }
+  };
+
   const handleExportSheetPdf = async () => {
     if (!currentSheetStudents.length) return;
     try {
@@ -98,6 +199,8 @@ const StudentIdCardsPage = () => {
       setTimeout(() => setExportNotice(''), 4000);
     } catch (e) {
       console.error(e);
+      setExportNotice('Sheet export failed');
+      setTimeout(() => setExportNotice(''), 4000);
     } finally {
       setIsExportingSheet(false);
     }
@@ -106,18 +209,35 @@ const StudentIdCardsPage = () => {
   const handleExportPdf = async () => {
     try {
       setIsExporting(true);
-      await exportStudentCardsPdf(selectedStudents, {
-        sideMode,
-        style: template,
-        orientation,
-        accentColor,
-        institution,
-        filename: `Student_ID_Cards_All_${selectedStudents.length}_Cards_${orientation}.pdf`
+      setExportNotice('Connecting to server and rendering vector cards...');
+      const count = await exportStudentCardsPdfBackground({
+        filterParams: {
+          campusId: selectedCampus,
+          gradeId: selectedGrade,
+          searchQuery,
+          photoFilter,
+          selectedIds,
+          isAllSelected,
+          fallbackStudents: selectedStudents
+        },
+        exportOptions: {
+          sideMode,
+          style: template,
+          orientation,
+          accentColor,
+          institution,
+          filename: `Student_ID_Cards_All_${selectedCount}_Cards_${orientation}.pdf`
+        },
+        onProgress: (p) => {
+          setExportNotice(p.message);
+        }
       });
-      setExportNotice(`Exported all ${selectedStudents.length} card(s) successfully!`);
+      setExportNotice(`Exported all ${count} student card(s) successfully!`);
       setTimeout(() => setExportNotice(''), 4000);
     } catch (e) {
       console.error(e);
+      setExportNotice(e.message || 'PDF Export failed');
+      setTimeout(() => setExportNotice(''), 4000);
     } finally {
       setIsExporting(false);
     }
@@ -126,19 +246,34 @@ const StudentIdCardsPage = () => {
   const handleExportZip = async () => {
     try {
       setIsExportingZip(true);
-      setZipProgress({ current: 0, total: selectedStudents.length, percent: 1, stage: 'init' });
-      await exportStudentCardsZip(selectedStudents, {
-        sideMode,
-        style: template,
-        orientation,
-        accentColor,
-        institution,
-        onProgress: (p) => setZipProgress(p)
+      setZipProgress({ current: 0, total: selectedCount, percent: 1, stage: 'init' });
+      const count = await exportStudentCardsZipBackground({
+        filterParams: {
+          campusId: selectedCampus,
+          gradeId: selectedGrade,
+          searchQuery,
+          photoFilter,
+          selectedIds,
+          isAllSelected,
+          fallbackStudents: selectedStudents
+        },
+        exportOptions: {
+          sideMode,
+          style: template,
+          orientation,
+          accentColor,
+          institution
+        },
+        onProgress: (p) => {
+          setZipProgress(p);
+        }
       });
-      setExportNotice(`Vendor package exported! ${selectedStudents.length} card(s) saved in ZIP archive.`);
+      setExportNotice(`Vendor package exported! ${count} card(s) saved in ZIP archive.`);
       setTimeout(() => setExportNotice(''), 5000);
     } catch (e) {
       console.error(e);
+      setExportNotice(e.message || 'Vendor ZIP Export failed');
+      setTimeout(() => setExportNotice(''), 4000);
     } finally {
       setIsExportingZip(false);
       setZipProgress(null);
@@ -172,9 +307,10 @@ const StudentIdCardsPage = () => {
         photoFilter={photoFilter}
         onPhotoFilterChange={handlePhotoFilterChange}
         photoCounts={photoCounts}
-        selectedCount={selectedStudents.length}
-        totalCount={filteredStudents.length}
+        selectedCount={selectedCount}
+        totalCount={totalCount || filteredStudents.length}
         onToggleSelectAll={handleToggleSelectAll}
+        onPrintSheet={handlePrintSheet}
         onExportSheetPdf={handleExportSheetPdf}
         isExportingSheet={isExportingSheet}
         activeSheetIndex={safeSheetIndex}
@@ -185,6 +321,16 @@ const StudentIdCardsPage = () => {
         isExportingZip={isExportingZip}
         zipProgress={zipProgress}
       />
+
+      {isPrinting && (
+        <div className="p-3.5 rounded-2xl bg-surface dark:bg-[#181818] border border-primary/20 shadow-xs flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2 text-primary font-bold">
+            <Printer className="w-4 h-4 animate-bounce" />
+            <span>Preparing vector print stream...</span>
+          </div>
+          <span className="text-ink-muted">Native print dialog will open shortly</span>
+        </div>
+      )}
 
       {isExportingZip && zipProgress && (
         <div className="p-3.5 rounded-2xl bg-surface dark:bg-[#181818] border border-primary/20 shadow-xs space-y-2">
@@ -253,7 +399,7 @@ const StudentIdCardsPage = () => {
               onClick={() => handleSelectSpecificStudent('all')}
               className="px-3 py-1.5 rounded-xl border border-primary/30 text-primary hover:bg-primary/15 font-bold transition-all cursor-pointer text-xs"
             >
-              Show All Students ({filteredStudents.length})
+              Show All Students ({totalCount || filteredStudents.length})
             </button>
             <button
               type="button"
@@ -266,118 +412,11 @@ const StudentIdCardsPage = () => {
         </div>
       )}
 
-      {chunks.length > 1 && (
-        <div className="print:hidden flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-surface dark:bg-[#111114] border border-line dark:border-white/10 shadow-xs">
-          <div className="flex items-center gap-2.5">
-            <span className="w-7 h-7 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-black text-xs border border-primary/20">
-              {safeSheetIndex + 1}
-            </span>
-            <div>
-              <p className="text-xs font-bold text-ink dark:text-white">
-                Sheet {safeSheetIndex + 1} of {chunks.length}
-              </p>
-              <p className="text-[11px] text-ink-muted">
-                {chunks[safeSheetIndex]?.length || 0} cards on this sheet • {selectedStudents.length} total selected
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center flex-wrap gap-2">
-            <div className="flex items-center bg-surface-secondary dark:bg-[#181818] p-1 rounded-xl border border-line dark:border-white/10 text-xs">
-              <button
-                type="button"
-                onClick={() => setViewMode('sheet')}
-                className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                  viewMode === 'sheet'
-                    ? 'bg-surface dark:bg-[#222222] text-primary dark:text-white shadow-2xs'
-                    : 'text-ink-muted hover:text-ink'
-                }`}
-              >
-                Fast Sheet View
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('all')}
-                className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                  viewMode === 'all'
-                    ? 'bg-surface dark:bg-[#222222] text-primary dark:text-white shadow-2xs'
-                    : 'text-ink-muted hover:text-ink'
-                }`}
-                title="Render all sheets simultaneously"
-              >
-                View All ({chunks.length})
-              </button>
-            </div>
-
-            {viewMode === 'sheet' && (
-              <div className="flex items-center gap-1 bg-surface-secondary dark:bg-[#181818] p-1 rounded-xl border border-line dark:border-white/10">
-                <button
-                  type="button"
-                  disabled={safeSheetIndex === 0}
-                  onClick={() => setActiveSheetIndex(0)}
-                  title="First Sheet"
-                  className="p-1 rounded-lg text-ink-muted hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                >
-                  <ChevronsLeft className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  disabled={safeSheetIndex === 0}
-                  onClick={() => setActiveSheetIndex((prev) => Math.max(0, prev - 1))}
-                  title="Previous Sheet"
-                  className="p-1 rounded-lg text-ink-muted hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-
-                <select
-                  value={safeSheetIndex}
-                  onChange={(e) => setActiveSheetIndex(Number(e.target.value))}
-                  className="px-2 py-0.5 text-xs font-bold bg-surface dark:bg-[#222222] text-ink dark:text-white rounded-lg border border-line dark:border-white/10 outline-none cursor-pointer"
-                >
-                  {chunks.map((_, i) => (
-                    <option key={i} value={i}>
-                      Sheet {i + 1} of {chunks.length}
-                    </option>
-                  ))}
-                </select>
-
-                <button
-                  type="button"
-                  disabled={safeSheetIndex >= chunks.length - 1}
-                  onClick={() => setActiveSheetIndex((prev) => Math.min(chunks.length - 1, prev + 1))}
-                  title="Next Sheet"
-                  className="p-1 rounded-lg text-ink-muted hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  disabled={safeSheetIndex >= chunks.length - 1}
-                  onClick={() => setActiveSheetIndex(chunks.length - 1)}
-                  title="Last Sheet"
-                  className="p-1 rounded-lg text-ink-muted hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                >
-                  <ChevronsRight className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      <StudentCardEditModal
-        isOpen={Boolean(editingStudent)}
-        student={editingStudent}
-        onClose={() => setEditingStudent(null)}
-        onSaveSuccess={(updated) => updateStudentInList(updated)}
-      />
-
       {loading ? (
         <div className="text-center py-16 text-xs text-ink-muted">
           Loading student directory &amp; generating cards...
         </div>
-      ) : chunks.length === 0 ? (
+      ) : selectedStudents.length === 0 ? (
         <div className="bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark rounded-2xl p-12 text-center text-xs text-ink-muted space-y-2">
           <Sparkles className="w-8 h-8 text-primary mx-auto opacity-40" />
           <p className="font-bold text-sm text-ink dark:text-white">No student cards selected</p>
@@ -388,64 +427,60 @@ const StudentIdCardsPage = () => {
           </p>
         </div>
       ) : (
-        <>
-          <div className="space-y-8 print:hidden">
-            {viewMode === 'sheet' ? (
-              chunks[safeSheetIndex] && (
-                <UniversalIdCardSheet
-                  key={safeSheetIndex}
-                  holders={chunks[safeSheetIndex]}
-                  holderType="student"
-                  template={template}
-                  orientation={orientation}
-                  accentColor={accentColor}
-                  sideMode={sideMode}
-                  selectedIds={selectedIds}
-                  onToggleSelect={handleToggleSelect}
-                  institution={institution}
-                  pageIndex={safeSheetIndex}
-                  totalSheets={chunks.length}
-                />
-              )
-            ) : (
-              chunks.map((chunk, idx) => (
-                <UniversalIdCardSheet
-                  key={idx}
-                  holders={chunk}
-                  holderType="student"
-                  template={template}
-                  orientation={orientation}
-                  accentColor={accentColor}
-                  sideMode={sideMode}
-                  selectedIds={selectedIds}
-                  onToggleSelect={handleToggleSelect}
-                  institution={institution}
-                  pageIndex={idx}
-                  totalSheets={chunks.length}
-                />
-              ))
+        <div className="bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark rounded-2xl p-4 sm:p-6 shadow-sm print:hidden">
+          <div className="flex items-center justify-between pb-4 mb-6 border-b border-line dark:border-line-dark text-xs text-ink-muted">
+            <span className="font-semibold text-ink dark:text-white">
+              Previewing {visibleStudents.length} of {selectedStudents.length} cards (Total Database: {totalCount || filteredStudents.length})
+            </span>
+            {visibleCount < selectedStudents.length && (
+              <button
+                type="button"
+                onClick={() => setVisibleCount(selectedStudents.length)}
+                className="text-primary hover:underline font-bold cursor-pointer"
+              >
+                Load More Preview ({selectedStudents.length - visibleCount})
+              </button>
             )}
           </div>
 
-          <div className="hidden print:block space-y-8">
-            {chunks.map((chunk, idx) => (
-              <UniversalIdCardSheet
-                key={`print-${idx}`}
-                holders={chunk}
-                holderType="student"
-                template={template}
-                orientation={orientation}
-                accentColor={accentColor}
-                sideMode={sideMode}
-                selectedIds={selectedIds}
-                onToggleSelect={handleToggleSelect}
-                institution={institution}
-                pageIndex={idx}
-                totalSheets={chunks.length}
-              />
+          <Masonry cols={masonryCols}>
+            {visibleStudents.map((student) => (
+              <div key={student._id} className="flex justify-center transition-all duration-300 hover:-translate-y-1 max-w-full overflow-x-auto sm:overflow-visible">
+                <UniversalIdCard
+                  holder={student}
+                  holderType="student"
+                  template={template}
+                  orientation={orientation}
+                  accentColor={accentColor}
+                  sideMode={sideMode}
+                  institution={institution}
+                  isSelected={selectedSet.has(student._id)}
+                  onToggleSelect={() => handleToggleSelect(student._id)}
+                />
+              </div>
             ))}
-          </div>
-        </>
+          </Masonry>
+
+          {visibleCount < selectedStudents.length && (
+            <div ref={sentinelRef} className="pt-8 pb-4 text-center">
+              <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-surface-secondary dark:bg-[#181818] border border-line dark:border-white/10 shadow-xs text-xs text-ink-muted">
+                <div className="w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                <span>Loading more cards...</span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {editingStudent && (
+        <StudentCardEditModal
+          student={editingStudent}
+          onClose={() => setEditingStudent(null)}
+          onSave={(updated) => {
+            updateStudentInList(updated);
+            setEditingStudent(null);
+          }}
+        />
       )}
     </div>
   );

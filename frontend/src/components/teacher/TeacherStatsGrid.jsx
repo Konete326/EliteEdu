@@ -1,4 +1,6 @@
 import { GraduationCap, BookOpen, Users, ShieldCheck } from 'lucide-react';
+import { motion } from 'framer-motion';
+import AnimatedNumber from '@/components/ui/AnimatedNumber';
 
 const TeacherStatsGrid = ({ classesCount = 0, subjectsCount = 0, studentsCount = 0, permissionsCount = 0 }) => {
   const cards = [
@@ -13,22 +15,26 @@ const TeacherStatsGrid = ({ classesCount = 0, subjectsCount = 0, studentsCount =
       {cards.map((card, idx) => {
         const Icon = card.icon;
         return (
-          <div
+          <motion.div
             key={idx}
-            className="p-4 rounded-2xl bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark shadow-xs flex items-center justify-between"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: idx * 0.05, ease: 'easeOut' }}
+            whileHover={{ y: -3 }}
+            className="relative overflow-hidden p-4 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs hover:border-primary/40 hover:shadow-md transition-all flex items-center justify-between before:absolute before:inset-0 before:-z-10 before:bg-[radial-gradient(circle_at_50%_50%,currentColor_2%,transparent_2%)] before:opacity-[0.04] before:bg-[length:16px_16px]"
           >
             <div>
               <p className="text-[11px] font-semibold text-ink-muted dark:text-ink-muted-dark uppercase tracking-wider">
                 {card.title}
               </p>
               <h3 className="text-2xl font-black text-ink dark:text-ink-dark mt-1">
-                {card.count}
+                <AnimatedNumber value={card.count} />
               </h3>
             </div>
-            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center border ${card.color}`}>
+            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center border ${card.color} transition-transform hover:scale-105`}>
               <Icon className="w-5 h-5" />
             </div>
-          </div>
+          </motion.div>
         );
       })}
     </div>

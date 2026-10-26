@@ -3,7 +3,7 @@ const RemarkTemplate = require('../models/RemarkTemplate');
 const getRemarkTemplates = async (req, res) => {
   try {
     const school_id = req.user.school_id;
-    let templates = await RemarkTemplate.find({ school_id }).populate('subjects', 'name code').sort({ createdAt: -1 });
+    let templates = await RemarkTemplate.find({ school_id }).populate('subjects', 'name code').sort({ createdAt: -1 }).lean();
     if (templates.length === 0) {
       const defaults = [
         { name: 'Consistent High Achiever', text: 'Demonstrates exceptional understanding, analytical skills, and consistent preparation.' },
@@ -26,7 +26,7 @@ const createRemarkTemplate = async (req, res) => {
     const template = await RemarkTemplate.create({
       school_id, name: name.trim(), text: text || '', subjects: Array.isArray(subjects) ? subjects : []
     });
-    const populated = await RemarkTemplate.findById(template._id).populate('subjects', 'name code');
+    const populated = await RemarkTemplate.findById(template._id).populate('subjects', 'name code').lean();
     res.status(201).json({ success: true, template: populated });
   } catch (error) {
     res.status(500).json({ message: 'Failed to create remark template', error: error.message });
@@ -40,7 +40,7 @@ const updateRemarkTemplate = async (req, res) => {
       { _id: id, school_id: req.user.school_id },
       req.body,
       { new: true }
-    ).populate('subjects', 'name code');
+    ).populate('subjects', 'name code').lean();
     if (!template) return res.status(404).json({ message: 'Template not found' });
     res.json({ success: true, template });
   } catch (error) {

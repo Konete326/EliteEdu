@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CampusProvider } from './context/CampusContext';
@@ -6,45 +7,98 @@ import { ToastProvider } from './context/ToastContext';
 import { ComingSoonProvider } from './context/ComingSoonContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import DashboardLayout from './components/layout/DashboardLayout';
-import NotificationsPage from './pages/common/NotificationsPage';
-import LoginPage from './pages/auth/LoginPage';
-import UnauthorizedPage from './components/common/UnauthorizedPage';
-import SuperAdminDashboard from './pages/superadmin/SuperAdminDashboard';
-import SchoolsList from './pages/superadmin/SchoolsList';
-import SchoolsPage from './pages/superadmin/SchoolsPage';
-import NotFoundPage from './pages/common/NotFoundPage';
-import MyProfilePage from './pages/common/MyProfilePage';
-import SystemLogsPage from './pages/common/SystemLogsPage';
-import StudentEmergencyVerifyPage from './pages/public/StudentEmergencyVerifyPage';
-import StaffServiceVerifyPage from './pages/public/StaffServiceVerifyPage';
-import CertificateVerifyPage from './pages/public/CertificateVerifyPage';
-import TeacherPortalDashboard from './pages/teacher/TeacherPortalDashboard';
-import TeacherStudentsRosterPage from './pages/teacher/TeacherStudentsRosterPage';
-import TeacherSalaryPage from './pages/teacher/TeacherSalaryPage';
-import TeacherTimetablePage from './pages/teacher/TeacherTimetablePage';
+import PageLoader from './components/common/PageLoader';
 import RootRedirect from './components/common/RootRedirect';
 import PwaInstallPrompt from './components/common/PwaInstallPrompt';
-import InternalMessengerPage from './pages/common/InternalMessengerPage';
 import { Agentation } from 'agentation';
 import './utils/telemetryAgent';
-import {
-  AdminDashboard, TeachersList, AddTeacherPage, CampusPage, SubjectsPage, GradesPage, StudentsList, AddStudentPage,
-  StaffApplicantsList, AddStaffApplicantPage, GradingPoliciesPage, AdmissionLetterPage, StudentIdCardsPage,
-  TeacherIdCardsPage, ThemeSettingsPage, GeneralSettingsPage, UserManagementPage, PromoteStudentsPage,
-  GeneralSignaturesPage, StudentAttendancePage, EmployeeAttendancePage, ExamsListPage, ExamWizardPage,
-  ManageClassTestsPage, ClassTestResultsPage, FeeManagementPage,
-  FeeCollectionPage, FeeStructurePage, FeeDefaultersPage, FeeConcessionsPage, FeeReportsPage,
-  ExamCategoriesPage, RemarksPolicyPage,
-  ManageRemarksPage, DatesheetsListPage, NewDatesheetPage, MarkSheetsPage, QuestionPapersPage,
-  MasterReportsHubPage, StudentAdmissionReportPage, ParentContactReportPage, StudentReportCardPage,
-  StaffInfoReportPage, CertificatesPage, LeaveRequestPage, AttendanceReportPage,
-  CrmLeadsPage, CrmLeadFormPage, CrmPipelinePage, CrmFollowUpsPage, CrmAnalyticsPage,
-  AccountsSuitePage, StaffPayrollPage, LmsSuitePage, TimetablePage,
-  PosStorePage, StorePosPage, BehaviorSkillsPage, CampusTransferPage, CampusOperationsHubPage,
-  CampusOperationsPage, PlannersAndEventsPage, BulkMigrationPage, BulkDataImportPage, TransportManagementPage,
-  MessagingStudioPage, ZoomSettingsPage
-} from './pages/admin';
-import StudentPortalPage from './pages/student/StudentPortalPage';
+
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
+const UnauthorizedPage = lazy(() => import('./components/common/UnauthorizedPage'));
+const NotFoundPage = lazy(() => import('./pages/common/NotFoundPage'));
+const NotificationsPage = lazy(() => import('./pages/common/NotificationsPage'));
+const MyProfilePage = lazy(() => import('./pages/common/MyProfilePage'));
+const SystemLogsPage = lazy(() => import('./pages/common/SystemLogsPage'));
+const InternalMessengerPage = lazy(() => import('./pages/common/InternalMessengerPage'));
+const StudentEmergencyVerifyPage = lazy(() => import('./pages/public/StudentEmergencyVerifyPage'));
+const StaffServiceVerifyPage = lazy(() => import('./pages/public/StaffServiceVerifyPage'));
+const CertificateVerifyPage = lazy(() => import('./pages/public/CertificateVerifyPage'));
+
+const SuperAdminDashboard = lazy(() => import('./pages/superadmin/SuperAdminDashboard'));
+const SchoolsList = lazy(() => import('./pages/superadmin/SchoolsList'));
+const SchoolsPage = lazy(() => import('./pages/superadmin/SchoolsPage'));
+
+const TeacherPortalDashboard = lazy(() => import('./pages/teacher/TeacherPortalDashboard'));
+const TeacherStudentsRosterPage = lazy(() => import('./pages/teacher/TeacherStudentsRosterPage'));
+const TeacherSalaryPage = lazy(() => import('./pages/teacher/TeacherSalaryPage'));
+const TeacherTimetablePage = lazy(() => import('./pages/teacher/TeacherTimetablePage'));
+
+const StudentPortalPage = lazy(() => import('./pages/student/StudentPortalPage'));
+
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const TeachersList = lazy(() => import('./pages/admin/TeachersList'));
+const AddTeacherPage = lazy(() => import('./pages/admin/AddTeacherPage'));
+const CampusPage = lazy(() => import('./pages/admin/CampusPage'));
+const SubjectsPage = lazy(() => import('./pages/admin/SubjectsPage'));
+const GradesPage = lazy(() => import('./pages/admin/GradesPage'));
+const StudentsList = lazy(() => import('./pages/admin/StudentsList'));
+const AddStudentPage = lazy(() => import('./pages/admin/AddStudentPage'));
+const StaffApplicantsList = lazy(() => import('./pages/admin/StaffApplicantsList'));
+const AddStaffApplicantPage = lazy(() => import('./pages/admin/AddStaffApplicantPage'));
+const GradingPoliciesPage = lazy(() => import('./pages/admin/GradingPoliciesPage'));
+const AdmissionLetterPage = lazy(() => import('./pages/admin/AdmissionLetterPage'));
+const StudentIdCardsPage = lazy(() => import('./pages/admin/StudentIdCardsPage'));
+const TeacherIdCardsPage = lazy(() => import('./pages/admin/TeacherIdCardsPage'));
+const ThemeSettingsPage = lazy(() => import('./pages/admin/ThemeSettingsPage'));
+const GeneralSettingsPage = lazy(() => import('./pages/admin/GeneralSettingsPage'));
+const UserManagementPage = lazy(() => import('./pages/admin/UserManagementPage'));
+const PromoteStudentsPage = lazy(() => import('./pages/admin/PromoteStudentsPage'));
+const GeneralSignaturesPage = lazy(() => import('./pages/admin/GeneralSignaturesPage'));
+const StudentAttendancePage = lazy(() => import('./pages/admin/StudentAttendancePage'));
+const EmployeeAttendancePage = lazy(() => import('./pages/admin/EmployeeAttendancePage'));
+const ExamsListPage = lazy(() => import('./pages/admin/ExamsListPage'));
+const ExamWizardPage = lazy(() => import('./pages/admin/ExamWizardPage'));
+const ManageClassTestsPage = lazy(() => import('./pages/admin/ManageClassTestsPage'));
+const ClassTestResultsPage = lazy(() => import('./pages/admin/ClassTestResultsPage'));
+const FeeCollectionPage = lazy(() => import('./pages/admin/fees/FeeCollectionPage'));
+const FeeStructurePage = lazy(() => import('./pages/admin/fees/FeeStructurePage'));
+const FeeDefaultersPage = lazy(() => import('./pages/admin/fees/FeeDefaultersPage'));
+const FeeConcessionsPage = lazy(() => import('./pages/admin/fees/FeeConcessionsPage'));
+const FeeReportsPage = lazy(() => import('./pages/admin/fees/FeeReportsPage'));
+const ExamCategoriesPage = lazy(() => import('./pages/admin/ExamCategoriesPage'));
+const RemarksPolicyPage = lazy(() => import('./pages/admin/RemarksPolicyPage'));
+const ManageRemarksPage = lazy(() => import('./pages/admin/ManageRemarksPage'));
+const DatesheetsListPage = lazy(() => import('./pages/admin/DatesheetsListPage'));
+const NewDatesheetPage = lazy(() => import('./pages/admin/NewDatesheetPage'));
+const MarkSheetsPage = lazy(() => import('./pages/admin/MarkSheetsPage'));
+const QuestionPapersPage = lazy(() => import('./pages/admin/QuestionPapersPage'));
+const MasterReportsHubPage = lazy(() => import('./pages/admin/MasterReportsHubPage'));
+const StudentAdmissionReportPage = lazy(() => import('./pages/admin/StudentAdmissionReportPage'));
+const ParentContactReportPage = lazy(() => import('./pages/admin/ParentContactReportPage'));
+const StudentReportCardPage = lazy(() => import('./pages/admin/StudentReportCardPage'));
+const StaffInfoReportPage = lazy(() => import('./pages/admin/StaffInfoReportPage'));
+const CertificatesPage = lazy(() => import('./pages/admin/CertificatesPage'));
+const LeaveRequestPage = lazy(() => import('./pages/admin/LeaveRequestPage'));
+const AttendanceReportPage = lazy(() => import('./pages/admin/AttendanceReportPage'));
+const CrmLeadsPage = lazy(() => import('./pages/admin/CrmLeadsPage'));
+const CrmLeadFormPage = lazy(() => import('./pages/admin/CrmLeadFormPage'));
+const CrmPipelinePage = lazy(() => import('./pages/admin/CrmPipelinePage'));
+const CrmFollowUpsPage = lazy(() => import('./pages/admin/CrmFollowUpsPage'));
+const CrmAnalyticsPage = lazy(() => import('./pages/admin/CrmAnalyticsPage'));
+const AccountsSuitePage = lazy(() => import('./pages/admin/AccountsSuitePage'));
+const StaffPayrollPage = lazy(() => import('./pages/admin/StaffPayrollPage'));
+const LmsSuitePage = lazy(() => import('./pages/admin/LmsSuitePage'));
+const TimetablePage = lazy(() => import('./pages/admin/TimetablePage'));
+const PosStorePage = lazy(() => import('./pages/admin/PosStorePage'));
+const BehaviorSkillsPage = lazy(() => import('./pages/admin/BehaviorSkillsPage'));
+const CampusTransferPage = lazy(() => import('./pages/admin/CampusTransferPage'));
+const CampusOperationsPage = lazy(() => import('./pages/admin/CampusOperationsPage'));
+const PlannersAndEventsPage = lazy(() => import('./pages/admin/PlannersAndEventsPage'));
+const BulkMigrationPage = lazy(() => import('./pages/admin/BulkMigrationPage'));
+const BulkDataImportPage = lazy(() => import('./pages/admin/BulkDataImportPage'));
+const TransportManagementPage = lazy(() => import('./pages/admin/TransportManagementPage'));
+const MessagingStudioPage = lazy(() => import('./pages/admin/MessagingStudioPage'));
+const ZoomSettingsPage = lazy(() => import('./pages/admin/ZoomSettingsPage'));
 
 function App() {
   return (
@@ -55,9 +109,10 @@ function App() {
             <ComingSoonProvider>
             <BrowserRouter>
               <PwaInstallPrompt />
-              <Routes>
-                <Route path="/" element={<RootRedirect />} />
-                <Route path="/login" element={<LoginPage />} />
+              <Suspense fallback={<PageLoader text="Loading section..." />}>
+                <Routes>
+                  <Route path="/" element={<RootRedirect />} />
+                  <Route path="/login" element={<LoginPage />} />
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
                 <Route path="/verify/student/:id" element={<StudentEmergencyVerifyPage />} />
                 <Route path="/verify/staff/:id" element={<StaffServiceVerifyPage />} />
@@ -114,8 +169,8 @@ function App() {
                     <Route path="/admin/reports/staff-info" element={<StaffInfoReportPage />} />
                     <Route path="/admin/reports/attendance-report" element={<AttendanceReportPage />} />
                     <Route path="/admin/reports/attendance" element={<AttendanceReportPage />} />
-                    <Route path="/admin/certificates" element={<CertificatesPage />} />
-                    <Route path="/admin/certificates/templates" element={<CertificatesPage defaultTab="templates" />} />
+                    <Route path="/admin/certificates" element={<CertificatesPage key="generate" defaultTab="generate" />} />
+                    <Route path="/admin/certificates/templates" element={<CertificatesPage key="templates" defaultTab="templates" />} />
                     <Route path="/admin/crm/inquiries" element={<CrmLeadsPage />} />
                     <Route path="/admin/crm/leads" element={<CrmLeadsPage />} />
                     <Route path="/admin/crm/inquiries/new" element={<CrmLeadFormPage />} />
@@ -257,6 +312,7 @@ function App() {
                 </Route>
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
+            </Suspense>
             </BrowserRouter>
             {import.meta.env.DEV && <Agentation />}
             </ComingSoonProvider>

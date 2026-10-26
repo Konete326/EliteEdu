@@ -61,7 +61,8 @@ const createFeeStructure = async (req, res) => {
 
     const populated = await FeeStructure.findById(structure._id)
       .populate('grade_id', 'name code monthly_fee')
-      .populate('campus_id', 'name code');
+      .populate('campus_id', 'name code')
+      .lean();
 
     res.status(201).json({ success: true, message: 'Fee structure saved successfully', structure: populated });
   } catch (error) {
@@ -76,7 +77,7 @@ const updateFeeStructure = async (req, res) => {
       { _id: id, school_id: req.schoolId },
       req.body,
       { new: true, runValidators: true }
-    ).populate('grade_id', 'name code monthly_fee').populate('campus_id', 'name code');
+    ).populate('grade_id', 'name code monthly_fee').populate('campus_id', 'name code').lean();
 
     if (!structure) {
       return res.status(404).json({ success: false, message: 'Fee structure not found' });

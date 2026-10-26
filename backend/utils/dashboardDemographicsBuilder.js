@@ -1,4 +1,8 @@
-const buildAppDownloadStats = (students, teachers, campusList, totalStudents, activeStudents, totalTeachers) => {
+const buildAppDownloadStats = (studentStats, teachers, campusList) => {
+  const totalStudents = studentStats?.summary?.totalStudents || 0;
+  const activeStudents = studentStats?.summary?.activeStudents || 0;
+  const totalTeachers = teachers.length;
+
   const totalDownloads = totalStudents + totalTeachers;
   const activeDownloads = activeStudents + totalTeachers;
   const activePct = totalDownloads > 0 ? Number(((activeDownloads / totalDownloads) * 100).toFixed(1)) : 0;
@@ -16,7 +20,7 @@ const buildAppDownloadStats = (students, teachers, campusList, totalStudents, ac
     staffStrength: totalTeachers,
     staffDownloadPct: totalTeachers > 0 ? 100 : 0,
     campusBreakdown: campusList.map((c) => {
-      const cStudents = students.filter((s) => String(s.campus_id) === String(c.id)).length;
+      const cStudents = studentStats?.campusMap?.get(String(c.id))?.totalStudents || 0;
       const cTeachers = teachers.filter((t) => String(t.campus_id) === String(c.id)).length;
       return {
         name: c.name,
@@ -32,57 +36,45 @@ const buildAppDownloadStats = (students, teachers, campusList, totalStudents, ac
   };
 };
 
-const buildAdmissionsStats = (students) => {
-  const now = new Date();
-  const curYear = now.getFullYear();
+const buildAdmissionsStats = (studentStats) => {
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const monthly = monthNames.map((mName, mIdx) => ({
+    month: mName,
+    admissions: studentStats?.admissionsMonthlyMap?.get(mIdx + 1) || 0,
+    dropouts: studentStats?.dropoutsMonthlyMap?.get(mIdx + 1) || 0
+  }));
 
-  const monthly = monthNames.map((mName, mIdx) => {
-    const admitted = students.filter((s) => {
-      const dt = s.admission_date ? new Date(s.admission_date) : new Date(s.createdAt);
-      return dt.getFullYear() === curYear && dt.getMonth() === mIdx;
-    }).length;
-    const dropouts = students.filter((s) => {
-      if (s.status !== 'Left') return false;
-      const dt = s.updatedAt ? new Date(s.updatedAt) : new Date(s.createdAt);
-      return dt.getFullYear() === curYear && dt.getMonth() === mIdx;
-    }).length;
-    return { month: mName, admissions: admitted, dropouts };
-  });
-
-  const areaMap = {};
-  students.forEach((s) => {
-    const a = s.address?.area?.trim() || 'General / Unspecified';
-    areaMap[a] = (areaMap[a] || 0) + 1;
-  });
   const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4'];
-  const areaBreakdown = Object.entries(areaMap).map(([name, count], i) => ({
-    name,
-    count,
+  const areaBreakdown = (studentStats?.areaBreakdown || []).map((item, i) => ({
+    name: item._id,
+    count: item.count,
     color: colors[i % colors.length]
   }));
 
   return {
-    totalAdmissions: students.length,
-    totalDropouts: students.filter((s) => s.status === 'Left').length,
+    totalAdmissions: studentStats?.summary?.totalStudents || 0,
+    totalDropouts: studentStats?.summary?.totalDropouts || 0,
     monthly,
     areaBreakdown: areaBreakdown.length > 0 ? areaBreakdown : [{ name: 'No area records', count: 0, color: '#3b82f6' }]
   };
 };
 
-const buildCrmPipeline = (students, activeStudents) => {
-  const pendingLeads = students.filter((s) => s.admission_test?.status === 'Pending').length;
-  const passedTests = students.filter((s) => s.admission_test?.status === 'Passed' || s.admission_test?.test_passed).length;
+const buildCrmPipeline = (studentStats) => {
+  const totalStudents = studentStats?.summary?.totalStudents || 0;
+  const activeStudents = studentStats?.summary?.activeStudents || 0;
+  const pendingLeads = studentStats?.summary?.pendingLeads || 0;
+  const passedTests = studentStats?.summary?.passedTests || 0;
+
   const stages = [
     { name: 'New Inquiries', count: pendingLeads, color: '#3b82f6' },
     { name: 'Evaluated / Passed', count: passedTests, color: '#f59e0b' },
     { name: 'Enrolled Students', count: activeStudents, color: '#10b981' }
   ].filter((st) => st.count > 0);
 
-  const conversionRate = students.length > 0 ? `${Math.round((activeStudents / students.length) * 100)}%` : '0%';
+  const conversionRate = totalStudents > 0 ? `${Math.round((activeStudents / totalStudents) * 100)}%` : '0%';
 
   return {
-    totalLeads: students.length,
+    totalLeads: totalStudents,
     converted: activeStudents,
     conversionRate,
     stages

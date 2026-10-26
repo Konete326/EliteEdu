@@ -37,7 +37,8 @@ const createLmsItem = async (req, res) => {
       .populate('grade_id', 'name code')
       .populate('subject_id', 'name code')
       .populate('chapter_id', 'title chapter_no')
-      .populate('teacher_id', 'name email');
+      .populate('teacher_id', 'name email')
+      .lean();
 
     res.status(201).json({ success: true, message: 'LMS item created successfully', item: populated });
   } catch (error) {
@@ -51,7 +52,7 @@ const updateLmsItem = async (req, res) => {
     const item = await LmsItem.findOneAndUpdate(
       { _id: id, school_id: req.schoolId },
       req.body,
-      { new: true, runValidators: true }
+      { new: true, runValidators: true, lean: true }
     )
       .populate('grade_id', 'name code')
       .populate('subject_id', 'name code')

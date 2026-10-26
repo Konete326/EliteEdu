@@ -15,12 +15,13 @@ const getTeacherPortalMe = async (req, res) => {
   try {
     const teacher = await User.findOne({ _id: req.user.id, school_id: req.user.school_id })
       .select('-password').populate('campus_id', 'name code').populate('subjects', 'name code')
-      .populate('grades', 'name sections').populate('custom_role_id');
+      .populate('grades', 'name sections').populate('custom_role_id')
+      .lean();
     if (!teacher || teacher.status === 'Inactive') {
       return res.status(403).json({ success: false, message: 'Teacher profile not accessible' });
     }
     const [ctGrades, school] = await Promise.all([
-      Grade.find({ school_id: req.user.school_id, class_teacher: req.user.id }).select('name sections campus_id'),
+      Grade.find({ school_id: req.user.school_id, class_teacher: req.user.id }).select('name sections campus_id').lean(),
       School.findById(req.user.school_id).select('theme_settings').lean()
     ]);
     const permissions = teacher.app_settings || teacher.app_permissions || {};
@@ -37,10 +38,10 @@ const getTeacherPortalMe = async (req, res) => {
 
 const getTeacherStudents = async (req, res) => {
   try {
-    const teacher = await User.findOne({ _id: req.user.id, school_id: req.user.school_id }).select('class_assignments grades campus_id');
+    const teacher = await User.findOne({ _id: req.user.id, school_id: req.user.school_id }).select('class_assignments grades campus_id').lean();
     if (!teacher) return res.status(404).json({ success: false, message: 'Teacher not found' });
 
-    const ctGrades = await Grade.find({ school_id: req.user.school_id, class_teacher: req.user.id }).select('_id name');
+    const ctGrades = await Grade.find({ school_id: req.user.school_id, class_teacher: req.user.id }).select('_id name').lean();
     const assignedIds = new Set(ctGrades.map((g) => String(g._id)));
     const assignedNames = new Set(ctGrades.map((g) => g.name.trim()));
     const sectionsByGrade = {};

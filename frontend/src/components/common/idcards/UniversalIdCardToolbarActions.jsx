@@ -12,6 +12,7 @@ const UniversalIdCardToolbarActions = ({
   selectedCount = 0,
   totalCount = 0,
   onToggleSelectAll,
+  onPrintSheet,
   onExportPdf,
   isExporting = false,
   onExportZip,
@@ -66,13 +67,25 @@ const UniversalIdCardToolbarActions = ({
           {isAllSelected ? <CheckSquare className="w-3.5 h-3.5 text-blue-600" /> : <Square className="w-3.5 h-3.5" />}
           <span>{selectedCount}/{totalCount} Selected</span>
         </button>
-        <button
-          onClick={() => window.print()}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-line hover:bg-surface-secondary text-xs font-semibold"
-        >
-          <Printer className="w-3.5 h-3.5 text-ink-muted" />
-          <span>Print Sheet</span>
-        </button>
+        <div className="inline-flex items-center rounded-xl border border-line overflow-hidden">
+          <button
+            type="button"
+            onClick={() => onPrintSheet ? onPrintSheet('current') : window.print()}
+            className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-surface-secondary text-xs font-semibold cursor-pointer"
+            title="Print active sheet via browser print dialog"
+          >
+            <Printer className="w-3.5 h-3.5 text-primary" />
+            <span>Print Sheet</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onPrintSheet ? onPrintSheet('all') : window.print()}
+            className="px-2 py-1.5 border-l border-line hover:bg-surface-secondary text-ink-muted hover:text-ink text-[11px] font-bold cursor-pointer"
+            title="Print all selected faculty sheets"
+          >
+            All
+          </button>
+        </div>
         {onExportPdf && (
           <button
             onClick={onExportPdf}

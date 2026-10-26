@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Building2, ScanLine, Moon, Sun, Download, Play
 } from 'lucide-react';
@@ -19,6 +19,12 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
   const [scannerOpen, setScannerOpen] = useState(false);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    setScannerOpen(false);
+    setVideoModalOpen(false);
+  }, [location.pathname]);
 
   const handleCampusSelect = (val) => {
     if (val === activeCampusId) return;

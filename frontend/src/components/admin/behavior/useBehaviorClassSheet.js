@@ -55,6 +55,18 @@ export const useBehaviorClassSheet = (selectedGrade, selectedSection, term, sess
     setEvaluations((prev) => ({ ...prev, [id]: { ...prev[id], teacher_observation: obs } }));
   };
 
+  const handleQuickRateStudent = (id, score, conduct = 'Good') => {
+    setEvaluations((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        general_conduct: conduct,
+        affective_ratings: { punctuality: score, discipline: score, neatness: score, obedience: score, teamwork: score },
+        psychomotor_ratings: { handwriting: score, communication: score, sports: score, creativity: score, computer_skills: score }
+      }
+    }));
+  };
+
   const handleSetAll = (score, conduct) => {
     setEvaluations((prev) => {
       const next = { ...prev };
@@ -90,6 +102,6 @@ export const useBehaviorClassSheet = (selectedGrade, selectedSection, term, sess
 
   return {
     students, evaluations, kpis, loading, saving,
-    handleRatingChange, handleConductChange, handleObservationChange, handleSetAll, handleSave
+    handleRatingChange, handleConductChange, handleObservationChange, handleQuickRateStudent, handleSetAll, handleSave
   };
 };

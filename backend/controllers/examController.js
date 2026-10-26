@@ -47,7 +47,8 @@ const getExamById = async (req, res) => {
     const schoolId = req.user.school_id || req.schoolId;
     const exam = await Exam.findOne({ _id: req.params.id, school_id: schoolId })
       .populate('campus_id', 'name code address logo')
-      .populate('grading_policy_id');
+      .populate('grading_policy_id')
+      .lean();
     if (!exam) return res.status(404).json({ success: false, message: 'Exam not found' });
     res.status(200).json({ success: true, exam });
   } catch (err) {

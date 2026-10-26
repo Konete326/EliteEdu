@@ -7,7 +7,7 @@ const updateSchool = async (req, res) => {
     const school = await School.findByIdAndUpdate(
       req.params.id,
       { name, school_type, board, contact_number, email, address },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true, lean: true }
     );
     if (!school) return res.status(404).json({ message: 'School not found' });
     res.status(200).json({ message: 'School updated successfully', school });

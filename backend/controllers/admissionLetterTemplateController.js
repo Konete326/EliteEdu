@@ -25,7 +25,7 @@ const getTemplates = async (req, res) => {
 const getTemplateById = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
-    const template = await AdmissionLetterTemplate.findOne({ _id: req.params.id, school_id: schoolId });
+    const template = await AdmissionLetterTemplate.findOne({ _id: req.params.id, school_id: schoolId }).lean();
     if (!template) return res.status(404).json({ success: false, message: 'Template not found' });
     res.status(200).json({ success: true, template });
   } catch (error) {

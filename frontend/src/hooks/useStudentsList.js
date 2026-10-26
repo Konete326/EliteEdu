@@ -91,7 +91,7 @@ export const useStudentsList = () => {
     }
     const timer = setTimeout(() => {
       fetchStudents();
-    }, 150);
+    }, 350);
     return () => clearTimeout(timer);
   }, [fetchStudents, searchQuery]);
 

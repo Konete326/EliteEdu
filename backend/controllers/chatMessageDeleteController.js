@@ -5,7 +5,7 @@ const deleteMessage = async (req, res) => {
   try {
     const { messageId } = req.params;
     const userId = req.user.id;
-    const msg = await ChatMessage.findOne({ _id: messageId, school_id: req.user.school_id });
+    const msg = await ChatMessage.findOne({ _id: messageId, school_id: req.user.school_id }).select('sender_id').lean();
     if (!msg) return res.status(404).json({ success: false, message: 'Message not found' });
 
     if (String(msg.sender_id) !== String(userId) && req.user.role !== 'Admin' && req.user.role !== 'SuperAdmin') {

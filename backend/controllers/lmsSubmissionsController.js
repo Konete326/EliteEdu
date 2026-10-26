@@ -6,7 +6,8 @@ const getItemSubmissions = async (req, res) => {
   try {
     const item = await LmsItem.findOne({ _id: req.params.id, school_id: req.schoolId })
       .populate('grade_id', 'name code')
-      .populate('subject_id', 'name code');
+      .populate('subject_id', 'name code')
+      .lean();
 
     if (!item) return res.status(404).json({ success: false, message: 'LMS item not found' });
 

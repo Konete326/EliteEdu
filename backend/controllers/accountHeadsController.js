@@ -29,7 +29,7 @@ const getAccountHeads = async (req, res) => {
       await AccountHead.insertMany(seeds);
     }
 
-    const heads = await AccountHead.find({ school_id: schoolId }).sort({ code: 1 });
+    const heads = await AccountHead.find({ school_id: schoolId }).sort({ code: 1 }).lean();
     res.status(200).json({ success: true, data: heads });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -44,7 +44,7 @@ const createAccountHead = async (req, res) => {
       return res.status(400).json({ message: 'Code, name, and category are required' });
     }
 
-    const existing = await AccountHead.findOne({ school_id: schoolId, code: String(code).trim() });
+    const existing = await AccountHead.findOne({ school_id: schoolId, code: String(code).trim() }).select('_id').lean();
     if (existing) return res.status(400).json({ message: 'Account code already exists' });
 
     const head = await AccountHead.create({
@@ -82,7 +82,7 @@ const FeeStructure = require('../models/FeeStructure');
 const deleteAccountHead = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
-    const head = await AccountHead.findOne({ _id: req.params.id, school_id: schoolId });
+    const head = await AccountHead.findOne({ _id: req.params.id, school_id: schoolId }).select('name').lean();
     if (!head) return res.status(404).json({ message: 'Account head not found' });
 
     const [inUse, feeInUse] = await Promise.all([

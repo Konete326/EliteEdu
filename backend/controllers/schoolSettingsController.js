@@ -26,7 +26,7 @@ const getSchoolGeneralSettings = async (req, res) => {
     const schoolId = req.user?.school_id;
     if (!schoolId) return res.status(400).json({ message: 'No school associated with user' });
 
-    const school = await School.findById(schoolId);
+    const school = await School.findById(schoolId).lean();
     if (!school) return res.status(404).json({ message: 'School not found' });
 
     res.status(200).json({ success: true, school: formatSchool(school) });

@@ -8,7 +8,7 @@ const getSessions = async (req, res) => {
     const { page = 1, limit = 20, ip = '', show_revoked = 'false', user_id } = req.query;
     const schoolId = req.user.role === 'Admin' ? req.user.school_id : req.user.school_id;
 
-    const currentUser = await User.findById(req.user.id);
+    const currentUser = await User.findById(req.user.id).select('school_id').lean();
     if (currentUser) {
       await ensureActiveSession(currentUser, req, req.user.session_id);
     }

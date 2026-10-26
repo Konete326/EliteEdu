@@ -80,7 +80,7 @@ export const useStudentAttendance = () => {
     fetchSheet();
   };
 
-  const recomputeSummary = (updatedRecords) => {
+  const recomputeSummary = useCallback((updatedRecords) => {
     let present = 0;
     let absent = 0;
     let leave = 0;
@@ -104,27 +104,27 @@ export const useStudentAttendance = () => {
       halfDay,
       markedCount: total
     }));
-  };
+  }, []);
 
-  const handleStatusChange = (studentId, status) => {
+  const handleStatusChange = useCallback((studentId, status) => {
     setRecords((prev) => {
       const updated = prev.map((r) => (r.student?._id === studentId || r._id === studentId ? { ...r, status } : r));
       recomputeSummary(updated);
       return updated;
     });
-  };
+  }, [recomputeSummary]);
 
-  const handleRemarksChange = (studentId, remarks) => {
+  const handleRemarksChange = useCallback((studentId, remarks) => {
     setRecords((prev) => prev.map((r) => (r.student?._id === studentId || r._id === studentId ? { ...r, remarks } : r)));
-  };
+  }, []);
 
-  const handleMarkAll = (status) => {
+  const handleMarkAll = useCallback((status) => {
     setRecords((prev) => {
       const updated = prev.map((r) => ({ ...r, status }));
       recomputeSummary(updated);
       return updated;
     });
-  };
+  }, [recomputeSummary]);
 
   const handleSave = async () => {
     if (!selectedGradeId || records.length === 0) return;

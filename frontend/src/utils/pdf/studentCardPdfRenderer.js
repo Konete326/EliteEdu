@@ -381,7 +381,7 @@ const drawHorizontalStudentCard = (page, coords, student, fonts, opts) => {
     y: y + height - 12,
     size: 7.5,
     font: fonts.bold,
-    color: rgb(1, 1, 1),
+    color: isApwa ? rgb(0.1, 0.15, 0.25) : rgb(1, 1, 1),
   });
 
   const subLine = (inst.area ? `${inst.area} ` : '') + (inst.semis ? `| SEMIS: ${inst.semis}` : inst.slogan.slice(0, 24));
@@ -390,7 +390,7 @@ const drawHorizontalStudentCard = (page, coords, student, fonts, opts) => {
     y: y + height - 21,
     size: 4.8,
     font: fonts.regular,
-    color: rgb(0.9, 0.93, 0.98),
+    color: isApwa ? rgb(0.4, 0.45, 0.55) : rgb(0.9, 0.93, 0.98),
   });
 
   const badgeW = 60;
@@ -402,7 +402,7 @@ const drawHorizontalStudentCard = (page, coords, student, fonts, opts) => {
     y: badgeY,
     width: badgeW,
     height: badgeH,
-    color: isGoldTemplate ? gold : rgb(1, 1, 1),
+    color: isGoldTemplate ? gold : (isApwa ? accent : rgb(1, 1, 1)),
   });
   const badgeTxt = 'STUDENT IDENTITY';
   const badgeTxtW = fonts.bold.widthOfTextAtSize(badgeTxt, 4.6);
@@ -411,7 +411,7 @@ const drawHorizontalStudentCard = (page, coords, student, fonts, opts) => {
     y: badgeY + 3,
     size: 4.6,
     font: fonts.bold,
-    color: isGoldTemplate ? rgb(0.1, 0.1, 0.1) : accent,
+    color: isGoldTemplate ? rgb(0.1, 0.1, 0.1) : (isApwa ? rgb(1, 1, 1) : accent),
   });
 
   const photoW = 50;

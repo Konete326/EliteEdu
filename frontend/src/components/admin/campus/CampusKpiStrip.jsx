@@ -1,4 +1,6 @@
 import { Building2, CheckCircle2, GraduationCap, Users, Compass } from 'lucide-react';
+import { motion } from 'framer-motion';
+import AnimatedNumber from '@/components/ui/AnimatedNumber';
 
 const CampusKpiStrip = ({ kpis = {}, activeCampusName = 'All Campuses' }) => {
   const cards = [
@@ -50,9 +52,13 @@ const CampusKpiStrip = ({ kpis = {}, activeCampusName = 'All Campuses' }) => {
       {cards.map((c, i) => {
         const Icon = c.icon;
         return (
-          <div
+          <motion.div
             key={i}
-            className={`p-3.5 rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between ${
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: i * 0.05, ease: 'easeOut' }}
+            whileHover={{ y: -3 }}
+            className={`relative overflow-hidden p-3.5 rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xs hover:shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between before:absolute before:inset-0 before:-z-10 before:bg-[radial-gradient(circle_at_50%_50%,currentColor_2%,transparent_2%)] before:opacity-[0.04] before:bg-[length:16px_16px] ${
               i === 4 ? 'col-span-2 sm:col-span-1' : ''
             }`}
           >
@@ -72,11 +78,11 @@ const CampusKpiStrip = ({ kpis = {}, activeCampusName = 'All Campuses' }) => {
                 }`}
                 title={c.isText ? String(c.value) : undefined}
               >
-                {c.value}
+                {c.isText ? c.value : <AnimatedNumber value={c.value} />}
               </p>
               <p className="text-[10px] text-ink-muted mt-0.5 truncate">{c.sub}</p>
             </div>
-          </div>
+          </motion.div>
         );
       })}
     </div>

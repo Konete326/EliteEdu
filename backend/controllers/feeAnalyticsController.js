@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const FeePayment = require('../models/FeePayment');
 const FeeInvoice = require('../models/FeeInvoice');
 const Grade = require('../models/Grade');
@@ -26,23 +27,46 @@ const getFeeReports = async (req, res) => {
 
     if (report_type === 'recovery_matrix') {
       const month = billing_month || new Date().toISOString().slice(0, 7);
-      filter.billing_month = month;
+      const schoolObjId = new mongoose.Types.ObjectId(String(req.schoolId));
+      const invoiceFilter = {
+        school_id: schoolObjId,
+        billing_month: month
+      };
+      if (campus_id && campus_id !== 'all') {
+        invoiceFilter.campus_id = new mongoose.Types.ObjectId(String(campus_id));
+      }
 
-      const [grades, invoices] = await Promise.all([
-        Grade.find({ school_id: req.schoolId }).sort({ order: 1, name: 1 }).lean(),
-        FeeInvoice.find(filter).lean()
+      const [grades, matrixAgg] = await Promise.all([
+        Grade.find({ school_id: schoolObjId }).sort({ order: 1, name: 1 }).lean(),
+        FeeInvoice.aggregate([
+          { $match: invoiceFilter },
+          {
+            $group: {
+              _id: '$grade_id',
+              invoice_count: { $sum: 1 },
+              total_billed: { $sum: { $ifNull: ['$net_payable', 0] } },
+              total_collected: { $sum: { $ifNull: ['$paid_amount', 0] } },
+              balance_outstanding: { $sum: { $ifNull: ['$balance_due', 0] } }
+            }
+          }
+        ])
       ]);
 
+      const matrixMap = new Map();
+      matrixAgg.forEach((m) => {
+        matrixMap.set(String(m._id || ''), m);
+      });
+
       const gradeStats = grades.map((g) => {
-        const gradeInvs = invoices.filter((i) => String(i.grade_id) === String(g._id));
-        const totalBilled = gradeInvs.reduce((sum, i) => sum + Number(i.net_payable || 0), 0);
-        const totalCollected = gradeInvs.reduce((sum, i) => sum + Number(i.paid_amount || 0), 0);
-        const balanceOutstanding = gradeInvs.reduce((sum, i) => sum + Number(i.balance_due || 0), 0);
+        const stats = matrixMap.get(String(g._id)) || {};
+        const totalBilled = stats.total_billed || 0;
+        const totalCollected = stats.total_collected || 0;
+        const balanceOutstanding = stats.balance_outstanding || 0;
         const recoveryRate = totalBilled > 0 ? Math.round((totalCollected / totalBilled) * 100) : 0;
         return {
           grade_id: g._id,
           grade_name: g.name,
-          invoice_count: gradeInvs.length,
+          invoice_count: stats.invoice_count || 0,
           total_billed: totalBilled,
           total_collected: totalCollected,
           balance_outstanding: balanceOutstanding,

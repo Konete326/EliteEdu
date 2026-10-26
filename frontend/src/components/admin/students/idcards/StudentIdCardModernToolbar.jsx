@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Printer,
   Download,
@@ -60,6 +61,7 @@ const StudentIdCardModernToolbar = ({
   selectedCount = 0,
   totalCount = 0,
   onToggleSelectAll,
+  onPrintSheet,
   onExportSheetPdf,
   isExportingSheet = false,
   activeSheetIndex = 0,
@@ -72,24 +74,24 @@ const StudentIdCardModernToolbar = ({
 }) => {
   const isAllSelected = totalCount > 0 && selectedCount === totalCount;
 
-  const campusOptions = [
+  const campusOptions = useMemo(() => [
     { value: '', label: 'All Campuses' },
     ...campuses.map((c) => ({ value: c._id, label: c.name }))
-  ];
+  ], [campuses]);
 
-  const gradeOptions = [
+  const gradeOptions = useMemo(() => [
     { value: '', label: 'All Classes' },
     ...grades.map((g) => ({ value: g._id, label: g.name }))
-  ];
+  ], [grades]);
 
-  const studentOptions = [
+  const studentOptions = useMemo(() => [
     { value: 'all', label: 'All Students (Bulk Print)' },
     ...students.map((s) => ({
       value: s._id,
       label: `${s.name} (GR: ${s.gr_number || '—'})`,
       subtext: `Class: ${s.current_grade?.name || '—'} • ${s.father_name ? 'Father: ' + s.father_name : ''}`
     }))
-  ];
+  ], [students]);
 
   return (
     <div className="print:hidden space-y-4 bg-surface dark:bg-[#111111] border border-line dark:border-white/10 p-4 sm:p-5 rounded-2xl shadow-xs">
@@ -124,15 +126,25 @@ const StudentIdCardModernToolbar = ({
             </span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#181818] hover:bg-surface-secondary text-ink dark:text-white text-xs font-bold transition-all shadow-2xs cursor-pointer"
-            title="Print current sheet using browser print dialog"
-          >
-            <Printer className="w-4 h-4 text-primary" />
-            <span>Print Sheet</span>
-          </button>
+          <div className="inline-flex items-center rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#181818] shadow-2xs overflow-hidden">
+            <button
+              type="button"
+              onClick={() => onPrintSheet ? onPrintSheet('current') : window.print()}
+              className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-surface-secondary text-ink dark:text-white text-xs font-bold transition-all cursor-pointer"
+              title={`Print Sheet ${activeSheetIndex + 1} (${activeSheetCount} cards) instantly via browser print`}
+            >
+              <Printer className="w-4 h-4 text-primary" />
+              <span>Print Sheet</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onPrintSheet ? onPrintSheet('all') : window.print()}
+              className="px-2 py-1.5 border-l border-line dark:border-white/10 hover:bg-surface-secondary text-ink-muted hover:text-ink dark:hover:text-white text-[11px] font-bold transition-all cursor-pointer"
+              title={`Print all selected sheets (${selectedCount} cards)`}
+            >
+              All
+            </button>
+          </div>
 
           {onExportSheetPdf && (
             <button

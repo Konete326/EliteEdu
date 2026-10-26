@@ -12,7 +12,8 @@ const getConversations = async (req, res) => {
 
     const conversations = await ChatConversation.find(query)
       .sort({ last_message_at: -1 })
-      .limit(100);
+      .limit(100)
+      .lean();
 
     const activeThreshold = new Date(Date.now() - 3 * 60 * 1000);
     const activeSessions = await UserSession.find({

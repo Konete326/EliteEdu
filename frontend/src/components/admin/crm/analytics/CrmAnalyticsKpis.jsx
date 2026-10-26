@@ -1,5 +1,7 @@
 import React from 'react';
 import { Users, CheckCircle2, TrendingUp, Calendar } from 'lucide-react';
+import { motion } from 'framer-motion';
+import AnimatedNumber from '@/components/ui/AnimatedNumber';
 
 export default function CrmAnalyticsKpis({ kpis = {} }) {
   const cards = [
@@ -35,22 +37,28 @@ export default function CrmAnalyticsKpis({ kpis = {} }) {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {cards.map((c) => {
+      {cards.map((c, idx) => {
         const Icon = c.icon;
         return (
-          <div
+          <motion.div
             key={c.title}
-            className="p-4 rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs flex items-center justify-between"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: idx * 0.05, ease: 'easeOut' }}
+            whileHover={{ y: -3 }}
+            className="relative overflow-hidden p-4 rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs hover:border-primary/40 hover:shadow-md transition-all flex items-center justify-between before:absolute before:inset-0 before:-z-10 before:bg-[radial-gradient(circle_at_50%_50%,currentColor_2%,transparent_2%)] before:opacity-[0.04] before:bg-[length:16px_16px]"
           >
             <div>
               <span className="text-xs font-semibold text-text-muted">{c.title}</span>
-              <h3 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mt-0.5">{c.value}</h3>
+              <h3 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mt-0.5">
+                <AnimatedNumber value={c.value} />
+              </h3>
               <p className="text-[11px] text-text-muted mt-1">{c.subtitle}</p>
             </div>
-            <div className={`p-3 rounded-2xl border ${c.color}`}>
+            <div className={`p-3 rounded-2xl border ${c.color} transition-transform hover:scale-105`}>
               <Icon className="w-5 h-5" />
             </div>
-          </div>
+          </motion.div>
         );
       })}
     </div>

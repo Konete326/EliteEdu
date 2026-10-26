@@ -11,7 +11,7 @@ const getSlips = async (req, res) => {
     if (status) query.status = status;
     if (campus_id) query.campus_id = campus_id;
 
-    const slips = await StaffSalarySlip.find(query).populate('staff_id', 'name email employee_code designation department photo_url basic_salary bank_details').sort({ createdAt: -1 });
+    const slips = await StaffSalarySlip.find(query).populate('staff_id', 'name email employee_code designation department photo_url basic_salary bank_details').sort({ createdAt: -1 }).lean();
     res.status(200).json({ success: true, data: slips });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -22,7 +22,7 @@ const getMySlips = async (req, res) => {
   try {
     const schoolId = req.user?.school_id;
     const staffId = req.user?._id;
-    const slips = await StaffSalarySlip.find({ school_id: schoolId, staff_id: staffId }).populate('staff_id', 'name email employee_code designation department basic_salary bank_details').sort({ salary_month: -1 });
+    const slips = await StaffSalarySlip.find({ school_id: schoolId, staff_id: staffId }).populate('staff_id', 'name email employee_code designation department basic_salary bank_details').sort({ salary_month: -1 }).lean();
     res.status(200).json({ success: true, data: slips });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -36,7 +36,7 @@ const updateSalarySlip = async (req, res) => {
       { _id: req.params.id, school_id: schoolId },
       { $set: req.body },
       { new: true }
-    );
+    ).lean();
     if (!slip) return res.status(404).json({ message: 'Slip not found' });
     res.status(200).json({ success: true, data: slip });
   } catch (error) {

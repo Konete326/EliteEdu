@@ -8,7 +8,7 @@ const getChapters = async (req, res) => {
     if (grade_id) query.grade_id = grade_id;
     if (subject_id) query.subject_id = subject_id;
     if (status) query.status = status;
-    const chapters = await SubjectChapter.find(query).sort({ chapter_no: 1 });
+    const chapters = await SubjectChapter.find(query).sort({ chapter_no: 1 }).lean();
     res.json({ success: true, chapters });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch chapters', error: error.message });
@@ -38,7 +38,7 @@ const updateChapter = async (req, res) => {
       { _id: id, school_id: req.user.school_id },
       req.body,
       { new: true }
-    );
+    ).lean();
     if (!chapter) return res.status(404).json({ message: 'Chapter not found' });
     res.json({ success: true, chapter });
   } catch (error) {
@@ -61,7 +61,7 @@ const seedDefaultChapters = async (req, res) => {
     const school_id = req.user.school_id;
     const { grade_id, subject_id } = req.body;
     if (!grade_id || !subject_id) return res.status(400).json({ message: 'Grade and Subject are required' });
-    const existing = await SubjectChapter.find({ school_id, grade_id, subject_id });
+    const existing = await SubjectChapter.find({ school_id, grade_id, subject_id }).lean();
     if (existing.length > 0) return res.json({ success: true, chapters: existing });
     const samples = [
       { chapter_no: 1, title: 'Introduction & Fundamentals', description: 'Core principles and definitions' },

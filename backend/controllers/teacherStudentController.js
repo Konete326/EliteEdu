@@ -68,7 +68,7 @@ const createTeacherStudent = async (req, res) => {
     };
 
     const student = await Student.create(sanitizeStudentPayload(rawStudent));
-    const populated = await Student.findById(student._id).populate('current_grade', 'name sections').populate('campus_id', 'name');
+    const populated = await Student.findById(student._id).populate('current_grade', 'name sections').populate('campus_id', 'name').lean();
     res.status(201).json({ success: true, message: 'Student enrolled successfully', student: populated });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to create student', error: error.message });
@@ -77,7 +77,7 @@ const createTeacherStudent = async (req, res) => {
 
 const updateTeacherStudent = async (req, res) => {
   try {
-    const student = await Student.findOne({ _id: req.params.studentId, school_id: req.user.school_id });
+    const student = await Student.findOne({ _id: req.params.studentId, school_id: req.user.school_id }).select('current_grade').lean();
     if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
 
     const hasAccess = await checkGradeAccess(req.user, student.current_grade);
@@ -92,7 +92,8 @@ const updateTeacherStudent = async (req, res) => {
 
     const updated = await Student.findByIdAndUpdate(req.params.studentId, cleanPayload, { new: true, runValidators: true })
       .populate('current_grade', 'name sections')
-      .populate('campus_id', 'name code address contact_number');
+      .populate('campus_id', 'name code address contact_number')
+      .lean();
 
     res.status(200).json({ success: true, message: 'Student profile updated successfully', student: updated });
   } catch (error) {

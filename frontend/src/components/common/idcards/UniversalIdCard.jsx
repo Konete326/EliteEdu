@@ -46,7 +46,7 @@ const UniversalIdCard = ({
 
     if (sideMode === 'both') {
       return (
-        <div className={`flex flex-col ${orientation === 'horizontal' ? 'xl:flex-row' : 'sm:flex-row'} gap-3 items-center justify-center print:flex-row print:gap-3`}>
+        <div className={`flex flex-col ${orientation === 'horizontal' ? 'min-[840px]:flex-row' : 'min-[540px]:flex-row'} gap-3 items-center justify-center print:flex-row print:gap-3`}>
           {renderFrontCard(template, { ...commonProps, sideMode: 'both' })}
           <UniversalIdCardBack {...commonProps} />
         </div>
@@ -57,7 +57,12 @@ const UniversalIdCard = ({
   };
 
   return (
-    <div className="print:break-inside-avoid">
+    <div
+      style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
+      className={`print:break-inside-avoid [print-color-adjust:exact] [-webkit-print-color-adjust:exact] rounded-2xl transition-all duration-200 ${
+        isSelected && sideMode !== 'both' ? 'ring-2 ring-primary ring-offset-2 ring-offset-surface dark:ring-offset-[#0c0c0f] shadow-lg print:ring-0 print:ring-offset-0' : ''
+      }`}
+    >
       {renderContent()}
     </div>
   );

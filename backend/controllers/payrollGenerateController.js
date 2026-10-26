@@ -12,7 +12,7 @@ const generateMonthPayroll = async (req, res) => {
     const staffQuery = { school_id: schoolId, role: { $in: ['Teacher', 'Admin'] }, status: 'Active' };
     if (campus_id) staffQuery.campus_id = campus_id;
 
-    const staffList = await User.find(staffQuery);
+    const staffList = await User.find(staffQuery).select('basic_salary payroll_config employee_code campus_id').lean();
     const generated = [];
 
     for (const staff of staffList) {
@@ -26,7 +26,7 @@ const generateMonthPayroll = async (req, res) => {
         school_id: schoolId,
         staff_id: staff._id,
         date: { $regex: `^${salary_month}` }
-      });
+      }).select('status').lean();
 
       const pDays = attList.filter((a) => a.status === 'P').length || 26;
       const aDays = attList.filter((a) => a.status === 'A').length;
@@ -42,7 +42,7 @@ const generateMonthPayroll = async (req, res) => {
         status: 'Active',
         record_type: { $in: ['Loan', 'Advance_Salary'] },
         hold_months: { $ne: salary_month }
-      });
+      }).select('monthly_installment remaining_balance').lean();
       const loanDed = activeLoans.reduce((acc, l) => acc + Math.min(l.monthly_installment, l.remaining_balance), 0);
 
       const activeDeposits = await StaffLoan.find({
@@ -51,7 +51,7 @@ const generateMonthPayroll = async (req, res) => {
         status: 'Active',
         record_type: 'Security_Deposit',
         hold_months: { $ne: salary_month }
-      });
+      }).select('monthly_installment remaining_balance').lean();
       const depositDed = activeDeposits.reduce((acc, s) => acc + Math.min(s.monthly_installment, s.remaining_balance), 0);
 
       const gross = basic + hAllowance + mAllowance + cAllowance + bonus;
@@ -84,7 +84,7 @@ const generateMonthPayroll = async (req, res) => {
             status: 'Draft'
           }
         },
-        { upsert: true, new: true }
+        { upsert: true, new: true, lean: true }
       );
       generated.push(slip);
     }

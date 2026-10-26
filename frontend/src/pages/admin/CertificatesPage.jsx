@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Award, Eye, Settings2 } from 'lucide-react';
+import { useSearchParams, useLocation } from 'react-router-dom';
+import { Eye, Settings2 } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useCampus } from '../../context/CampusContext';
@@ -13,11 +13,18 @@ import { exportCertificatePdf } from '../../utils/pdf/certificatePdfExporter';
 
 const CertificatesPage = ({ defaultTab = 'generate' }) => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const initialStudentId = searchParams.get('studentId') || '';
   const initialStaffId = searchParams.get('staffId') || '';
   const { user } = useAuth();
   const { activeCampus } = useCampus();
-  const [tab, setTab] = useState(searchParams.get('tab') || defaultTab);
+  const resolvedTab = location.pathname === '/admin/certificates/templates' || defaultTab === 'templates' || searchParams.get('tab') === 'templates' ? 'templates' : 'generate';
+  const [tab, setTab] = useState(resolvedTab);
+
+  useEffect(() => {
+    const nextTab = location.pathname === '/admin/certificates/templates' || defaultTab === 'templates' || searchParams.get('tab') === 'templates' ? 'templates' : 'generate';
+    setTab(nextTab);
+  }, [location.pathname, defaultTab, searchParams]);
   const [mobileStudioView, setMobileStudioView] = useState('preview');
   const [templates, setTemplates] = useState([]);
   const [students, setStudents] = useState([]);
@@ -216,40 +223,6 @@ const CertificatesPage = ({ defaultTab = 'generate' }) => {
 
   return (
     <div className="w-full flex flex-col gap-2 xl:h-[calc(100vh-80px)] xl:overflow-hidden">
-      <div className="px-3 py-2 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xs flex flex-wrap items-center justify-between gap-2 shrink-0 print:hidden">
-        <div>
-          <h1 className="text-base sm:text-lg font-bold text-ink dark:text-ink-dark flex items-center gap-2">
-            <Award className="w-5 h-5 text-primary" />
-            <span>{tab === 'templates' ? 'Certificate Templates Studio' : 'Certificate Generator Studio'}</span>
-          </h1>
-          <p className="text-[11px] font-semibold text-ink-muted hidden sm:block">
-            {tab === 'templates'
-              ? 'Manage institutional templates, award wording, and placeholder tags'
-              : 'Design, issue, and print verifiable student and staff institutional credentials'}
-          </p>
-        </div>
-        <div className="flex rounded-xl border border-line p-0.5 bg-surface-secondary/40 text-xs font-bold shrink-0">
-          <button
-            type="button"
-            onClick={() => setTab('generate')}
-            className={`px-3 py-1 rounded-lg transition-colors cursor-pointer ${
-              tab === 'generate' ? 'bg-primary text-white shadow-2xs' : 'text-ink-muted hover:text-ink'
-            }`}
-          >
-            Generate Certificate
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab('templates')}
-            className={`px-3 py-1 rounded-lg transition-colors cursor-pointer ${
-              tab === 'templates' ? 'bg-primary text-white shadow-2xs' : 'text-ink-muted hover:text-ink'
-            }`}
-          >
-            Certificate Templates
-          </button>
-        </div>
-      </div>
-
       {tab === 'templates' ? (
         <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
           <CertificateTemplatesManager templates={templates} onRefresh={loadData} />

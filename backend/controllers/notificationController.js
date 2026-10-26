@@ -102,7 +102,8 @@ const createNotification = async (req, res) => {
     });
     const populated = await Notification.findById(item._id)
       .populate('created_by', 'name role')
-      .populate('campus_id', 'name code');
+      .populate('campus_id', 'name code')
+      .lean();
     res.status(201).json({ success: true, notification: populated });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

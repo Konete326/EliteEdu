@@ -83,7 +83,7 @@ const deleteConversation = async (req, res) => {
   try {
     const { id } = req.params;
     const schoolId = req.user.school_id;
-    const conv = await ChatConversation.findOne({ _id: id, school_id: schoolId });
+    const conv = await ChatConversation.findOne({ _id: id, school_id: schoolId }).select('participants').lean();
     if (!conv) return res.status(404).json({ success: false, message: 'Conversation not found' });
 
     await ChatMessage.deleteMany({ conversation_id: id, school_id: schoolId });

@@ -64,7 +64,7 @@ const handleCardAction = async (req, res) => {
     message.markModified('card_payload');
     await message.save();
 
-    const conv = await ChatConversation.findById(message.conversation_id).select('participants');
+    const conv = await ChatConversation.findById(message.conversation_id).select('participants').lean();
     if (conv) {
       const uids = conv.participants.map((p) => p.user_id);
       emitChatEvent(schoolId, uids, 'card_updated', {

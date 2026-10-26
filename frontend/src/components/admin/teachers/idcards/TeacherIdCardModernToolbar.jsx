@@ -52,6 +52,7 @@ const TeacherIdCardModernToolbar = ({
   selectedCount = 0,
   totalCount = 0,
   onToggleSelectAll,
+  onPrintSheet,
   onExportPdf,
   isExporting = false,
   onExportZip,
@@ -108,8 +109,9 @@ const TeacherIdCardModernToolbar = ({
 
           <button
             type="button"
-            onClick={() => window.print()}
+            onClick={() => (onPrintSheet ? onPrintSheet('all') : window.print())}
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#181818] hover:bg-surface-secondary text-ink dark:text-white text-xs font-bold transition-all shadow-2xs cursor-pointer"
+            title={`Print printable A4 sheets for ${selectedCount} selected faculty member(s)`}
           >
             <Printer className="w-4 h-4 text-primary" />
             <span>Print Sheet</span>

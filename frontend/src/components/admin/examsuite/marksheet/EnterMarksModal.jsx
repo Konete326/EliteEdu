@@ -1,6 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import { X, Save, CheckCircle2 } from 'lucide-react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
+import { X, CheckCircle2 } from 'lucide-react';
 import axios from '../../api/axios';
+
+const EnterMarksRowItem = memo(({ entry, index, maxMarks, onMarksChange, onAbsentToggle }) => {
+  return (
+    <tr className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+      <td className="p-2.5 font-mono text-slate-500">{entry.student_id?.roll_number || index + 1}</td>
+      <td className="p-2.5 font-semibold text-slate-800 dark:text-white">
+        {entry.student_id?.name || `${entry.student_id?.first_name || ''} ${entry.student_id?.last_name || ''}`}
+      </td>
+      <td className="p-2.5">
+        <input
+          type="number"
+          disabled={entry.is_absent}
+          min="0"
+          max={maxMarks}
+          value={entry.obtained_marks ?? 0}
+          onChange={(e) => onMarksChange(index, e.target.value)}
+          className="w-20 px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-center font-bold"
+        />
+      </td>
+      <td className="p-2.5 font-bold text-slate-700 dark:text-slate-300">{entry.percentage}%</td>
+      <td className="p-2.5">
+        <span
+          className="px-2 py-0.5 rounded-md text-[10px] font-bold text-white"
+          style={{ backgroundColor: entry.status_color || '#16A34A' }}
+        >
+          {entry.grade}
+        </span>
+      </td>
+      <td className="p-2.5 text-center">
+        <input
+          type="checkbox"
+          checked={entry.is_absent}
+          onChange={() => onAbsentToggle(index)}
+          className="rounded text-red-600 focus:ring-0 cursor-pointer"
+        />
+      </td>
+    </tr>
+  );
+});
 
 const EnterMarksModal = ({ isOpen, onClose, sheetId, onMarksSaved }) => {
   const [sheet, setSheet] = useState(null);
@@ -18,20 +57,18 @@ const EnterMarksModal = ({ isOpen, onClose, sheetId, onMarksSaved }) => {
     }).catch(() => {}).finally(() => setLoading(false));
   }, [isOpen, sheetId]);
 
-  if (!isOpen) return null;
-
-  const handleMarksChange = (idx, val) => {
-    const obt = Math.max(0, Math.min(sheet?.max_marks || 100, Number(val) || 0));
+  const handleMarksChange = useCallback((idx, val) => {
     const max = sheet?.max_marks || 100;
+    const obt = Math.max(0, Math.min(max, Number(val) || 0));
     const pct = Math.round((obt / max) * 100);
     const grade = pct >= 80 ? 'A+' : pct >= 70 ? 'A' : pct >= 60 ? 'B' : pct >= 50 ? 'C' : pct >= 33 ? 'D' : 'F';
     const color = pct >= 33 ? '#16A34A' : '#DC2626';
     setEntries(prev => prev.map((e, i) => i === idx ? { ...e, obtained_marks: obt, percentage: pct, grade, status_color: color } : e));
-  };
+  }, [sheet?.max_marks]);
 
-  const handleAbsentToggle = (idx) => {
+  const handleAbsentToggle = useCallback((idx) => {
     setEntries(prev => prev.map((e, i) => i === idx ? { ...e, is_absent: !e.is_absent, obtained_marks: !e.is_absent ? 0 : e.obtained_marks } : e));
-  };
+  }, []);
 
   const handleSave = async (submitStatus = 'Draft') => {
     try {
@@ -43,6 +80,8 @@ const EnterMarksModal = ({ isOpen, onClose, sheetId, onMarksSaved }) => {
       setSaving(false);
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
@@ -72,22 +111,14 @@ const EnterMarksModal = ({ isOpen, onClose, sheetId, onMarksSaved }) => {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {entries.map((en, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
-                    <td className="p-2.5 font-mono text-slate-500">{en.student_id?.roll_number || idx + 1}</td>
-                    <td className="p-2.5 font-semibold text-slate-800 dark:text-white">{en.student_id?.name || `${en.student_id?.first_name || ''} ${en.student_id?.last_name || ''}`}</td>
-                    <td className="p-2.5">
-                      <input type="number" disabled={en.is_absent} min="0" max={sheet?.max_marks || 100} value={en.obtained_marks ?? 0} onChange={(e) => handleMarksChange(idx, e.target.value)} className="w-20 px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-center font-bold" />
-                    </td>
-                    <td className="p-2.5 font-bold text-slate-700 dark:text-slate-300">{en.percentage}%</td>
-                    <td className="p-2.5">
-                      <span className="px-2 py-0.5 rounded-md text-[10px] font-bold text-white" style={{ backgroundColor: en.status_color || '#16A34A' }}>
-                        {en.grade}
-                      </span>
-                    </td>
-                    <td className="p-2.5 text-center">
-                      <input type="checkbox" checked={en.is_absent} onChange={() => handleAbsentToggle(idx)} className="rounded text-red-600 focus:ring-0 cursor-pointer" />
-                    </td>
-                  </tr>
+                  <EnterMarksRowItem
+                    key={en.student_id?._id || idx}
+                    entry={en}
+                    index={idx}
+                    maxMarks={sheet?.max_marks || 100}
+                    onMarksChange={handleMarksChange}
+                    onAbsentToggle={handleAbsentToggle}
+                  />
                 ))}
               </tbody>
             </table>

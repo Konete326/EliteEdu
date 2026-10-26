@@ -47,7 +47,7 @@ const savePolicies = async (req, res) => {
     const policy = await GradingPolicy.findOneAndUpdate(
       { school_id: schoolId, campus_id: campusRef },
       { policies, grading_scale: legacyScale },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
+      { new: true, upsert: true, setDefaultsOnInsert: true, lean: true }
     );
 
     res.status(200).json({ success: true, message: 'Policies saved successfully', policy });
@@ -64,7 +64,7 @@ const saveFailCriteria = async (req, res) => {
     const policy = await GradingPolicy.findOneAndUpdate(
       { school_id: schoolId, campus_id: campusRef },
       { fail_criteria: { overall_percentage, subject_percentage, min_failed_subjects } },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
+      { new: true, upsert: true, setDefaultsOnInsert: true, lean: true }
     );
     res.status(200).json({ success: true, message: 'Fail criteria saved successfully', policy });
   } catch (error) {
@@ -79,7 +79,7 @@ const resetDefaultScale = async (req, res) => {
     const policy = await GradingPolicy.findOneAndUpdate(
       { school_id: schoolId, campus_id: campusRef },
       { policies: DEFAULT_POLICIES, grading_scale: DEFAULT_SCALE, fail_criteria: DEFAULT_FAIL_CRITERIA },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
+      { new: true, upsert: true, setDefaultsOnInsert: true, lean: true }
     );
     res.status(200).json({ success: true, message: 'Standard policies reset successfully', policy });
   } catch (error) {

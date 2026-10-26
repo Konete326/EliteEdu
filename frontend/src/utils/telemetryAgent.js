@@ -17,8 +17,13 @@ export const reportTelemetry = async (payload) => {
 
   const dedupeKey = `${payload.category}_${msg.slice(0, 80)}`;
   const now = Date.now();
-  if (recentLogs.has(dedupeKey) && now - recentLogs.get(dedupeKey) < 3000) return;
+  if (recentLogs.has(dedupeKey) && now - recentLogs.get(dedupeKey) < 8000) return;
   recentLogs.set(dedupeKey, now);
+  if (recentLogs.size > 100) {
+    for (const [k, t] of recentLogs) {
+      if (now - t > 30000) recentLogs.delete(k);
+    }
+  }
 
   try {
     const token = localStorage.getItem('token');

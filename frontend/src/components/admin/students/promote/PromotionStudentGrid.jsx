@@ -8,9 +8,9 @@ const PromotionStudentGrid = ({
   onScoreChange, passThreshold, setPassThreshold, loading
 }) => {
   return (
-    <div className="space-y-4">
-      <div className="p-3.5 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs space-y-3">
-        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+    <div className="space-y-2.5 min-w-0 min-h-0">
+      <div className="p-2.5 rounded-xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs space-y-2">
+        <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
           <div className="sm:col-span-5 relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none" />
             <input
@@ -92,16 +92,18 @@ const PromotionStudentGrid = ({
           <p className="text-xs text-ink-muted">Adjust class or campus filters to view student records.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {candidates.map((s) => (
-            <PromotionStudentCard
-              key={s._id} student={s}
-              isSelected={selectedIds.includes(s._id)}
-              onToggle={() => onToggleStudent(s._id)}
-              onScoreChange={onScoreChange}
-              passThreshold={passThreshold}
-            />
-          ))}
+        <div className="overflow-y-auto overscroll-contain pr-1 sm:pr-1.5 max-h-[55vh] sm:max-h-[62vh] xl:max-h-[calc(100dvh-390px)] min-h-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            {candidates.map((s) => (
+              <PromotionStudentCard
+                key={s._id} student={s}
+                isSelected={selectedIds.includes(s._id)}
+                onToggle={() => onToggleStudent(s._id)}
+                onScoreChange={onScoreChange}
+                passThreshold={passThreshold}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

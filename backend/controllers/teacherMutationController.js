@@ -3,6 +3,7 @@ const User = require('../models/User');
 const { generateNextEmployeeCode } = require('../utils/employeeCodeGenerator');
 const { sanitizeTeacherPayload } = require('../utils/sanitizePayload');
 const { syncUserPermissions } = require('../utils/permissionResolver');
+const { ensureDefaultCampus } = require('../utils/defaultCampusHelper');
 
 const syncAssignments = (data) => {
   if (Array.isArray(data.class_assignments)) {
@@ -24,7 +25,7 @@ const addTeacher = async (req, res) => {
       ? email.toLowerCase().trim()
       : `staff_${Date.now()}_${Math.floor(Math.random() * 1000)}@school.local`;
 
-    const existingUser = await User.findOne({ email: finalEmail });
+    const existingUser = await User.findOne({ email: finalEmail }).select('_id').lean();
     if (existingUser) {
       return res.status(409).json({ message: 'User with this email already exists' });
     }
@@ -33,7 +34,13 @@ const addTeacher = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password || 'Teacher123', salt);
 
+    let finalCampusId = rest.campus_id;
+    if (!finalCampusId) {
+      const defCampus = await ensureDefaultCampus(schoolId);
+      if (defCampus) finalCampusId = defCampus._id;
+    }
     const rawPayload = {
+      campus_id: finalCampusId,
       ...rest,
       name: name.trim(),
       email: finalEmail,
@@ -63,7 +70,7 @@ const updateTeacher = async (req, res) => {
     const { password, email, ...updateData } = req.body;
 
     if (email) {
-      const conflict = await User.findOne({ email: email.toLowerCase().trim(), _id: { $ne: id } });
+      const conflict = await User.findOne({ email: email.toLowerCase().trim(), _id: { $ne: id } }).select('_id').lean();
       if (conflict) return res.status(409).json({ message: 'Email is already used by another user' });
       updateData.email = email.toLowerCase().trim();
     }
@@ -84,7 +91,7 @@ const updateTeacher = async (req, res) => {
     const teacher = await User.findOneAndUpdate(
       { _id: id, school_id: schoolId, role: 'Teacher' },
       cleanUpdateData,
-      { new: true, runValidators: true }
+      { new: true, runValidators: true, lean: true }
     ).select('-password');
 
     if (!teacher) return res.status(404).json({ message: 'Teacher not found' });

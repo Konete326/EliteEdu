@@ -29,8 +29,8 @@ const getDirectory = async (req, res) => {
     }
 
     const [staffList, studentList] = await Promise.all([
-      User.find(userQuery).select('name role designation photo_url campus_id employee_code').sort({ name: 1 }).limit(300),
-      Student.find(studentQuery).select('name current_grade current_section photo_url gr_number campus_id').populate('current_grade', 'name').sort({ name: 1 }).limit(300)
+      User.find(userQuery).select('name role designation photo_url campus_id employee_code').sort({ name: 1 }).limit(300).lean(),
+      Student.find(studentQuery).select('name current_grade current_section photo_url gr_number campus_id').populate('current_grade', 'name').sort({ name: 1 }).limit(300).lean()
     ]);
 
     const formattedStaff = staffList.map((u) => ({

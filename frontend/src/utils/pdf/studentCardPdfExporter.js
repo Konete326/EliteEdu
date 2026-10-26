@@ -1,84 +1,87 @@
 import { PDFDocument, StandardFonts } from 'pdf-lib';
-import QRCode from 'qrcode';
 import { A4_WIDTH, A4_HEIGHT, getCardCoordinates, getMirroredBackCoordinates, chunkArray } from './teacherCardPdfLayout';
 import { drawStudentCard } from './studentCardPdfRenderer';
 import { drawStudentCardBack } from './studentCardBackPdf';
 import { generateStudentVerifyUrl } from '../idCardCodeGenerator';
+import { generateDotQrPng } from './dotQrGenerator';
 
-const qrCache = new Map();
 const imageCache = new Map();
 
-const generateQrPng = async (url) => {
-  if (!url) return null;
-  if (qrCache.has(url)) return qrCache.get(url);
-  try {
-    const dataUrl = await QRCode.toDataURL(url, { margin: 1, width: 140, errorCorrectionLevel: 'M' });
-    qrCache.set(url, dataUrl);
-    return dataUrl;
-  } catch {
-    return null;
-  }
+const resolveImageUrl = (url) => {
+  if (!url || typeof url !== 'string') return null;
+  const clean = url.trim();
+  if (!clean || clean.startsWith('data:')) return clean;
+  if (/^https?:\/\//i.test(clean)) return clean;
+  const rawApi = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '';
+  const backendOrigin = rawApi.replace(/\/api\/?$/, '');
+  const base = backendOrigin || (typeof window !== 'undefined' ? window.location.origin : '');
+  return clean.startsWith('/') ? `${base}${clean}` : `${base}/${clean}`;
+};
+
+const isImageBuffer = (bytes) => {
+  if (!bytes || bytes.length < 8) return false;
+  const isJpg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+  const isPng = bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47;
+  return isJpg || isPng;
 };
 
 const fetchImageBytes = async (url) => {
-  if (!url || typeof url !== 'string') return null;
-  const clean = url.trim();
-  if (!clean || clean.startsWith('data:')) return null;
-  if (imageCache.has(clean)) return imageCache.get(clean);
-
+  const resolved = resolveImageUrl(url);
+  if (!resolved) return null;
+  if (imageCache.has(resolved)) return imageCache.get(resolved);
   try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 1800);
-    const res = await fetch(clean, { signal: controller.signal });
-    clearTimeout(timer);
-    if (!res.ok) {
-      imageCache.set(clean, null);
-      return null;
-    }
-    const buf = await res.arrayBuffer();
-    const bytes = new Uint8Array(buf);
-    imageCache.set(clean, bytes);
+    const res = await fetch(resolved);
+    if (!res.ok) return null;
+    const arrayBuffer = await res.arrayBuffer();
+    const bytes = new Uint8Array(arrayBuffer);
+    if (!isImageBuffer(bytes)) return null;
+    imageCache.set(resolved, bytes);
     return bytes;
   } catch {
-    imageCache.set(clean, null);
     return null;
   }
 };
 
 export const generateStudentCardsPdfBytes = async (students, options = {}) => {
-  const {
-    sideMode = 'front',
-    style = 'template_1_curve_blue',
-    orientation = 'vertical',
-    accentColor = '#003B73',
-    institution = {}
-  } = options;
-
   if (!students || students.length === 0) return null;
 
-  const pdfDoc = await PDFDocument.create();
-  const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-  const regular = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  const mono = await pdfDoc.embedFont(StandardFonts.CourierBold);
-  const fonts = { bold, regular, mono };
-
+  const orientation = options.orientation || 'vertical';
+  const sideMode = options.sideMode || 'front';
+  const style = options.style || 'template_1_curve_blue';
+  const accentColor = options.accentColor || '#003B73';
+  const institution = options.institution || {};
   const chunkSize = 6;
   const chunks = chunkArray(students, chunkSize);
 
-  for (const chunk of chunks) {
+  const pdfDoc = await PDFDocument.create();
+  const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  const courier = await pdfDoc.embedFont(StandardFonts.Courier);
+  const fonts = { regular: helvetica, bold: helveticaBold, mono: courier };
+
+  for (let cIdx = 0; cIdx < chunks.length; cIdx++) {
+    const chunk = chunks[cIdx];
+
     const qrImages = await Promise.all(
-      chunk.map(async (s) => {
-        const verifyUrl = generateStudentVerifyUrl(s._id || s.gr_number);
-        const dataUrl = await generateQrPng(verifyUrl);
-        if (dataUrl) return await pdfDoc.embedPng(dataUrl);
-        return null;
+      chunk.map(async (student) => {
+        const verifyUrl = generateStudentVerifyUrl(student);
+        const dataUrl = await generateDotQrPng(verifyUrl);
+        if (!dataUrl) return null;
+        try {
+          const base64 = dataUrl.split(',')[1];
+          const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+          return await pdfDoc.embedPng(bytes);
+        } catch {
+          return null;
+        }
       })
     );
 
     const photoImages = await Promise.all(
-      chunk.map(async (s) => {
-        if (!s?.photo_url) return null;
-        const bytes = await fetchImageBytes(s.photo_url);
+      chunk.map(async (student) => {
+        const photoUrl = student.photo_url;
+        if (!photoUrl) return null;
+        const bytes = await fetchImageBytes(photoUrl);
         if (!bytes) return null;
         try {
           return await pdfDoc.embedJpg(bytes);
@@ -120,6 +123,10 @@ export const generateStudentCardsPdfBytes = async (students, options = {}) => {
         });
       });
     }
+
+    if (cIdx % 3 === 0) {
+      await new Promise((r) => setTimeout(r, 0));
+    }
   }
 
   return await pdfDoc.save();
@@ -140,5 +147,34 @@ export const exportStudentCardsPdf = async (students, options = {}) => {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(downloadUrl);
+  return true;
+};
+
+export const printStudentCardsPdf = async (students, options = {}) => {
+  const pdfBytes = await generateStudentCardsPdfBytes(students, options);
+  if (!pdfBytes) return false;
+  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+  const blobUrl = URL.createObjectURL(blob);
+  const iframe = document.createElement('iframe');
+  iframe.style.position = 'fixed';
+  iframe.style.right = '0';
+  iframe.style.bottom = '0';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = '0';
+  iframe.src = blobUrl;
+  document.body.appendChild(iframe);
+  iframe.onload = () => {
+    try {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+    } catch {
+      window.open(blobUrl, '_blank');
+    }
+    setTimeout(() => {
+      if (document.body.contains(iframe)) document.body.removeChild(iframe);
+      URL.revokeObjectURL(blobUrl);
+    }, 60000);
+  };
   return true;
 };

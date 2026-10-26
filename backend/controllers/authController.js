@@ -55,7 +55,7 @@ const login = async (req, res) => {
         { contact_number: cleanId },
         { phone: cleanId }
       ]
-    }).populate('custom_role_id');
+    }).populate('custom_role_id').lean();
 
     if (!user || user.is_active === false || user.status === 'Inactive') {
       const fallbackHandled = await handleStudentLogin(cleanId, password, res);
@@ -99,7 +99,7 @@ const getMe = async (req, res) => {
     if (req.user?.role === 'Student') {
       return handleStudentGetMe(req.user.student_id || req.user.id, res);
     }
-    const user = await User.findById(req.user.id).select('-password').populate('custom_role_id');
+    const user = await User.findById(req.user.id).select('-password').populate('custom_role_id').lean();
     if (!user || user.is_active === false || user.status === 'Inactive') return res.status(404).json({ message: 'User not found' });
     const [, meta] = await Promise.all([
       ensureActiveSession(user, req, req.user?.session_id),

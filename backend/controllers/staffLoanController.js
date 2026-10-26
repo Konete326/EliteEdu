@@ -15,7 +15,7 @@ const getLoans = async (req, res) => {
     if (record_type) query.record_type = record_type;
     if (status) query.status = status;
 
-    const loans = await StaffLoan.find(query).populate('staff_id', 'name email employee_code designation department').sort({ createdAt: -1 });
+    const loans = await StaffLoan.find(query).populate('staff_id', 'name email employee_code designation department').sort({ createdAt: -1 }).lean();
     res.status(200).json({ success: true, data: loans });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -83,7 +83,7 @@ const updateLoan = async (req, res) => {
       { _id: req.params.id, school_id: schoolId },
       { $set: req.body },
       { new: true }
-    );
+    ).lean();
     if (!loan) return res.status(404).json({ message: 'Loan not found' });
     res.status(200).json({ success: true, data: loan });
   } catch (error) {

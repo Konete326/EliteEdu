@@ -8,6 +8,9 @@
   --color-primary: #0d9488;
   --color-primary-hover: #0f766e;
   --color-primary-soft: #ccfbf1;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  color-adjust: exact;
 }
 
 .dark {
@@ -20,6 +23,9 @@ html {
   color-scheme: light;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 #f1f5f9;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  color-adjust: exact;
 }
 
 html.dark, html.dark *, .dark, .dark * {
@@ -36,6 +42,9 @@ body {
   font-family: 'Figtree', system-ui, -apple-system, sans-serif;
   background-color: #f2f5f6;
   color: #15222b;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  color-adjust: exact;
 }
 
 .dark body {
@@ -241,10 +250,12 @@ html:not([data-sidebar-bg]) .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
 @media print {
   @page {
     margin: 0;
+    size: auto;
   }
   *, *::before, *::after {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
   html, body {
     margin: 0 !important;
@@ -253,6 +264,7 @@ html:not([data-sidebar-bg]) .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
     color: #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    color-adjust: exact !important;
     height: auto !important;
     min-height: 100% !important;
     overflow: visible !important;

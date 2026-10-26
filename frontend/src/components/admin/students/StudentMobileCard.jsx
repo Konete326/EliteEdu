@@ -120,7 +120,7 @@ const StudentMobileCard = ({
 
         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark border border-primary/20 font-semibold text-[11px]">
           <GraduationCap className="w-3.5 h-3.5 shrink-0" />
-          <span>{student.current_grade?.name || 'Unassigned'}</span>
+          <span>{(student.current_grade?.name || '—').replace(/^(class|grade)\s+/i, '')}</span>
           <span className="px-1.5 py-0.2 rounded-md bg-white/40 dark:bg-black/20 text-[10px] font-bold">
             Sec {student.current_section || 'A'}
           </span>

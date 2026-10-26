@@ -12,7 +12,8 @@ const getAttendanceSummary = async (req, res) => {
     const sheets = await MarkSheet.find(query)
       .populate('grade_id', 'name')
       .populate('subject_id', 'name')
-      .populate('exam_category_id', 'name');
+      .populate('exam_category_id', 'name')
+      .lean();
 
     const summary = sheets.map(s => {
       const total = s.marks?.length || 0;
@@ -47,8 +48,8 @@ const getClassResultsGazette = async (req, res) => {
     const q = { school_id, grade_id };
     if (exam_category_id) q.exam_category_id = exam_category_id;
 
-    const sheets = await MarkSheet.find(q).populate('subject_id', 'name code').populate('marks.student_id', 'name roll_number first_name last_name');
-    const policies = await RemarkPolicy.find({ school_id });
+    const sheets = await MarkSheet.find(q).populate('subject_id', 'name code').populate('marks.student_id', 'name roll_number first_name last_name').lean();
+    const policies = await RemarkPolicy.find({ school_id }).lean();
 
     const studentMap = {};
     for (const sheet of sheets) {

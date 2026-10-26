@@ -10,7 +10,8 @@ const getProfile = async (req, res) => {
       .populate('assigned_campuses', 'name code')
       .populate('grades', 'name sections')
       .populate('subjects', 'name code')
-      .populate('custom_role_id');
+      .populate('custom_role_id')
+      .lean();
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
     let schoolMeta = null;
@@ -60,7 +61,8 @@ const updateProfile = async (req, res) => {
       .populate('assigned_campuses', 'name code')
       .populate('grades', 'name sections')
       .populate('subjects', 'name code')
-      .populate('custom_role_id');
+      .populate('custom_role_id')
+      .lean();
 
     let schoolMeta = null;
     if (updatedUser.school_id) {

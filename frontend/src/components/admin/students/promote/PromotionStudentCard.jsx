@@ -6,17 +6,17 @@ const PromotionStudentCard = ({ student, isSelected, onToggle, onScoreChange, pa
   return (
     <div
       onClick={onToggle}
-      className={`relative p-3.5 rounded-2xl border transition-all cursor-pointer select-none space-y-2.5 ${
+      className={`relative p-2.5 rounded-xl border transition-all cursor-pointer select-none space-y-2 ${
         isSelected
-          ? 'bg-primary/5 dark:bg-primary/10 border-primary ring-2 ring-primary/30 shadow-md'
+          ? 'bg-primary/5 dark:bg-primary/10 border-primary ring-2 ring-primary ring-offset-2 ring-offset-surface dark:ring-offset-surface-dark shadow-md'
           : 'bg-surface dark:bg-surface-dark border-line dark:border-line-dark hover:border-primary/50 shadow-xs'
       }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-9 h-9 rounded-xl bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark flex items-center justify-center font-bold text-xs text-ink dark:text-ink-dark overflow-hidden shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-8 h-8 aspect-square rounded-lg bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark flex items-center justify-center font-bold text-xs text-ink dark:text-ink-dark overflow-hidden shrink-0">
             {student.photo_url ? (
-              <img src={student.photo_url} alt={student.name} className="w-full h-full object-cover" />
+              <img src={student.photo_url} alt={student.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
             ) : (
               <User className="w-4 h-4 text-ink-muted" />
             )}

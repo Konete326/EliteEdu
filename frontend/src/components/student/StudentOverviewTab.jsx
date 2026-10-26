@@ -1,4 +1,4 @@
-import { Calendar, Clock, BookOpen, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, BookOpen } from 'lucide-react';
 import TimetableMatrixGrid from '../admin/timetable/TimetableMatrixGrid';
 
 const StudentOverviewTab = ({ timetable = [], lmsItems = [] }) => {
@@ -6,23 +6,25 @@ const StudentOverviewTab = ({ timetable = [], lmsItems = [] }) => {
   const liveClasses = lmsItems.filter((it) => it.item_type === 'Live_Class').slice(0, 2);
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm space-y-3">
-          <h4 className="font-bold text-sm text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-blue-500" /> Pending Homework ({pendingHomework.length})
-          </h4>
+    <div className="space-y-4 sm:space-y-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+        <div className="bg-surface dark:bg-surface-dark p-4 rounded-2xl border border-line dark:border-line-dark shadow-2xs space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="font-bold text-xs uppercase tracking-wider text-ink dark:text-ink-dark flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-primary" /> Pending Homework ({pendingHomework.length})
+            </h4>
+          </div>
           {pendingHomework.length === 0 ? (
-            <p className="text-xs text-gray-400 py-2">No pending assignments! All caught up.</p>
+            <p className="text-xs text-ink-muted dark:text-ink-muted-dark py-3 text-center">No pending assignments! All caught up.</p>
           ) : (
             <div className="space-y-2">
               {pendingHomework.map((hw) => (
-                <div key={hw._id} className="p-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-bold text-gray-800 dark:text-gray-200">{hw.title}</span>
-                    <span className="text-gray-400 block text-[11px]">{hw.subject_id?.name}</span>
+                <div key={hw._id} className="p-2.5 rounded-xl bg-surface-secondary dark:bg-surface-secondary-dark border border-line/60 dark:border-line-dark/60 flex items-center justify-between text-xs">
+                  <div className="min-w-0 pr-2">
+                    <span className="font-bold text-ink dark:text-ink-dark block truncate">{hw.title}</span>
+                    <span className="text-ink-muted dark:text-ink-muted-dark block text-[11px] truncate">{hw.subject_id?.name || 'Subject'}</span>
                   </div>
-                  <span className="text-amber-600 dark:text-amber-400 font-semibold text-[11px]">
+                  <span className="text-warn-dark font-semibold text-[11px] shrink-0 bg-warn-soft/50 px-2 py-0.5 rounded-md border border-warn/20">
                     Due: {new Date(hw.due_date).toLocaleDateString()}
                   </span>
                 </div>
@@ -31,25 +33,27 @@ const StudentOverviewTab = ({ timetable = [], lmsItems = [] }) => {
           )}
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm space-y-3">
-          <h4 className="font-bold text-sm text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Clock className="w-4 h-4 text-rose-500" /> Upcoming Live Sessions
-          </h4>
+        <div className="bg-surface dark:bg-surface-dark p-4 rounded-2xl border border-line dark:border-line-dark shadow-2xs space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="font-bold text-xs uppercase tracking-wider text-ink dark:text-ink-dark flex items-center gap-2">
+              <Clock className="w-4 h-4 text-bad dark:text-bad-dark" /> Upcoming Live Sessions
+            </h4>
+          </div>
           {liveClasses.length === 0 ? (
-            <p className="text-xs text-gray-400 py-2">No live classes scheduled for today.</p>
+            <p className="text-xs text-ink-muted dark:text-ink-muted-dark py-3 text-center">No live classes scheduled for today.</p>
           ) : (
             <div className="space-y-2">
               {liveClasses.map((lc) => (
-                <div key={lc._id} className="p-2.5 rounded-lg bg-rose-50/50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-800/40 flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-bold text-rose-900 dark:text-rose-200">{lc.title}</span>
-                    <span className="text-gray-400 block text-[11px]">{lc.subject_id?.name} • {lc.start_time}</span>
+                <div key={lc._id} className="p-2.5 rounded-xl bg-surface-secondary dark:bg-surface-secondary-dark border border-line/60 dark:border-line-dark/60 flex items-center justify-between text-xs">
+                  <div className="min-w-0 pr-2">
+                    <span className="font-bold text-ink dark:text-ink-dark block truncate">{lc.title}</span>
+                    <span className="text-ink-muted dark:text-ink-muted-dark block text-[11px] truncate">{lc.subject_id?.name} • {lc.start_time}</span>
                   </div>
                   <a
                     href={lc.resource_url || `https://meet.jit.si/${lc.meeting_room_code || 'EliteEdu'}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-2.5 py-1 bg-rose-600 text-white rounded text-[11px] font-bold hover:bg-rose-700"
+                    className="px-3 py-1 bg-bad hover:bg-bad/90 text-white rounded-lg text-[11px] font-bold shadow-2xs shrink-0"
                   >
                     Join
                   </a>
@@ -60,11 +64,13 @@ const StudentOverviewTab = ({ timetable = [], lmsItems = [] }) => {
         </div>
       </div>
 
-      <div className="space-y-2">
-        <h4 className="font-bold text-sm text-gray-900 dark:text-gray-100 flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-blue-600" /> My Class Weekly Timetable
+      <div className="bg-surface dark:bg-surface-dark p-4 rounded-2xl border border-line dark:border-line-dark shadow-2xs space-y-3">
+        <h4 className="font-bold text-xs uppercase tracking-wider text-ink dark:text-ink-dark flex items-center gap-2">
+          <Calendar className="w-4 h-4 text-primary" /> Class Weekly Timetable Routine
         </h4>
-        <TimetableMatrixGrid slots={timetable} viewMode="class" canManage={false} />
+        <div className="overflow-x-auto">
+          <TimetableMatrixGrid slots={timetable} viewMode="class" canManage={false} />
+        </div>
       </div>
     </div>
   );

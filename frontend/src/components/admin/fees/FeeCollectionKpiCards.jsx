@@ -1,4 +1,6 @@
 import { DollarSign, TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import AnimatedNumber from '@/components/ui/AnimatedNumber';
 
 const FeeCollectionKpiCards = ({ kpis = {} }) => {
   const cards = [
@@ -38,19 +40,28 @@ const FeeCollectionKpiCards = ({ kpis = {} }) => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {cards.map((c) => {
+      {cards.map((c, idx) => {
         const Icon = c.icon;
         return (
-          <div key={c.title} className="p-4 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs space-y-2">
+          <motion.div
+            key={c.title}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: idx * 0.06, ease: 'easeOut' }}
+            whileHover={{ y: -3 }}
+            className="relative overflow-hidden p-4 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs space-y-2 hover:border-primary/40 hover:shadow-md transition-all before:absolute before:inset-0 before:-z-10 before:bg-[radial-gradient(circle_at_50%_50%,currentColor_2%,transparent_2%)] before:opacity-[0.04] before:bg-[length:16px_16px]"
+          >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-ink-muted uppercase tracking-wider">{c.title}</span>
               <div className={`p-2 rounded-xl ${c.bg} ${c.color}`}>
                 <Icon className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-lg font-black text-ink dark:text-ink-dark">{c.value}</div>
+            <div className="text-lg font-black text-ink dark:text-ink-dark">
+              <AnimatedNumber value={c.value} />
+            </div>
             <div className="text-[11px] text-ink-muted">{c.sub}</div>
-          </div>
+          </motion.div>
         );
       })}
     </div>

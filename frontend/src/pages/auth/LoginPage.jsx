@@ -7,6 +7,7 @@ import api from '../../services/api';
 import LoginHeader from '../../components/auth/LoginHeader';
 import LoginRoleSwitcher from '../../components/auth/LoginRoleSwitcher';
 import LoginFormFields from '../../components/auth/LoginFormFields';
+import StudentComingSoonModal from '../../components/auth/StudentComingSoonModal';
 
 const LoginPage = () => {
   const [role, setRole] = useState('Admin');
@@ -15,6 +16,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showStudentModal, setShowStudentModal] = useState(false);
   const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
@@ -31,6 +33,10 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isStudent) {
+      setShowStudentModal(true);
+      return;
+    }
     if (!isFormValid || loading) return;
     setError('');
     setLoading(true);
@@ -80,7 +86,7 @@ const LoginPage = () => {
 
           <button
             type="submit"
-            disabled={loading || !isFormValid}
+            disabled={loading || (!isStudent && !isFormValid)}
             className="w-full py-3 sm:py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-hover active:scale-[0.99] text-white font-bold text-xs tracking-wide transition-all disabled:opacity-50 mt-2 shadow-md shadow-primary/20 cursor-pointer flex items-center justify-center gap-2"
           >
             {loading ? (
@@ -98,6 +104,11 @@ const LoginPage = () => {
           Elite Educational System · Secure Gateway
         </div>
       </div>
+
+      <StudentComingSoonModal
+        isOpen={showStudentModal}
+        onClose={() => setShowStudentModal(false)}
+      />
     </div>
   );
 };

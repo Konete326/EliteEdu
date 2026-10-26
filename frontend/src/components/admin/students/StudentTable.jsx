@@ -1,3 +1,4 @@
+import { usePermissions } from '../../../hooks/usePermissions';
 import StudentTableRow from './StudentTableRow';
 
 const StudentTable = ({
@@ -11,6 +12,9 @@ const StudentTable = ({
   onOpenAdmissionLetter,
   onOpenIdCard
 }) => {
+  const { canDelete } = usePermissions();
+  const hasDelete = canDelete('students');
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
@@ -34,6 +38,7 @@ const StudentTable = ({
             <StudentTableRow
               key={student._id}
               student={student}
+              hasDelete={hasDelete}
               onToggleStatus={onToggleStatus}
               onEdit={onEdit}
               onDelete={onDelete}

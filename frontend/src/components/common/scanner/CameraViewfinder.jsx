@@ -1,7 +1,7 @@
 import React from 'react';
-import { Camera, Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
 
-const CameraViewfinder = ({ containerId, isReady, error, onRetry, isScanning, className = '' }) => {
+const CameraViewfinder = ({ containerId, isReady, error, onRetry, className = '' }) => {
   return (
     <div className={`relative w-full aspect-square max-w-sm mx-auto overflow-hidden rounded-2xl bg-slate-950 border-2 border-slate-800 shadow-2xl flex items-center justify-center ${className}`}>
       <div id={containerId} className="w-full h-full object-cover" />
@@ -34,22 +34,13 @@ const CameraViewfinder = ({ containerId, isReady, error, onRetry, isScanning, cl
       {isReady && !error && (
         <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-between p-6 z-10">
           <div className="w-full flex justify-between items-start">
-            <span className="w-8 h-8 border-t-4 border-l-4 border-emerald-400 rounded-tl-xl shadow-xs" />
-            <span className="w-8 h-8 border-t-4 border-r-4 border-emerald-400 rounded-tr-xl shadow-xs" />
-          </div>
-
-          <div className="relative w-full flex-1 flex items-center justify-center">
-            <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_12px_rgba(52,211,153,0.8)] animate-pulse" />
+            <span className="w-8 h-8 border-t-3 border-l-3 border-primary/70 rounded-tl-xl shadow-xs" />
+            <span className="w-8 h-8 border-t-3 border-r-3 border-primary/70 rounded-tr-xl shadow-xs" />
           </div>
 
           <div className="w-full flex justify-between items-end">
-            <span className="w-8 h-8 border-b-4 border-l-4 border-emerald-400 rounded-bl-xl shadow-xs" />
-            <span className="w-8 h-8 border-b-4 border-r-4 border-emerald-400 rounded-br-xl shadow-xs" />
-          </div>
-
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md border border-slate-700/60 text-[10px] font-bold text-emerald-300 flex items-center gap-1.5 whitespace-nowrap shadow-md">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span>Align QR or Barcode in Center</span>
+            <span className="w-8 h-8 border-b-3 border-l-3 border-primary/70 rounded-bl-xl shadow-xs" />
+            <span className="w-8 h-8 border-b-3 border-r-3 border-primary/70 rounded-br-xl shadow-xs" />
           </div>
         </div>
       )}

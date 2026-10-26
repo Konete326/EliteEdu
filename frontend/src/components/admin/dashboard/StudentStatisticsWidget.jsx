@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Users, ArrowUpRight } from 'lucide-react';
+import AnimatedNumber from '@/components/ui/AnimatedNumber';
 
 const StudentStatisticsWidget = ({ studentStats }) => {
   const stats = studentStats || {
@@ -35,11 +36,13 @@ const StudentStatisticsWidget = ({ studentStats }) => {
               <p className="text-[10px] uppercase font-bold">{item.label}</p>
               <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
-            <p className="text-base font-black text-ink dark:text-ink-dark">{item.data?.total || 0}</p>
+            <p className="text-base font-black text-ink dark:text-ink-dark">
+              <AnimatedNumber value={item.data?.total || 0} />
+            </p>
             <div className="flex gap-1 mt-1 text-[9px] font-semibold opacity-90">
-              <span>B: {item.data?.boys || 0}</span>
+              <span>B: <AnimatedNumber value={item.data?.boys || 0} /></span>
               <span>•</span>
-              <span>G: {item.data?.girls || 0}</span>
+              <span>G: <AnimatedNumber value={item.data?.girls || 0} /></span>
             </div>
           </Link>
         ))}

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-export default function ExamMarksRowItem({ row, maxTheory, maxPractical, totalMax, onChange }) {
+const ExamMarksRowItem = memo(function ExamMarksRowItem({ row, maxTheory, maxPractical, totalMax, onChange }) {
   const isAbsent = row.status === 'ABSENT';
 
   const handleMarks = (field, val) => {
@@ -62,4 +62,6 @@ export default function ExamMarksRowItem({ row, maxTheory, maxPractical, totalMa
       </td>
     </tr>
   );
-}
+});
+
+export default ExamMarksRowItem;

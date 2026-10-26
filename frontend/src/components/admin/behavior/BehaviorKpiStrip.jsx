@@ -6,44 +6,40 @@ const BehaviorKpiStrip = ({ kpis = {} }) => {
       label: 'Students Evaluated',
       value: kpis.totalStudents || 0,
       icon: Users,
-      color: 'text-blue-600',
-      bg: 'bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800/40'
+      color: 'text-primary'
     },
     {
       label: 'Exemplary Conduct',
       value: kpis.exemplaryCount || 0,
       icon: Award,
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-800/40'
+      color: 'text-good dark:text-good-dark'
     },
     {
-      label: 'Class Average Score',
+      label: 'Class Average',
       value: `${kpis.classAverage || '5.0'} / 5`,
       icon: TrendingUp,
-      color: 'text-purple-600',
-      bg: 'bg-purple-50 dark:bg-purple-900/20 border-purple-100 dark:border-purple-800/40'
+      color: 'text-info dark:text-info-dark'
     },
     {
       label: 'Needs Attention',
       value: kpis.needsAttention || 0,
       icon: AlertTriangle,
-      color: 'text-amber-600',
-      bg: 'bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-800/40'
+      color: 'text-warn dark:text-warn-dark'
     }
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 shrink-0">
       {cards.map((c, i) => {
         const Icon = c.icon;
         return (
-          <div key={i} className={`p-4 rounded-2xl border ${c.bg} flex items-center justify-between shadow-sm`}>
-            <div>
-              <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{c.label}</p>
-              <h3 className="text-xl font-black text-gray-900 dark:text-gray-100 mt-1">{c.value}</h3>
+          <div key={i} className="p-2.5 sm:p-3 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xs flex items-center justify-between gap-2.5">
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold text-ink-muted dark:text-ink-muted-dark uppercase tracking-wider truncate">{c.label}</p>
+              <h3 className="text-base sm:text-lg font-black text-ink dark:text-ink-dark mt-0.5 leading-tight truncate">{c.value}</h3>
             </div>
-            <div className={`p-2.5 rounded-xl bg-white dark:bg-gray-800 shadow-sm ${c.color}`}>
-              <Icon className="w-5 h-5" />
+            <div className={`p-2 rounded-lg bg-surface-secondary dark:bg-surface-secondary-dark border border-line/60 dark:border-line-dark/60 shrink-0 ${c.color}`}>
+              <Icon className="w-4 h-4" />
             </div>
           </div>
         );

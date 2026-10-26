@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import api from '../../../../services/api';
 
 let cachedCampuses = null;
@@ -9,60 +9,68 @@ export const useIdCardsData = (initialStudentId) => {
   const [campuses, setCampuses] = useState(cachedCampuses || []);
   const [grades, setGrades] = useState(cachedGrades || []);
   const [loading, setLoading] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCampus, setSelectedCampus] = useState('');
   const [selectedGrade, setSelectedGrade] = useState('');
   const [photoFilter, setPhotoFilter] = useState('all');
+  const [isAllSelected, setIsAllSelected] = useState(!initialStudentId);
   const [selectedIds, setSelectedIds] = useState(initialStudentId ? [initialStudentId] : []);
 
-  useEffect(() => {
-    let isMounted = true;
+  const fetchPreviewStudents = useCallback(async () => {
+    try {
+      setLoading(true);
+      const params = {
+        cardView: 'true',
+        limit: 36
+      };
+      if (selectedCampus) params.campus_id = selectedCampus;
+      if (selectedGrade) params.grade_id = selectedGrade;
+      if (searchQuery && searchQuery.trim()) params.search = searchQuery.trim();
 
-    if (initialStudentId) {
-      api.get(`/students/${initialStudentId}`).then((res) => {
-        if (!isMounted) return;
-        const student = res.data?.student || res.data;
-        if (student) {
-          setStudents((prev) => {
-            if (prev.some((s) => s._id === student._id)) return prev;
-            return [student, ...prev];
-          });
-          setSelectedIds([student._id]);
-          setLoading(false);
-        }
-      }).catch(() => {});
-    }
+      const [sRes, cRes, gRes] = await Promise.all([
+        api.get('/students', { params }),
+        cachedCampuses ? Promise.resolve({ data: { campuses: cachedCampuses } }) : api.get('/campuses'),
+        cachedGrades ? Promise.resolve({ data: { grades: cachedGrades } }) : api.get('/grades')
+      ]);
 
-    Promise.all([
-      api.get('/students?cardView=true&limit=1000'),
-      cachedCampuses ? Promise.resolve({ data: { campuses: cachedCampuses } }) : api.get('/campuses'),
-      cachedGrades ? Promise.resolve({ data: { grades: cachedGrades } }) : api.get('/grades'),
-    ]).then(([sRes, cRes, gRes]) => {
-      if (!isMounted) return;
       const list = sRes.data?.students || sRes.data || [];
+      const total = sRes.data?.totalCount || sRes.data?.pagination?.total || list.length;
       cachedCampuses = cRes.data?.campuses || cRes.data || [];
       cachedGrades = gRes.data?.grades || gRes.data || [];
 
       setCampuses(cachedCampuses);
       setGrades(cachedGrades);
+      setStudents(list);
+      setTotalCount(total);
 
-      setStudents((prev) => {
-        if (!prev.length) return list;
-        const existingIds = new Set(list.map((item) => item._id));
-        const prepended = prev.filter((p) => !existingIds.has(p._id));
-        return [...prepended, ...list];
-      });
-
-      if (!initialStudentId) {
+      if (initialStudentId && !list.some((s) => s._id === initialStudentId)) {
+        try {
+          const singleRes = await api.get(`/students/${initialStudentId}`);
+          const single = singleRes.data?.student || singleRes.data;
+          if (single) {
+            setStudents((prev) => [single, ...prev]);
+            setSelectedIds([single._id]);
+            setIsAllSelected(false);
+          }
+        } catch {}
+      } else if (!initialStudentId && isAllSelected) {
         setSelectedIds(list.map((s) => s._id));
       }
-    }).finally(() => {
-      if (isMounted) setLoading(false);
-    });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedCampus, selectedGrade, searchQuery, initialStudentId, isAllSelected]);
 
-    return () => { isMounted = false; };
-  }, [initialStudentId]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchPreviewStudents();
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [fetchPreviewStudents]);
 
   const photoCounts = useMemo(() => {
     let withPhoto = 0;
@@ -71,55 +79,48 @@ export const useIdCardsData = (initialStudentId) => {
       if (s.photo_url && String(s.photo_url).trim()) withPhoto++;
       else withoutPhoto++;
     });
-    return { withPhoto, withoutPhoto, total: students.length };
-  }, [students]);
+    return { withPhoto, withoutPhoto, total: totalCount || students.length };
+  }, [students, totalCount]);
 
   const filteredStudents = useMemo(() => {
     return students.filter((s) => {
-      if (selectedCampus && s.campus_id?._id !== selectedCampus && s.campus_id !== selectedCampus) return false;
-      if (selectedGrade && s.current_grade?._id !== selectedGrade && s.current_grade !== selectedGrade) return false;
       if (photoFilter === 'with_photo' && (!s.photo_url || !String(s.photo_url).trim())) return false;
       if (photoFilter === 'without_photo' && s.photo_url && String(s.photo_url).trim()) return false;
-      if (!searchQuery) return true;
-      const q = searchQuery.toLowerCase();
-      return (
-        s.name?.toLowerCase().includes(q) ||
-        s.gr_number?.toLowerCase().includes(q) ||
-        s.father_name?.toLowerCase().includes(q)
-      );
+      return true;
     });
-  }, [students, selectedCampus, selectedGrade, photoFilter, searchQuery]);
+  }, [students, photoFilter]);
 
   const selectedStudents = useMemo(() => {
-    return filteredStudents.filter((s) => selectedIds.includes(s._id));
-  }, [filteredStudents, selectedIds]);
+    if (isAllSelected) return filteredStudents;
+    const set = new Set(selectedIds);
+    return filteredStudents.filter((s) => set.has(s._id));
+  }, [filteredStudents, selectedIds, isAllSelected]);
 
   const handlePhotoFilterChange = (filter) => {
     setPhotoFilter(filter);
-    const nextFiltered = students.filter((s) => {
-      if (selectedCampus && s.campus_id?._id !== selectedCampus && s.campus_id !== selectedCampus) return false;
-      if (selectedGrade && s.current_grade?._id !== selectedGrade && s.current_grade !== selectedGrade) return false;
-      if (filter === 'with_photo' && (!s.photo_url || !String(s.photo_url).trim())) return false;
-      if (filter === 'without_photo' && s.photo_url && String(s.photo_url).trim()) return false;
-      if (!searchQuery) return true;
-      const q = searchQuery.toLowerCase();
-      return (
-        s.name?.toLowerCase().includes(q) ||
-        s.gr_number?.toLowerCase().includes(q) ||
-        s.father_name?.toLowerCase().includes(q)
-      );
-    });
-    setSelectedIds(nextFiltered.map((s) => s._id));
   };
 
   const handleToggleSelect = (id) => {
-    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
+    if (isAllSelected) {
+      setIsAllSelected(false);
+      setSelectedIds(filteredStudents.filter((s) => s._id !== id).map((s) => s._id));
+    } else {
+      setSelectedIds((prev) => {
+        const next = prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id];
+        if (next.length === totalCount && totalCount > 0) {
+          setIsAllSelected(true);
+        }
+        return next;
+      });
+    }
   };
 
   const handleToggleSelectAll = () => {
-    if (selectedIds.length === filteredStudents.length && filteredStudents.length > 0) {
+    if (isAllSelected) {
+      setIsAllSelected(false);
       setSelectedIds([]);
     } else {
+      setIsAllSelected(true);
       setSelectedIds(filteredStudents.map((s) => s._id));
     }
   };
@@ -133,6 +134,8 @@ export const useIdCardsData = (initialStudentId) => {
     campuses,
     grades,
     loading,
+    totalCount,
+    isAllSelected,
     searchQuery,
     setSearchQuery,
     selectedCampus,
@@ -150,5 +153,6 @@ export const useIdCardsData = (initialStudentId) => {
     handleToggleSelect,
     handleToggleSelectAll,
     updateStudentInList,
+    selectedCount: isAllSelected ? (totalCount || filteredStudents.length) : selectedIds.length
   };
 };

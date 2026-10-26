@@ -14,28 +14,47 @@ const FeeDefaultersPage = () => {
   const [minArrears, setMinArrears] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [activeNotice, setActiveNotice] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
+      params.append('page', page);
+      params.append('limit', '50');
       if (gradeFilter) params.append('grade_id', gradeFilter);
       if (minArrears) params.append('min_arrears', minArrears);
 
       const [defRes, grdRes] = await Promise.all([
-        api.get(`/fees/defaulters?${params.toString()}`).catch(() => ({ data: { defaulters: [] } })),
+        api.get(`/fees/defaulters?${params.toString()}`).catch(() => ({ data: { defaulters: [], total: 0, totalPages: 1 } })),
         api.get('/grades').catch(() => ({ data: { data: [] } }))
       ]);
-      if (defRes.data?.defaulters) setDefaulters(defRes.data.defaulters);
+      if (defRes.data?.defaulters) {
+        setDefaulters(defRes.data.defaulters);
+        setTotalPages(defRes.data.totalPages || 1);
+        setTotalCount(defRes.data.total || 0);
+      }
       if (grdRes.data?.data) setGrades(grdRes.data.data);
     } catch {
       showToast('Error loading fee defaulters', 'error');
     } finally {
       setLoading(false);
     }
-  }, [gradeFilter, minArrears, showToast]);
+  }, [page, gradeFilter, minArrears, showToast]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  const handleGradeChange = (val) => {
+    setGradeFilter(val);
+    setPage(1);
+  };
+
+  const handleMinArrearsChange = (val) => {
+    setMinArrears(val);
+    setPage(1);
+  };
 
   const handleSendAlert = async (d) => {
     try {
@@ -70,7 +89,7 @@ const FeeDefaultersPage = () => {
       </div>
 
       <div className="flex flex-wrap items-center gap-2 p-3 rounded-2xl bg-surface border border-line text-xs">
-        <select value={gradeFilter} onChange={(e) => setGradeFilter(e.target.value)} className="px-3 py-1.5 rounded-xl border border-line bg-surface text-ink outline-none">
+        <select value={gradeFilter} onChange={(e) => handleGradeChange(e.target.value)} className="px-3 py-1.5 rounded-xl border border-line bg-surface text-ink outline-none">
           <option value="">All Classes</option>
           {grades.map((g) => <option key={g._id} value={g._id}>{g.name}</option>)}
         </select>
@@ -78,7 +97,7 @@ const FeeDefaultersPage = () => {
           type="number"
           placeholder="Min Arrears (PKR)..."
           value={minArrears}
-          onChange={(e) => setMinArrears(e.target.value)}
+          onChange={(e) => handleMinArrearsChange(e.target.value)}
           className="px-3 py-1.5 rounded-xl border border-line bg-surface text-ink outline-none w-36 font-mono"
         />
       </div>
@@ -91,6 +110,33 @@ const FeeDefaultersPage = () => {
         onSendAlert={handleSendAlert}
         onOpenNotice={(d) => setActiveNotice(d)}
       />
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-3 py-2 text-xs border border-line rounded-xl bg-surface">
+          <span className="text-ink-muted">
+            Page <span className="font-bold text-ink dark:text-ink-dark">{page}</span> of{' '}
+            <span className="font-bold text-ink dark:text-ink-dark">{totalPages}</span> ({totalCount} total defaulters)
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={page <= 1 || loading}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="px-3 py-1 rounded-lg border border-line bg-surface hover:bg-surface-secondary text-ink disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed font-medium"
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              disabled={page >= totalPages || loading}
+              onClick={() => setPage((p) => p + 1)}
+              className="px-3 py-1 rounded-lg border border-line bg-surface hover:bg-surface-secondary text-ink disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed font-medium"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
       <DefaulterNoticeModal isOpen={Boolean(activeNotice)} onClose={() => setActiveNotice(null)} defaulter={activeNotice} />
     </div>

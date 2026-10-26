@@ -36,18 +36,43 @@ const buildFeeReports = async (schoolId, campusId, { sub_report, grade_id, payme
   }
 
   if (sub_report === 'monthly_collection_summary') {
-    const invoices = await FeeInvoice.find(qBase).populate('grade_id', 'name').lean();
-    const summary = {};
-    invoices.forEach((inv) => {
-      const gName = inv.grade_id?.name || 'Unassigned';
-      if (!summary[gName]) summary[gName] = { class_name: gName, billed: 0, collected: 0, balance: 0 };
-      summary[gName].billed += Number(inv.net_payable) || 0;
-      summary[gName].collected += Number(inv.paid_amount) || 0;
-      summary[gName].balance += Number(inv.balance_due) || 0;
+    const rowsAgg = await FeeInvoice.aggregate([
+      { $match: qBase },
+      {
+        $group: {
+          _id: '$grade_id',
+          billed: { $sum: { $ifNull: ['$net_payable', 0] } },
+          collected: { $sum: { $ifNull: ['$paid_amount', 0] } },
+          balance: { $sum: { $ifNull: ['$balance_due', 0] } }
+        }
+      },
+      {
+        $lookup: {
+          from: 'grades',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'grade',
+          pipeline: [{ $project: { _id: 1, name: 1 } }]
+        }
+      },
+      { $unwind: { path: '$grade', preserveNullAndEmptyArrays: true } },
+      { $sort: { 'grade.name': 1 } }
+    ]);
+    const rows = rowsAgg.map((s, i) => {
+      const className = s.grade?.name || 'Unassigned';
+      const billed = Number(s.billed) || 0;
+      const collected = Number(s.collected) || 0;
+      const balance = Number(s.balance) || 0;
+      return {
+        sr: i + 1,
+        id: `sum-${i + 1}`,
+        class_name: className,
+        billed,
+        collected,
+        balance,
+        rate: billed > 0 ? `${Math.round((collected / billed) * 100)}%` : '0%'
+      };
     });
-    const rows = Object.values(summary).map((s, i) => ({
-      sr: i + 1, id: `sum-${i + 1}`, ...s, rate: s.billed > 0 ? `${Math.round((s.collected / s.billed) * 100)}%` : '0%'
-    }));
     const columns = [
       { key: 'sr', label: '#', visible: true }, { key: 'class_name', label: 'Class', visible: true },
       { key: 'billed', label: 'Total Billed', visible: true }, { key: 'collected', label: 'Total Collected', visible: true },

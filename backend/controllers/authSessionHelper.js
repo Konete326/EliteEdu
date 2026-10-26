@@ -7,7 +7,7 @@ const isIpBlocked = async (schoolId, ipAddress) => {
   if (!ipAddress) return false;
   const filter = { ip_address: ipAddress };
   if (schoolId) filter.school_id = schoolId;
-  const blocked = await BlockedIp.findOne(filter);
+  const blocked = await BlockedIp.findOne(filter).select('_id').lean();
   return Boolean(blocked);
 };
 
@@ -47,7 +47,7 @@ const createLoginSession = async (user, req) => {
 
 const verifySession = async (sessionId, tokenVersion) => {
   if (!sessionId) return { valid: true };
-  const session = await UserSession.findById(sessionId).populate('user_id', 'token_version status is_active');
+  const session = await UserSession.findById(sessionId).populate('user_id', 'token_version status is_active').lean();
   if (!session) return { valid: false, reason: 'Session expired or revoked' };
   if (session.status !== 'Active') return { valid: false, reason: 'Session revoked' };
   if (session.expires_at && new Date() > session.expires_at) {
@@ -72,7 +72,7 @@ const ensureActiveSession = async (user, req, currentSessionId) => {
   if (blocked) return null;
 
   if (currentSessionId) {
-    const existing = await UserSession.findById(currentSessionId);
+    const existing = await UserSession.findById(currentSessionId).lean();
     if (existing && existing.status === 'Active') {
       await UserSession.findByIdAndUpdate(currentSessionId, { last_active: new Date() });
       return existing;

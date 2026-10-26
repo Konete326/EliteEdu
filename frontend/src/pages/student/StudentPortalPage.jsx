@@ -23,7 +23,7 @@ const StudentPortalPage = () => {
 
   useEffect(() => {
     if (isStaff) {
-      api.get('/students?status=Active').then((res) => {
+      api.get('/students?status=Active&limit=1000&minimal=true').then((res) => {
         const list = res.data?.students || res.data || [];
         setAllStudents(list);
         if (list.length > 0 && !selectedStudentId) setSelectedStudentId(list[0]._id);
@@ -58,7 +58,7 @@ const StudentPortalPage = () => {
   ];
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-4 sm:space-y-5">
       <StudentSwitcherBar
         isStaff={isStaff}
         students={allStudents}
@@ -72,7 +72,7 @@ const StudentPortalPage = () => {
         invoices={portalData?.invoices}
       />
 
-      <div className="flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto gap-2">
+      <div className="flex border-b border-line dark:border-line-dark overflow-x-auto gap-1 sm:gap-2 pb-px scrollbar-none">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -80,10 +80,10 @@ const StudentPortalPage = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 whitespace-nowrap transition-colors ${
+              className={`flex items-center gap-2 px-3.5 py-2.5 text-xs font-bold border-b-2 whitespace-nowrap transition-all cursor-pointer ${
                 isActive
-                  ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                  ? 'border-primary text-primary dark:text-primary-dark font-black'
+                  : 'border-transparent text-ink-muted dark:text-ink-muted-dark hover:text-ink dark:hover:text-ink-dark hover:border-line'
               }`}
             >
               <Icon className="w-4 h-4" /> {tab.label}
@@ -93,7 +93,10 @@ const StudentPortalPage = () => {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-blue-500" /></div>
+        <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-12 text-center space-y-3 shadow-2xs flex flex-col items-center justify-center">
+          <Loader2 className="w-7 h-7 animate-spin text-primary" />
+          <p className="text-xs text-ink-muted dark:text-ink-muted-dark font-semibold">Loading student portal details...</p>
+        </div>
       ) : (
         <div>
           {activeTab === 'overview' && <StudentOverviewTab timetable={portalData?.timetable} lmsItems={portalData?.lmsItems} />}

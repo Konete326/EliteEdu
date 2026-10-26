@@ -49,7 +49,7 @@ const CameraScannerModal = ({
 
   const {
     cameras, selectedCameraId, setSelectedCameraId, isReady,
-    isTorchOn, hasTorch, toggleTorch, cameraError, scanFile, restart
+    isTorchOn, hasTorch, toggleTorch, cameraError, scanFile, restart, stopScanner
   } = useCameraScanner({ containerId, onScan: handleScanCode, isActive: isOpen, continuous: isKioskMode ? true : continuous });
 
   useEffect(() => {
@@ -82,15 +82,7 @@ const CameraScannerModal = ({
     if (document.fullscreenElement) {
       document.exitFullscreen?.().catch(() => {});
     }
-    try {
-      const videos = document.querySelectorAll('video');
-      videos.forEach((v) => {
-        if (v.srcObject && typeof v.srcObject.getTracks === 'function') {
-          v.srcObject.getTracks().forEach((t) => t.stop());
-          v.srcObject = null;
-        }
-      });
-    } catch (_) {}
+    stopScanner();
     onClose();
   };
 

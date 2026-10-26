@@ -14,8 +14,8 @@ const generateReceiptNo = async (schoolId) => {
 
 const handleAccountingSync = async (schoolId, campusId, receiptNo, buyerName, netTotal, paymentMode, userId) => {
   try {
-    let incomeHead = await AccountHead.findOne({ school_id: schoolId, name: /Store|Bookshop/i });
-    if (!incomeHead) incomeHead = await AccountHead.findOne({ school_id: schoolId, category: 'Income' });
+    let incomeHead = await AccountHead.findOne({ school_id: schoolId, name: /Store|Bookshop/i }).select('_id name').lean();
+    if (!incomeHead) incomeHead = await AccountHead.findOne({ school_id: schoolId, category: 'Income' }).select('_id name').lean();
     if (!incomeHead) {
       incomeHead = await AccountHead.create({
         school_id: schoolId, campus_id: campusId, name: 'Store & Bookshop Sales',

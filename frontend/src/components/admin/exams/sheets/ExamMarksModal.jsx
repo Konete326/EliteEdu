@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, Save, FileSpreadsheet } from 'lucide-react';
 import axios from '../../../../utils/axiosConfig';
 import { useNotification } from '../../../../context/NotificationContext';
@@ -30,9 +30,9 @@ export default function ExamMarksModal({ isOpen, onClose, exam, initialPaper, on
       .finally(() => setIsLoading(false));
   }, [selectedPaperIdx, exam._id]);
 
-  const handleRowChange = (idx, updated) => {
+  const handleRowChange = useCallback((idx, updated) => {
     setRows((prev) => { const copy = [...prev]; copy[idx] = updated; return copy; });
-  };
+  }, []);
 
   const handleSave = async () => {
     try {

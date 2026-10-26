@@ -77,7 +77,7 @@ const assignSubstitution = async (req, res) => {
     if (!slot_id || !substitute_teacher_id) {
       return res.status(400).json({ success: false, message: 'Slot ID and substitute teacher are required' });
     }
-    const slot = await TimetableSlot.findOne({ _id: slot_id, school_id: schoolId }).populate('grade_id', 'name').populate('subject_id', 'name');
+    const slot = await TimetableSlot.findOne({ _id: slot_id, school_id: schoolId }).populate('grade_id', 'name').populate('subject_id', 'name').lean();
     if (!slot) return res.status(404).json({ success: false, message: 'Timetable slot not found' });
 
     const targetDate = date || new Date().toISOString().slice(0, 10);

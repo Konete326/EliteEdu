@@ -34,7 +34,7 @@ const getClassTests = async (req, res) => {
 
 const getClassTestById = async (req, res) => {
   try {
-    const test = await ClassTest.findOne({ _id: req.params.id, school_id: req.user.school_id }).populate('grade_id', 'name code sections').populate('subject_id', 'name code').populate('teacher_id', 'name employee_code designation').populate('campus_id', 'name code');
+    const test = await ClassTest.findOne({ _id: req.params.id, school_id: req.user.school_id }).populate('grade_id', 'name code sections').populate('subject_id', 'name code').populate('teacher_id', 'name employee_code designation').populate('campus_id', 'name code').lean();
     if (!test) return res.status(404).json({ success: false, message: 'Class test not found' });
     if (!canTeacherAccessClassTest(req.user, test.grade_id?._id, test.section, test.subject_id?._id, test.teacher_id?._id)) {
       return res.status(403).json({ success: false, message: 'Forbidden: Access denied.' });
@@ -63,7 +63,7 @@ const createClassTest = async (req, res) => {
 
 const updateClassTest = async (req, res) => {
   try {
-    const existing = await ClassTest.findOne({ _id: req.params.id, school_id: req.user.school_id });
+    const existing = await ClassTest.findOne({ _id: req.params.id, school_id: req.user.school_id }).select('grade_id section subject_id teacher_id').lean();
     if (!existing) return res.status(404).json({ success: false, message: 'Class test not found' });
     if (!canTeacherAccessClassTest(req.user, existing.grade_id, existing.section, existing.subject_id, existing.teacher_id)) {
       return res.status(403).json({ success: false, message: 'Forbidden: Unauthorized update.' });
@@ -80,7 +80,7 @@ const updateClassTest = async (req, res) => {
 
 const deleteClassTest = async (req, res) => {
   try {
-    const test = await ClassTest.findOne({ _id: req.params.id, school_id: req.user.school_id });
+    const test = await ClassTest.findOne({ _id: req.params.id, school_id: req.user.school_id }).select('grade_id section subject_id teacher_id').lean();
     if (!test) return res.status(404).json({ success: false, message: 'Class test not found' });
     if (!canTeacherAccessClassTest(req.user, test.grade_id, test.section, test.subject_id, test.teacher_id)) {
       return res.status(403).json({ success: false, message: 'Forbidden: Unauthorized delete.' });

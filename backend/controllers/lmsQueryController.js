@@ -69,7 +69,8 @@ const getSingleLmsItem = async (req, res) => {
       .populate('grade_id', 'name code')
       .populate('subject_id', 'name code')
       .populate('chapter_id', 'title chapter_no')
-      .populate('teacher_id', 'name email');
+      .populate('teacher_id', 'name email')
+      .lean();
 
     if (!item) return res.status(404).json({ success: false, message: 'Item not found' });
     res.status(200).json({ success: true, item });

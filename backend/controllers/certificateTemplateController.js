@@ -10,7 +10,7 @@ const getTemplates = async (req, res) => {
     if (recipient_type && recipient_type !== 'all') {
       filter.$or = [{ recipient_type }, { recipient_type: 'Both' }];
     }
-    const templates = await CertificateTemplate.find(filter).sort({ is_default: -1, createdAt: -1 });
+    const templates = await CertificateTemplate.find(filter).sort({ is_default: -1, createdAt: -1 }).lean();
     res.status(200).json({ success: true, templates });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Failed to fetch certificate templates', error: err.message });

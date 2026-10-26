@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+require('./UserRole');
 const {
   weeklyTimingSchema, classAssignmentSchema, childSchema, appPermissionsSchema,
   payrollConfigSchema, securityDepositSchema, incrementSchema, loanSchema, followUpSchema, documentSchema

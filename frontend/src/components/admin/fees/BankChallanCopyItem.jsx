@@ -81,8 +81,8 @@ const BankChallanCopyItem = ({ copyTitle, invoice, bankSettings, schoolName = 'E
 
       <div className="pt-1 border-t border-slate-300 space-y-1">
         <div className="flex items-center justify-between px-1">
-          <div className="w-24 overflow-hidden" dangerouslySetInnerHTML={{ __html: renderSvgBarcode(invoice?.challan_no || 'CH-000', 95, 20) }} />
-          <div className="w-8 h-8" dangerouslySetInnerHTML={{ __html: renderSvgQrCode(invoice?.challan_no || 'CH-000', 32) }} />
+          <div className="w-24 overflow-hidden">{renderSvgBarcode(invoice?.challan_no || 'CH-000', 95, 20)}</div>
+          <div className="w-8 h-8 flex items-center justify-center">{renderSvgQrCode(invoice?.challan_no || 'CH-000', 32)}</div>
         </div>
         <OfficialSignatureStampBlock compact={true} signatureTitle="Bank Officer / Teller" stampTitle="Institute Stamp" />
         <div className="text-[7px] text-slate-400 text-right font-mono select-none">Powered by EliteEdu</div>

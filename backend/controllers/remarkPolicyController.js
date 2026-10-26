@@ -13,7 +13,7 @@ const DEFAULT_REMARKS = [
 const getRemarkPolicies = async (req, res) => {
   try {
     const school_id = req.user.school_id;
-    let policies = await RemarkPolicy.find({ school_id }).populate('target_grades', 'name').sort({ type: 1, from_percent: -1 });
+    let policies = await RemarkPolicy.find({ school_id }).populate('target_grades', 'name').sort({ type: 1, from_percent: -1 }).lean();
     if (policies.length === 0) {
       policies = await RemarkPolicy.insertMany(DEFAULT_REMARKS.map(r => ({ ...r, school_id })));
     }

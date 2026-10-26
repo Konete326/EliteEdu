@@ -26,8 +26,8 @@ const paySalarySlip = async (req, res) => {
       }
     }
 
-    let head = await AccountHead.findOne({ school_id: schoolId, category: 'Expense', name: { $regex: /Salaries/i } });
-    if (!head) head = await AccountHead.findOne({ school_id: schoolId, category: 'Expense' });
+    let head = await AccountHead.findOne({ school_id: schoolId, category: 'Expense', name: { $regex: /Salaries/i } }).select('_id name').lean();
+    if (!head) head = await AccountHead.findOne({ school_id: schoolId, category: 'Expense' }).select('_id name').lean();
 
     if (head) {
       await AccountTransaction.create({

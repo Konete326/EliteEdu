@@ -3,7 +3,7 @@ const ExamCategory = require('../models/ExamCategory');
 const getCategories = async (req, res) => {
   try {
     const school_id = req.user.school_id;
-    let categories = await ExamCategory.find({ school_id }).sort({ createdAt: -1 });
+    let categories = await ExamCategory.find({ school_id }).sort({ createdAt: -1 }).lean();
     if (categories.length === 0) {
       const defaultCats = [
         { name: 'Exam', description: 'Standard Term Examination' },
@@ -24,7 +24,7 @@ const createCategory = async (req, res) => {
     const school_id = req.user.school_id;
     const { name, description, status } = req.body;
     if (!name?.trim()) return res.status(400).json({ message: 'Category name is required' });
-    const exists = await ExamCategory.findOne({ school_id, name: name.trim() });
+    const exists = await ExamCategory.findOne({ school_id, name: name.trim() }).select('_id').lean();
     if (exists) return res.status(400).json({ message: 'Category with this name already exists' });
     const category = await ExamCategory.create({
       school_id, name: name.trim(), description: description || '', status: status || 'Active'

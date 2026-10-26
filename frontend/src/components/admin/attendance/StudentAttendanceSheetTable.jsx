@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { User, QrCode } from 'lucide-react';
 
 const STATUS_BUTTONS = [
@@ -8,6 +8,148 @@ const STATUS_BUTTONS = [
   { code: 'LT', label: 'LT', activeClass: 'bg-amber-600 text-white shadow-xs', title: 'Late' },
   { code: 'HD', label: 'HD', activeClass: 'bg-violet-600 text-white shadow-xs', title: 'Half Day' }
 ];
+
+const StudentAttendanceSheetTableRow = memo(({ r, idx, onStatusChange, onRemarksChange }) => {
+  const student = r.student || {};
+  const fullName = (student.name || `${student.first_name || ''} ${student.last_name || ''}`).trim() || 'Student';
+  const rollDisplay = student.roll_number || student.gr_number || `S-${idx + 1}`;
+  const photo = student.photo_url || student.avatar_url || student.image || student.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0d9488&color=fff&size=64&bold=true`;
+
+  return (
+    <tr className="hover:bg-surface-secondary/40 dark:hover:bg-surface-secondary-dark/40 transition-colors">
+      <td className="py-3 px-4 font-mono font-bold text-[11px] text-ink-muted">
+        {rollDisplay}
+      </td>
+
+      <td className="py-3 px-4">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden border border-line dark:border-line-dark shadow-2xs">
+            {photo ? (
+              <img
+                src={photo}
+                alt=""
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            ) : (
+              <User className="w-4 h-4" />
+            )}
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p className="font-bold text-xs text-ink dark:text-ink-dark leading-tight truncate">
+                {fullName}
+              </p>
+              {r.marked_via === 'Card_Scan' && (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-primary/10 text-primary border border-primary/20">
+                  <QrCode className="w-2.5 h-2.5" /> Scan
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] text-ink-muted truncate">
+              {student.father_name ? `S/O ${student.father_name}` : `GR: ${student.gr_number || 'N/A'}`}
+            </p>
+          </div>
+        </div>
+      </td>
+
+      <td className="py-3 px-4">
+        <div className="flex items-center justify-center gap-1 bg-surface-secondary dark:bg-surface-secondary-dark p-1 rounded-xl w-fit mx-auto border border-line dark:border-line-dark">
+          {STATUS_BUTTONS.map((opt) => (
+            <button
+              key={opt.code}
+              type="button"
+              title={opt.title}
+              onClick={() => onStatusChange(student._id || r._id, opt.code)}
+              className={`w-7 h-7 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                r.status === opt.code
+                  ? opt.activeClass
+                  : 'text-ink-muted hover:text-ink dark:hover:text-ink-dark'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </td>
+
+      <td className="py-3 px-4">
+        <input
+          type="text"
+          value={r.remarks || ''}
+          onChange={(e) => onRemarksChange(student._id || r._id, e.target.value)}
+          placeholder="Optional remarks..."
+          className="w-full px-3 py-1.5 text-xs rounded-xl bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark text-ink dark:text-ink-dark outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+        />
+      </td>
+    </tr>
+  );
+});
+
+const StudentAttendanceSheetMobileCard = memo(({ r, idx, onStatusChange }) => {
+  const student = r.student || {};
+  const fullName = (student.name || `${student.first_name || ''} ${student.last_name || ''}`).trim() || 'Student';
+  const rollDisplay = student.roll_number || student.gr_number || `S-${idx + 1}`;
+  const photo = student.photo_url || student.avatar_url || student.image || student.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0d9488&color=fff&size=64&bold=true`;
+
+  return (
+    <div className="p-2.5 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xs space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden border border-line dark:border-line-dark shadow-2xs">
+            {photo ? (
+              <img
+                src={photo}
+                alt=""
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            ) : (
+              <User className="w-4 h-4" />
+            )}
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1">
+              <span className="font-mono text-[10px] font-bold text-ink-muted shrink-0">#{rollDisplay}</span>
+              <h4 className="font-bold text-xs text-ink dark:text-ink-dark truncate">{fullName}</h4>
+            </div>
+            {student.father_name && (
+              <p className="text-[10px] text-ink-muted truncate">S/O {student.father_name}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-0.5 bg-surface-secondary dark:bg-surface-secondary-dark p-0.5 rounded-lg border border-line dark:border-line-dark shrink-0">
+          {STATUS_BUTTONS.map((opt) => (
+            <button
+              key={opt.code}
+              type="button"
+              title={opt.title}
+              onClick={() => onStatusChange(student._id || r._id, opt.code)}
+              className={`w-7 h-7 rounded-md text-[11px] font-black transition-all cursor-pointer ${
+                r.status === opt.code
+                  ? opt.activeClass
+                  : 'text-ink-muted hover:text-ink dark:hover:text-ink-dark'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {r.remarks && (
+        <div className="text-[10px] text-ink-muted bg-surface-secondary/40 dark:bg-surface-secondary-dark/40 px-2 py-1 rounded-md border border-line/40">
+          Remarks: {r.remarks}
+        </div>
+      )}
+    </div>
+  );
+});
 
 const StudentAttendanceSheetTable = ({ records = [], onStatusChange, onRemarksChange }) => {
   return (
@@ -22,153 +164,27 @@ const StudentAttendanceSheetTable = ({ records = [], onStatusChange, onRemarksCh
           </tr>
         </thead>
         <tbody className="divide-y divide-line/60 dark:divide-line-dark/60 text-ink dark:text-ink-dark">
-          {records.map((r, idx) => {
-            const student = r.student || {};
-            const fullName = (student.name || `${student.first_name || ''} ${student.last_name || ''}`).trim() || 'Student';
-            const rollDisplay = student.roll_number || student.gr_number || `S-${idx + 1}`;
-            const photo = student.photo_url || student.avatar_url || student.image || student.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0d9488&color=fff&size=64&bold=true`;
-
-            return (
-              <tr key={student._id || r._id} className="hover:bg-surface-secondary/40 dark:hover:bg-surface-secondary-dark/40 transition-colors">
-                <td className="py-3 px-4 font-mono font-bold text-[11px] text-ink-muted">
-                  {rollDisplay}
-                </td>
-
-                <td className="py-3 px-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden border border-line dark:border-line-dark shadow-2xs">
-                      {photo ? (
-                        <img
-                          src={photo}
-                          alt=""
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
-                      ) : (
-                        <User className="w-4 h-4" />
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <p className="font-bold text-xs text-ink dark:text-ink-dark leading-tight truncate">
-                          {fullName}
-                        </p>
-                        {r.marked_via === 'Card_Scan' && (
-                          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-primary/10 text-primary border border-primary/20">
-                            <QrCode className="w-2.5 h-2.5" /> Scan
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[11px] text-ink-muted truncate">
-                        {student.father_name ? `S/O ${student.father_name}` : `GR: ${student.gr_number || 'N/A'}`}
-                      </p>
-                    </div>
-                  </div>
-                </td>
-
-                <td className="py-3 px-4">
-                  <div className="flex items-center justify-center gap-1 bg-surface-secondary dark:bg-surface-secondary-dark p-1 rounded-xl w-fit mx-auto border border-line dark:border-line-dark">
-                    {STATUS_BUTTONS.map((opt) => (
-                      <button
-                        key={opt.code}
-                        type="button"
-                        title={opt.title}
-                        onClick={() => onStatusChange(student._id || r._id, opt.code)}
-                        className={`w-7 h-7 rounded-lg text-xs font-black transition-all cursor-pointer ${
-                          r.status === opt.code
-                            ? opt.activeClass
-                            : 'text-ink-muted hover:text-ink dark:hover:text-ink-dark'
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                </td>
-
-                <td className="py-3 px-4">
-                  <input
-                    type="text"
-                    value={r.remarks || ''}
-                    onChange={(e) => onRemarksChange(student._id || r._id, e.target.value)}
-                    placeholder="Optional remarks..."
-                    className="w-full px-3 py-1.5 text-xs rounded-xl bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark text-ink dark:text-ink-dark outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                  />
-                </td>
-              </tr>
-            );
-          })}
+          {records.map((r, idx) => (
+            <StudentAttendanceSheetTableRow
+              key={r.student?._id || r._id || idx}
+              r={r}
+              idx={idx}
+              onStatusChange={onStatusChange}
+              onRemarksChange={onRemarksChange}
+            />
+          ))}
         </tbody>
       </table>
 
       <div className="block sm:hidden p-2 space-y-2">
-        {records.map((r, idx) => {
-          const student = r.student || {};
-          const fullName = (student.name || `${student.first_name || ''} ${student.last_name || ''}`).trim() || 'Student';
-          const rollDisplay = student.roll_number || student.gr_number || `S-${idx + 1}`;
-          const photo = student.photo_url || student.avatar_url || student.image || student.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0d9488&color=fff&size=64&bold=true`;
-
-          return (
-            <div
-              key={student._id || r._id}
-              className="p-2.5 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xs space-y-2"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden border border-line dark:border-line-dark shadow-2xs">
-                    {photo ? (
-                      <img
-                        src={photo}
-                        alt=""
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    ) : (
-                      <User className="w-4 h-4" />
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-1">
-                      <span className="font-mono text-[10px] font-bold text-ink-muted shrink-0">#{rollDisplay}</span>
-                      <h4 className="font-bold text-xs text-ink dark:text-ink-dark truncate">{fullName}</h4>
-                    </div>
-                    {student.father_name && (
-                      <p className="text-[10px] text-ink-muted truncate">S/O {student.father_name}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-0.5 bg-surface-secondary dark:bg-surface-secondary-dark p-0.5 rounded-lg border border-line dark:border-line-dark shrink-0">
-                  {STATUS_BUTTONS.map((opt) => (
-                    <button
-                      key={opt.code}
-                      type="button"
-                      title={opt.title}
-                      onClick={() => onStatusChange(student._id || r._id, opt.code)}
-                      className={`w-7 h-7 rounded-md text-[11px] font-black transition-all cursor-pointer ${
-                        r.status === opt.code
-                          ? opt.activeClass
-                          : 'text-ink-muted hover:text-ink dark:hover:text-ink-dark'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {r.remarks && (
-                <div className="text-[10px] text-ink-muted bg-surface-secondary/40 dark:bg-surface-secondary-dark/40 px-2 py-1 rounded-md border border-line/40">
-                  Remarks: {r.remarks}
-                </div>
-              )}
-            </div>
-          );
-        })}
+        {records.map((r, idx) => (
+          <StudentAttendanceSheetMobileCard
+            key={r.student?._id || r._id || idx}
+            r={r}
+            idx={idx}
+            onStatusChange={onStatusChange}
+          />
+        ))}
       </div>
     </div>
   );

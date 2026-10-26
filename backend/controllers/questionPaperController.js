@@ -13,7 +13,8 @@ const getPapers = async (req, res) => {
       .populate('grade_id', 'name')
       .populate('subject_id', 'name code')
       .populate('exam_category_id', 'name')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
     res.json({ success: true, papers });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch papers', error: error.message });
@@ -25,7 +26,8 @@ const getPaperById = async (req, res) => {
     const paper = await QuestionPaper.findOne({ _id: req.params.id, school_id: req.user.school_id })
       .populate('grade_id', 'name')
       .populate('subject_id', 'name code')
-      .populate('exam_category_id', 'name');
+      .populate('exam_category_id', 'name')
+      .lean();
     if (!paper) return res.status(404).json({ message: 'Paper not found' });
     res.json({ success: true, paper });
   } catch (error) {
@@ -55,7 +57,7 @@ const updatePaper = async (req, res) => {
       { _id: req.params.id, school_id: req.user.school_id },
       req.body,
       { new: true }
-    );
+    ).lean();
     if (!paper) return res.status(404).json({ message: 'Paper not found' });
     res.json({ success: true, paper });
   } catch (error) {
@@ -80,9 +82,9 @@ const autoGeneratePaper = async (req, res) => {
     const qFilter = { school_id, grade_id, subject_id };
     if (Array.isArray(chapter_ids) && chapter_ids.length > 0) qFilter.chapter_id = { $in: chapter_ids };
 
-    const mcqs = await QuestionBank.find({ ...qFilter, question_type: 'MCQ' }).limit(Number(mcq_count) || 10);
-    const shorts = await QuestionBank.find({ ...qFilter, question_type: 'Short' }).limit(Number(short_count) || 5);
-    const longs = await QuestionBank.find({ ...qFilter, question_type: 'Long' }).limit(Number(long_count) || 2);
+    const mcqs = await QuestionBank.find({ ...qFilter, question_type: 'MCQ' }).limit(Number(mcq_count) || 10).lean();
+    const shorts = await QuestionBank.find({ ...qFilter, question_type: 'Short' }).limit(Number(short_count) || 5).lean();
+    const longs = await QuestionBank.find({ ...qFilter, question_type: 'Long' }).limit(Number(long_count) || 2).lean();
 
     const mapQuestions = (list) => list.map(q => ({
       question_id: q._id, question_text: q.question_text, question_type: q.question_type,

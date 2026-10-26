@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { FileText, Calendar, Pencil, Trash2, Eye, CreditCard, Award, ShieldCheck } from 'lucide-react';
-import usePermissions from '../../../hooks/usePermissions';
 
-const StudentTableRow = ({
+const StudentTableRow = memo(({
   student,
+  hasDelete,
   onToggleStatus,
   onEdit,
   onDelete,
@@ -13,8 +14,6 @@ const StudentTableRow = ({
   onOpenAdmissionLetter,
   onOpenIdCard
 }) => {
-  const { canDelete } = usePermissions();
-  const hasDelete = canDelete('students');
   const initials = student.name ? student.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) : 'ST';
   const admissionDateStr = student.admission_date ? new Date(student.admission_date).toLocaleDateString() : '—';
   const isActive = student.status === 'Active';
@@ -45,7 +44,7 @@ const StudentTableRow = ({
       </td>
       <td className="px-5 py-3.5">
         <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark border border-primary/20">
-          {student.current_grade?.name || 'Unassigned'}
+          {(student.current_grade?.name || '—').replace(/^(class|grade)\s+/i, '')}
         </span>
         {student.elective_stream && student.elective_stream !== 'None' && (
           <span className="block mt-0.5 text-[10px] font-bold text-accent truncate max-w-[120px]">
@@ -136,6 +135,6 @@ const StudentTableRow = ({
       </td>
     </tr>
   );
-};
+});
 
 export default StudentTableRow;

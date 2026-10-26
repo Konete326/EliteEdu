@@ -4,14 +4,15 @@ const { getZoomAccessToken } = require('../utils/zoomApiClient');
 const getZoomSettings = async (req, res) => {
   try {
     const schoolId = req.user.school_id;
-    let integration = await ZoomIntegration.findOne({ school_id: schoolId });
+    let integration = await ZoomIntegration.findOne({ school_id: schoolId }).lean();
     if (!integration) {
-      integration = await ZoomIntegration.create({
+      const created = await ZoomIntegration.create({
         school_id: schoolId,
         webhook_url: `${req.protocol}://${req.get('host')}/api/zoom/webhook`
       });
+      integration = created.toObject();
     }
-    const safeData = integration.toObject();
+    const safeData = { ...integration };
     if (safeData.client_secret) {
       safeData.client_secret = '••••••••';
     }

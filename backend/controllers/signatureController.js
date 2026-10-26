@@ -16,7 +16,8 @@ const getSignatures = async (req, res) => {
     }
     const items = await DigitalSignature.find(filter)
       .populate('user_id', 'name email role')
-      .sort({ is_default: -1, createdAt: -1 });
+      .sort({ is_default: -1, createdAt: -1 })
+      .lean();
     res.status(200).json({ success: true, data: items });
   } catch (err) {
     if (err.name === 'ValidationError') {

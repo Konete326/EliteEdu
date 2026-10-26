@@ -62,7 +62,8 @@ const updateStudentConcession = async (req, res) => {
 
     const updated = await Student.findById(student._id)
       .populate('current_grade', 'name')
-      .populate('campus_id', 'name code');
+      .populate('campus_id', 'name code')
+      .lean();
 
     res.status(200).json({ success: true, message: 'Student concession updated successfully', student: updated });
   } catch (error) {

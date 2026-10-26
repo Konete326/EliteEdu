@@ -53,7 +53,7 @@ const saveMarksSheet = async (req, res) => {
   try {
     const { grade_id, section = 'A', subject_id, records = [] } = req.body;
     const schoolId = req.user.school_id;
-    const exam = await Exam.findOne({ _id: req.params.id, school_id: schoolId }).populate('grading_policy_id');
+    const exam = await Exam.findOne({ _id: req.params.id, school_id: schoolId }).populate('grading_policy_id').lean();
     if (!exam) return res.status(404).json({ success: false, message: 'Exam not found' });
 
     const paper = (exam.papers || []).find((p) => String(p.grade_id) === String(grade_id) && String(p.section) === String(section) && String(p.subject_id) === String(subject_id));

@@ -1,4 +1,50 @@
-import { Check, X, Clock, HelpCircle, User } from 'lucide-react';
+import { memo } from 'react';
+import { User } from 'lucide-react';
+
+const StudentAttendanceTableRow = memo(({ student, index, status, remarks, onStatusChange, onRemarksChange, statuses }) => {
+  return (
+    <tr className="hover:bg-primary/5 transition-colors">
+      <td className="py-2.5 px-4 font-mono text-[11px] text-text-muted">
+        {student.roll_number || student.gr_number || `S-${index + 1}`}
+      </td>
+      <td className="py-2.5 px-4">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden">
+            {student.photo_url ? <img src={student.photo_url} alt="" className="w-full h-full object-cover" /> : <User className="w-3.5 h-3.5" />}
+          </div>
+          <div>
+            <p className="font-semibold text-xs leading-snug">{student.name}</p>
+            <p className="text-[10px] text-text-muted">{student.father_name ? `S/O ${student.father_name}` : ''}</p>
+          </div>
+        </div>
+      </td>
+      <td className="py-2.5 px-4">
+        <div className="flex items-center justify-center gap-1.5">
+          {statuses.map((stObj) => (
+            <button
+              key={stObj.key}
+              type="button"
+              onClick={() => onStatusChange(student._id, stObj.key)}
+              className={`w-7 h-7 rounded-lg text-xs font-bold border transition-all ${status === stObj.key ? stObj.active : 'border-line dark:border-white/10 text-text-muted hover:border-text-muted'}`}
+              title={stObj.key}
+            >
+              {stObj.label}
+            </button>
+          ))}
+        </div>
+      </td>
+      <td className="py-2.5 px-4">
+        <input
+          type="text"
+          value={remarks || ''}
+          onChange={(e) => onRemarksChange(student._id, e.target.value)}
+          placeholder="Optional notes..."
+          className="w-full px-2.5 py-1 text-xs rounded-lg border border-line dark:border-white/10 bg-transparent text-text dark:text-text-dark focus:outline-hidden focus:ring-1 focus:ring-primary"
+        />
+      </td>
+    </tr>
+  );
+});
 
 const StudentAttendanceTable = ({ students, attendanceMap, onStatusChange, onRemarksChange, onMarkAll }) => {
   const statuses = [
@@ -34,48 +80,18 @@ const StudentAttendanceTable = ({ students, attendanceMap, onStatusChange, onRem
           </thead>
           <tbody className="divide-y divide-line dark:divide-white/5 text-text dark:text-text-dark">
             {students.map((st, idx) => {
-              const record = attendanceMap[st._id] || { status: 'Present', remarks: '' };
+              const record = attendanceMap[st._id];
               return (
-                <tr key={st._id} className="hover:bg-primary/5 transition-colors">
-                  <td className="py-2.5 px-4 font-mono text-[11px] text-text-muted">
-                    {st.roll_number || st.gr_number || `S-${idx + 1}`}
-                  </td>
-                  <td className="py-2.5 px-4">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden">
-                        {st.photo_url ? <img src={st.photo_url} alt="" className="w-full h-full object-cover" /> : <User className="w-3.5 h-3.5" />}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-xs leading-snug">{st.name}</p>
-                        <p className="text-[10px] text-text-muted">{st.father_name ? `S/O ${st.father_name}` : ''}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-2.5 px-4">
-                    <div className="flex items-center justify-center gap-1.5">
-                      {statuses.map((stObj) => (
-                        <button
-                          key={stObj.key}
-                          type="button"
-                          onClick={() => onStatusChange(st._id, stObj.key)}
-                          className={`w-7 h-7 rounded-lg text-xs font-bold border transition-all ${record.status === stObj.key ? stObj.active : 'border-line dark:border-white/10 text-text-muted hover:border-text-muted'}`}
-                          title={stObj.key}
-                        >
-                          {stObj.label}
-                        </button>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="py-2.5 px-4">
-                    <input
-                      type="text"
-                      value={record.remarks || ''}
-                      onChange={(e) => onRemarksChange(st._id, e.target.value)}
-                      placeholder="Optional notes..."
-                      className="w-full px-2.5 py-1 text-xs rounded-lg border border-line dark:border-white/10 bg-transparent text-text dark:text-text-dark focus:outline-hidden focus:ring-1 focus:ring-primary"
-                    />
-                  </td>
-                </tr>
+                <StudentAttendanceTableRow
+                  key={st._id}
+                  student={st}
+                  index={idx}
+                  status={record?.status || 'Present'}
+                  remarks={record?.remarks || ''}
+                  onStatusChange={onStatusChange}
+                  onRemarksChange={onRemarksChange}
+                  statuses={statuses}
+                />
               );
             })}
           </tbody>

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { User } from 'lucide-react';
 
-export default function ClassTestMarksRowItem({ row, totalMax, passingMarks, onChange }) {
+const ClassTestMarksRowItem = memo(function ClassTestMarksRowItem({ row, totalMax, passingMarks, onChange }) {
   const isAbsent = Boolean(row.is_absent);
 
   const handleMarksChange = (val) => {
@@ -68,4 +68,6 @@ export default function ClassTestMarksRowItem({ row, totalMax, passingMarks, onC
       </td>
     </tr>
   );
-}
+});
+
+export default ClassTestMarksRowItem;

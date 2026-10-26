@@ -39,8 +39,8 @@ const getTeachers = async (req, res) => {
     }
 
     const teachers = await query.select('-password').sort({ createdAt: -1 }).lean();
+    if (isCard) return res.status(200).json({ success: true, teachers });
     const enriched = await enrichTeachersWithRosterAndAttendance(schoolId, teachers);
-
     res.status(200).json({ success: true, teachers: enriched });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch teachers', error: error.message });
@@ -57,7 +57,8 @@ const getTeacherById = async (req, res) => {
       .populate('grades', 'name sections')
       .populate('class_assignments.subject_id', 'name code')
       .populate('class_assignments.grade_id', 'name sections')
-      .select('-password');
+      .select('-password')
+      .lean();
 
     if (!teacher) return res.status(404).json({ message: 'Teacher not found' });
     res.status(200).json({ success: true, teacher });

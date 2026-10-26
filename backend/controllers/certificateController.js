@@ -25,7 +25,8 @@ const getIssuedCertificates = async (req, res) => {
         .populate('campus_id', 'name')
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(Number(limit)),
+        .limit(Number(limit))
+        .lean(),
       IssuedCertificate.countDocuments(filter)
     ]);
     res.status(200).json({ success: true, certificates, total, page: Number(page), pages: Math.ceil(total / Number(limit)) });
@@ -44,8 +45,8 @@ const generateCertificate = async (req, res) => {
     } = req.body;
     const schoolId = req.user.school_id;
     const [template, school] = await Promise.all([
-      CertificateTemplate.findById(template_id),
-      School.findById(schoolId)
+      CertificateTemplate.findById(template_id).lean(),
+      School.findById(schoolId).lean()
     ]);
     if (!template) return res.status(404).json({ success: false, message: 'Template not found' });
 

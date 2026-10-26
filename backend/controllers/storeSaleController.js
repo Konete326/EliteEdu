@@ -24,7 +24,8 @@ const getSales = async (req, res) => {
       .populate('student_id', 'name roll_number')
       .populate('staff_id', 'name employee_code')
       .populate('sold_by', 'name')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
     res.status(200).json({ success: true, data: sales });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -67,9 +68,9 @@ const createSale = async (req, res) => {
     });
 
     try {
-      let incomeHead = await AccountHead.findOne({ school_id: schoolId, code: '4002' });
+      let incomeHead = await AccountHead.findOne({ school_id: schoolId, code: '4002' }).select('_id name').lean();
       if (!incomeHead) {
-        incomeHead = await AccountHead.findOne({ school_id: schoolId, category: 'Income' });
+        incomeHead = await AccountHead.findOne({ school_id: schoolId, category: 'Income' }).select('_id name').lean();
       }
       if (incomeHead) {
         await AccountTransaction.create({

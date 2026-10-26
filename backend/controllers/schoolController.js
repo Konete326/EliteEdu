@@ -25,14 +25,14 @@ const registerSchool = async (req, res) => {
   session.startTransaction();
 
   try {
-    const existingSchool = await School.findOne({ code: code.toUpperCase().trim() }).session(session);
+    const existingSchool = await School.findOne({ code: code.toUpperCase().trim() }).select('_id').session(session).lean();
     if (existingSchool) {
       await session.abortTransaction();
       session.endSession();
       return res.status(409).json({ message: 'School code already exists' });
     }
 
-    const existingUser = await User.findOne({ email: adminEmail.toLowerCase().trim() }).session(session);
+    const existingUser = await User.findOne({ email: adminEmail.toLowerCase().trim() }).select('_id').session(session).lean();
     if (existingUser) {
       await session.abortTransaction();
       session.endSession();

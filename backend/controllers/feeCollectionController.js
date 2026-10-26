@@ -57,7 +57,8 @@ const collectInvoiceFee = async (req, res) => {
     const populatedInvoice = await FeeInvoice.findById(invoice._id)
       .populate('student_id', 'name gr_number current_section current_grade contact_number father_name')
       .populate('grade_id', 'name code')
-      .populate('campus_id', 'name code');
+      .populate('campus_id', 'name code')
+      .lean();
 
     res.status(200).json({
       success: true,
@@ -87,7 +88,7 @@ const getFeeHistory = async (req, res) => {
       const matchingStudents = await Student.find({
         school_id: req.schoolId,
         $or: [{ name: { $regex: q, $options: 'i' } }, { gr_number: { $regex: q, $options: 'i' } }]
-      }).select('_id');
+      }).select('_id').lean();
       query.$or = [{ receipt_number: { $regex: q, $options: 'i' } }, { student_id: { $in: matchingStudents.map((s) => s._id) } }];
     }
 

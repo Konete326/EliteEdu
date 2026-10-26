@@ -41,7 +41,7 @@ const createSubject = async (req, res) => {
 
     let campusRef = null;
     if (campus_id && mongoose.Types.ObjectId.isValid(campus_id)) {
-      const campus = await Campus.findOne({ _id: campus_id, school_id: schoolId });
+      const campus = await Campus.findOne({ _id: campus_id, school_id: schoolId }).select('_id').lean();
       if (campus) campusRef = campus._id;
     }
 

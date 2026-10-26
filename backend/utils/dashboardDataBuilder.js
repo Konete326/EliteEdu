@@ -9,18 +9,33 @@ const {
   buildCrmPipeline
 } = require('./dashboardDemographicsBuilder');
 
-const buildAdminDashboardData = (school, teachers = [], students = [], campuses = [], totalSubjects = 0, grades = [], homework = [], todayAttendance = [], todayStaffAttendance = [], feePayments = [], expenses = []) => {
+const buildAdminDashboardData = ({
+  school,
+  teachers = [],
+  campuses = [],
+  totalSubjects = 0,
+  grades = [],
+  homework = [],
+  todayAttendance = [],
+  todayStaffAttendance = [],
+  studentStats,
+  feeStats,
+  expenseStats
+}) => {
   const schoolName = school?.name || 'Main Campus';
   const schoolType = school?.school_type || 'Private';
 
-  const totalStudents = students.length;
-  const activeStudents = students.filter((s) => s.status === 'Active').length;
+  const {
+    totalStudents = 0,
+    activeStudents = 0,
+    maleStudents = 0,
+    femaleStudents = 0,
+    pendingLeads = 0
+  } = studentStats?.summary || {};
+
   const totalTeachers = teachers.length;
   const totalCampuses = campuses.length;
   const totalGrades = grades.length;
-
-  const maleStudents = students.filter((s) => s.gender === 'Male').length;
-  const femaleStudents = students.filter((s) => s.gender === 'Female').length;
 
   const campusList = campuses.length > 0
     ? campuses.map((c) => ({ id: c._id, name: c.name, sub: c.status || 'Active' }))
@@ -37,7 +52,7 @@ const buildAdminDashboardData = (school, teachers = [], students = [], campuses 
   };
 
   const birthdaysToday = [
-    ...students.filter((s) => isBday(s.dob)).map((s) => ({ name: s.name, role: 'Student' })),
+    ...(studentStats?.birthdaysToday || []),
     ...teachers.filter((t) => isBday(t.dob)).map((t) => ({ name: t.name, role: 'Staff' }))
   ];
 
@@ -45,8 +60,6 @@ const buildAdminDashboardData = (school, teachers = [], students = [], campuses 
     title: `${g.name} ${g.sections?.length > 0 ? `(Sec: ${g.sections.join(', ')})` : ''}`,
     time: 'Scheduled'
   }));
-
-  const pendingLeads = students.filter((s) => s.admission_test?.status === 'Pending').length;
 
   return {
     school: { name: schoolName, school_type: schoolType },
@@ -60,28 +73,27 @@ const buildAdminDashboardData = (school, teachers = [], students = [], campuses 
       upcomingSessions: totalGrades,
       liveNow: 0
     },
-    appDownloadStats: buildAppDownloadStats(students, teachers, campusList, totalStudents, activeStudents, totalTeachers),
-    admissionsStats: buildAdmissionsStats(students),
-    financialOverview: buildFinancialOverview(campusList, students, feePayments, expenses),
-    attendanceSummary: buildAttendanceSummary(campusList, students, teachers, todayAttendance, todayStaffAttendance),
+    appDownloadStats: buildAppDownloadStats(studentStats, teachers, campusList),
+    admissionsStats: buildAdmissionsStats(studentStats),
+    financialOverview: buildFinancialOverview(campusList, studentStats, feeStats, expenseStats),
+    attendanceSummary: buildAttendanceSummary(campusList, studentStats, teachers, todayAttendance, todayStaffAttendance),
     homeworkSummary: buildHomeworkSummary(campusList, homework),
     studentStats: {
       enquiries: { total: pendingLeads, boys: Math.ceil(pendingLeads / 2), girls: Math.floor(pendingLeads / 2) },
       registrations: { total: activeStudents, boys: maleStudents, girls: femaleStudents },
       admissions: { total: totalStudents, boys: maleStudents, girls: femaleStudents },
       campusBreakdown: campusList.map((c) => {
-        const cTotal = students.filter((s) => String(s.campus_id) === String(c.id)).length;
-        const cActive = students.filter((s) => s.status === 'Active' && String(s.campus_id) === String(c.id)).length;
+        const cData = studentStats?.campusMap?.get(String(c.id)) || { totalStudents: 0, activeStudents: 0 };
         return {
           name: c.name,
           sub: c.sub,
           inquiries: 0,
-          registered: cActive,
-          admissions: cTotal
+          registered: cData.activeStudents || 0,
+          admissions: cData.totalStudents || 0
         };
       })
     },
-    crmPipeline: buildCrmPipeline(students, activeStudents),
+    crmPipeline: buildCrmPipeline(studentStats),
     birthdaysToday,
     upcomingClasses
   };

@@ -19,6 +19,9 @@ const DashboardLayout = () => {
   const isDark = themeSettings.mode === 'dark';
   const toggleTheme = () => updateThemeSetting('mode', isDark ? 'light' : 'dark');
   const isChatRoute = location.pathname.startsWith('/admin/messaging') || location.pathname.startsWith('/admin/messages');
+  const isCompactDesktopRoute = location.pathname.startsWith('/admin/students/promote') ||
+    location.pathname.startsWith('/admin/control-panel/class-transfer') ||
+    location.pathname.includes('/behavior-skills');
 
   return (
     <div className="flex h-screen h-[100dvh] overflow-hidden bg-bg dark:bg-bg-dark text-ink dark:text-ink-dark">
@@ -40,7 +43,7 @@ const DashboardLayout = () => {
           isDark={isDark}
           toggleTheme={toggleTheme}
         />
-        <main className={`flex-1 min-h-0 flex flex-col ${isChatRoute ? 'p-2 sm:p-3 overflow-hidden' : 'p-4 sm:p-6 lg:p-8 overflow-y-auto'}`}>
+        <main className={`flex-1 min-h-0 flex flex-col ${isChatRoute ? 'p-2 sm:p-3 overflow-hidden' : isCompactDesktopRoute ? 'p-3 sm:p-4 lg:p-5 xl:overflow-hidden overflow-y-auto' : 'p-4 sm:p-6 lg:p-8 overflow-y-auto'}`}>
           <Suspense fallback={<PageLoader text="Loading section..." />}>
             <Outlet />
           </Suspense>

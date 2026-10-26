@@ -1,40 +1,51 @@
-import { Check, Award, ThumbsUp, Save, Filter, BookOpen } from 'lucide-react';
+import { Award, ThumbsUp, Save, Filter, BookOpen } from 'lucide-react';
 
-const TERMS = ['First Term', 'Mid Term', 'Final Term'];
-const SECTIONS = ['A', 'B', 'C', 'D'];
+const TERMS = ['First Term', 'Mid Term', 'Final Term', 'Annual'];
 
 const BehaviorFilterSidebar = ({
-  grades = [], selectedGrade, onGradeChange, selectedSection, onSectionChange,
-  term, onTermChange, session, onSessionChange, onSetAllRatings, onSave, saving
+  grades = [],
+  selectedGrade,
+  onGradeChange,
+  sections = ['A', 'B', 'C', 'D'],
+  selectedSection,
+  onSectionChange,
+  term,
+  onTermChange,
+  session,
+  onSessionChange,
+  onSetAllRatings,
+  onSave,
+  saving
 }) => (
-  <div className="bg-white dark:bg-gray-800 p-5 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm space-y-5">
-    <div className="space-y-3">
-      <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-700 text-xs font-bold uppercase tracking-wider text-gray-500">
-        <Filter className="w-3.5 h-3.5 text-blue-600" /> Class & Term Scope
+  <div className="bg-surface dark:bg-surface-dark p-3.5 sm:p-4 rounded-2xl border border-line dark:border-line-dark shadow-2xs flex flex-col gap-3 text-xs">
+    <div className="space-y-2.5">
+      <div className="flex items-center gap-2 pb-1.5 border-b border-line dark:border-line-dark text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-ink-muted-dark">
+        <Filter className="w-3.5 h-3.5 text-primary" /> Class & Term Scope
       </div>
+
       <div>
-        <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Select Class / Grade</label>
+        <label className="block text-[11px] font-bold text-ink-muted dark:text-ink-muted-dark mb-1">Class / Grade</label>
         <select
           value={selectedGrade}
           onChange={(e) => onGradeChange(e.target.value)}
-          className="w-full px-3 py-2 border rounded-xl text-xs font-semibold bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          className="w-full px-2.5 py-1.5 border border-line dark:border-line-dark rounded-xl text-xs font-semibold bg-surface dark:bg-surface-dark text-ink dark:text-ink-dark focus:ring-1 focus:ring-primary focus:outline-none transition-colors"
         >
           {grades.map((g) => <option key={g._id} value={g._id}>{g.name}</option>)}
         </select>
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Section</label>
-        <div className="flex gap-1.5">
-          {SECTIONS.map((sec) => (
+        <label className="block text-[11px] font-bold text-ink-muted dark:text-ink-muted-dark mb-1">Section</label>
+        <div className="flex flex-wrap gap-1">
+          {sections.map((sec) => (
             <button
               key={sec}
               type="button"
               onClick={() => onSectionChange(sec)}
-              className={`flex-1 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              className={`min-w-[32px] px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
                 selectedSection === sec
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200'
+                  ? 'bg-primary text-white shadow-2xs'
+                  : 'bg-surface-secondary dark:bg-surface-secondary-dark text-ink-muted dark:text-ink-muted-dark border border-line/60 dark:border-line-dark/60 hover:bg-line/40'
               }`}
             >
               {sec}
@@ -45,59 +56,59 @@ const BehaviorFilterSidebar = ({
 
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Term</label>
+          <label className="block text-[11px] font-bold text-ink-muted dark:text-ink-muted-dark mb-1">Term</label>
           <select
             value={term}
             onChange={(e) => onTermChange(e.target.value)}
-            className="w-full px-2.5 py-1.5 border rounded-xl text-xs font-semibold bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            className="w-full px-2 py-1.5 border border-line dark:border-line-dark rounded-xl text-xs font-semibold bg-surface dark:bg-surface-dark text-ink dark:text-ink-dark focus:ring-1 focus:ring-primary focus:outline-none"
           >
             {TERMS.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Session</label>
+          <label className="block text-[11px] font-bold text-ink-muted dark:text-ink-muted-dark mb-1">Session</label>
           <input
             type="text"
             value={session}
             onChange={(e) => onSessionChange(e.target.value)}
-            className="w-full px-2.5 py-1.5 border rounded-xl text-xs font-semibold bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            className="w-full px-2 py-1.5 border border-line dark:border-line-dark rounded-xl text-xs font-semibold bg-surface dark:bg-surface-dark text-ink dark:text-ink-dark focus:ring-1 focus:ring-primary focus:outline-none"
           />
         </div>
       </div>
     </div>
 
-    <div className="p-3.5 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10 border border-amber-200 dark:border-amber-800/40 space-y-2">
-      <div className="text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
-        <Award className="w-3.5 h-3.5" /> 1-Click Batch Rating
+    <div className="p-2.5 rounded-xl bg-surface-secondary dark:bg-surface-secondary-dark border border-line/70 dark:border-line-dark/70 space-y-1.5">
+      <div className="text-[10px] font-bold uppercase tracking-wider text-ink-muted dark:text-ink-muted-dark flex items-center gap-1.5">
+        <Award className="w-3.5 h-3.5 text-primary" /> 1-Click Batch Rating
       </div>
-      <div className="grid grid-cols-1 gap-2">
+      <div className="grid grid-cols-2 gap-1.5">
         <button
           type="button"
           onClick={() => onSetAllRatings(5, 'Exemplary')}
-          className="w-full py-2 px-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all"
+          className="py-1.5 px-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 transition-colors"
         >
-          <Award className="w-3.5 h-3.5" /> Set All Exemplary (5/5)
+          <Award className="w-3 h-3 shrink-0" /> Set 5/5
         </button>
         <button
           type="button"
           onClick={() => onSetAllRatings(4, 'Good')}
-          className="w-full py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all"
+          className="py-1.5 px-2 bg-primary-soft hover:bg-primary-soft/80 text-primary dark:text-primary-dark border border-primary/20 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 transition-colors"
         >
-          <ThumbsUp className="w-3.5 h-3.5" /> Set All Good (4/5)
+          <ThumbsUp className="w-3 h-3 shrink-0" /> Set 4/5
         </button>
       </div>
     </div>
 
-    <div className="p-3.5 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-700 space-y-1.5 text-[11px]">
-      <div className="font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5 uppercase tracking-wider">
-        <BookOpen className="w-3.5 h-3.5 text-blue-600" /> Rating Scale Guide
+    <div className="p-2.5 rounded-xl bg-surface-secondary/50 dark:bg-surface-secondary-dark/50 border border-line/50 dark:border-line-dark/50 space-y-1.5 text-[10px]">
+      <div className="font-bold text-ink-muted dark:text-ink-muted-dark flex items-center gap-1.5 uppercase tracking-wider">
+        <BookOpen className="w-3 h-3 text-primary" /> Rating Scale Guide
       </div>
-      <div className="text-gray-500 dark:text-gray-400 space-y-0.5">
-        <div><span className="font-bold text-emerald-600">5:</span> Outstanding / Exemplary</div>
-        <div><span className="font-bold text-blue-600">4:</span> Very Good / Commendable</div>
-        <div><span className="font-bold text-cyan-600">3:</span> Satisfactory / Normal</div>
-        <div><span className="font-bold text-amber-600">2:</span> Fair / Room to Improve</div>
-        <div><span className="font-bold text-rose-600">1:</span> Needs Urgent Improvement</div>
+      <div className="flex flex-wrap gap-1 text-[10px]">
+        <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-500/20">5: Outstanding</span>
+        <span className="px-1.5 py-0.5 rounded bg-primary-soft text-primary dark:text-primary-dark font-bold border border-primary/20">4: Good</span>
+        <span className="px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 font-bold border border-cyan-500/20">3: Satisfactory</span>
+        <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-300 font-bold border border-amber-500/20">2: Fair</span>
+        <span className="px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-700 dark:text-rose-300 font-bold border border-rose-500/20">1: Urgent</span>
       </div>
     </div>
 
@@ -105,10 +116,10 @@ const BehaviorFilterSidebar = ({
       type="button"
       onClick={onSave}
       disabled={saving}
-      className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all"
+      className="w-full py-2.5 px-4 bg-primary hover:bg-primary-hover active:scale-[0.99] disabled:opacity-50 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-2xs transition-all"
     >
-      {saving ? <Save className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-      {saving ? 'Saving Records...' : '✓ Save Class Behavior Sheet'}
+      <Save className={`w-3.5 h-3.5 ${saving ? 'animate-spin' : ''}`} />
+      <span>{saving ? 'Saving...' : 'Save Behavior Sheet'}</span>
     </button>
   </div>
 );

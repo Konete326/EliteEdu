@@ -47,7 +47,7 @@ const createUser = async (req, res) => {
     const cleanEmail = email ? email.toLowerCase().trim() : null;
 
     if (cleanEmail) {
-      const existing = await User.findOne({ email: cleanEmail });
+      const existing = await User.findOne({ email: cleanEmail }).select('_id').lean();
       if (existing) return res.status(400).json({ success: false, message: 'Email already registered' });
     }
 
@@ -65,7 +65,8 @@ const createUser = async (req, res) => {
 
     const populated = await User.findById(user._id).select('-password')
       .populate('campus_id', 'name code').populate('assigned_campuses', 'name code')
-      .populate('custom_role_id', 'name dashboard_type');
+      .populate('custom_role_id', 'name dashboard_type')
+      .lean();
 
     res.status(201).json({ success: true, user: populated });
   } catch (error) {
@@ -91,7 +92,7 @@ const updateUser = async (req, res) => {
 
     if (email) {
       const cleanEmail = email.toLowerCase().trim();
-      const existing = await User.findOne({ email: cleanEmail, _id: { $ne: req.params.id } });
+      const existing = await User.findOne({ email: cleanEmail, _id: { $ne: req.params.id } }).select('_id').lean();
       if (existing) return res.status(400).json({ success: false, message: 'Email already in use' });
       update.email = cleanEmail;
     }
@@ -100,7 +101,8 @@ const updateUser = async (req, res) => {
       .select('-password')
       .populate('campus_id', 'name code')
       .populate('assigned_campuses', 'name code')
-      .populate('custom_role_id', 'name dashboard_type');
+      .populate('custom_role_id', 'name dashboard_type')
+      .lean();
 
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
     res.status(200).json({ success: true, user });

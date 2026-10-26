@@ -4,6 +4,7 @@ const { generateNextGrNumber } = require('../utils/grNumberGenerator');
 const { generateNextFamilyNumber } = require('../utils/familyNumberGenerator');
 const { sanitizeStudentPayload } = require('../utils/sanitizeData');
 const { createSystemNotification } = require('../utils/notificationDispatcher');
+const { ensureDefaultCampus } = require('../utils/defaultCampusHelper');
 
 const createStudent = async (req, res) => {
   try {
@@ -15,7 +16,7 @@ const createStudent = async (req, res) => {
 
     let finalCampusId = campus_id;
     if (!finalCampusId) {
-      const defCampus = await mongoose.model('Campus').findOne({ school_id: schoolId }).lean();
+      const defCampus = await ensureDefaultCampus(schoolId);
       if (defCampus) finalCampusId = defCampus._id;
     }
 

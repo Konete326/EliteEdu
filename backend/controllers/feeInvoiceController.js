@@ -23,7 +23,7 @@ const getInvoices = async (req, res) => {
           { gr_number: { $regex: q, $options: 'i' } },
           { father_name: { $regex: q, $options: 'i' } }
         ]
-      }).select('_id');
+      }).select('_id').lean();
       query.$or = [
         { challan_no: { $regex: q, $options: 'i' } },
         { student_id: { $in: matchingStudents.map((s) => s._id) } }
@@ -54,7 +54,8 @@ const getSingleInvoice = async (req, res) => {
       .populate('student_id')
       .populate('grade_id', 'name code')
       .populate('campus_id', 'name code address phone')
-      .populate('collected_by', 'name email');
+      .populate('collected_by', 'name email')
+      .lean();
 
     if (!invoice) return res.status(404).json({ success: false, message: 'Invoice not found' });
     res.status(200).json({ success: true, invoice });

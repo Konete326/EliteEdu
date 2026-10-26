@@ -28,7 +28,7 @@ const promoteStudents = async (req, res) => {
     let toRetainIds = [];
     if (mode === 'Auto_Criteria') {
       if (!source_grade_id) return res.status(400).json({ success: false, message: 'Source grade required for auto promotion' });
-      const pool = await Student.find({ school_id: schoolId, current_grade: source_grade_id, status: 'Active' });
+      const pool = await Student.find({ school_id: schoolId, current_grade: source_grade_id, status: 'Active' }).select('_id latest_exam_percentage').lean();
       pool.forEach((s) => {
         const score = typeof s.latest_exam_percentage === 'number' ? s.latest_exam_percentage : 70;
         if (score >= pass_percentage) {

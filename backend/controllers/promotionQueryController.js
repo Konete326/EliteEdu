@@ -14,7 +14,7 @@ const getCandidates = async (req, res) => {
     if (section && section !== 'ALL') filter.current_section = section;
 
     if (req.user.role === 'Teacher') {
-      const teacher = await User.findById(req.user.id).select('grades app_settings app_permissions custom_role_id');
+      const teacher = await User.findById(req.user.id).select('grades app_settings app_permissions custom_role_id').lean();
       const allowed = teacher?.app_settings?.student_promotion !== false && teacher?.app_permissions?.student_promotion !== false;
       if (!allowed) {
         return res.status(403).json({ success: false, message: 'Permission denied for student promotion' });

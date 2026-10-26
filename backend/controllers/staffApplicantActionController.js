@@ -51,7 +51,7 @@ const convertApplicantToTeacher = async (req, res) => {
     const empCode = await generateNextEmployeeCode(schoolId);
     let teacherEmail = applicant.email ? applicant.email.toLowerCase().trim() : '';
 
-    if (!teacherEmail || (await User.findOne({ email: teacherEmail }))) {
+    if (!teacherEmail || (await User.findOne({ email: teacherEmail }).select('_id').lean())) {
       const slug = applicant.name.toLowerCase().replace(/[^a-z0-9]/g, '') || 'staff';
       teacherEmail = `${slug}.${Date.now().toString().slice(-4)}@school.local`;
     }

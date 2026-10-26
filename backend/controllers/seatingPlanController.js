@@ -7,12 +7,12 @@ const generateSeatingArrangement = async (req, res) => {
     const { exam_id, rooms } = req.body;
     let students = [];
     if (exam_id) {
-      const exam = await Exam.findOne({ _id: exam_id, school_id });
+      const exam = await Exam.findOne({ _id: exam_id, school_id }).select('grade_id').lean();
       const query = { school_id, is_active: true };
       if (exam?.grade_id) query.grade_id = exam.grade_id;
-      students = await Student.find(query).populate('grade_id', 'name').sort({ roll_number: 1, name: 1 });
+      students = await Student.find(query).populate('grade_id', 'name').sort({ roll_number: 1, name: 1 }).lean();
     } else {
-      students = await Student.find({ school_id, is_active: true }).populate('grade_id', 'name').limit(120).sort({ roll_number: 1 });
+      students = await Student.find({ school_id, is_active: true }).populate('grade_id', 'name').limit(120).sort({ roll_number: 1 }).lean();
     }
 
     const roomList = Array.isArray(rooms) && rooms.length > 0 ? rooms : [

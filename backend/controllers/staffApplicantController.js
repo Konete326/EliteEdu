@@ -42,7 +42,8 @@ const getApplicantById = async (req, res) => {
     const applicant = await StaffApplicant.findOne({ _id: req.params.id, school_id: schoolId })
       .populate('campus_id', 'name')
       .populate('replacement_staff', 'name basic_salary designation employee_code photo_url')
-      .populate('converted_user_id', 'name employee_code');
+      .populate('converted_user_id', 'name employee_code')
+      .lean();
 
     if (!applicant) return res.status(404).json({ message: 'Applicant not found' });
     res.status(200).json({ success: true, applicant });

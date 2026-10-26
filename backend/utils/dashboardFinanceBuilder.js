@@ -1,22 +1,12 @@
-const buildFinancialOverview = (campusList, students, payments = [], expenses = []) => {
-  const activeStudents = students.filter((s) => s.status === 'Active');
-  const totalMonthlyFee = activeStudents.reduce((acc, s) => acc + Math.max(0, Number(s.monthly_fee || 0) - Number(s.discount || 0)), 0);
+const buildFinancialOverview = (campusList, studentStats, feeStats, expenseStats) => {
+  const feeTotals = feeStats?.totals || { todayCollection: 0, mtdCollection: 0, ytdCollection: 0 };
+  const feeCampusMap = feeStats?.campusMap || new Map();
+  const { todayExp = 0, mtdExp = 0, ytdExp = 0 } = expenseStats || {};
+  const totalMonthlyFee = studentStats?.summary?.totalMonthlyFee || 0;
 
-  const now = new Date();
-  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const startOfYear = new Date(now.getFullYear(), 0, 1);
-
-  const sumPaid = (list) => list.reduce((acc, p) => acc + Number(p.paid_amount || 0), 0);
-  const sumExp = (list) => list.reduce((acc, e) => acc + Number(e.amount || 0), 0);
-
-  const todayCollection = sumPaid(payments.filter((p) => p.payment_date && new Date(p.payment_date) >= startOfToday));
-  const mtdCollection = sumPaid(payments.filter((p) => p.payment_date && new Date(p.payment_date) >= startOfMonth));
-  const ytdCollection = sumPaid(payments.filter((p) => p.payment_date && new Date(p.payment_date) >= startOfYear));
-
-  const todayExp = sumExp(expenses.filter((e) => e.transaction_date && new Date(e.transaction_date) >= startOfToday));
-  const mtdExp = sumExp(expenses.filter((e) => e.transaction_date && new Date(e.transaction_date) >= startOfMonth));
-  const ytdExp = sumExp(expenses.filter((e) => e.transaction_date && new Date(e.transaction_date) >= startOfYear));
+  const todayCollection = feeTotals.todayCollection || 0;
+  const mtdCollection = feeTotals.mtdCollection || 0;
+  const ytdCollection = feeTotals.ytdCollection || 0;
 
   const outstanding = Math.max(0, totalMonthlyFee - mtdCollection);
   const netMonthlyProfit = mtdCollection - mtdExp;
@@ -32,16 +22,19 @@ const buildFinancialOverview = (campusList, students, payments = [], expenses = 
     totalExpenseMonth: `Rs. ${mtdExp.toLocaleString()}`,
     expenseToday: `Rs. ${todayExp.toLocaleString()}`,
     campusBreakdown: campusList.map((c) => {
-      const cStudents = activeStudents.filter((s) => String(s.campus_id) === String(c.id));
-      const cEst = cStudents.reduce((acc, s) => acc + Math.max(0, Number(s.monthly_fee || 0) - Number(s.discount || 0)), 0);
-      const cPayments = payments.filter((p) => String(p.campus_id) === String(c.id));
-      const cToday = sumPaid(cPayments.filter((p) => p.payment_date && new Date(p.payment_date) >= startOfToday));
-      const cMtd = sumPaid(cPayments.filter((p) => p.payment_date && new Date(p.payment_date) >= startOfMonth));
-      const cYtd = sumPaid(cPayments.filter((p) => p.payment_date && new Date(p.payment_date) >= startOfYear));
+      const cStudent = studentStats?.campusMap?.get(String(c.id)) || { estMonthlyFee: 0 };
+      const cEst = cStudent.estMonthlyFee || 0;
+      const cFee = feeCampusMap.get(String(c.id)) || { today: 0, mtd: 0, ytd: 0 };
+      const cToday = cFee.today || 0;
+      const cMtd = cFee.mtd || 0;
+      const cYtd = cFee.ytd || 0;
       return {
-        name: c.name, sub: c.sub,
-        today: `Rs. ${cToday.toLocaleString()}`, mtd: `Rs. ${cMtd.toLocaleString()}`,
-        ytd: `Rs. ${cYtd.toLocaleString()}`, estMonthly: `Rs. ${cEst.toLocaleString()}`,
+        name: c.name,
+        sub: c.sub,
+        today: `Rs. ${cToday.toLocaleString()}`,
+        mtd: `Rs. ${cMtd.toLocaleString()}`,
+        ytd: `Rs. ${cYtd.toLocaleString()}`,
+        estMonthly: `Rs. ${cEst.toLocaleString()}`,
         outstanding: `Rs. ${Math.max(0, cEst - cMtd).toLocaleString()}`
       };
     })
@@ -58,23 +51,24 @@ const countStatuses = (list) => {
   return { ...counts, marked: counts.p + counts.a + counts.l + counts.late + counts.hd + counts.hol };
 };
 
-const buildAttendanceSummary = (campusList, students, teachers, todayAttendance = [], todayStaffAttendance = []) => {
-  const activeStudents = students.filter((s) => s.status === 'Active');
+const buildAttendanceSummary = (campusList, studentStats, teachers, todayAttendance = [], todayStaffAttendance = []) => {
+  const activeStudentsCount = studentStats?.summary?.activeStudents || 0;
   const now = new Date();
   const stStats = countStatuses(todayAttendance);
   const staffStats = countStatuses(todayStaffAttendance);
 
   return {
     date: now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-    students: { ...stStats, um: Math.max(0, activeStudents.length - stStats.marked), marked: `${stStats.marked}/${activeStudents.length}` },
+    students: { ...stStats, um: Math.max(0, activeStudentsCount - stStats.marked), marked: `${stStats.marked}/${activeStudentsCount}` },
     staff: { ...staffStats, um: Math.max(0, teachers.length - staffStats.marked), marked: `${staffStats.marked}/${teachers.length}` },
     campusBreakdown: campusList.map((c) => {
-      const cStudents = activeStudents.filter((s) => String(s.campus_id) === String(c.id)).length;
+      const cStudents = studentStats?.campusMap?.get(String(c.id))?.activeStudents || 0;
       const cTeachers = teachers.filter((t) => String(t.campus_id) === String(c.id)).length;
       const cStAtt = countStatuses(todayAttendance.filter((rec) => String(rec.campus_id) === String(c.id)));
       const cStaffAtt = countStatuses(todayStaffAttendance.filter((rec) => String(rec.campus_id) === String(c.id)));
       return {
-        name: c.name, sub: c.sub,
+        name: c.name,
+        sub: c.sub,
         students: { total: cStudents, ...cStAtt, um: Math.max(0, cStudents - cStAtt.marked) },
         staff: { total: cTeachers, ...cStaffAtt, um: Math.max(0, cTeachers - cStaffAtt.marked) }
       };

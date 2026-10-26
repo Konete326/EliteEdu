@@ -79,33 +79,6 @@ const OfficialSignatureStampBlock = ({
 
   return (
     <div className={`w-full max-w-full overflow-hidden select-none ${compact ? 'text-[8px]' : 'text-xs'}`}>
-      {!hideControls && (signatures.length > 1 || (hasUploadedStamp && stamps.length > 1)) && (
-        <div className="print:hidden flex flex-wrap items-center justify-center gap-1.5 p-1 rounded-lg bg-surface-secondary/70 border border-line text-[9px] mb-2">
-          {showSignature && signatures.length > 0 && (
-            <select
-              value={selectedSigId}
-              onChange={(e) => setSelectedSigId(e.target.value)}
-              className="px-1.5 py-0.5 rounded border border-line bg-surface font-medium outline-none text-[9px]"
-            >
-              {signatures.map((s) => (
-                <option key={s._id} value={s._id}>{s.label}</option>
-              ))}
-            </select>
-          )}
-          {showStamp && hasUploadedStamp && stamps.length > 1 && (
-            <select
-              value={selectedStampId}
-              onChange={(e) => setSelectedStampId(e.target.value)}
-              className="px-1.5 py-0.5 rounded border border-line bg-surface font-medium outline-none text-[9px]"
-            >
-              {stamps.map((s) => (
-                <option key={s._id} value={s._id}>{s.label}</option>
-              ))}
-            </select>
-          )}
-        </div>
-      )}
-
       <div className={`w-full flex items-end justify-center gap-3 ${compact ? 'pt-0.5' : 'pt-2'}`}>
         {showSignature && (
           <div className="w-full max-w-[140px] text-center flex flex-col items-center">

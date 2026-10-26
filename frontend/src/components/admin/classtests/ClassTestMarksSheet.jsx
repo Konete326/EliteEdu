@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ArrowLeft, CheckCircle2, RotateCcw, Award, Printer, Save, FileSpreadsheet } from 'lucide-react';
 import ClassTestMarksRowItem from './ClassTestMarksRowItem';
 
@@ -6,13 +6,13 @@ export default function ClassTestMarksSheet({ test, rows = [], setRows, onSave, 
   const totalMax = test?.total_marks || 25;
   const passingMarks = test?.passing_marks ?? Math.round(totalMax * 0.33);
 
-  const handleRowChange = (idx, updated) => {
+  const handleRowChange = useCallback((idx, updated) => {
     setRows((prev) => {
       const copy = [...prev];
       copy[idx] = updated;
       return copy;
     });
-  };
+  }, [setRows]);
 
   const setAllMaxMarks = () => {
     setRows((prev) => prev.map((r) => {

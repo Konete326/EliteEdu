@@ -14,7 +14,8 @@ const getDatesheets = async (req, res) => {
     const datesheets = await Exam.find(query)
       .populate('grade_id', 'name')
       .populate('exam_category_id', 'name')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     const formatted = datesheets.map((d) => ({
       _id: d._id,
@@ -42,7 +43,8 @@ const getDatesheetById = async (req, res) => {
       .populate('exam_category_id', 'name')
       .populate('papers.subject_id', 'name code')
       .populate('papers.examiner_id', 'name')
-      .populate('papers.invigilator_id', 'name');
+      .populate('papers.invigilator_id', 'name')
+      .lean();
     if (!datesheet) return res.status(404).json({ message: 'Datesheet not found' });
     res.json({ success: true, datesheet });
   } catch (error) {

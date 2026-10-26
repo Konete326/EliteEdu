@@ -29,7 +29,7 @@ const quickMarkAttendance = async (req, res) => {
     const school_id = req.user.school_id;
 
     if (type === 'student') {
-      const student = await Student.findOne({ _id: id, school_id });
+      const student = await Student.findOne({ _id: id, school_id }).select('name current_grade current_section campus_id').lean();
       if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
 
       const isAdmin = ['Admin', 'SuperAdmin'].includes(req.user.role);
@@ -66,7 +66,7 @@ const quickMarkAttendance = async (req, res) => {
       const isAdmin = ['Admin', 'SuperAdmin'].includes(req.user.role);
       if (!isAdmin) return res.status(403).json({ success: false, message: 'Admin permissions required to mark staff attendance' });
 
-      const staff = await User.findOne({ _id: id, school_id });
+      const staff = await User.findOne({ _id: id, school_id }).select('name campus_id').lean();
       if (!staff) return res.status(404).json({ success: false, message: 'Staff member not found' });
 
       const now = formatStandardTime();

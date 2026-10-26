@@ -1,17 +1,17 @@
 import React from 'react';
-import { QrCode, X, Printer, ExternalLink } from 'lucide-react';
+import { QrCode as QrIcon, X, Printer, ExternalLink } from 'lucide-react';
+import { QRCode } from '@/components/ui/qr-code';
 
 export default function CrmQrInquiryModal({ isOpen, onClose }) {
   if (!isOpen) return null;
   const inquiryUrl = `${window.location.origin}/admin/crm/inquiries/new?source=Walk-in`;
-  const qrSvgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(inquiryUrl)}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
       <div className="w-full max-w-sm rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xl p-6 text-center space-y-4">
         <div className="flex items-center justify-between pb-2 border-b border-line dark:border-line-dark">
           <div className="flex items-center gap-2">
-            <QrCode className="w-5 h-5 text-primary" />
+            <QrIcon className="w-5 h-5 text-primary" />
             <h3 className="text-sm font-bold text-text-primary dark:text-text-primary-dark">
               Walk-in Inquiry QR
             </h3>
@@ -22,7 +22,13 @@ export default function CrmQrInquiryModal({ isOpen, onClose }) {
         </div>
 
         <div className="p-3 bg-white rounded-2xl inline-block shadow-xs border border-line">
-          <img src={qrSvgUrl} alt="Walk-in QR" className="w-48 h-48 mx-auto" />
+          <QRCode
+            value={inquiryUrl}
+            size={192}
+            fgColor="#0f172a"
+            bgColor="#ffffff"
+            className="mx-auto"
+          />
         </div>
 
         <p className="text-xs text-text-secondary">

@@ -16,7 +16,8 @@ const getMarkSheets = async (req, res) => {
       .populate('subject_id', 'name code')
       .populate('exam_category_id', 'name')
       .populate('question_paper_id', 'title total_marks')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     res.json({ success: true, markSheets: sheets });
   } catch (error) {
@@ -31,7 +32,8 @@ const getMarkSheetById = async (req, res) => {
       .populate('subject_id', 'name code')
       .populate('exam_category_id', 'name')
       .populate('question_paper_id', 'title total_marks sections')
-      .populate('marks.student_id', 'first_name last_name name roll_number gender');
+      .populate('marks.student_id', 'first_name last_name name roll_number gender')
+      .lean();
 
     if (!sheet) return res.status(404).json({ message: 'Mark sheet not found' });
 
@@ -40,7 +42,7 @@ const getMarkSheetById = async (req, res) => {
         school_id: req.user.school_id,
         grade_id: sheet.grade_id?._id || sheet.grade_id,
         is_active: true
-      }).sort({ roll_number: 1, name: 1 });
+      }).sort({ roll_number: 1, name: 1 }).lean();
 
       sheet.marks = students.map(s => ({
         student_id: s,
@@ -80,7 +82,8 @@ const createMarkSheet = async (req, res) => {
     const populated = await MarkSheet.findById(sheet._id)
       .populate('grade_id', 'name')
       .populate('subject_id', 'name code')
-      .populate('exam_category_id', 'name');
+      .populate('exam_category_id', 'name')
+      .lean();
 
     res.status(201).json({ success: true, markSheet: populated });
   } catch (error) {

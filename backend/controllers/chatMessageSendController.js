@@ -10,7 +10,7 @@ const sendMessage = async (req, res) => {
     const schoolId = req.user.school_id;
     let { message_text, attachment_url = '', attachment_name = '', reply_to = null, card_payload = null } = req.body;
 
-    const conv = await ChatConversation.findOne({ _id: id, school_id: schoolId });
+    const conv = await ChatConversation.findOne({ _id: id, school_id: schoolId }).select('participants').lean();
     if (!conv) return res.status(404).json({ success: false, message: 'Conversation not found' });
 
     const isMember = conv.participants.some((p) => String(p.user_id) === String(userId));

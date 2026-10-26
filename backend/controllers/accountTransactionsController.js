@@ -26,7 +26,7 @@ const getTransactions = async (req, res) => {
       ];
     }
 
-    const txs = await AccountTransaction.find(query).sort({ transaction_date: -1, createdAt: -1 });
+    const txs = await AccountTransaction.find(query).sort({ transaction_date: -1, createdAt: -1 }).lean();
     res.status(200).json({ success: true, data: txs });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -42,7 +42,7 @@ const createTransaction = async (req, res) => {
       return res.status(400).json({ message: 'Missing required voucher fields' });
     }
 
-    const head = await AccountHead.findOne({ _id: account_head_id, school_id: schoolId });
+    const head = await AccountHead.findOne({ _id: account_head_id, school_id: schoolId }).select('name').lean();
     if (!head) return res.status(404).json({ message: 'Account head not found' });
 
     const voucher_no = req.body.voucher_no || await generateVoucherNo(schoolId, voucher_type);

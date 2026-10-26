@@ -9,6 +9,7 @@ import AdmissionsChartWidget from '../../components/admin/dashboard/AdmissionsCh
 import FinancialOverviewWidget from '../../components/admin/dashboard/FinancialOverviewWidget';
 import AttendanceHomeworkWidget from '../../components/admin/dashboard/AttendanceHomeworkWidget';
 import DashboardRightColumn from '../../components/admin/dashboard/DashboardRightColumn';
+import Testimonial2 from '../../components/ui/testimonial-section-2';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -48,6 +49,11 @@ const AdminDashboard = () => {
       )}
 
       <DashboardKpiRow topKpis={stats?.topKpis} />
+
+      <Testimonial2
+        students={stats?.spotlightStudents || []}
+        title="Active Student Community Spotlight"
+      />
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
         <div className="xl:col-span-8 space-y-6">

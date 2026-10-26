@@ -25,7 +25,7 @@ const getItems = async (req, res) => {
     if (search) {
       query.$or = [{ name: { $regex: search, $options: 'i' } }, { sku: { $regex: search, $options: 'i' } }];
     }
-    const items = await StoreItem.find(query).populate('grade_id', 'name').sort({ name: 1 });
+    const items = await StoreItem.find(query).populate('grade_id', 'name').sort({ name: 1 }).lean();
     res.status(200).json({ success: true, data: items });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -39,7 +39,7 @@ const createItem = async (req, res) => {
     if (!sku || !name || sale_price === undefined) {
       return res.status(400).json({ message: 'SKU, name, and sale price are required' });
     }
-    const existing = await StoreItem.findOne({ school_id: schoolId, sku: String(sku).trim() });
+    const existing = await StoreItem.findOne({ school_id: schoolId, sku: String(sku).trim() }).select('_id').lean();
     if (existing) return res.status(400).json({ message: 'Item SKU already exists' });
     const stock = Number(stock_qty) || 0;
     const item = await StoreItem.create({

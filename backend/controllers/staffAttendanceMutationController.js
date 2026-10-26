@@ -70,7 +70,7 @@ const scanStaffCard = async (req, res) => {
     const staff = await resolveStaffMember(code.trim(), school_id);
     if (!staff) return res.status(404).json({ message: 'Staff member not found or does not belong to school' });
 
-    const existing = await StaffAttendance.findOne({ school_id, staff_id: staff._id, date });
+    const existing = await StaffAttendance.findOne({ school_id, staff_id: staff._id, date }).select('check_in_time check_out_time').lean();
     const timeNow = formatTimeNow();
     let check_in = existing?.check_in_time || timeNow;
     let check_out = existing?.check_out_time || '';
@@ -85,7 +85,7 @@ const scanStaffCard = async (req, res) => {
           marked_via: 'Card_Scan', marked_by, scan_time: new Date()
         }
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true, lean: true }
     );
 
     const [totalStaff, allAttendances] = await Promise.all([

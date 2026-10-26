@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const compression = require('compression');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes'); const schoolRoutes = require('./routes/schoolRoutes');
 const teacherRoutes = require('./routes/teacherRoutes'); const dashboardRoutes = require('./routes/dashboardRoutes');
@@ -33,6 +34,13 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: true }));
+app.use(compression({
+  threshold: 1024,
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) return false;
+    return compression.filter(req, res);
+  }
+}));
 app.use((req, res, next) => {
   if (req.method === 'OPTIONS') {
     res.header('Access-Control-Allow-Origin', req.headers.origin || '*');

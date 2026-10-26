@@ -14,7 +14,7 @@ const findStudentForLogin = async (identifier) => {
       { 'father_details.mobile': cleanId },
       { portal_username: cleanId }
     ]
-  }).populate('school_id').populate('campus_id').populate('current_grade');
+  }).populate('school_id').populate('campus_id').populate('current_grade').lean();
 };
 
 const verifyStudentPassword = async (student, password) => {
@@ -80,7 +80,7 @@ const handleStudentLogin = async (identifier, password, res) => {
 };
 
 const handleStudentGetMe = async (studentId, res) => {
-  const student = await Student.findById(studentId).populate('school_id').populate('campus_id').populate('current_grade');
+  const student = await Student.findById(studentId).populate('school_id').populate('campus_id').populate('current_grade').lean();
   if (!student || student.status !== 'Active') return res.status(404).json({ message: 'Student profile not found' });
   const meta = await getSchoolMeta(student.school_id?._id || student.school_id);
   return res.status(200).json({ user: buildStudentUserPayload(student, meta) });

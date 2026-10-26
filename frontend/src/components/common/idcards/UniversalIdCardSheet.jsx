@@ -24,7 +24,10 @@ const UniversalIdCardSheet = ({
       : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center print:grid-cols-3 print:gap-4 print:w-full';
 
   return (
-    <div className="bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark rounded-2xl p-6 shadow-sm print:border-none print:shadow-none print:p-0 print:m-0 print:break-after-page print:break-inside-avoid">
+    <div
+      style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
+      className="bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark rounded-2xl p-6 shadow-sm print:border-none print:shadow-none print:p-0 print:m-0 print:break-after-page print:break-inside-avoid [print-color-adjust:exact] [-webkit-print-color-adjust:exact]"
+    >
       <div className="flex items-center justify-between pb-4 mb-4 border-b border-line dark:border-line-dark print:hidden text-xs text-ink-muted">
         <span className="font-semibold">
           Sheet {pageIndex + 1} of {totalSheets}

@@ -2,15 +2,25 @@ const Campus = require('../models/Campus');
 const Student = require('../models/Student');
 const resolveSchoolId = require('../utils/schoolResolver');
 const { enrichCampusesWithCounts } = require('../utils/campusMetricsHelper');
+const { ensureDefaultCampus } = require('../utils/defaultCampusHelper');
 
 const getCampuses = async (req, res) => {
   try {
     const schoolId = await resolveSchoolId(req);
     if (!schoolId) return res.status(200).json({ success: true, campuses: [] });
 
-    const rawCampuses = await Campus.find({ school_id: schoolId })
+    let rawCampuses = await Campus.find({ school_id: schoolId })
       .populate('school_id', 'name logo_url')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
+
+    if (rawCampuses.length === 0) {
+      await ensureDefaultCampus(schoolId);
+      rawCampuses = await Campus.find({ school_id: schoolId })
+        .populate('school_id', 'name logo_url')
+        .sort({ createdAt: -1 })
+        .lean();
+    }
 
     const campuses = await enrichCampusesWithCounts(rawCampuses, schoolId);
     res.status(200).json({ success: true, campuses });
@@ -27,7 +37,7 @@ const createCampus = async (req, res) => {
     const { name, email, website, address, contact_number, status, image_url, image } = req.body;
     if (!name || !name.trim()) return res.status(400).json({ message: 'Campus name is required' });
 
-    const dupCreate = await Campus.findOne({ school_id: schoolId, name: { $regex: `^${name.trim()}$`, $options: 'i' } });
+    const dupCreate = await Campus.findOne({ school_id: schoolId, name: { $regex: `^${name.trim()}$`, $options: 'i' } }).select('_id').lean();
     if (dupCreate) return res.status(400).json({ message: `Campus name "${name.trim()}" is already in use` });
 
     if (status && !['Active', 'Inactive'].includes(status)) {
@@ -65,7 +75,7 @@ const updateCampus = async (req, res) => {
 
     const updateData = {};
     if (name !== undefined) {
-      const dup = await Campus.findOne({ school_id: schoolId, _id: { $ne: id }, name: { $regex: `^${name.trim()}$`, $options: 'i' } });
+      const dup = await Campus.findOne({ school_id: schoolId, _id: { $ne: id }, name: { $regex: `^${name.trim()}$`, $options: 'i' } }).select('_id').lean();
       if (dup) return res.status(400).json({ message: `Campus name "${name.trim()}" is already in use` });
       updateData.name = name.trim();
     }
