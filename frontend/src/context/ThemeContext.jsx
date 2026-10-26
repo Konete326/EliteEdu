@@ -62,14 +62,20 @@ export const ThemeProvider = ({ children }) => {
     }).catch(() => {});
   }, [user?.school_id]);
 
+  const isAnimatingRef = useRef(false);
+
   const triggerAnimation = useCallback((onMidpoint) => {
-    if (transitionState.isAnimating) return onMidpoint && onMidpoint();
+    if (isAnimatingRef.current) return onMidpoint && onMidpoint();
+    isAnimatingRef.current = true;
     setTransitionState({ isAnimating: true, isClosed: false });
     requestAnimationFrame(() => setTransitionState({ isAnimating: true, isClosed: true }));
     setTimeout(() => onMidpoint && onMidpoint(), 280);
     setTimeout(() => setTransitionState({ isAnimating: true, isClosed: false }), 620);
-    setTimeout(() => setTransitionState({ isAnimating: false, isClosed: false }), 920);
-  }, [transitionState.isAnimating]);
+    setTimeout(() => {
+      isAnimatingRef.current = false;
+      setTransitionState({ isAnimating: false, isClosed: false });
+    }, 920);
+  }, []);
 
   const syncToBackend = useCallback((next) => {
     if (user?.role !== 'Admin') return;
@@ -107,8 +113,20 @@ export const ThemeProvider = ({ children }) => {
     });
   }, [triggerAnimation, syncToBackend]);
 
+  const value = useMemo(
+    () => ({
+      themeSettings: settings,
+      updateThemeSetting,
+      resetThemeToDefault,
+      transitionState,
+      triggerAnimation,
+      isSyncing: false
+    }),
+    [settings, updateThemeSetting, resetThemeToDefault, triggerAnimation]
+  );
+
   return (
-    <ThemeContext.Provider value={{ themeSettings: settings, updateThemeSetting, resetThemeToDefault, transitionState, triggerAnimation }}>
+    <ThemeContext.Provider value={value}>
       {children}
       <ThemeTransition isAnimating={transitionState.isAnimating} isClosed={transitionState.isClosed} />
     </ThemeContext.Provider>

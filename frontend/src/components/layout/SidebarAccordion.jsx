@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
@@ -85,4 +86,4 @@ const SidebarAccordion = ({ category, isOpen, onToggle, isExpanded, onNavigate, 
   );
 };
 
-export default SidebarAccordion;
+export default memo(SidebarAccordion);

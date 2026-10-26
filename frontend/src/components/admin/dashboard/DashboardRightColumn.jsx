@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Gift, Video, ArrowUpRight } from 'lucide-react';
 import CalendarWidget from './CalendarWidget';
@@ -88,4 +89,4 @@ const DashboardRightColumn = ({ birthdaysToday, upcomingClasses, studentStats, c
   );
 };
 
-export default DashboardRightColumn;
+export default memo(DashboardRightColumn);

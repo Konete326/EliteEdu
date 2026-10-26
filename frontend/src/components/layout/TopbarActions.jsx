@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Building2, ScanLine, Moon, Sun, Download, Play
@@ -26,19 +26,19 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
     setVideoModalOpen(false);
   }, [location.pathname]);
 
-  const handleCampusSelect = (val) => {
+  const handleCampusSelect = useCallback((val) => {
     if (val === activeCampusId) return;
     const targetName = val === 'all'
       ? 'All Campuses'
       : (campuses.find((c) => String(c._id) === String(val))?.name || 'Selected Branch');
     requestCampusSwitch(val, targetName);
-  };
+  }, [activeCampusId, campuses, requestCampusSwitch]);
 
-  const getInitials = (name) => {
+  const getInitials = useCallback((name) => {
     if (!name) return 'ED';
     const parts = name.trim().split(/\s+/);
     return parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
-  };
+  }, []);
 
   const btnClass = isColored
     ? 'p-1.5 rounded-lg text-white/90 hover:bg-white/15 transition-colors'
@@ -46,14 +46,23 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
 
   const schoolPill = user?.school_name || (user?.role === 'SuperAdmin' ? 'System HQ' : 'School');
 
-  const campusOptions = [
+  const campusOptions = useMemo(() => [
     { value: 'all', label: campuses.length > 0 ? 'All Campuses' : schoolPill },
     ...campuses.map((c) => ({
       value: c._id,
       label: c.name,
       subtext: c.code ? `Code: ${c.code}` : ''
     }))
-  ];
+  ], [campuses, schoolPill]);
+
+  const handleOpenVideo = useCallback(() => setVideoModalOpen(true), []);
+  const handleCloseVideo = useCallback(() => setVideoModalOpen(false), []);
+  const handleOpenScanner = useCallback(() => setScannerOpen(true), []);
+  const handleCloseScanner = useCallback(() => setScannerOpen(false), []);
+
+  const handleProfileClick = useCallback(() => {
+    navigate(user?.role === 'SuperAdmin' ? '/superadmin/profile' : user?.role === 'Teacher' ? '/teacher/profile' : '/admin/profile');
+  }, [navigate, user?.role]);
 
   return (
     <div className="flex items-center gap-1 sm:gap-2">
@@ -70,7 +79,7 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
 
       <button
         type="button"
-        onClick={() => setVideoModalOpen(true)}
+        onClick={handleOpenVideo}
         className={`hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${
           isColored ? 'bg-white/15 border-white/20 text-white hover:bg-white/25' : 'border-line dark:border-line-dark hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark text-ink dark:text-ink-dark'
         }`}
@@ -83,7 +92,7 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
 
       <button
         type="button"
-        onClick={() => setScannerOpen(true)}
+        onClick={handleOpenScanner}
         className={btnClass}
         title="Universal QR & Barcode Scanner"
       >
@@ -111,7 +120,7 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
 
       <button
         type="button"
-        onClick={() => navigate(user?.role === 'SuperAdmin' ? '/superadmin/profile' : user?.role === 'Teacher' ? '/teacher/profile' : '/admin/profile')}
+        onClick={handleProfileClick}
         className={`w-8 h-8 rounded-full font-bold text-xs flex items-center justify-center border shrink-0 overflow-hidden cursor-pointer transition-all hover:scale-105 ${
           isColored ? 'bg-white/20 border-white/40 text-white' : 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-dark border-primary/20'
         }`}
@@ -119,10 +128,10 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
         {user?.photo_url ? <img src={user.photo_url} alt={user.name || 'User'} className="w-full h-full object-cover" /> : getInitials(user?.name)}
       </button>
 
-      <UniversalScannerModal isOpen={scannerOpen} onClose={() => setScannerOpen(false)} />
-      <VideoComingSoonModal isOpen={videoModalOpen} onClose={() => setVideoModalOpen(false)} />
+      <UniversalScannerModal isOpen={scannerOpen} onClose={handleCloseScanner} />
+      <VideoComingSoonModal isOpen={videoModalOpen} onClose={handleCloseVideo} />
     </div>
   );
 };
 
-export default TopbarActions;
+export default memo(TopbarActions);

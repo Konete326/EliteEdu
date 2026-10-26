@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import AttendanceWidget from './AttendanceWidget';
 import HomeworkWidget from './HomeworkWidget';
 
@@ -10,4 +11,4 @@ const AttendanceHomeworkWidget = ({ stats, attendanceSummary, homeworkSummary })
   );
 };
 
-export default AttendanceHomeworkWidget;
+export default memo(AttendanceHomeworkWidget);

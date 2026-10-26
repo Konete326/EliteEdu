@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import api from '../services/api';
 import { useAuth } from './AuthContext';
 
@@ -42,16 +42,16 @@ export const CampusProvider = ({ children }) => {
     }
   }, [user]);
 
-  const setActiveCampusId = (id) => {
+  const setActiveCampusId = useCallback((id) => {
     const val = id || 'all';
     setActiveCampusIdState(val);
     localStorage.setItem('elite_active_campus_id', val);
     if (user) {
       api.patch('/auth/active-campus', { campus_id: val }).catch(() => {});
     }
-  };
+  }, [user]);
 
-  const requestCampusSwitch = (targetId, targetName) => {
+  const requestCampusSwitch = useCallback((targetId, targetName) => {
     const id = targetId || 'all';
     let name = targetName;
     if (!name) {
@@ -62,39 +62,54 @@ export const CampusProvider = ({ children }) => {
       }
     }
     setPendingSwitch({ id, name });
-  };
+  }, [campuses]);
 
-  const confirmCampusSwitch = () => {
+  const confirmCampusSwitch = useCallback(() => {
     if (!pendingSwitch) return '';
     setActiveCampusId(pendingSwitch.id);
     const switchedName = pendingSwitch.name;
     setPendingSwitch(null);
     return switchedName;
-  };
+  }, [pendingSwitch, setActiveCampusId]);
 
-  const cancelCampusSwitch = () => {
+  const cancelCampusSwitch = useCallback(() => {
     setPendingSwitch(null);
-  };
+  }, []);
 
-  const activeCampus = activeCampusId === 'all'
-    ? null
-    : campuses.find((c) => String(c._id) === String(activeCampusId)) || null;
+  const activeCampus = useMemo(() => {
+    if (activeCampusId === 'all') return null;
+    return campuses.find((c) => String(c._id) === String(activeCampusId)) || null;
+  }, [activeCampusId, campuses]);
+
+  const value = useMemo(
+    () => ({
+      campuses,
+      activeCampusId,
+      setActiveCampusId,
+      activeCampus,
+      refreshCampuses: fetchCampuses,
+      loading,
+      pendingSwitch,
+      requestCampusSwitch,
+      confirmCampusSwitch,
+      cancelCampusSwitch
+    }),
+    [
+      campuses,
+      activeCampusId,
+      setActiveCampusId,
+      activeCampus,
+      fetchCampuses,
+      loading,
+      pendingSwitch,
+      requestCampusSwitch,
+      confirmCampusSwitch,
+      cancelCampusSwitch
+    ]
+  );
 
   return (
-    <CampusContext.Provider
-      value={{
-        campuses,
-        activeCampusId,
-        setActiveCampusId,
-        activeCampus,
-        refreshCampuses: fetchCampuses,
-        loading,
-        pendingSwitch,
-        requestCampusSwitch,
-        confirmCampusSwitch,
-        cancelCampusSwitch
-      }}
-    >
+    <CampusContext.Provider value={value}>
       {children}
     </CampusContext.Provider>
   );

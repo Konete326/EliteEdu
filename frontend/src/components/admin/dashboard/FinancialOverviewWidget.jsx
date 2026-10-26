@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Landmark, Eye, EyeOff, TrendingUp, TrendingDown, ArrowUpRight } from 'lucide-react';
 
@@ -7,9 +7,9 @@ const FinancialOverviewWidget = ({ stats, financialOverview }) => {
   const data = financialOverview || stats?.financialOverview || stats;
   const campuses = data?.campusBreakdown || [];
 
-  const mask = (val) => (showValues ? val : '••••••');
+  const mask = useCallback((val) => (showValues ? val : '••••••'), [showValues]);
 
-  const cards = [
+  const cards = useMemo(() => [
     { label: "Today's Collection", value: data?.todayCollection || 'Rs. 0', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40', path: '/admin/fees/collection' },
     { label: 'MTD Collection', value: data?.mtdCollection || 'Rs. 0', icon: TrendingUp, color: 'text-teal-600 bg-teal-50 dark:bg-teal-950/20 border-teal-200/60 dark:border-teal-900/40', path: '/admin/fees/collection' },
     { label: 'YTD Collection', value: data?.ytdCollection || 'Rs. 0', icon: TrendingUp, color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/20 border-blue-200/60 dark:border-blue-900/40', path: '/admin/fees/reports' },
@@ -18,7 +18,7 @@ const FinancialOverviewWidget = ({ stats, financialOverview }) => {
     { label: 'Profit / Loss (Month)', value: data?.profitThisMonth || 'Rs. 0', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40', path: '/admin/accounts/transactions' },
     { label: 'Total Expense (Year)', value: data?.totalExpenseYear || 'Rs. 0', icon: TrendingDown, color: 'text-rose-600 bg-rose-50 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40', path: '/admin/accounts/expenses' },
     { label: 'Expense Today', value: data?.expenseToday || 'Rs. 0', icon: TrendingDown, color: 'text-rose-600 bg-rose-50 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40', path: '/admin/accounts/expenses' }
-  ];
+  ], [data]);
 
   return (
     <div className="p-5 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm space-y-4">
@@ -91,4 +91,4 @@ const FinancialOverviewWidget = ({ stats, financialOverview }) => {
   );
 };
 
-export default FinancialOverviewWidget;
+export default memo(FinancialOverviewWidget);

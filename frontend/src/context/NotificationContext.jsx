@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useCallback, useMemo } from 'react';
 import { useToast } from './ToastContext';
 
 const NotificationContext = createContext(null);
@@ -6,15 +6,17 @@ const NotificationContext = createContext(null);
 export const NotificationProvider = ({ children }) => {
   const toast = useToast();
 
-  const showNotification = (message, type = 'info', title) => {
+  const showNotification = useCallback((message, type = 'info', title) => {
     if (type === 'success') toast.success(message, title || 'Success');
     else if (type === 'error') toast.error(message, title || 'Error');
     else if (type === 'warning') toast.warning(message, title || 'Warning');
     else toast.info(message, title || 'Notice');
-  };
+  }, [toast]);
+
+  const value = useMemo(() => ({ showNotification }), [showNotification]);
 
   return (
-    <NotificationContext.Provider value={{ showNotification }}>
+    <NotificationContext.Provider value={value}>
       {children}
     </NotificationContext.Provider>
   );

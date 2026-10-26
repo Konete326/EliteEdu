@@ -1,4 +1,4 @@
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useCallback, useMemo } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
@@ -17,11 +17,25 @@ const DashboardLayout = () => {
   const location = useLocation();
 
   const isDark = themeSettings.mode === 'dark';
-  const toggleTheme = () => updateThemeSetting('mode', isDark ? 'light' : 'dark');
-  const isChatRoute = location.pathname.startsWith('/admin/messaging') || location.pathname.startsWith('/admin/messages');
-  const isCompactDesktopRoute = location.pathname.startsWith('/admin/students/promote') ||
-    location.pathname.startsWith('/admin/control-panel/class-transfer') ||
-    location.pathname.includes('/behavior-skills');
+  const toggleTheme = useCallback(() => {
+    updateThemeSetting('mode', isDark ? 'light' : 'dark');
+  }, [updateThemeSetting, isDark]);
+
+  const handleOpenLogout = useCallback(() => setConfirmLogout(true), []);
+  const handleCloseLogout = useCallback(() => setConfirmLogout(false), []);
+
+  const isChatRoute = useMemo(
+    () => location.pathname.startsWith('/admin/messaging') || location.pathname.startsWith('/admin/messages'),
+    [location.pathname]
+  );
+
+  const isCompactDesktopRoute = useMemo(
+    () =>
+      location.pathname.startsWith('/admin/students/promote') ||
+      location.pathname.startsWith('/admin/control-panel/class-transfer') ||
+      location.pathname.includes('/behavior-skills'),
+    [location.pathname]
+  );
 
   return (
     <div className="flex h-screen h-[100dvh] overflow-hidden bg-bg dark:bg-bg-dark text-ink dark:text-ink-dark">
@@ -32,7 +46,7 @@ const DashboardLayout = () => {
         setIsDesktopOpen={setIsDesktopOpen}
         isDark={isDark}
         toggleTheme={toggleTheme}
-        onLogoutClick={() => setConfirmLogout(true)}
+        onLogoutClick={handleOpenLogout}
       />
 
       <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
@@ -52,7 +66,7 @@ const DashboardLayout = () => {
 
       <ConfirmModal
         isOpen={confirmLogout}
-        onClose={() => setConfirmLogout(false)}
+        onClose={handleCloseLogout}
         onConfirm={logout}
         title="Sign Out"
         message="Are you sure you want to sign out of your account?"

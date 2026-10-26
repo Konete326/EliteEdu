@@ -1,10 +1,11 @@
+import { useMemo, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { GraduationCap, Users, BookOpen, CalendarDays, Video, ArrowUpRight } from 'lucide-react';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 
 const DashboardKpiRow = ({ topKpis }) => {
-  const cards = [
+  const cards = useMemo(() => [
     {
       title: 'Active Students',
       value: topKpis?.activeStudents ?? 0,
@@ -55,7 +56,7 @@ const DashboardKpiRow = ({ topKpis }) => {
       iconBg: 'bg-rose-500/10 dark:bg-rose-500/20',
       path: '/admin/online-classes'
     }
-  ];
+  ], [topKpis]);
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4">
@@ -101,4 +102,4 @@ const DashboardKpiRow = ({ topKpis }) => {
   );
 };
 
-export default DashboardKpiRow;
+export default memo(DashboardKpiRow);

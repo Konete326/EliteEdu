@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { X, Search } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -15,30 +15,43 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
   const [openGroup, setOpenGroup] = useState('Main');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const activePreset = HEADER_BG_PRESETS.find((p) => p.id === themeSettings.headerBg);
-  const isColored = themeSettings.headerBg && themeSettings.headerBg !== 'white';
+  const activePreset = useMemo(
+    () => HEADER_BG_PRESETS.find((p) => p.id === themeSettings.headerBg),
+    [themeSettings.headerBg]
+  );
+  const isColored = Boolean(themeSettings.headerBg && themeSettings.headerBg !== 'white');
   const sidebarBgClass = isColored && activePreset ? activePreset.sidebarClass : isDark ? 'bg-surface-dark border-r border-line-dark text-ink-dark' : 'bg-surface border-r border-line text-ink';
   const headerBorderClass = isColored ? 'border-white/15' : 'border-line dark:border-line-dark';
   const brandTextClass = isColored ? 'text-white' : 'text-ink dark:text-ink-dark';
-  const allCategories = getNavCategories(user);
+
+  const allCategories = useMemo(() => getNavCategories(user), [user]);
 
   useEffect(() => {
     if (!user || searchQuery.trim()) return;
     const active = allCategories.find((cat) => cat.subItems?.some((sub) => sub.path === location.pathname));
     if (active) setOpenGroup(active.title);
-  }, [location.pathname, user]);
+  }, [location.pathname, user, allCategories, searchQuery]);
 
-  const filteredCategories = !searchQuery.trim() ? allCategories : allCategories.map((cat) => {
+  const filteredCategories = useMemo(() => {
+    if (!searchQuery.trim()) return allCategories;
     const q = searchQuery.toLowerCase().trim();
-    if (cat.title.toLowerCase().includes(q)) return cat;
-    const matched = cat.subItems?.filter((s) => s.name.toLowerCase().includes(q)) || [];
-    return matched.length ? { ...cat, subItems: matched } : null;
-  }).filter(Boolean);
+    return allCategories.map((cat) => {
+      if (cat.title.toLowerCase().includes(q)) return cat;
+      const matched = cat.subItems?.filter((s) => s.name.toLowerCase().includes(q)) || [];
+      return matched.length ? { ...cat, subItems: matched } : null;
+    }).filter(Boolean);
+  }, [allCategories, searchQuery]);
 
-  const toggleGroup = (title) => {
+  const toggleGroup = useCallback((title) => {
     if (!isDesktopOpen) setIsDesktopOpen(true);
     setOpenGroup((prev) => (!isDesktopOpen || prev !== title ? title : null));
-  };
+  }, [isDesktopOpen, setIsDesktopOpen]);
+
+  const handleCloseMobile = useCallback(() => setMobileOpen(false), [setMobileOpen]);
+  const handleToggleCollapse = useCallback(() => {
+    if (window.innerWidth >= 1024) setIsDesktopOpen((p) => !p);
+    else setMobileOpen(false);
+  }, [setIsDesktopOpen, setMobileOpen]);
 
   const navBody = (isExpanded) => (
     <div className={`flex flex-col h-full ${sidebarBgClass} transition-all duration-300 ${isExpanded ? 'w-64' : 'w-16'}`}>
@@ -48,7 +61,7 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
           {isExpanded && <span className={`font-extrabold text-base tracking-tight truncate ${brandTextClass}`}>Elite Edu</span>}
         </div>
         {isExpanded && mobileOpen && (
-          <button type="button" onClick={() => setMobileOpen(false)} className={`lg:hidden ${isColored ? 'text-white/80 hover:text-white' : 'text-ink-muted hover:text-ink'}`}>
+          <button type="button" onClick={handleCloseMobile} className={`lg:hidden ${isColored ? 'text-white/80 hover:text-white' : 'text-ink-muted hover:text-ink'}`}>
             <X className="w-5 h-5" />
           </button>
         )}
@@ -81,7 +94,7 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
             isOpen={searchQuery.trim() ? true : openGroup === cat.title}
             onToggle={toggleGroup}
             isExpanded={isExpanded}
-            onNavigate={() => setMobileOpen(false)}
+            onNavigate={handleCloseMobile}
             isColored={isColored}
           />
         ))}
@@ -90,7 +103,7 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
       <SidebarFooter
         user={user}
         isExpanded={isExpanded}
-        onToggleCollapse={() => (window.innerWidth >= 1024 ? setIsDesktopOpen((p) => !p) : setMobileOpen(false))}
+        onToggleCollapse={handleToggleCollapse}
         isDark={isDark}
         toggleTheme={toggleTheme}
         onLogoutClick={onLogoutClick}
@@ -106,7 +119,7 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
       </aside>
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex">
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={handleCloseMobile} />
           <div className="relative z-10 h-full">{navBody(true)}</div>
         </div>
       )}
@@ -114,4 +127,4 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
   );
 };
 
-export default Sidebar;
+export default memo(Sidebar);

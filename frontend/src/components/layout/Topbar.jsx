@@ -1,3 +1,4 @@
+import { useMemo, useCallback, memo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { PanelLeft, Home, Search } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
@@ -10,13 +11,16 @@ const Topbar = ({ setMobileOpen, setIsDesktopOpen, isDark, toggleTheme }) => {
   const location = useLocation();
   const pageTitle = getRouteTitle(location.pathname);
 
-  const activePreset = HEADER_BG_PRESETS.find((p) => p.id === themeSettings.headerBg);
-  const isColored = themeSettings.headerBg && themeSettings.headerBg !== 'white';
+  const activePreset = useMemo(
+    () => HEADER_BG_PRESETS.find((p) => p.id === themeSettings.headerBg),
+    [themeSettings.headerBg]
+  );
+  const isColored = Boolean(themeSettings.headerBg && themeSettings.headerBg !== 'white');
 
-  const handleMenuClick = () => {
+  const handleMenuClick = useCallback(() => {
     if (window.innerWidth >= 1024) setIsDesktopOpen((prev) => !prev);
     else setMobileOpen(true);
-  };
+  }, [setIsDesktopOpen, setMobileOpen]);
 
   const headerBgClass = isColored && activePreset
     ? activePreset.headerClass
@@ -69,4 +73,4 @@ const Topbar = ({ setMobileOpen, setIsDesktopOpen, isDark, toggleTheme }) => {
   );
 };
 
-export default Topbar;
+export default memo(Topbar);

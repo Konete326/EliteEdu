@@ -11,6 +11,8 @@ import AttendanceHomeworkWidget from '../../components/admin/dashboard/Attendanc
 import DashboardRightColumn from '../../components/admin/dashboard/DashboardRightColumn';
 import Testimonial2 from '../../components/ui/testimonial-section-2';
 
+const EMPTY_ARRAY = [];
+
 const AdminDashboard = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState(null);
@@ -35,9 +37,10 @@ const AdminDashboard = () => {
     };
   }, []);
 
-  if (loading) return <PageLoader text="Loading institutional dashboard..." />;
-
   const isPrivate = (user?.school_type || stats?.school?.school_type) === 'Private';
+  const spotlightStudents = stats?.spotlightStudents || EMPTY_ARRAY;
+
+  if (loading) return <PageLoader text="Loading institutional dashboard..." />;
 
   return (
     <div className="space-y-6 pb-12">
@@ -51,7 +54,7 @@ const AdminDashboard = () => {
       <DashboardKpiRow topKpis={stats?.topKpis} />
 
       <Testimonial2
-        students={stats?.spotlightStudents || []}
+        students={spotlightStudents}
         title="Active Student Community Spotlight"
       />
 

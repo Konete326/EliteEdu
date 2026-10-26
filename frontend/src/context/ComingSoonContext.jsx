@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import ComingSoonModal from '../components/common/ComingSoonModal';
 
 const ComingSoonContext = createContext(null);
@@ -24,8 +24,10 @@ export const ComingSoonProvider = ({ children }) => {
     setModalState((prev) => ({ ...prev, isOpen: false }));
   }, []);
 
+  const value = useMemo(() => ({ openComingSoon, closeComingSoon }), [openComingSoon, closeComingSoon]);
+
   return (
-    <ComingSoonContext.Provider value={{ openComingSoon, closeComingSoon }}>
+    <ComingSoonContext.Provider value={value}>
       {children}
       <ComingSoonModal
         isOpen={modalState.isOpen}

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Target, ChevronRight } from 'lucide-react';
 
@@ -55,4 +56,4 @@ const CrmPipelineWidget = ({ crmPipeline }) => {
   );
 };
 
-export default CrmPipelineWidget;
+export default memo(CrmPipelineWidget);

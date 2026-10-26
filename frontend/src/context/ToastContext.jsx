@@ -21,15 +21,29 @@ export const ToastProvider = ({ children }) => {
     return subscribeToast((t) => addToast(t));
   }, [addToast]);
 
+  const showToast = useCallback((message, type = 'info', title) => {
+    return addToast({
+      type,
+      message,
+      title: title || (type === 'success' ? 'Success' : type === 'error' ? 'Error' : type === 'warning' ? 'Warning' : 'Notice')
+    });
+  }, [addToast]);
+
+  const success = useCallback((message, title = 'Success') => addToast({ type: 'success', message, title }), [addToast]);
+  const error = useCallback((message, title = 'Error') => addToast({ type: 'error', message, title }), [addToast]);
+  const warning = useCallback((message, title = 'Warning') => addToast({ type: 'warning', message, title }), [addToast]);
+  const info = useCallback((message, title = 'Notice') => addToast({ type: 'info', message, title }), [addToast]);
+
   const toast = useMemo(
     () => ({
-      success: (message, title = 'Success') => addToast({ type: 'success', message, title }),
-      error: (message, title = 'Error') => addToast({ type: 'error', message, title }),
-      warning: (message, title = 'Warning') => addToast({ type: 'warning', message, title }),
-      info: (message, title = 'Notice') => addToast({ type: 'info', message, title }),
+      showToast,
+      success,
+      error,
+      warning,
+      info,
       dismiss
     }),
-    [addToast, dismiss]
+    [showToast, success, error, warning, info, dismiss]
   );
 
   return (
@@ -44,6 +58,7 @@ export const useToast = () => {
   const ctx = useContext(ToastContext);
   if (!ctx) {
     return {
+      showToast: () => {},
       success: () => {},
       error: () => {},
       warning: () => {},

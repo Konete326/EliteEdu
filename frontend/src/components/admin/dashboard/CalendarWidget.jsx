@@ -1,39 +1,50 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const DAY_NAMES = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
 
 const CalendarWidget = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  const dayNames = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+  const monthNames = MONTH_NAMES;
+  const dayNames = DAY_NAMES;
 
-  const today = new Date();
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
-  const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
-  const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
+  const prevMonth = useCallback(() => {
+    setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  }, []);
 
-  const firstDayIndex = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const prevMonthDays = new Date(year, month, 0).getDate();
+  const nextMonth = useCallback(() => {
+    setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  }, []);
 
-  const days = [];
-  for (let i = firstDayIndex - 1; i >= 0; i--) {
-    days.push({ day: prevMonthDays - i, isCurrent: false });
-  }
-  for (let i = 1; i <= daysInMonth; i++) {
-    const isToday =
-      i === today.getDate() &&
-      month === today.getMonth() &&
-      year === today.getFullYear();
-    days.push({ day: i, isCurrent: true, isToday });
-  }
-  const remaining = 35 - days.length;
-  for (let i = 1; i <= (remaining > 0 ? remaining : 0); i++) {
-    days.push({ day: i, isCurrent: false });
-  }
+  const days = useMemo(() => {
+    const today = new Date();
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const prevMonthDays = new Date(year, month, 0).getDate();
+
+    const result = [];
+    for (let i = firstDayIndex - 1; i >= 0; i--) {
+      result.push({ day: prevMonthDays - i, isCurrent: false });
+    }
+    for (let i = 1; i <= daysInMonth; i++) {
+      const isToday =
+        i === today.getDate() &&
+        month === today.getMonth() &&
+        year === today.getFullYear();
+      result.push({ day: i, isCurrent: true, isToday });
+    }
+    const remaining = 35 - result.length;
+    for (let i = 1; i <= (remaining > 0 ? remaining : 0); i++) {
+      result.push({ day: i, isCurrent: false });
+    }
+    return result;
+  }, [year, month]);
 
   return (
     <div className="p-4 sm:p-5 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm">
@@ -81,4 +92,4 @@ const CalendarWidget = () => {
   );
 };
 
-export default CalendarWidget;
+export default memo(CalendarWidget);

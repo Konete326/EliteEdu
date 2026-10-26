@@ -1,19 +1,21 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { CalendarCheck, ArrowUpRight } from 'lucide-react';
+
+const PILLS = [
+  { key: 'p', label: 'P', color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50' },
+  { key: 'a', label: 'A', color: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-900/50' },
+  { key: 'l', label: 'L', color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/50' },
+  { key: 'late', label: 'Late', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-900/50' },
+  { key: 'hd', label: 'HD', color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-900/50' },
+  { key: 'hol', label: 'Hol', color: 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-900/50' },
+  { key: 'um', label: 'UM', color: 'bg-surface-secondary text-ink-muted border-line dark:border-line-dark' }
+];
 
 const AttendanceWidget = ({ stats, attendanceSummary }) => {
   const data = attendanceSummary || stats?.attendanceSummary || stats;
   const campuses = data?.campusBreakdown || [];
-
-  const pills = [
-    { key: 'p', label: 'P', color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50' },
-    { key: 'a', label: 'A', color: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-900/50' },
-    { key: 'l', label: 'L', color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/50' },
-    { key: 'late', label: 'Late', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-900/50' },
-    { key: 'hd', label: 'HD', color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-900/50' },
-    { key: 'hol', label: 'Hol', color: 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-900/50' },
-    { key: 'um', label: 'UM', color: 'bg-surface-secondary text-ink-muted border-line dark:border-line-dark' }
-  ];
+  const pills = PILLS;
 
   return (
     <div className="p-5 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm space-y-4">
@@ -103,4 +105,4 @@ const AttendanceWidget = ({ stats, attendanceSummary }) => {
   );
 };
 
-export default AttendanceWidget;
+export default memo(AttendanceWidget);

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PanelLeft, Moon, Sun, LogOut } from 'lucide-react';
 
@@ -69,4 +70,4 @@ const SidebarFooter = ({ user, isExpanded, onToggleCollapse, isDark, toggleTheme
   );
 };
 
-export default SidebarFooter;
+export default memo(SidebarFooter);

@@ -1,9 +1,17 @@
+import { useMemo, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Smartphone, CheckCircle2, ArrowUpRight } from 'lucide-react';
 
 const AppStatsWidget = ({ stats, appStats }) => {
   const data = appStats || stats?.appDownloadStats || stats;
   const campuses = data?.campusBreakdown || [];
+
+  const cards = useMemo(() => [
+    { title: 'Total Downloads', val: data?.totalDownloads ?? 0, sub: `Students: ${data?.studentDownloads ?? 0} | Staff: ${data?.staffDownloads ?? 0}`, theme: 'text-indigo-700 dark:text-indigo-400 bg-indigo-50/70 dark:bg-indigo-950/20 border-indigo-200/60 dark:border-indigo-900/40', path: '/admin/students' },
+    { title: 'Active Users', val: data?.activeUsers ?? 0, bar: data?.activePct ?? 0, barColor: 'bg-emerald-500', theme: 'text-emerald-700 dark:text-emerald-400 bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40', path: '/admin/students' },
+    { title: 'Student Strength', val: data?.studentStrength ?? 0, bar: data?.studentDownloadPct ?? 0, barColor: 'bg-blue-500', theme: 'text-blue-700 dark:text-blue-400 bg-blue-50/70 dark:bg-blue-950/20 border-blue-200/60 dark:border-blue-900/40', path: '/admin/students' },
+    { title: 'Staff Strength', val: data?.staffStrength ?? 0, bar: data?.staffDownloadPct ?? 0, barColor: 'bg-amber-500', theme: 'text-amber-700 dark:text-amber-400 bg-amber-50/70 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-900/40', path: '/admin/teachers' }
+  ], [data]);
 
   return (
     <div className="p-5 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm space-y-4">
@@ -21,12 +29,7 @@ const AppStatsWidget = ({ stats, appStats }) => {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {[
-          { title: 'Total Downloads', val: data?.totalDownloads ?? 0, sub: `Students: ${data?.studentDownloads ?? 0} | Staff: ${data?.staffDownloads ?? 0}`, theme: 'text-indigo-700 dark:text-indigo-400 bg-indigo-50/70 dark:bg-indigo-950/20 border-indigo-200/60 dark:border-indigo-900/40', path: '/admin/students' },
-          { title: 'Active Users', val: data?.activeUsers ?? 0, bar: data?.activePct ?? 0, barColor: 'bg-emerald-500', theme: 'text-emerald-700 dark:text-emerald-400 bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40', path: '/admin/students' },
-          { title: 'Student Strength', val: data?.studentStrength ?? 0, bar: data?.studentDownloadPct ?? 0, barColor: 'bg-blue-500', theme: 'text-blue-700 dark:text-blue-400 bg-blue-50/70 dark:bg-blue-950/20 border-blue-200/60 dark:border-blue-900/40', path: '/admin/students' },
-          { title: 'Staff Strength', val: data?.staffStrength ?? 0, bar: data?.staffDownloadPct ?? 0, barColor: 'bg-amber-500', theme: 'text-amber-700 dark:text-amber-400 bg-amber-50/70 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-900/40', path: '/admin/teachers' }
-        ].map((c) => (
+        {cards.map((c) => (
           <Link
             key={c.title}
             to={c.path}
@@ -89,4 +92,4 @@ const AppStatsWidget = ({ stats, appStats }) => {
   );
 };
 
-export default AppStatsWidget;
+export default memo(AppStatsWidget);

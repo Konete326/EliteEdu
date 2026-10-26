@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import api from '../services/api';
 
 const AuthContext = createContext(null);
@@ -28,30 +28,42 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const login = (userData, receivedToken) => {
+  const login = useCallback((userData, receivedToken) => {
     localStorage.setItem('token', receivedToken);
     localStorage.setItem('user', JSON.stringify(userData));
     setToken(receivedToken);
     setUser(userData);
-  };
+  }, []);
 
-  const updateUser = (updatedData) => {
+  const updateUser = useCallback((updatedData) => {
     setUser((prev) => {
       const merged = { ...prev, ...updatedData };
       localStorage.setItem('user', JSON.stringify(merged));
       return merged;
     });
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setToken(null);
     setUser(null);
-  };
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      user,
+      token,
+      isAuthenticated: !!token,
+      login,
+      logout,
+      updateUser
+    }),
+    [user, token, login, logout, updateUser]
+  );
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated: !!token, login, logout, updateUser }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

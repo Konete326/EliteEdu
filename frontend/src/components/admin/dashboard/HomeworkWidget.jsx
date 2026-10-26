@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { FileText, Search } from 'lucide-react';
 
@@ -7,18 +7,22 @@ const HomeworkWidget = ({ stats, homeworkSummary }) => {
   const data = homeworkSummary || stats?.homeworkSummary || stats;
   const campuses = data?.campusBreakdown || [];
 
-  const filtered = campuses.filter((c) =>
-    c.name.toLowerCase().includes(filter.toLowerCase()) ||
-    c.sub.toLowerCase().includes(filter.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    if (!filter.trim()) return campuses;
+    const q = filter.toLowerCase();
+    return campuses.filter((c) =>
+      c.name.toLowerCase().includes(q) ||
+      c.sub.toLowerCase().includes(q)
+    );
+  }, [campuses, filter]);
 
-  const counters = [
+  const counters = useMemo(() => [
     { label: 'TOTAL', count: data?.total ?? 0, color: 'bg-indigo-50/80 text-indigo-700 dark:bg-indigo-950/20 dark:text-indigo-400 border-indigo-200 dark:border-indigo-900/50' },
     { label: 'ASSIGNED', count: data?.assigned ?? 0, color: 'bg-emerald-50/80 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50' },
     { label: 'PUBLISHED', count: data?.published ?? 0, color: 'bg-cyan-50/80 text-cyan-700 dark:bg-cyan-950/20 dark:text-cyan-400 border-cyan-200 dark:border-cyan-900/50' },
     { label: 'UNASSIGNED', count: data?.unassigned ?? 0, color: 'bg-amber-50/80 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-200 dark:border-amber-900/50' },
     { label: 'UNPUBLISHED', count: data?.unpublished ?? 0, color: 'bg-rose-50/80 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 border-rose-200 dark:border-rose-900/50' }
-  ];
+  ], [data]);
 
   return (
     <div className="p-5 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm space-y-4">
@@ -93,4 +97,4 @@ const HomeworkWidget = ({ stats, homeworkSummary }) => {
   );
 };
 
-export default HomeworkWidget;
+export default memo(HomeworkWidget);

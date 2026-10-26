@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { BarChart3, ArrowUpRight } from 'lucide-react';
 import AdmissionsAreaBreakdown from './AdmissionsAreaBreakdown';
@@ -9,10 +9,18 @@ const AdmissionsChartWidget = ({ stats, admissionsStats }) => {
   const months = data?.monthly || [];
   const areas = data?.areaBreakdown || [];
 
-  const maxVal = Math.max(...months.map((m) => Math.max(m.admissions || 0, m.dropouts || 0)), 1);
-  const maxAdmissions = Math.max(maxVal, 5);
+  const maxAdmissions = useMemo(() => {
+    const maxVal = Math.max(...months.map((m) => Math.max(m.admissions || 0, m.dropouts || 0)), 1);
+    return Math.max(maxVal, 5);
+  }, [months]);
+
   const totalAdmissions = data?.totalAdmissions ?? 0;
   const totalDropouts = data?.totalDropouts ?? 0;
+
+  const summaryCards = useMemo(() => [
+    { label: 'Total Admissions', val: totalAdmissions, color: 'text-emerald-700 dark:text-emerald-400 bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40 text-emerald-600' },
+    { label: 'Total Dropouts', val: totalDropouts, color: 'text-rose-700 dark:text-rose-400 bg-rose-50/70 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40 text-rose-600' }
+  ], [totalAdmissions, totalDropouts]);
 
   return (
     <div className="p-5 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm space-y-4">
@@ -42,10 +50,7 @@ const AdmissionsChartWidget = ({ stats, admissionsStats }) => {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        {[
-          { label: 'Total Admissions', val: totalAdmissions, color: 'text-emerald-700 dark:text-emerald-400 bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40 text-emerald-600' },
-          { label: 'Total Dropouts', val: totalDropouts, color: 'text-rose-700 dark:text-rose-400 bg-rose-50/70 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40 text-rose-600' }
-        ].map((c) => (
+        {summaryCards.map((c) => (
           <Link
             key={c.label}
             to="/admin/students"
@@ -109,4 +114,4 @@ const AdmissionsChartWidget = ({ stats, admissionsStats }) => {
   );
 };
 
-export default AdmissionsChartWidget;
+export default memo(AdmissionsChartWidget);
