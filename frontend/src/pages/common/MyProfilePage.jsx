@@ -1,4 +1,3 @@
-import { Navigate } from 'react-router-dom';
 import { CheckCircle2, AlertCircle, Save, Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useMyProfile } from '../../hooks/useMyProfile';
@@ -12,14 +11,12 @@ import ProfilePermissionsTab from '../../components/common/profile/ProfilePermis
 
 const MyProfilePage = () => {
   const { user } = useAuth();
-  if (user?.role === 'Teacher') {
-    return <Navigate to="/teacher/dashboard" replace />;
-  }
-
   const {
     profile, formData, activeTab, setActiveTab, loading, saving, toast,
     handleFieldChange, handlePhotoUpload, handleSaveProfile, handlePasswordChange
   } = useMyProfile();
+
+  const schoolType = user?.school_type || user?.school_id?.school_type || profile?.school_type || profile?.school_id?.school_type || 'Private';
 
   if (loading) {
     return (
@@ -48,7 +45,7 @@ const MyProfilePage = () => {
       <div>
         {activeTab === 'personal' && <ProfilePersonalTab formData={formData} onChange={handleFieldChange} />}
         {activeTab === 'contact' && <ProfileContactTab formData={formData} onChange={handleFieldChange} />}
-        {activeTab === 'qualification' && <ProfileQualificationsBankTab formData={formData} onChange={handleFieldChange} />}
+        {activeTab === 'qualification' && <ProfileQualificationsBankTab formData={formData} onChange={handleFieldChange} schoolType={schoolType} />}
         {activeTab === 'security' && <ProfileSecurityTab onPasswordChange={handlePasswordChange} saving={saving} />}
         {activeTab === 'permissions' && <ProfilePermissionsTab profile={profile} />}
       </div>

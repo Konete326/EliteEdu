@@ -294,13 +294,13 @@ function App() {
                     <Route path="/teacher/planner" element={<PlannersAndEventsPage />} />
                     <Route path="/teacher/lost-and-found" element={<CampusOperationsPage />} />
                     <Route path="/teacher/notifications" element={<NotificationsPage />} />
-                    <Route path="/teacher/profile" element={<Navigate to="/teacher/dashboard" replace />} />
+                    <Route path="/teacher/profile" element={<MyProfilePage />} />
                     <Route path="/teacher/messages" element={<MessagingStudioPage />} />
                     <Route path="/teacher/chat" element={<InternalMessengerPage />} />
                     <Route path="/teacher/circular" element={<InternalMessengerPage defaultTab="circular" />} />
                     <Route path="/teacher/feedback" element={<CampusOperationsPage />} />
-                    <Route path="/teacher/my-profile" element={<Navigate to="/teacher/dashboard" replace />} />
-                    <Route path="/teacher/update-picture" element={<Navigate to="/teacher/dashboard" replace />} />
+                    <Route path="/teacher/my-profile" element={<MyProfilePage />} />
+                    <Route path="/teacher/update-picture" element={<MyProfilePage />} />
                     <Route path="/teacher/*" element={<TeacherPortalDashboard />} />
                   </Route>
                   <Route element={<ProtectedRoute allowedRoles={['Student', 'Admin', 'Teacher']} />}>

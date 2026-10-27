@@ -75,8 +75,7 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
   const handleCloseScanner = useCallback(() => setScannerOpen(false), []);
 
   const handleProfileClick = useCallback(() => {
-    if (user?.role === 'Teacher') return;
-    navigate(user?.role === 'SuperAdmin' ? '/superadmin/profile' : '/admin/profile');
+    navigate(user?.role === 'SuperAdmin' ? '/superadmin/profile' : user?.role === 'Teacher' ? '/teacher/profile' : '/admin/profile');
   }, [navigate, user?.role]);
 
   return (
@@ -150,9 +149,7 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
       <button
         type="button"
         onClick={handleProfileClick}
-        className={`w-8 h-8 rounded-full font-bold text-xs flex items-center justify-center border shrink-0 overflow-hidden transition-all ${
-          user?.role === 'Teacher' ? 'cursor-default' : 'cursor-pointer hover:scale-105'
-        } ${
+        className={`w-8 h-8 rounded-full font-bold text-xs flex items-center justify-center border shrink-0 overflow-hidden cursor-pointer transition-all hover:scale-105 ${
           isColored ? 'bg-white/20 border-white/40 text-white' : 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-dark border-primary/20'
         }`}
       >

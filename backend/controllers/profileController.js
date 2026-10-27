@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const School = require('../models/School');
-const { sanitizeProfileBody, verifyAndHashPassword } = require('../utils/profileUpdateHelper');
+const { sanitizeProfileBody, processProfileDocuments, verifyAndHashPassword } = require('../utils/profileUpdateHelper');
 const { uploadToCloudinary } = require('../utils/cloudinaryHelper');
 
 const getProfile = async (req, res) => {
@@ -45,6 +45,10 @@ const updateProfile = async (req, res) => {
       try {
         updateFields.photo_url = await uploadToCloudinary(updateFields.photo_url, 'eliteedu/avatars');
       } catch (err) {}
+    }
+
+    if (updateFields.documents) {
+      updateFields.documents = await processProfileDocuments(updateFields.documents);
     }
 
     if (req.body.new_password) {

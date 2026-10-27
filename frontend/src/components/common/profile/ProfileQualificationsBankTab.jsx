@@ -1,7 +1,9 @@
 import ProfileBankDetailsCard from './ProfileBankDetailsCard';
+import ProfileDocumentsCard from './ProfileDocumentsCard';
 
-const ProfileQualificationsBankTab = ({ formData, onChange }) => {
+const ProfileQualificationsBankTab = ({ formData, onChange, schoolType = 'Private' }) => {
   const bank = formData.bank_details || {};
+  const isGovt = schoolType === 'Government';
 
   const handleBankChange = (field, val) => {
     onChange('bank_details', { ...bank, [field]: val });
@@ -55,47 +57,16 @@ const ProfileQualificationsBankTab = ({ formData, onChange }) => {
             />
           </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-3 border-t border-line/50">
-          <div>
-            <label className="block text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
-              Official Designation (Admin Assigned)
-            </label>
-            <input
-              type="text"
-              value={formData.designation || 'Faculty Member'}
-              disabled
-              className="w-full px-3.5 py-2 text-xs rounded-xl border border-line/60 dark:border-line-dark/60 bg-surface-secondary/70 dark:bg-[#1a1a24] text-ink-muted outline-none cursor-not-allowed"
-            />
-          </div>
-
-          <div>
-            <label className="block text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
-              BPS / Pay Scale
-            </label>
-            <input
-              type="text"
-              value={formData.bps_grade || 'BPS-14'}
-              disabled
-              className="w-full px-3.5 py-2 text-xs rounded-xl border border-line/60 dark:border-line-dark/60 bg-surface-secondary/70 dark:bg-[#1a1a24] text-ink-muted outline-none cursor-not-allowed"
-            />
-          </div>
-
-          <div>
-            <label className="block text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
-              Appointment / Joining Date
-            </label>
-            <input
-              type="text"
-              value={formData.joining_date ? new Date(formData.joining_date).toLocaleDateString('en-GB') : '—'}
-              disabled
-              className="w-full px-3.5 py-2 text-xs rounded-xl border border-line/60 dark:border-line-dark/60 bg-surface-secondary/70 dark:bg-[#1a1a24] text-ink-muted outline-none cursor-not-allowed"
-            />
-          </div>
-        </div>
       </div>
 
-      <ProfileBankDetailsCard bank={bank} onChange={handleBankChange} />
+      <ProfileDocumentsCard
+        documents={formData.documents || []}
+        onChange={(docs) => onChange('documents', docs)}
+      />
+
+      {!isGovt && (
+        <ProfileBankDetailsCard bank={bank} onChange={handleBankChange} />
+      )}
     </div>
   );
 };

@@ -268,6 +268,7 @@ export const getNavCategories = (user) => {
       employmentItems.push({ name: 'Salary Slip', path: '/teacher/salary', badge: 'Coming Soon' });
     }
     employmentItems.push({ name: 'Messages', path: '/teacher/messages' });
+    if (has('my_profile')) employmentItems.push({ name: 'Profile', path: '/teacher/profile' });
     if (employmentItems.length > 0) {
       groups.push({
         type: 'group',

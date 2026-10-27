@@ -70,13 +70,13 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
       {isExpanded && (
         <div className="px-3 pt-3 pb-1 shrink-0">
           <div className="relative">
-            <Search className={`w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none ${isColored ? 'text-white/70' : 'text-ink-muted'}`} />
+            <Search className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${isColored ? 'text-white/70' : 'text-ink-muted'}`} />
             <input
               type="text"
               placeholder="Search menu..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className={`w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border transition-colors focus:outline-none focus:ring-1 ${
+              className={`w-full pl-9 pr-3.5 py-2 text-sm rounded-xl border transition-colors focus:outline-none focus:ring-1 ${
                 isColored
                   ? 'bg-white/15 border-white/20 text-white placeholder:text-white/60 focus:ring-white/40'
                   : 'bg-surface-secondary dark:bg-surface-secondary-dark border-line dark:border-line-dark text-ink dark:text-ink-dark placeholder:text-ink-muted focus:ring-primary'
@@ -86,7 +86,7 @@ const Sidebar = ({ mobileOpen, setMobileOpen, isDesktopOpen, setIsDesktopOpen, i
         </div>
       )}
 
-      <nav className="flex-1 px-2.5 py-3 space-y-1 overflow-y-auto overflow-x-hidden sidebar-scrollbar">
+      <nav className="flex-1 px-3 py-3 space-y-1.5 overflow-y-auto overflow-x-hidden sidebar-scrollbar">
         {filteredCategories.map((cat, idx) => (
           <SidebarAccordion
             key={cat.title || idx}

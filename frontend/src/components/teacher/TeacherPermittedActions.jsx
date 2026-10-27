@@ -27,7 +27,8 @@ const TeacherPermittedActions = ({ permissions = {}, customRole = null }) => {
     { key: 'exams', label: 'Exams & Marks', path: '/teacher/exams', icon: Award, color: 'hover:border-amber-500 text-amber-500', badge: 'Coming Soon' },
     { key: 'timetable', label: 'Class Timetable', path: '/teacher/timetable', icon: Calendar, color: 'hover:border-emerald-500 text-emerald-500' },
     { key: 'online_classes', label: 'Virtual Classrooms', path: '/teacher/online-classes', icon: Video, color: 'hover:border-cyan-500 text-cyan-500', badge: 'Coming Soon' },
-    { key: 'salary', label: 'Salary Slip', path: '/teacher/salary', icon: DollarSign, color: 'hover:border-teal-500 text-teal-500', badge: 'Coming Soon' }
+    { key: 'salary', label: 'Salary Slip', path: '/teacher/salary', icon: DollarSign, color: 'hover:border-teal-500 text-teal-500', badge: 'Coming Soon' },
+    { key: 'my_profile', label: 'My Profile', path: '/teacher/profile', icon: UserCheck, color: 'hover:border-primary text-primary' }
   ];
 
   const permittedActions = actions.filter((act) => {

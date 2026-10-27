@@ -54,7 +54,35 @@ const sanitizeProfileBody = (body) => {
       branch_code: bBranch !== undefined ? String(bBranch).trim() : ''
     };
   }
+
+  if (Array.isArray(body.documents)) {
+    fields.documents = body.documents.map((d) => ({
+      title: String(d.title || d.name || 'Official Document').trim(),
+      file_url: String(d.file_url || d.url || '').trim(),
+      file_name: String(d.file_name || d.name || 'document').trim(),
+      uploaded_at: d.uploaded_at ? new Date(d.uploaded_at) : new Date()
+    })).filter((d) => d.file_url);
+  }
+
   return fields;
+};
+
+const processProfileDocuments = async (documents) => {
+  if (!Array.isArray(documents)) return [];
+  const { uploadToCloudinary } = require('./cloudinaryHelper');
+  return Promise.all(
+    documents.map(async (doc) => {
+      if (doc.file_url && String(doc.file_url).startsWith('data:')) {
+        try {
+          const url = await uploadToCloudinary(doc.file_url, 'eliteedu/staff_documents');
+          return { ...doc, file_url: url };
+        } catch {
+          return doc;
+        }
+      }
+      return doc;
+    })
+  );
 };
 
 const verifyAndHashPassword = async (user, currentPassword, newPassword) => {
@@ -77,4 +105,4 @@ const verifyAndHashPassword = async (user, currentPassword, newPassword) => {
   return bcrypt.hash(newPassword, 10);
 };
 
-module.exports = { sanitizeProfileBody, verifyAndHashPassword };
+module.exports = { sanitizeProfileBody, processProfileDocuments, verifyAndHashPassword };

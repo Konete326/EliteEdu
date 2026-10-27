@@ -23,14 +23,14 @@ const SidebarAccordion = ({ category, isOpen, onToggle, isExpanded, onNavigate, 
         to={singleItem.path}
         onClick={onNavigate}
         title={singleItem.name || category.title}
-        className={`w-full flex items-center ${!isExpanded ? 'justify-center px-2' : 'justify-between px-3'} py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${singleStyle}`}
+        className={`w-full flex items-center ${!isExpanded ? 'justify-center px-2' : 'justify-between px-3'} py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer ${singleStyle}`}
       >
-        <div className="flex items-center gap-2.5 min-w-0 flex-1">
-          <Icon className="w-4 h-4 shrink-0" />
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <Icon className="w-5 h-5 shrink-0" />
           {isExpanded && <span className="truncate text-left">{singleItem.name || category.title}</span>}
         </div>
         {isExpanded && singleItem.badge && (
-          <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold shrink-0 ml-1.5 ${
+          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 ml-1.5 ${
             isColored
               ? 'bg-white/20 text-white border border-white/30'
               : 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-dark border border-primary/20'
@@ -58,19 +58,19 @@ const SidebarAccordion = ({ category, isOpen, onToggle, isExpanded, onNavigate, 
         type="button"
         onClick={() => onToggle(category.title)}
         title={category.title}
-        className={`w-full flex items-center ${!isExpanded ? 'justify-center px-2' : 'justify-between px-3'} py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer active:scale-95 ${buttonStyle}`}
+        className={`w-full flex items-center ${!isExpanded ? 'justify-center px-2' : 'justify-between px-3'} py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer active:scale-[0.98] ${buttonStyle}`}
       >
-        <div className={`flex items-center ${!isExpanded ? 'justify-center' : 'gap-2.5'} min-w-0 flex-1`}>
-          <Icon className="w-4 h-4 shrink-0" />
+        <div className={`flex items-center ${!isExpanded ? 'justify-center' : 'gap-3'} min-w-0 flex-1`}>
+          <Icon className="w-5 h-5 shrink-0" />
           {isExpanded && <span className="truncate text-left">{category.title}</span>}
         </div>
         {isExpanded && (
-          isOpen ? <ChevronDown className="w-3.5 h-3.5 shrink-0 opacity-70 ml-1.5" /> : <ChevronRight className="w-3.5 h-3.5 shrink-0 opacity-70 ml-1.5" />
+          isOpen ? <ChevronDown className="w-4 h-4 shrink-0 opacity-70 ml-1.5" /> : <ChevronRight className="w-4 h-4 shrink-0 opacity-70 ml-1.5" />
         )}
       </button>
 
       {isExpanded && isOpen && (
-        <div className={`ml-3.5 pl-2.5 border-l space-y-1 py-1 ${isColored ? 'border-white/20' : 'border-line/70 dark:border-line-dark/70'}`}>
+        <div className={`ml-4 pl-3 border-l space-y-1 py-1 ${isColored ? 'border-white/20' : 'border-line/70 dark:border-line-dark/70'}`}>
           {category.subItems.map((sub) => (
             <NavLink
               key={sub.path}
@@ -78,7 +78,7 @@ const SidebarAccordion = ({ category, isOpen, onToggle, isExpanded, onNavigate, 
               onClick={onNavigate}
               title={sub.name}
               className={({ isActive }) =>
-                `flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                `flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
                   isColored
                     ? isActive
                       ? 'bg-white text-slate-900 font-bold shadow-xs'
@@ -91,7 +91,7 @@ const SidebarAccordion = ({ category, isOpen, onToggle, isExpanded, onNavigate, 
             >
               <span className="truncate flex-1 min-w-0 text-left">{sub.name}</span>
               {sub.badge && (
-                <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold shrink-0 ml-1.5 ${
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 ml-1.5 ${
                   isColored
                     ? 'bg-white/20 text-white border border-white/30'
                     : 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-dark border border-primary/20'

@@ -1,8 +1,39 @@
+import { useState, useEffect } from 'react';
 import { Mail } from 'lucide-react';
 import ProfileEmergencyContactFields from './ProfileEmergencyContactFields';
 
 const ProfileContactTab = ({ formData, onChange }) => {
   const emergency = formData.emergency_contact || {};
+  const [customWhatsApp, setCustomWhatsApp] = useState(() => {
+    return Boolean(
+      formData.whatsapp_number &&
+      formData.contact_number &&
+      formData.whatsapp_number !== formData.contact_number
+    );
+  });
+
+  useEffect(() => {
+    if (formData.contact_number && !formData.whatsapp_number && !customWhatsApp) {
+      onChange('whatsapp_number', formData.contact_number);
+    }
+  }, [formData.contact_number, formData.whatsapp_number, customWhatsApp, onChange]);
+
+  const handlePhoneChange = (newVal) => {
+    onChange('contact_number', newVal);
+    if (!customWhatsApp || !formData.whatsapp_number || formData.whatsapp_number === formData.contact_number) {
+      onChange('whatsapp_number', newVal);
+    }
+  };
+
+  const handleWhatsAppChange = (newVal) => {
+    setCustomWhatsApp(true);
+    onChange('whatsapp_number', newVal);
+  };
+
+  const handleSyncWhatsApp = () => {
+    setCustomWhatsApp(false);
+    onChange('whatsapp_number', formData.contact_number || '');
+  };
 
   const handleEmergencyChange = (field, val) => {
     onChange('emergency_contact', { ...emergency, [field]: val });
@@ -37,20 +68,33 @@ const ProfileContactTab = ({ formData, onChange }) => {
           <input
             type="text"
             value={formData.contact_number || ''}
-            onChange={(e) => onChange('contact_number', e.target.value)}
+            onChange={(e) => handlePhoneChange(e.target.value)}
             placeholder="e.g. +923001234567"
             className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-[#141419] text-ink dark:text-ink-dark outline-none focus:border-primary"
           />
         </div>
 
         <div>
-          <label className="block text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
-            WhatsApp Number
+          <label className="block text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1.5 flex items-center justify-between">
+            <span>WhatsApp Number</span>
+            {customWhatsApp ? (
+              <button
+                type="button"
+                onClick={handleSyncWhatsApp}
+                className="text-[10px] text-primary hover:underline lowercase font-medium cursor-pointer"
+              >
+                same as phone
+              </button>
+            ) : (
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 lowercase font-medium">
+                same as phone
+              </span>
+            )}
           </label>
           <input
             type="text"
             value={formData.whatsapp_number || ''}
-            onChange={(e) => onChange('whatsapp_number', e.target.value)}
+            onChange={(e) => handleWhatsAppChange(e.target.value)}
             placeholder="e.g. +923001234567"
             className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-[#141419] text-ink dark:text-ink-dark outline-none focus:border-primary"
           />
