@@ -148,24 +148,24 @@ const OnboardingWizardModal = () => {
   if (!isOpen) return null;
 
   const modalNode = (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-ink/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
-        <div className="p-4 sm:p-6 border-b border-line dark:border-line-dark bg-surface-secondary/40 dark:bg-surface-dark-secondary/40">
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-4 bg-ink/60 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="relative w-full max-w-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col max-h-[94vh] sm:max-h-[90vh] overflow-hidden">
+        <div className="p-3.5 sm:p-5 sm:pb-4 border-b border-line dark:border-line-dark bg-surface-secondary/40 dark:bg-surface-dark-secondary/40 shrink-0">
+          <div className="flex items-center justify-between gap-2.5 sm:gap-3 mb-3 sm:mb-3.5">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">
                 <Sparkles className="w-5 h-5" />
               </div>
-              <div>
-                <h3 className="font-extrabold text-base sm:text-lg text-ink dark:text-ink-dark">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-extrabold text-sm sm:text-base md:text-lg text-ink dark:text-ink-dark truncate">
                   {role === 'Admin'
-                    ? 'School Setup & General Configuration'
+                    ? 'School Setup & Configuration'
                     : role === 'Student'
-                    ? 'Student Portal Quick Onboarding'
+                    ? 'Student Portal Quick Setup'
                     : 'Teacher Profile & Portal Setup'}
                 </h3>
-                <p className="text-xs text-ink-muted">
-                  Step {step} of 4 • {stepsList[step - 1]?.title}
+                <p className="text-[11px] sm:text-xs text-ink-muted truncate">
+                  Step {step} of 4 • <span className="font-semibold text-ink dark:text-ink-dark">{stepsList[step - 1]?.title}</span>
                 </p>
               </div>
             </div>
@@ -174,33 +174,33 @@ const OnboardingWizardModal = () => {
               type="button"
               onClick={handleSkip}
               disabled={loading}
-              className="text-xs font-semibold text-ink-muted hover:text-ink dark:hover:text-ink-dark px-3 py-1.5 rounded-lg border border-line dark:border-line-dark bg-surface dark:bg-surface-dark hover:bg-surface-secondary transition-colors"
+              className="shrink-0 text-xs font-semibold text-ink-muted hover:text-ink dark:hover:text-ink-dark px-2.5 sm:px-3 py-1.5 rounded-lg border border-line dark:border-line-dark bg-surface dark:bg-surface-dark hover:bg-surface-secondary transition-colors cursor-pointer"
             >
               Skip Setup
             </button>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 mb-2.5">
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mb-2 sm:mb-2.5">
             {stepsList.map((s) => {
               const isDone = s.number < step;
               const isCurrent = s.number === step;
               return (
                 <div
                   key={s.number}
-                  className={`flex flex-col gap-1 p-2 rounded-xl border transition-all ${
+                  className={`flex items-center justify-center sm:justify-start gap-1 sm:gap-1.5 p-1.5 sm:p-2 rounded-xl border transition-all text-center sm:text-left ${
                     isCurrent
-                      ? 'border-primary bg-primary/5 text-primary font-bold shadow-2xs'
+                      ? 'border-primary bg-primary/10 text-primary font-bold shadow-2xs'
                       : isDone
-                      ? 'border-emerald-500/40 bg-emerald-500/5 text-emerald-600 font-semibold'
+                      ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 font-semibold'
                       : 'border-line dark:border-line-dark text-ink-muted opacity-60'
                   }`}
                 >
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="flex items-center gap-1">
-                      {isDone ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : `${s.number}.`}
-                      <span className="truncate">{s.title}</span>
-                    </span>
-                  </div>
+                  {isDone ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  ) : (
+                    <span className="text-[11px] sm:text-xs font-bold shrink-0">{s.number}.</span>
+                  )}
+                  <span className="text-[11px] sm:text-xs truncate hidden sm:inline">{s.title}</span>
                 </div>
               );
             })}
@@ -214,7 +214,7 @@ const OnboardingWizardModal = () => {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 overscroll-contain">
           {error && (
             <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 text-xs font-medium text-rose-600 dark:text-rose-400">
               {error}
@@ -232,54 +232,56 @@ const OnboardingWizardModal = () => {
           )}
         </div>
 
-        <div className="p-4 sm:p-5 border-t border-line dark:border-line-dark bg-surface-secondary/20 dark:bg-surface-dark-secondary/20 flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={handleBack}
-            disabled={step === 1 || loading}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold border border-line dark:border-line-dark transition-all ${
-              step === 1
-                ? 'opacity-30 cursor-not-allowed text-ink-muted'
-                : 'text-ink dark:text-ink-dark hover:bg-surface-secondary active:scale-95'
-            }`}
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back
-          </button>
+        <div className="p-3 sm:p-4 md:p-5 border-t border-line dark:border-line-dark bg-surface-secondary/20 dark:bg-surface-dark-secondary/20 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-2.5 sm:gap-3 shrink-0">
+          <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={handleBack}
+              disabled={step === 1 || loading}
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold border border-line dark:border-line-dark transition-all cursor-pointer ${
+                step === 1
+                  ? 'opacity-30 cursor-not-allowed text-ink-muted'
+                  : 'text-ink dark:text-ink-dark hover:bg-surface-secondary active:scale-95'
+              }`}
+            >
+              <ChevronLeft className="w-4 h-4 shrink-0" />
+              <span>Back</span>
+            </button>
 
-          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handleSkip}
               disabled={loading}
-              className="px-3.5 py-2 text-xs font-semibold text-ink-muted hover:text-ink dark:hover:text-ink-dark transition-colors"
+              className="flex-1 sm:flex-none px-3.5 py-2.5 sm:py-2 text-xs sm:text-sm font-semibold text-ink-muted hover:text-ink dark:hover:text-ink-dark transition-colors cursor-pointer text-center"
             >
-              Skip for Now
+              Skip Setup
             </button>
+          </div>
 
+          <div className="w-full sm:w-auto">
             {step < 4 ? (
               <button
                 type="button"
                 onClick={handleNext}
                 disabled={loading}
-                className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-hover shadow-sm active:scale-95 transition-all"
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-6 py-2.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-primary hover:bg-primary-hover shadow-sm active:scale-95 transition-all cursor-pointer"
               >
-                Next Step
-                <ChevronRight className="w-4 h-4" />
+                <span>Next Step</span>
+                <ChevronRight className="w-4 h-4 shrink-0" />
               </button>
             ) : (
               <button
                 type="button"
                 onClick={handleSubmit}
                 disabled={loading}
-                className="flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm active:scale-95 transition-all"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm active:scale-95 transition-all cursor-pointer"
               >
                 {loading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin shrink-0" />
                 ) : (
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 shrink-0" />
                 )}
-                Complete Setup &amp; Launch
+                <span>Complete &amp; Launch</span>
               </button>
             )}
           </div>
