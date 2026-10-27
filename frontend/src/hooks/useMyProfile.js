@@ -40,12 +40,28 @@ export const useMyProfile = () => {
   };
 
   const handlePhotoUpload = async (photoBase64) => {
-    handleFieldChange('photo_url', photoBase64);
     try {
       setSaving(true);
-      const res = await api.put('/auth/profile', { photo_url: photoBase64 });
-      if (res.data?.user) updateUser(res.data.user);
-      showToast('Profile photo updated successfully');
+      let newPhotoUrl = photoBase64;
+      try {
+        const res = await api.post('/auth/upload-avatar', { image: photoBase64 });
+        if (res.data?.photo_url) {
+          newPhotoUrl = res.data.photo_url;
+        }
+        if (res.data?.user) {
+          updateUser(res.data.user);
+          setProfile(res.data.user);
+        }
+      } catch {
+        const res = await api.put('/auth/profile', { photo_url: photoBase64 });
+        if (res.data?.user) {
+          updateUser(res.data.user);
+          setProfile(res.data.user);
+          if (res.data.user.photo_url) newPhotoUrl = res.data.user.photo_url;
+        }
+      }
+      handleFieldChange('photo_url', newPhotoUrl);
+      showToast('Profile photo cropped & uploaded successfully');
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to upload photo', 'error');
     } finally {

@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import React, { useState, useEffect } from 'react';
 import { X, Settings, Check, BellRing, Clock, ShieldCheck, AlertTriangle, Volume2, VolumeX } from 'lucide-react';
 
@@ -62,8 +63,8 @@ const AttendanceSettingsModal = ({ isOpen, onClose }) => {
     }, 1000);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+  const modalNode = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div
         className="fixed inset-0"
         onClick={onClose}
@@ -236,6 +237,8 @@ const AttendanceSettingsModal = ({ isOpen, onClose }) => {
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalNode, document.body) : null;
 };
 
 export default AttendanceSettingsModal;

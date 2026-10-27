@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import api from '../services/api';
 import { useAuth } from './AuthContext';
 import { DEFAULT_THEME, getActiveColorMeta, HEADER_BG_PRESETS } from '../utils/themeConstants';
@@ -122,7 +122,7 @@ export const ThemeProvider = ({ children }) => {
       triggerAnimation,
       isSyncing: false
     }),
-    [settings, updateThemeSetting, resetThemeToDefault, triggerAnimation]
+    [settings, updateThemeSetting, resetThemeToDefault, triggerAnimation, transitionState]
   );
 
   return (

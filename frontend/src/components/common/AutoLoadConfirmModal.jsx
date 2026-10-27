@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import { X, GraduationCap, CheckCircle2, ShieldCheck, Loader2 } from 'lucide-react';
 
 const AutoLoadConfirmModal = ({
@@ -18,8 +19,8 @@ const AutoLoadConfirmModal = ({
 }) => {
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  const modalNode = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={!isLoading ? onClose : undefined}
@@ -110,6 +111,8 @@ const AutoLoadConfirmModal = ({
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalNode, document.body) : null;
 };
 
 export default AutoLoadConfirmModal;

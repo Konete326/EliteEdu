@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { useStudentAttendance } from '../../hooks/useStudentAttendance';
 import AttendanceTopTabs from '../../components/admin/attendance/AttendanceTopTabs';
 import StudentAttendanceFilterBar from '../../components/admin/attendance/StudentAttendanceFilterBar';
@@ -13,8 +14,13 @@ import AttendanceReportPage from './AttendanceReportPage';
 import StudentAttendancePrintSheet from '../../components/admin/attendance/StudentAttendancePrintSheet';
 
 const StudentAttendancePage = () => {
+  const { user } = useAuth();
+  const isTeacher = user?.role === 'Teacher';
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab = searchParams.get('tab') || 'student';
+  const rawTab = searchParams.get('tab') || 'student';
+  const activeTab = (isTeacher && (rawTab === 'staff' || rawTab === 'realtime' || rawTab === 'settings'))
+    ? 'student'
+    : rawTab;
 
   const {
     date, setDate, grades, selectedGradeId, setSelectedGradeId,
@@ -30,12 +36,13 @@ const StudentAttendancePage = () => {
   const classLabel = currentGrade ? currentGrade.name : 'Selected Class';
 
   const handleTabChange = (tabId) => {
+    if (isTeacher && (tabId === 'staff' || tabId === 'realtime' || tabId === 'settings')) return;
     setSearchParams(tabId === 'student' ? {} : { tab: tabId });
   };
 
   return (
     <div className="w-full min-h-full flex flex-col gap-3">
-      <div className="shrink-0 sticky top-0 z-30 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-xs pb-1 print:hidden">
+      <div className="shrink-0 sticky top-0 z-10 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-xs pb-1 print:hidden">
         <AttendanceTopTabs
           activeTab={activeTab}
           onTabChange={handleTabChange}
@@ -55,7 +62,7 @@ const StudentAttendancePage = () => {
         </div>
       )}
 
-      {activeTab === 'staff' && (
+      {!isTeacher && activeTab === 'staff' && (
         <div className="flex-1 min-h-0 flex flex-col">
           <EmployeeAttendancePage />
         </div>
@@ -73,7 +80,7 @@ const StudentAttendancePage = () => {
         </div>
       )}
 
-      {activeTab === 'realtime' && (
+      {!isTeacher && activeTab === 'realtime' && (
         <div className="flex-1 min-h-0 flex flex-col">
           <CardScannerTerminal
             onScanCode={handleScanCode}
@@ -148,10 +155,12 @@ const StudentAttendancePage = () => {
         date={date}
       />
 
-      <AttendanceSettingsModal
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-      />
+      {!isTeacher && (
+        <AttendanceSettingsModal
+          isOpen={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+        />
+      )}
     </div>
   );
 };

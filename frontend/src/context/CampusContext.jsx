@@ -32,7 +32,14 @@ export const CampusProvider = ({ children }) => {
   }, [fetchCampuses]);
 
   useEffect(() => {
-    if (user?.last_active_campus) {
+    if (!user) return;
+    if (user.role === 'Teacher') {
+      const assignedId = String(user.campus_id?._id || user.campus_id || user.last_active_campus?._id || user.last_active_campus || '');
+      if (assignedId && assignedId !== activeCampusId) {
+        setActiveCampusIdState(assignedId);
+        localStorage.setItem('elite_active_campus_id', assignedId);
+      }
+    } else if (user.last_active_campus) {
       const id = String(user.last_active_campus._id || user.last_active_campus);
       const stored = localStorage.getItem('elite_active_campus_id');
       if (!stored) {
@@ -40,9 +47,10 @@ export const CampusProvider = ({ children }) => {
         localStorage.setItem('elite_active_campus_id', id);
       }
     }
-  }, [user]);
+  }, [user, activeCampusId]);
 
   const setActiveCampusId = useCallback((id) => {
+    if (user?.role === 'Teacher') return;
     const val = id || 'all';
     setActiveCampusIdState(val);
     localStorage.setItem('elite_active_campus_id', val);
@@ -52,6 +60,7 @@ export const CampusProvider = ({ children }) => {
   }, [user]);
 
   const requestCampusSwitch = useCallback((targetId, targetName) => {
+    if (user?.role === 'Teacher') return;
     const id = targetId || 'all';
     let name = targetName;
     if (!name) {
@@ -62,15 +71,16 @@ export const CampusProvider = ({ children }) => {
       }
     }
     setPendingSwitch({ id, name });
-  }, [campuses]);
+  }, [campuses, user?.role]);
 
   const confirmCampusSwitch = useCallback(() => {
+    if (user?.role === 'Teacher') return '';
     if (!pendingSwitch) return '';
     setActiveCampusId(pendingSwitch.id);
     const switchedName = pendingSwitch.name;
     setPendingSwitch(null);
     return switchedName;
-  }, [pendingSwitch, setActiveCampusId]);
+  }, [pendingSwitch, setActiveCampusId, user?.role]);
 
   const cancelCampusSwitch = useCallback(() => {
     setPendingSwitch(null);

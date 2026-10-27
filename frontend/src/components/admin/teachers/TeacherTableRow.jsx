@@ -81,10 +81,7 @@ const TeacherTableRow = ({
       <td className="px-4 py-3">
         {live?.status === 'in_class' ? (
           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-accent/10 border border-accent/30 text-accent dark:text-accent-dark text-[11px] font-bold">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
-            </span>
+            <span className="inline-flex rounded-full h-2 w-2 bg-accent" />
             <span className="truncate max-w-[170px]" title={`In Class: ${live.grade_name} ${live.subject_name}`}>
               {live.grade_name} {live.subject_name} (P{live.period_no})
             </span>

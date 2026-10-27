@@ -1,4 +1,4 @@
-import { Clock, Sparkles } from 'lucide-react';
+import { Clock } from 'lucide-react';
 
 const ComingSoonPage = ({ title = 'Module' }) => {
   return (
@@ -11,13 +11,8 @@ const ComingSoonPage = ({ title = 'Module' }) => {
       </div>
 
       <div className="p-12 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm text-center flex flex-col items-center justify-center min-h-[380px] space-y-4">
-        <div className="relative">
-          <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
-            <Clock className="w-8 h-8" />
-          </div>
-          <div className="absolute -top-1 -right-1 p-1 rounded-full bg-accent text-white">
-            <Sparkles className="w-3.5 h-3.5" />
-          </div>
+        <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
+          <Clock className="w-8 h-8" />
         </div>
 
         <div className="space-y-1.5 max-w-md">

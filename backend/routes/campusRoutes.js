@@ -10,11 +10,11 @@ const {
 
 const router = express.Router();
 
-router.use(authMiddleware, authorizeRoles('Admin', 'SuperAdmin'));
+router.use(authMiddleware);
 
-router.get('/', getCampuses);
-router.post('/', createCampus);
-router.put('/:id', updateCampus);
-router.delete('/:id', deleteCampus);
+router.get('/', authorizeRoles('Admin', 'SuperAdmin', 'Teacher'), getCampuses);
+router.post('/', authorizeRoles('Admin', 'SuperAdmin'), createCampus);
+router.put('/:id', authorizeRoles('Admin', 'SuperAdmin'), updateCampus);
+router.delete('/:id', authorizeRoles('Admin', 'SuperAdmin'), deleteCampus);
 
 module.exports = router;

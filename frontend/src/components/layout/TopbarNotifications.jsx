@@ -4,6 +4,7 @@ import { Bell } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { getApiBase } from '../../utils/apiBase';
+import { showPwaNotification, requestPwaNotificationPermission } from '../../utils/pwaNotifications';
 import TopbarNotificationDropdown from './TopbarNotificationDropdown';
 
 const TopbarNotifications = ({ btnClass }) => {
@@ -17,6 +18,20 @@ const TopbarNotifications = ({ btnClass }) => {
   const lastNotifIdRef = useRef(null);
   const initialMountRef = useRef(true);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+      const handleFirstAction = () => {
+        requestPwaNotificationPermission();
+      };
+      window.addEventListener('click', handleFirstAction, { once: true });
+      window.addEventListener('touchstart', handleFirstAction, { once: true });
+      return () => {
+        window.removeEventListener('click', handleFirstAction);
+        window.removeEventListener('touchstart', handleFirstAction);
+      };
+    }
+  }, []);
+
   const fetchRecent = useCallback(async () => {
     if (!token) return;
     try {
@@ -29,12 +44,30 @@ const TopbarNotifications = ({ btnClass }) => {
         setNotifications(list);
         setUnreadCount(data.unreadCount || 0);
 
-        if (list.length > 0 && !list[0].is_read) {
+        if (list.length > 0) {
           const newest = list[0];
-          if (!initialMountRef.current && lastNotifIdRef.current && lastNotifIdRef.current !== newest._id) {
-            toast.info(newest.message, newest.title || 'Notification');
+          if (!initialMountRef.current && lastNotifIdRef.current && lastNotifIdRef.current !== newest._id && !newest.is_read) {
+            const titleLower = (newest.title || '').toLowerCase();
+            if (titleLower.includes('approved')) {
+              toast.success(newest.message, newest.title);
+            } else if (titleLower.includes('rejected')) {
+              toast.error(newest.message, newest.title);
+            } else {
+              toast.info(newest.message, newest.title || 'Notification');
+            }
+
+            showPwaNotification(newest.title || 'EliteEdu Notification', {
+              body: newest.message || '',
+              data: { url: newest.action_url || '/teacher/attendance?tab=leave' }
+            });
+
+            if (newest.type === 'Attendance' || newest.action_url?.includes('leave')) {
+              window.dispatchEvent(new CustomEvent('eliteedu:leave-updated', { detail: newest }));
+            }
           }
           lastNotifIdRef.current = newest._id;
+        } else {
+          lastNotifIdRef.current = 'empty';
         }
         initialMountRef.current = false;
       }

@@ -26,7 +26,7 @@ const ThemeStudioHeader = () => {
 
       <div className="flex items-center gap-2.5 self-end md:self-center">
         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-medium">
-          <span className={`w-1.5 h-1.5 rounded-full ${isSyncing ? 'bg-amber-500 animate-ping' : 'bg-emerald-500 animate-pulse'}`} />
+          <span className={`w-1.5 h-1.5 rounded-full ${isSyncing ? 'bg-amber-500' : 'bg-emerald-500'}`} />
           <span className="text-[11px] font-semibold">{isSyncing ? 'Syncing...' : 'Auto-Saved • Live Preview'}</span>
         </div>
 

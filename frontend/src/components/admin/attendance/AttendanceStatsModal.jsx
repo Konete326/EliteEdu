@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import React, { useState, useEffect, useMemo } from 'react';
 import { X, BarChart3, CheckCircle2, XCircle, Clock, AlertCircle, Percent, Users, UserX, Loader2 } from 'lucide-react';
 import api from '../../../services/api';
@@ -118,8 +119,8 @@ const AttendanceStatsModal = ({
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+  const modalNode = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div className="fixed inset-0" onClick={onClose} />
       <div className="relative w-full max-w-lg bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-3xl p-6 shadow-2xl z-10 space-y-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between pb-3 border-b border-line dark:border-line-dark">
@@ -275,6 +276,8 @@ const AttendanceStatsModal = ({
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalNode, document.body) : null;
 };
 
 export default AttendanceStatsModal;

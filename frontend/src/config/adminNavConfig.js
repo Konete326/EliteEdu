@@ -1,6 +1,6 @@
 import {
   LayoutGrid, CalendarCheck, DollarSign, Landmark, GraduationCap,
-  Users, MessageSquare, Award, Calendar, Bus, BarChart3, Sliders
+  Users, MessageSquare, Award, Calendar, Bus, BarChart3, Sliders, BookOpen
 } from 'lucide-react';
 
 export const getAdminNavItems = (schoolType) => [
@@ -10,22 +10,22 @@ export const getAdminNavItems = (schoolType) => [
     icon: LayoutGrid,
     subItems: [
       { name: 'Dashboard', path: '/admin' },
-      { name: 'Campus', path: '/admin/campus' },
+      { name: 'Campuses', path: '/admin/campus' },
       { name: 'Campus Transfer', path: '/admin/campus-transfer' },
-      { name: 'Grades', path: '/admin/grades' },
+      { name: 'Classes', path: '/admin/grades' },
       { name: 'Subjects', path: '/admin/subjects' },
       { name: 'Teachers', path: '/admin/teachers' },
-      { name: 'Staff Service ID Cards', path: '/admin/teachers/id-cards' },
-      { name: 'Staff Applicants', path: '/admin/staff-applicants' },
+      { name: 'Teacher Cards', path: '/admin/teachers/id-cards' },
+      { name: 'Applicants', path: '/admin/staff-applicants' },
       { name: 'Students', path: '/admin/students' },
-      { name: 'Admission Letter', path: '/admin/students/admission-letter' },
-      { name: 'Student ID Cards', path: '/admin/students/id-cards' },
-      { name: 'Certificates Studio', path: '/admin/certificates' },
-      { name: 'Certificate Templates', path: '/admin/certificates/templates' },
-      { name: 'Promote Students', path: '/admin/students/promote' },
-      { name: 'Campus Operations Hub', path: '/admin/events' },
-      { name: 'Behavior & Skills Assessment', path: '/admin/behavior-skills' },
-      { name: 'Student Portal Preview', path: '/admin/student-portal-preview' }
+      { name: 'Admissions', path: '/admin/students/admission-letter' },
+      { name: 'Student Cards', path: '/admin/students/id-cards' },
+      { name: 'Certificates', path: '/admin/certificates' },
+      { name: 'Templates', path: '/admin/certificates/templates' },
+      { name: 'Promotions', path: '/admin/students/promote' },
+      { name: 'Activities', path: '/admin/events', badge: 'Coming Soon' },
+      { name: 'Behavior', path: '/admin/behavior-skills' },
+      { name: 'Student Portal', path: '/admin/student-portal-preview' }
     ]
   },
   {
@@ -39,14 +39,14 @@ export const getAdminNavItems = (schoolType) => [
   ...(schoolType === 'Private' ? [
     {
       type: 'group',
-      title: 'Fee Management',
+      title: 'Fees',
       icon: DollarSign,
       subItems: [
-        { name: 'Fee Collection', path: '/admin/fees/collection' },
-        { name: 'Fee Structure', path: '/admin/fees/structure' },
-        { name: 'Defaulters List', path: '/admin/fees/defaulters' },
+        { name: 'Collect Fees', path: '/admin/fees/collection' },
+        { name: 'Fee Plans', path: '/admin/fees/structure' },
+        { name: 'Defaulters', path: '/admin/fees/defaulters' },
         { name: 'Fee Reports', path: '/admin/fees/reports' },
-        { name: 'Fee Concession', path: '/admin/fees/concession' }
+        { name: 'Concessions', path: '/admin/fees/concession' }
       ]
     },
     {
@@ -54,74 +54,74 @@ export const getAdminNavItems = (schoolType) => [
       title: 'Accounts',
       icon: Landmark,
       subItems: [
-        { name: 'Chart of Accounts', path: '/admin/accounts/chart' },
+        { name: 'Account Heads', path: '/admin/accounts/chart' },
         { name: 'Income', path: '/admin/accounts/income' },
         { name: 'Expenses', path: '/admin/accounts/expenses' },
         { name: 'Transactions', path: '/admin/accounts/transactions' },
         { name: 'Balance Sheet', path: '/admin/accounts/balance-sheet' },
-        { name: 'Staff Payroll & Loans', path: '/admin/payroll' },
-        { name: 'Bookstore & POS', path: '/admin/store' }
+        { name: 'Payroll', path: '/admin/payroll' },
+        { name: 'Store / POS', path: '/admin/store' }
       ]
     }
   ] : []),
   {
     type: 'group',
-    title: 'LMS Academic Suite',
+    title: 'E-Learning',
     icon: GraduationCap,
     subItems: [
-      { name: 'LMS Digital Studio', path: '/admin/lms/courses' }
+      { name: 'Courses', path: '/admin/lms/courses', badge: 'Coming Soon' }
     ]
   },
   {
     type: 'group',
-    title: 'CRM',
+    title: 'Admissions',
     icon: Users,
     subItems: [
       { name: 'Inquiries', path: '/admin/crm/inquiries' },
-      { name: 'Admissions Pipeline', path: '/admin/crm/admissions' },
+      { name: 'Status', path: '/admin/crm/admissions' },
       { name: 'Follow-ups', path: '/admin/crm/follow-ups' },
-      { name: 'Lead Analytics', path: '/admin/crm/analytics' }
+      { name: 'Analytics', path: '/admin/crm/analytics' }
     ]
   },
   {
     type: 'group',
-    title: 'Messaging',
+    title: 'Messages',
     icon: MessageSquare,
     subItems: [
-      { name: 'Internal Messaging', path: '/admin/messaging/internal' },
-      { name: 'Notification Center', path: '/admin/notifications' }
+      { name: 'Staff Chat', path: '/admin/messaging/internal' },
+      { name: 'Notices', path: '/admin/notifications' }
     ]
   },
   {
     type: 'group',
-    title: 'Exam Management',
+    title: 'Exams',
     icon: Award,
     subItems: [
-      { name: 'Exam Categories', path: '/admin/exam-management/categories' },
-      { name: 'Grading Policies', path: '/admin/exam-management/grading-policies' },
-      { name: 'Remarks Policy', path: '/admin/exam-management/remarks-policy' },
-      { name: 'Date Sheet', path: '/admin/exam-management/schedule' },
-      { name: 'Manage Remarks', path: '/admin/exam-management/manage-remarks' },
-      { name: 'Mark Sheets', path: '/admin/exam-management/mark-sheets' },
+      { name: 'Exam Types', path: '/admin/exam-management/categories' },
+      { name: 'Grading', path: '/admin/exam-management/grading-policies', badge: 'Coming Soon' },
+      { name: 'Remarks Rules', path: '/admin/exam-management/remarks-policy' },
+      { name: 'Datesheet', path: '/admin/exam-management/schedule' },
+      { name: 'Remarks', path: '/admin/exam-management/manage-remarks' },
+      { name: 'Marks Entry', path: '/admin/exam-management/mark-sheets' },
       { name: 'Question Papers', path: '/admin/question-papers' }
     ]
   },
   {
     type: 'group',
-    title: 'Planners',
+    title: 'Timetable',
     icon: Calendar,
     subItems: [
-      { name: 'Smart Timetable', path: '/admin/timetable' },
-      { name: 'Academic Calendar & Events', path: '/admin/events' }
+      { name: 'Timetable', path: '/admin/timetable' },
+      { name: 'Calendar', path: '/admin/events', badge: 'Coming Soon' }
     ]
   },
   {
     type: 'group',
-    title: 'Van Management',
+    title: 'Transport',
     icon: Bus,
     subItems: [
-      { name: 'Transport & Fleet Studio', path: '/admin/transport' },
-      { name: 'Van Allocation & Roster', path: '/admin/van-management' }
+      { name: 'Vehicles', path: '/admin/transport' },
+      { name: 'Routes', path: '/admin/van-management' }
     ]
   },
   {
@@ -129,29 +129,29 @@ export const getAdminNavItems = (schoolType) => [
     title: 'Reports',
     icon: BarChart3,
     subItems: [
-      { name: 'Master Reports Hub', path: '/admin/reports' },
-      { name: 'Students Info Report', path: '/admin/reports/student-info' },
-      { name: 'Parents Contact Report', path: '/admin/reports/parent-info' },
-      { name: 'Staff & HR Report', path: '/admin/reports/staff-info' },
-      { name: 'Attendance Report', path: '/admin/attendance/report' },
-      { name: 'Students Report Card', path: '/admin/reports/report-cards' },
-      { name: 'Audit & System Logs', path: '/admin/reports/audit-logs' }
+      { name: 'Reports Hub', path: '/admin/reports' },
+      { name: 'Students Report', path: '/admin/reports/student-info' },
+      { name: 'Parents Info', path: '/admin/reports/parent-info' },
+      { name: 'Staff Report', path: '/admin/reports/staff-info' },
+      { name: 'Attendance', path: '/admin/attendance/report' },
+      { name: 'Report Cards', path: '/admin/reports/report-cards' },
+      { name: 'Audit Logs', path: '/admin/reports/audit-logs' }
     ]
   },
   {
     type: 'group',
-    title: 'Control Panel',
+    title: 'Settings',
     icon: Sliders,
     subItems: [
-      { name: 'General Settings', path: '/admin/settings/general' },
-      { name: 'Zoom Integration', path: '/admin/settings/integrations/zoom' },
-      { name: 'Digital Signatures & Stamps', path: '/admin/general-settings/signatures' },
-      { name: 'Roles & Permissions', path: '/admin/settings/roles' },
-      { name: 'User Management', path: '/admin/control-panel/user-management' },
+      { name: 'General', path: '/admin/settings/general' },
+      { name: 'Zoom Setup', path: '/admin/settings/integrations/zoom' },
+      { name: 'Signatures', path: '/admin/general-settings/signatures' },
+      { name: 'Roles & Rights', path: '/admin/settings/roles' },
+      { name: 'Users', path: '/admin/control-panel/user-management' },
       { name: 'Class Transfer', path: '/admin/control-panel/class-transfer' },
-      { name: 'Theme & Branding', path: '/admin/control-panel/branding' },
-      { name: 'Bulk Data Import', path: '/admin/control-panel/bulk-import' },
-      { name: 'Backup & Logs', path: '/admin/settings/backup' }
+      { name: 'Logo & Theme', path: '/admin/control-panel/branding' },
+      { name: 'Bulk Import', path: '/admin/control-panel/bulk-import' },
+      { name: 'Backup', path: '/admin/settings/backup' }
     ]
   }
 ];
@@ -166,9 +166,118 @@ export const getNavCategories = (user) => {
       subItems: [
         { name: 'Dashboard', path: '/superadmin' },
         { name: 'Schools', path: '/superadmin/schools' },
-        { name: 'System & Error Logs', path: '/superadmin/logs' }
+        { name: 'Logs', path: '/superadmin/logs' }
       ]
     }];
+  }
+
+  if (user.role === 'Student') {
+    return [{
+      type: 'group',
+      title: 'Main',
+      icon: LayoutGrid,
+      subItems: [
+        { name: 'Dashboard', path: '/student/dashboard' },
+        { name: 'Messages', path: '/student/messages' }
+      ]
+    }];
+  }
+
+  if (user.role === 'Teacher') {
+    const permissions = user.app_settings || user.app_permissions || {};
+    const eff = user.effective_permissions || {};
+    const has = (key, fallback = true) => {
+      if (eff[key]?.view !== undefined) return Boolean(eff[key].view);
+      return permissions[key] !== undefined ? permissions[key] !== false : fallback;
+    };
+
+    const groups = [];
+
+    const mainItems = [
+      { name: 'Dashboard', path: '/teacher' }
+    ];
+    if (has('students')) mainItems.push({ name: 'Students', path: '/teacher/students' });
+    if (has('timetable')) mainItems.push({ name: 'Timetable', path: '/teacher/timetable' });
+    groups.push({
+      type: 'group',
+      title: 'Main',
+      icon: LayoutGrid,
+      subItems: mainItems
+    });
+
+    const attendanceItems = [];
+    if (has('attendance')) attendanceItems.push({ name: 'Attendance', path: '/teacher/attendance' });
+    if (has('behavior')) attendanceItems.push({ name: 'Behavior', path: '/teacher/behavior' });
+    if (attendanceItems.length > 0) {
+      groups.push({
+        type: 'group',
+        title: 'Attendance',
+        icon: CalendarCheck,
+        subItems: attendanceItems
+      });
+    }
+
+    const lmsItems = [];
+    if (has('homework')) lmsItems.push({ name: 'Homework', path: '/teacher/homework', badge: 'Coming Soon' });
+    if (has('lectures')) lmsItems.push({ name: 'Lectures', path: '/teacher/lectures', badge: 'Coming Soon' });
+    if (has('quizzes')) lmsItems.push({ name: 'Quizzes', path: '/teacher/quizzes', badge: 'Coming Soon' });
+    if (has('online_classes')) lmsItems.push({ name: 'Live Classes', path: '/teacher/online-classes', badge: 'Coming Soon' });
+    if (lmsItems.length > 0) {
+      groups.push({
+        type: 'group',
+        title: 'E-Learning',
+        icon: BookOpen,
+        subItems: lmsItems
+      });
+    }
+
+    const examItems = [];
+    if (has('examination') || has('exams') || permissions.exam_management) {
+      examItems.push({ name: 'Exam Marks', path: '/teacher/exams', badge: 'Coming Soon' });
+    }
+    if (has('datesheet')) examItems.push({ name: 'Datesheet', path: '/teacher/datesheet', badge: 'Coming Soon' });
+    if (has('class_tests')) examItems.push({ name: 'Class Tests', path: '/teacher/class-tests' });
+    if (has('question_papers')) examItems.push({ name: 'Question Papers', path: '/teacher/question-papers' });
+    if (examItems.length > 0) {
+      groups.push({
+        type: 'group',
+        title: 'Exams',
+        icon: Award,
+        subItems: examItems
+      });
+    }
+
+    const schoolType = user?.school_type || user?.school_id?.school_type || 'Private';
+    const plannerItems = [];
+    if (has('planner')) plannerItems.push({ name: 'Planner', path: '/teacher/planner', badge: 'Coming Soon' });
+    if (has('events')) plannerItems.push({ name: 'Events', path: '/teacher/events', badge: 'Coming Soon' });
+    if (has('counseling')) plannerItems.push({ name: 'Counseling', path: '/teacher/counseling', badge: 'Coming Soon' });
+    if (has('complaints')) plannerItems.push({ name: 'Complaints', path: '/teacher/complaints', badge: 'Coming Soon' });
+    if (has('lost_and_found')) plannerItems.push({ name: 'Lost & Found', path: '/teacher/lost-and-found', badge: 'Coming Soon' });
+    if (plannerItems.length > 0) {
+      groups.push({
+        type: 'group',
+        title: 'Events',
+        icon: Calendar,
+        subItems: plannerItems
+      });
+    }
+
+    const employmentItems = [];
+    if (schoolType !== 'Government' && has('salary')) {
+      employmentItems.push({ name: 'Salary Slip', path: '/teacher/salary', badge: 'Coming Soon' });
+    }
+    employmentItems.push({ name: 'Messages', path: '/teacher/messages' });
+    if (employmentItems.length > 0) {
+      groups.push({
+        type: 'group',
+        title: 'My Account',
+        icon: DollarSign,
+        subItems: employmentItems
+      });
+    }
+
+    return groups;
   }
 
   const customRole = user?.custom_role_id || user?.custom_role;
@@ -179,25 +288,24 @@ export const getNavCategories = (user) => {
     const groups = [];
 
     const mainSub = [
-      { name: 'Dashboard', path: user.role === 'Teacher' ? '/teacher' : '/admin' }
+      { name: 'Dashboard', path: '/admin' }
     ];
 
-    if (allowed.has('campus')) mainSub.push({ name: 'Campus', path: '/admin/campus' });
-    if (allowed.has('grades')) mainSub.push({ name: 'Grades', path: '/admin/grades' });
+    if (allowed.has('campus')) mainSub.push({ name: 'Campuses', path: '/admin/campus' });
+    if (allowed.has('grades')) mainSub.push({ name: 'Classes', path: '/admin/grades' });
     if (allowed.has('subjects')) mainSub.push({ name: 'Subjects', path: '/admin/subjects' });
     if (allowed.has('teachers')) mainSub.push({ name: 'Teachers', path: '/admin/teachers' });
     if (allowed.has('students')) mainSub.push({ name: 'Students', path: '/admin/students' });
-    if (allowed.has('student_promotion')) mainSub.push({ name: 'Promote Students', path: '/admin/students/promote' });
-    if (allowed.has('admission_letter')) mainSub.push({ name: 'Admission Letter', path: '/admin/students/admission-letter' });
-    if (allowed.has('student_id_cards')) mainSub.push({ name: 'Student ID Cards', path: '/admin/students/id-cards' });
-    if (allowed.has('teacher_id_cards')) mainSub.push({ name: 'Staff Service ID Cards', path: '/admin/teachers/id-cards' });
+    if (allowed.has('student_promotion')) mainSub.push({ name: 'Promotions', path: '/admin/students/promote' });
+    if (allowed.has('admission_letter')) mainSub.push({ name: 'Admissions', path: '/admin/students/admission-letter' });
+    if (allowed.has('student_id_cards')) mainSub.push({ name: 'Student Cards', path: '/admin/students/id-cards' });
+    if (allowed.has('teacher_id_cards')) mainSub.push({ name: 'Teacher Cards', path: '/admin/teachers/id-cards' });
     if (allowed.has('certificates')) {
-      mainSub.push({ name: 'Certificates Studio', path: '/admin/certificates' });
-      mainSub.push({ name: 'Certificate Templates', path: '/admin/certificates/templates' });
+      mainSub.push({ name: 'Certificates', path: '/admin/certificates' });
+      mainSub.push({ name: 'Templates', path: '/admin/certificates/templates' });
     }
-    if (allowed.has('student_portal')) mainSub.push({ name: 'Student Portal Preview', path: '/admin/student-portal-preview' });
-    if (allowed.has('transport')) mainSub.push({ name: 'Transport & Fleet', path: '/admin/transport' });
-    if (user.role === 'Teacher') mainSub.push({ name: 'My Profile', path: '/teacher/profile' });
+    if (allowed.has('student_portal')) mainSub.push({ name: 'Student Portal', path: '/admin/student-portal-preview' });
+    if (allowed.has('transport')) mainSub.push({ name: 'Vehicles', path: '/admin/transport' });
 
     groups.push({
       type: 'group',
@@ -209,14 +317,14 @@ export const getNavCategories = (user) => {
     if (allowed.has('fees')) {
       groups.push({
         type: 'group',
-        title: 'Fee Management',
+        title: 'Fees',
         icon: DollarSign,
         subItems: [
-          { name: 'Fee Collection', path: '/admin/fees/collection' },
-          { name: 'Fee Structure', path: '/admin/fees/structure' },
-          { name: 'Defaulters List', path: '/admin/fees/defaulters' },
+          { name: 'Collect Fees', path: '/admin/fees/collection' },
+          { name: 'Fee Plans', path: '/admin/fees/structure' },
+          { name: 'Defaulters', path: '/admin/fees/defaulters' },
           { name: 'Fee Reports', path: '/admin/fees/reports' },
-          { name: 'Fee Concession', path: '/admin/fees/concession' }
+          { name: 'Concessions', path: '/admin/fees/concession' }
         ]
       });
     }
@@ -227,12 +335,12 @@ export const getNavCategories = (user) => {
         title: 'Accounts',
         icon: Landmark,
         subItems: [
-          { name: 'Chart of Accounts', path: '/admin/accounts/chart' },
+          { name: 'Account Heads', path: '/admin/accounts/chart' },
           { name: 'Income', path: '/admin/accounts/income' },
           { name: 'Expenses', path: '/admin/accounts/expenses' },
           { name: 'Transactions', path: '/admin/accounts/transactions' },
           { name: 'Balance Sheet', path: '/admin/accounts/balance-sheet' },
-          { name: 'Staff Payroll & Loans', path: '/admin/payroll' }
+          { name: 'Payroll', path: '/admin/payroll' }
         ]
       });
     }
@@ -251,18 +359,18 @@ export const getNavCategories = (user) => {
     if (allowed.has('exams') || allowed.has('grading_policies')) {
       const examSubs = [];
       if (allowed.has('exams')) {
-        examSubs.push({ name: 'Examinations', path: '/admin/exam-management/exams' });
-        examSubs.push({ name: 'Manage Class Tests', path: '/admin/class-tests/manage' });
-        examSubs.push({ name: 'Exam Schedules', path: '/admin/exams/schedules' });
-        examSubs.push({ name: 'Date Sheets', path: '/admin/exams/date-sheets' });
+        examSubs.push({ name: 'Exams', path: '/admin/exam-management/exams' });
+        examSubs.push({ name: 'Class Tests', path: '/admin/class-tests/manage' });
+        examSubs.push({ name: 'Schedules', path: '/admin/exams/schedules' });
+        examSubs.push({ name: 'Datesheets', path: '/admin/exams/date-sheets' });
         examSubs.push({ name: 'Marks Entry', path: '/admin/exams/marks' });
       }
       if (allowed.has('grading_policies')) {
-        examSubs.push({ name: 'Exam Grading', path: '/admin/exam-management/grading-policies' });
+        examSubs.push({ name: 'Grading', path: '/admin/exam-management/grading-policies', badge: 'Coming Soon' });
       }
       groups.push({
         type: 'group',
-        title: 'Exam Management',
+        title: 'Exams',
         icon: Award,
         subItems: examSubs
       });
@@ -270,14 +378,14 @@ export const getNavCategories = (user) => {
 
     if (allowed.has('reports') || allowed.has('student_reports') || allowed.has('parent_reports') || allowed.has('report_cards')) {
       const repSubs = [
-        { name: 'Master Reports Hub', path: '/admin/reports' }
+        { name: 'Reports Hub', path: '/admin/reports' }
       ];
-      if (allowed.has('student_reports') || allowed.has('reports')) repSubs.push({ name: 'Students Info Report', path: '/admin/reports/student-info' });
-      if (allowed.has('parent_reports') || allowed.has('reports')) repSubs.push({ name: 'Parents Contact Report', path: '/admin/reports/parent-info' });
-      if (allowed.has('staff') || allowed.has('reports')) repSubs.push({ name: 'Staff & HR Report', path: '/admin/reports/staff-info' });
-      if (allowed.has('attendance') || allowed.has('reports')) repSubs.push({ name: 'Attendance Report', path: '/admin/attendance/report' });
-      if (allowed.has('report_cards') || allowed.has('reports')) repSubs.push({ name: 'Students Report Card', path: '/admin/reports/report-cards' });
-      repSubs.push({ name: 'Audit & System Logs', path: '/admin/reports/audit-logs' });
+      if (allowed.has('student_reports') || allowed.has('reports')) repSubs.push({ name: 'Students Report', path: '/admin/reports/student-info' });
+      if (allowed.has('parent_reports') || allowed.has('reports')) repSubs.push({ name: 'Parents Info', path: '/admin/reports/parent-info' });
+      if (allowed.has('staff') || allowed.has('reports')) repSubs.push({ name: 'Staff Report', path: '/admin/reports/staff-info' });
+      if (allowed.has('attendance') || allowed.has('reports')) repSubs.push({ name: 'Attendance', path: '/admin/attendance/report' });
+      if (allowed.has('report_cards') || allowed.has('reports')) repSubs.push({ name: 'Report Cards', path: '/admin/reports/report-cards' });
+      repSubs.push({ name: 'Audit Logs', path: '/admin/reports/audit-logs' });
       groups.push({
         type: 'group',
         title: 'Reports',
@@ -289,11 +397,11 @@ export const getNavCategories = (user) => {
     if (allowed.has('messaging') || allowed.has('messenger') || allowed.has('operations')) {
       groups.push({
         type: 'group',
-        title: 'Messaging',
+        title: 'Messages',
         icon: MessageSquare,
         subItems: [
-          { name: 'Internal Messaging', path: '/admin/messaging/internal' },
-          { name: 'Notification Center', path: '/admin/notifications' }
+          { name: 'Staff Chat', path: '/admin/messaging/internal' },
+          { name: 'Notices', path: '/admin/notifications' }
         ]
       });
     }
@@ -301,67 +409,24 @@ export const getNavCategories = (user) => {
     if (allowed.has('control_panel') || allowed.has('user_management') || allowed.has('bulk_migration')) {
       const cpSubs = [];
       if (allowed.has('control_panel') || allowed.has('bulk_migration')) {
-        cpSubs.push({ name: 'General Settings', path: '/admin/settings/general' });
-        cpSubs.push({ name: 'Digital Signatures & Stamps', path: '/admin/general-settings/signatures' });
-        cpSubs.push({ name: 'Theme & Branding', path: '/admin/control-panel/branding' });
-        cpSubs.push({ name: 'Bulk Data Migration', path: '/admin/control-panel/bulk-import' });
+        cpSubs.push({ name: 'General', path: '/admin/settings/general' });
+        cpSubs.push({ name: 'Signatures', path: '/admin/general-settings/signatures' });
+        cpSubs.push({ name: 'Logo & Theme', path: '/admin/control-panel/branding' });
+        cpSubs.push({ name: 'Bulk Import', path: '/admin/control-panel/bulk-import' });
       }
       if (allowed.has('user_management')) {
-        cpSubs.push({ name: 'User Management', path: '/admin/control-panel/user-management' });
-        cpSubs.push({ name: 'Roles & Permissions', path: '/admin/settings/roles' });
+        cpSubs.push({ name: 'Users', path: '/admin/control-panel/user-management' });
+        cpSubs.push({ name: 'Roles & Rights', path: '/admin/settings/roles' });
       }
       groups.push({
         type: 'group',
-        title: 'Control Panel',
+        title: 'Settings',
         icon: Sliders,
         subItems: cpSubs
       });
     }
 
     return groups;
-  }
-
-  if (user.role === 'Teacher') {
-    const permissions = user.app_settings || user.app_permissions || {};
-    const eff = user.effective_permissions || {};
-    const has = (key, fallback = true) => {
-      if (eff[key]?.view !== undefined) return Boolean(eff[key].view);
-      return permissions[key] !== undefined ? permissions[key] !== false : fallback;
-    };
-    const subItems = [{ name: 'Dashboard', path: '/teacher' }];
-    if (has('students')) subItems.push({ name: 'My Students', path: '/teacher/students' });
-    if (has('attendance')) subItems.push({ name: 'Attendance', path: '/teacher/attendance' });
-    if (has('homework')) subItems.push({ name: 'Homework', path: '/teacher/homework' });
-    if (has('examination') || has('exams') || permissions.exam_management) subItems.push({ name: 'Examinations', path: '/teacher/exams' });
-    if (has('timetable')) subItems.push({ name: 'Timetable', path: '/teacher/timetable' });
-    if (has('quizzes')) subItems.push({ name: 'Quizzes', path: '/teacher/quizzes' });
-    if (has('lectures')) subItems.push({ name: 'Lectures', path: '/teacher/lectures' });
-    if (has('online_classes')) subItems.push({ name: 'Online Classes', path: '/teacher/online-classes' });
-    if (has('datesheet')) subItems.push({ name: 'Date Sheet', path: '/teacher/datesheet' });
-    if (has('salary')) subItems.push({ name: 'My Salary', path: '/teacher/salary' });
-    if (has('my_profile')) subItems.push({ name: 'My Profile', path: '/teacher/profile' });
-    if (has('student_promotion', false) || permissions.class_transfer) subItems.push({ name: 'Promote Students', path: '/admin/students/promote' });
-    if (has('admission_letter', false)) subItems.push({ name: 'Admission Letters', path: '/admin/students/admission-letter' });
-    if (has('student_id_cards', false)) subItems.push({ name: 'Student ID Cards', path: '/admin/students/id-cards' });
-    if (has('teacher_id_cards', false)) subItems.push({ name: 'Staff ID Cards', path: '/admin/teachers/id-cards' });
-    if (has('grading_policies', false)) subItems.push({ name: 'Grading Policies', path: '/admin/exam-management/grading-policies' });
-    if (has('class_tests')) subItems.push({ name: 'Class Tests', path: '/teacher/class-tests' });
-    if (has('question_papers')) subItems.push({ name: 'Question Papers', path: '/teacher/question-papers' });
-    if (has('certificates', false)) subItems.push({ name: 'Certificates Studio', path: '/admin/certificates' });
-    if (has('behavior')) subItems.push({ name: 'Behavior & Skills', path: '/teacher/behavior' });
-    if (has('events')) subItems.push({ name: 'Events', path: '/teacher/events' });
-    if (has('complaints')) subItems.push({ name: 'Complaints', path: '/teacher/complaints' });
-    if (has('counseling')) subItems.push({ name: 'Counseling', path: '/teacher/counseling' });
-    if (has('planner')) subItems.push({ name: 'Academic Planner', path: '/teacher/planner' });
-    if (has('lost_and_found')) subItems.push({ name: 'Lost & Found', path: '/teacher/lost-and-found' });
-    subItems.push({ name: 'Messages', path: '/teacher/messages' });
-
-    return [{
-      type: 'group',
-      title: 'Teacher Portal',
-      icon: LayoutGrid,
-      subItems
-    }];
   }
 
   return getAdminNavItems(user.school_type);
@@ -421,100 +486,100 @@ export const getAllAdminRoutes = () => {
 };
 
 export const getRouteTitle = (pathname) => {
-  if (pathname === '/admin/messaging/messages' || pathname === '/admin/messaging/internal' || pathname === '/admin/messages' || pathname === '/teacher/messages' || pathname === '/student/messages') return 'Internal Messaging Studio';
+  if (pathname === '/admin/messaging/messages' || pathname === '/admin/messaging/internal' || pathname === '/admin/messages' || pathname === '/teacher/messages' || pathname === '/student/messages') return 'Staff Chat & Messages';
   if (pathname === '/admin') return 'Dashboard';
-  if (pathname === '/admin/campus') return 'Campus Management';
+  if (pathname === '/admin/campus') return 'Campuses';
   if (pathname === '/admin/subjects') return 'Subjects';
-  if (pathname === '/admin/grades') return 'Grades & Sections';
+  if (pathname === '/admin/grades') return 'Classes & Sections';
   if (pathname === '/admin/teachers') return 'Teachers';
   if (pathname === '/admin/teachers/new') return 'Add Teacher';
   if (pathname.startsWith('/admin/teachers/') && pathname.endsWith('/edit')) return 'Edit Teacher';
-  if (pathname === '/admin/teachers/id-cards') return 'Staff Service ID Cards';
-  if (pathname === '/admin/staff-applicants') return 'Staff Applicants';
+  if (pathname === '/admin/teachers/id-cards') return 'Teacher ID Cards';
+  if (pathname === '/admin/staff-applicants') return 'Job Applications';
   if (pathname === '/admin/staff-applicants/new') return 'New Applicant';
   if (pathname.startsWith('/admin/staff-applicants/') && pathname.endsWith('/edit')) return 'Edit Applicant';
-  if (pathname === '/admin/students') return 'Students';
+  if (pathname === '/admin/students') return 'Students List';
   if (pathname === '/admin/students/new') return 'Enroll Student';
   if (pathname.startsWith('/admin/students/') && pathname.endsWith('/edit')) return 'Edit Student';
-  if (pathname === '/admin/students/admission-letter') return 'Admission Letter';
+  if (pathname === '/admin/students/admission-letter') return 'Admission Letters';
   if (pathname === '/admin/students/id-cards') return 'Student ID Cards';
-  if (pathname === '/admin/fees' || pathname === '/admin/fees/collection') return 'Fee Collection Counter';
-  if (pathname === '/admin/fees/structure') return 'Fee Structure Studio';
-  if (pathname === '/admin/fees/defaulters') return 'Fee Defaulters & Recovery';
-  if (pathname === '/admin/fees/reports') return 'Fee Reports & Ledger';
-  if (pathname === '/admin/fees/concession') return 'Fee Concessions & Scholarships';
-  if (pathname === '/admin/settings/appearance' || pathname === '/admin/control-panel/branding') return 'Theme & Appearance';
-  if (pathname === '/admin/exam-management/grading-policies' || pathname === '/admin/exams/grading-policies') return 'Exam Grading';
-  if (pathname === '/admin/exam-management/categories') return 'Exam Categories';
-  if (pathname === '/admin/exam-management/remarks-policy') return 'Remarks Policy';
-  if (pathname === '/admin/exam-management/schedule') return 'Datesheets';
+  if (pathname === '/admin/fees' || pathname === '/admin/fees/collection') return 'Collect Fees';
+  if (pathname === '/admin/fees/structure') return 'Fee Plans';
+  if (pathname === '/admin/fees/defaulters') return 'Unpaid Fees';
+  if (pathname === '/admin/fees/reports') return 'Fee Reports';
+  if (pathname === '/admin/fees/concession') return 'Fee Discounts';
+  if (pathname === '/admin/settings/appearance' || pathname === '/admin/control-panel/branding') return 'School Logo & Theme';
+  if (pathname === '/admin/exam-management/grading-policies' || pathname === '/admin/exams/grading-policies') return 'Grading System';
+  if (pathname === '/admin/exam-management/categories') return 'Exam Types';
+  if (pathname === '/admin/exam-management/remarks-policy') return 'Remarks Rules';
+  if (pathname === '/admin/exam-management/schedule') return 'Exam Schedule';
   if (pathname === '/admin/exam-management/schedule/new') return 'New Datesheet';
-  if (pathname === '/admin/exam-management/manage-remarks') return 'Manage Remarks';
-  if (pathname === '/admin/exam-management/mark-sheets') return 'Mark Sheets';
-  if (pathname === '/admin/question-papers') return 'Question Papers Studio';
-  if (pathname === '/admin/exam-management/exams' || pathname === '/admin/exams/schedules' || pathname === '/admin/exams/date-sheets' || pathname === '/admin/exams/marks' || pathname === '/teacher/exams' || pathname === '/teacher/examination' || pathname === '/teacher/datesheet') return 'Examinations & Assessments';
-  if (pathname === '/admin/exam-management/exams/new') return 'Exam Setup Wizard';
+  if (pathname === '/admin/exam-management/manage-remarks') return 'Student Remarks';
+  if (pathname === '/admin/exam-management/mark-sheets') return 'Enter Student Marks';
+  if (pathname === '/admin/question-papers') return 'Question Papers';
+  if (pathname === '/admin/exam-management/exams' || pathname === '/admin/exams/schedules' || pathname === '/admin/exams/date-sheets' || pathname === '/admin/exams/marks' || pathname === '/teacher/exams' || pathname === '/teacher/examination' || pathname === '/teacher/datesheet') return 'Exams & Marks';
+  if (pathname === '/admin/exam-management/exams/new') return 'New Exam Setup';
   if (pathname.startsWith('/admin/exam-management/exams/') && pathname.endsWith('/edit')) return 'Edit Exam';
-  if (pathname === '/admin/class-tests/manage' || pathname === '/teacher/class-tests') return 'Manage Class Tests & Marks';
-  if (pathname === '/admin/class-tests/results') return 'Test Results & Reports';
+  if (pathname === '/admin/class-tests/manage' || pathname === '/teacher/class-tests') return 'Class Tests';
+  if (pathname === '/admin/class-tests/results') return 'Test Results';
   if (pathname === '/admin/profile' || pathname === '/superadmin/profile' || pathname === '/teacher/profile') return 'My Profile';
   if (pathname === '/superadmin') return 'Dashboard';
-  if (pathname === '/superadmin/schools') return 'Schools';
+  if (pathname === '/superadmin/schools') return 'All Schools';
   if (pathname === '/superadmin/schools/new') return 'New School';
-  if (pathname === '/superadmin/logs' || pathname === '/admin/reports/audit-logs' || pathname === '/admin/reports/audit-log') return 'System Telemetry & Audit Logs';
-  if (pathname === '/admin/reports' || pathname === '/admin/reports/academic') return 'Master Reports Studio';
-  if (pathname === '/admin/reports/report-cards') return 'Student Report Card Studio';
-  if (pathname === '/admin/reports/student-info') return 'Student Admission & Info Report';
-  if (pathname === '/admin/reports/parent-info') return 'Parent & Student Contact Report';
-  if (pathname === '/admin/reports/staff-info') return 'Staff & Faculty Master Directory Report';
-  if (pathname === '/admin/certificates') return 'Certificates Studio';
-  if (pathname === '/admin/certificates/templates') return 'Certificate Templates Studio';
-  if (pathname === '/admin/students/promote' || pathname === '/admin/control-panel/class-transfer') return 'Promote Students & Class Transfer';
-  if (pathname === '/admin/control-panel/user-management') return 'User Management';
-  if (pathname === '/admin/settings/roles' || pathname === '/admin/control-panel/roles' || pathname === '/admin/roles') return 'Roles & Permissions';
-  if (pathname === '/admin/notifications' || pathname === '/admin/messaging/notifications' || pathname === '/admin/circular' || pathname === '/teacher/notifications' || pathname === '/superadmin/notifications') return 'Notification Center & Broadcasts';
-  if (pathname === '/admin/general-settings/signatures' || pathname === '/admin/settings/signatures') return 'Digital Signatures & Stamps Studio';
-  if (pathname === '/admin/settings/integrations/zoom') return 'Zoom Team Chat Integration';
+  if (pathname === '/superadmin/logs' || pathname === '/admin/reports/audit-logs' || pathname === '/admin/reports/audit-log') return 'System Logs';
+  if (pathname === '/admin/reports' || pathname === '/admin/reports/academic') return 'All Reports Overview';
+  if (pathname === '/admin/reports/report-cards') return 'Print Report Cards';
+  if (pathname === '/admin/reports/student-info') return 'Students Info Report';
+  if (pathname === '/admin/reports/parent-info') return 'Parents Phone Numbers';
+  if (pathname === '/admin/reports/staff-info') return 'Staff & Teachers List';
+  if (pathname === '/admin/certificates') return 'Print Certificates';
+  if (pathname === '/admin/certificates/templates') return 'Certificate Designs';
+  if (pathname === '/admin/students/promote' || pathname === '/admin/control-panel/class-transfer') return 'Promote Students';
+  if (pathname === '/admin/control-panel/user-management') return 'User Accounts';
+  if (pathname === '/admin/settings/roles' || pathname === '/admin/control-panel/roles' || pathname === '/admin/roles') return 'Staff Roles & Rights';
+  if (pathname === '/admin/notifications' || pathname === '/admin/messaging/notifications' || pathname === '/admin/circular' || pathname === '/teacher/notifications' || pathname === '/superadmin/notifications') return 'Send Notices & Alerts';
+  if (pathname === '/admin/general-settings/signatures' || pathname === '/admin/settings/signatures') return 'Stamps & Signatures';
+  if (pathname === '/admin/settings/integrations/zoom') return 'Zoom Live Classes';
   if (pathname === '/admin/attendance/students') return 'Student Attendance';
   if (pathname === '/admin/attendance/staff' || pathname === '/admin/attendance/employees') return 'Staff Attendance';
-  if (pathname === '/admin/attendance/leave-request' || pathname === '/teacher/leaves') return 'Leave Request Engine';
-  if (pathname === '/admin/attendance/report' || pathname === '/admin/reports/attendance-report' || pathname === '/admin/reports/attendance' || pathname === '/teacher/attendance-report') return 'Attendance Report & Monthly Register';
-  if (pathname === '/teacher') return 'Faculty Dashboard';
-  if (pathname === '/teacher/students') return 'My Classes & Students';
-  if (pathname === '/teacher/attendance') return 'Attendance';
-  if (pathname === '/teacher/homework') return 'Homework';
-  if (pathname === '/teacher/examination') return 'Examination';
-  if (pathname === '/teacher/timetable') return 'Timetable';
-  if (pathname === '/teacher/quizzes') return 'Quizzes';
-  if (pathname === '/teacher/lectures') return 'Lectures';
-  if (pathname === '/teacher/online-classes') return 'Online Classes';
-  if (pathname === '/teacher/datesheet') return 'Date Sheet';
-  if (pathname === '/teacher/salary') return 'My Salary & Compensation';
-  if (pathname.startsWith('/admin/accounts')) return 'Accounts & Bookkeeping';
-  if (pathname === '/admin/payroll') return 'Staff Payroll & Benefits';
-  if (pathname === '/admin/store' || pathname === '/admin/pos' || pathname === '/admin/online-store') return 'Bookstore & POS Terminal';
-  if (pathname === '/admin/behavior' || pathname === '/teacher/behavior' || pathname === '/admin/behavior-skills' || pathname === '/teacher/behavior-skills') return 'Affective & Psychomotor Behavior Studio';
-  if (pathname === '/admin/campus-transfer') return 'Inter-Campus Transfer & Branch Reallocation';
-  if (pathname === '/admin/events' || pathname === '/teacher/events') return 'Campus Operations & Events';
-  if (pathname === '/admin/news-feed') return 'Institutional News Feed';
-  if (pathname === '/admin/complaints' || pathname === '/teacher/complaints') return 'Complaints & Redressal Desk';
-  if (pathname === '/teacher/counseling') return 'Student Counseling & Well-being';
-  if (pathname === '/admin/consent') return 'Parental Consent & Circulars';
-  if (pathname === '/admin/lost-and-found' || pathname === '/teacher/lost-and-found') return 'Lost & Found Desk';
-  if (pathname === '/teacher/planner') return 'Academic Lesson Planner';
-  if (pathname.startsWith('/admin/planners')) return 'Academic Lesson Planners & School Events';
-  if (pathname.startsWith('/admin/operations')) return 'Campus Operations & Student Welfare';
-  if (pathname === '/admin/counseling') return 'Student Counseling & Well-being';
-  if (pathname === '/admin/control-panel/bulk-import' || pathname === '/admin/bulk-import' || pathname === '/admin/data-migration') return 'Bulk Data Import & Migration Hub';
-  if (pathname === '/admin/transport' || pathname === '/admin/general-settings/transport' || pathname.startsWith('/admin/van-management')) return 'School Transport & Fleet Management';
-  if (pathname === '/admin/student-portal-preview' || pathname.startsWith('/student')) return 'Student & Parent Portal';
-  if (pathname === '/admin/messaging' || pathname === '/admin/messaging/chat' || pathname === '/teacher/chat') return 'Internal Staff Messenger';
-  if (pathname === '/admin/circular' || pathname === '/teacher/circular') return 'Official Circulars & Memos';
-  if (pathname === '/admin/messaging/sms') return 'SMS Broadcast Communications';
-  if (pathname === '/admin/messaging/whatsapp') return 'WhatsApp Alerts Studio';
-  if (pathname === '/admin/messaging/email') return 'Email Notification Center';
-  if (pathname === '/teacher/feedback') return 'Staff Feedback & Suggestions';
-  if (pathname === '/teacher/my-profile' || pathname === '/teacher/update-picture') return 'Teacher Profile Settings';
+  if (pathname === '/admin/attendance/leave-request' || pathname === '/teacher/leaves') return 'Leave Requests';
+  if (pathname === '/admin/attendance/report' || pathname === '/admin/reports/attendance-report' || pathname === '/admin/reports/attendance' || pathname === '/teacher/attendance-report') return 'Attendance Report';
+  if (pathname === '/teacher') return 'Teacher Dashboard';
+  if (pathname === '/teacher/students') return 'My Students';
+  if (pathname === '/teacher/attendance') return 'Mark Attendance';
+  if (pathname === '/teacher/homework') return 'Give Homework';
+  if (pathname === '/teacher/examination') return 'Enter Exam Marks';
+  if (pathname === '/teacher/timetable') return 'My Timetable';
+  if (pathname === '/teacher/quizzes') return 'Online Quizzes';
+  if (pathname === '/teacher/lectures') return 'Video Lectures';
+  if (pathname === '/teacher/online-classes') return 'Live Classes';
+  if (pathname === '/teacher/datesheet') return 'Exam Datesheet';
+  if (pathname === '/teacher/salary') return 'My Salary Slip';
+  if (pathname.startsWith('/admin/accounts')) return 'Accounts';
+  if (pathname === '/admin/payroll') return 'Staff Salaries & Loans';
+  if (pathname === '/admin/store' || pathname === '/admin/pos' || pathname === '/admin/online-store') return 'School Uniform & Books';
+  if (pathname === '/admin/behavior' || pathname === '/teacher/behavior' || pathname === '/admin/behavior-skills' || pathname === '/teacher/behavior-skills') return 'Student Behavior';
+  if (pathname === '/admin/campus-transfer') return 'Campus Transfer';
+  if (pathname === '/admin/events' || pathname === '/teacher/events') return 'School Events';
+  if (pathname === '/admin/news-feed') return 'School News Feed';
+  if (pathname === '/admin/complaints' || pathname === '/teacher/complaints') return 'Complaints Box';
+  if (pathname === '/teacher/counseling') return 'Student Counseling';
+  if (pathname === '/admin/consent') return 'Parental Consents';
+  if (pathname === '/admin/lost-and-found' || pathname === '/teacher/lost-and-found') return 'Lost & Found';
+  if (pathname === '/teacher/planner') return 'Yearly Planner';
+  if (pathname.startsWith('/admin/planners')) return 'Timetable & Calendar';
+  if (pathname.startsWith('/admin/operations')) return 'School Activities';
+  if (pathname === '/admin/counseling') return 'Student Counseling';
+  if (pathname === '/admin/control-panel/bulk-import' || pathname === '/admin/bulk-import' || pathname === '/admin/data-migration') return 'Import Excel Data';
+  if (pathname === '/admin/transport' || pathname === '/admin/general-settings/transport' || pathname.startsWith('/admin/van-management')) return 'School Transport';
+  if (pathname === '/admin/student-portal-preview' || pathname.startsWith('/student')) return 'Student Portal';
+  if (pathname === '/admin/messaging' || pathname === '/admin/messaging/chat' || pathname === '/teacher/chat') return 'Staff Chat';
+  if (pathname === '/admin/circular' || pathname === '/teacher/circular') return 'Official Circulars';
+  if (pathname === '/admin/messaging/sms') return 'SMS Alerts';
+  if (pathname === '/admin/messaging/whatsapp') return 'WhatsApp Alerts';
+  if (pathname === '/admin/messaging/email') return 'Email Notices';
+  if (pathname === '/teacher/feedback') return 'Staff Feedback';
+  if (pathname === '/teacher/my-profile' || pathname === '/teacher/update-picture') return 'My Profile';
 
   const allGroups = getAdminNavItems('Private');
   for (const group of allGroups) {

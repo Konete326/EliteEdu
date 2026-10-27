@@ -104,10 +104,7 @@ const TeacherMobileCard = ({
       <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-line/60 dark:border-white/5">
         {live?.status === 'in_class' ? (
           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-accent/10 border border-accent/30 text-accent dark:text-accent-dark text-[11px] font-bold">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
-            </span>
+            <span className="inline-flex rounded-full h-2 w-2 bg-accent" />
             <span>
               In Class: {live.grade_name} {live.subject_name} (Period {live.period_no})
             </span>

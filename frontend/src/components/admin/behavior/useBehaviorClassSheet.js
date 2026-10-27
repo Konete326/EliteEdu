@@ -100,8 +100,35 @@ export const useBehaviorClassSheet = (selectedGrade, selectedSection, term, sess
     }
   };
 
+  const handleSaveSingleStudent = async (studentId, updatedData) => {
+    try {
+      const payload = {
+        student_id: studentId,
+        grade_id: selectedGrade,
+        section: selectedSection,
+        term_name: term,
+        academic_session: session,
+        campus_id: selectedCampus,
+        ...updatedData
+      };
+      await api.post('/behavior', payload);
+      setEvaluations((prev) => ({
+        ...prev,
+        [studentId]: {
+          ...prev[studentId],
+          ...updatedData
+        }
+      }));
+      showToast('Student behavior assessment saved successfully', 'success');
+      return true;
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to save behavior assessment', 'error');
+      return false;
+    }
+  };
+
   return {
     students, evaluations, kpis, loading, saving,
-    handleRatingChange, handleConductChange, handleObservationChange, handleQuickRateStudent, handleSetAll, handleSave
+    handleRatingChange, handleConductChange, handleObservationChange, handleQuickRateStudent, handleSetAll, handleSave, handleSaveSingleStudent
   };
 };

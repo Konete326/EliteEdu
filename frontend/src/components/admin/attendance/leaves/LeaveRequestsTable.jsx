@@ -6,7 +6,8 @@ import LeaveRequestMobileCard from './LeaveRequestMobileCard';
 const LeaveRequestsTable = ({
   leaves = [], pagination = {}, search = '', onSearchChange,
   statusFilter = 'all', onStatusChange, applicantFilter = 'all', onApplicantChange,
-  onApprove, onReject, onPrint, onDelete, onWhatsApp, isProcessing, onPageChange
+  onApprove, onReject, onPrint, onDelete, onWhatsApp, isProcessing, onPageChange,
+  canApprove = true
 }) => {
   return (
     <div className="rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs overflow-hidden flex flex-col flex-1 min-h-0">
@@ -64,6 +65,7 @@ const LeaveRequestsTable = ({
               onDelete={onDelete}
               onWhatsApp={onWhatsApp}
               isProcessing={isProcessing}
+              canApprove={canApprove}
             />
           ))
         )}
@@ -99,6 +101,7 @@ const LeaveRequestsTable = ({
                   onDelete={onDelete}
                   onWhatsApp={onWhatsApp}
                   isProcessing={isProcessing}
+                  canApprove={canApprove}
                 />
               ))
             )}

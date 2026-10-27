@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import React, { useState, useEffect, useMemo } from 'react';
 import { X, Calendar as CalendarIcon, ChevronLeft, ChevronRight, User, Loader2 } from 'lucide-react';
 import api from '../../../../services/api';
@@ -95,8 +96,8 @@ const StaffAttendanceCalendarModal = ({ isOpen, onClose, staff }) => {
     setCurrentMonth(d.toISOString().slice(0, 7));
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+  const modalNode = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="relative w-full max-w-lg bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-3xl p-6 shadow-2xl space-y-4 animate-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between pb-3 border-b border-line dark:border-line-dark">
           <div className="flex items-center gap-3">
@@ -211,6 +212,8 @@ const StaffAttendanceCalendarModal = ({ isOpen, onClose, staff }) => {
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalNode, document.body) : null;
 };
 
 export default StaffAttendanceCalendarModal;

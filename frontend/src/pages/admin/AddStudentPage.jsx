@@ -48,7 +48,7 @@ const AddStudentPage = () => {
 
   return (
     <div className="w-full space-y-6 pb-16">
-      <div className="sticky top-0 z-20 pb-3 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-md space-y-3">
+      <div className="sticky top-0 z-10 pb-3 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-md space-y-3">
         <StudentTopActionBar isEditMode={Boolean(id)} studentName={formData.name} onSave={handleSave} submitting={submitting} />
         <StudentTabsNav activeTab={activeTab} onTabChange={setActiveTab} />
       </div>

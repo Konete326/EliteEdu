@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import { X, Play, Sparkles, BookOpen, Clock, Film } from 'lucide-react';
 
 const UPCOMING_MODULES = [
@@ -10,8 +11,8 @@ const UPCOMING_MODULES = [
 const VideoComingSoonModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  const modalNode = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity" onClick={onClose} />
       <div className="relative w-full max-w-lg bg-surface dark:bg-[#111111] border border-line dark:border-white/10 rounded-2xl shadow-2xl z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div className="relative bg-gradient-to-br from-primary/90 via-primary to-teal-800 p-6 text-white overflow-hidden">
@@ -94,6 +95,8 @@ const VideoComingSoonModal = ({ isOpen, onClose }) => {
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalNode, document.body) : null;
 };
 
 export default VideoComingSoonModal;

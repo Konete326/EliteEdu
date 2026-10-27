@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CampusProvider } from './context/CampusContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -143,24 +143,24 @@ function App() {
                     <Route path="/admin/exams/schedules" element={<ExamsListPage />} />
                     <Route path="/admin/exams/date-sheets" element={<ExamsListPage />} />
                     <Route path="/admin/exams/marks" element={<ExamsListPage />} />
-                    <Route path="/admin/exam-management/exams/new" element={<ExamWizardPage />} />
-                    <Route path="/admin/exam-management/exams/:id/edit" element={<ExamWizardPage />} />
-                    <Route path="/admin/exam-management/categories" element={<ExamCategoriesPage />} />
-                    <Route path="/admin/exam-management/remarks-policy" element={<RemarksPolicyPage />} />
-                    <Route path="/admin/exam-management/schedule" element={<DatesheetsListPage />} />
-                    <Route path="/admin/exam-management/schedule/new" element={<NewDatesheetPage />} />
-                    <Route path="/admin/exam-management/manage-remarks" element={<ManageRemarksPage />} />
-                    <Route path="/admin/exam-management/mark-sheets" element={<MarkSheetsPage />} />
-                    <Route path="/admin/exam-management/results" element={<MarkSheetsPage />} />
-                    <Route path="/admin/question-papers" element={<QuestionPapersPage />} />
-                    <Route path="/admin/class-tests/manage" element={<ManageClassTestsPage />} />
-                    <Route path="/admin/class-tests/results" element={<ClassTestResultsPage />} />
+                    <Route path="/admin/exam-management/exams/new" element={<ExamsListPage />} />
+                    <Route path="/admin/exam-management/exams/:id/edit" element={<ExamsListPage />} />
+                    <Route path="/admin/exam-management/categories" element={<ExamsListPage />} />
+                    <Route path="/admin/exam-management/remarks-policy" element={<ExamsListPage />} />
+                    <Route path="/admin/exam-management/schedule" element={<ExamsListPage />} />
+                    <Route path="/admin/exam-management/schedule/new" element={<ExamsListPage />} />
+                    <Route path="/admin/exam-management/manage-remarks" element={<ExamsListPage />} />
+                    <Route path="/admin/exam-management/mark-sheets" element={<ExamsListPage />} />
+                    <Route path="/admin/exam-management/results" element={<ExamsListPage />} />
+                    <Route path="/admin/question-papers" element={<ExamsListPage />} />
+                    <Route path="/admin/class-tests/manage" element={<ExamsListPage />} />
+                    <Route path="/admin/class-tests/results" element={<ExamsListPage />} />
                     <Route path="/teacher/exams" element={<ExamsListPage />} />
                     <Route path="/teacher/examination" element={<ExamsListPage />} />
-                    <Route path="/teacher/datesheet" element={<DatesheetsListPage />} />
-                    <Route path="/teacher/mark-sheets" element={<MarkSheetsPage />} />
-                    <Route path="/teacher/question-papers" element={<QuestionPapersPage />} />
-                    <Route path="/teacher/class-tests" element={<ManageClassTestsPage />} />
+                    <Route path="/teacher/datesheet" element={<ExamsListPage />} />
+                    <Route path="/teacher/mark-sheets" element={<ExamsListPage />} />
+                    <Route path="/teacher/question-papers" element={<ExamsListPage />} />
+                    <Route path="/teacher/class-tests" element={<ExamsListPage />} />
                     <Route path="/admin/reports" element={<MasterReportsHubPage />} />
                     <Route path="/admin/reports/academic" element={<MasterReportsHubPage />} />
                     <Route path="/admin/reports/report-cards" element={<StudentReportCardPage />} />
@@ -215,8 +215,8 @@ function App() {
                     <Route path="/admin/staff-applicants" element={<StaffApplicantsList />} />
                     <Route path="/admin/staff-applicants/new" element={<AddStaffApplicantPage />} />
                     <Route path="/admin/staff-applicants/:id/edit" element={<AddStaffApplicantPage />} />
-                    <Route path="/admin/exam-management/grading-policies" element={<GradingPoliciesPage />} />
-                    <Route path="/admin/exams/grading-policies" element={<GradingPoliciesPage />} />
+                    <Route path="/admin/exam-management/grading-policies" element={<ExamsListPage />} />
+                    <Route path="/admin/exams/grading-policies" element={<ExamsListPage />} />
                     <Route path="/admin/settings/general" element={<GeneralSettingsPage />} />
                     <Route path="/admin/settings/integrations/zoom" element={<ZoomSettingsPage />} />
                     <Route path="/admin/general-settings/signatures" element={<GeneralSignaturesPage />} />
@@ -294,13 +294,13 @@ function App() {
                     <Route path="/teacher/planner" element={<PlannersAndEventsPage />} />
                     <Route path="/teacher/lost-and-found" element={<CampusOperationsPage />} />
                     <Route path="/teacher/notifications" element={<NotificationsPage />} />
-                    <Route path="/teacher/profile" element={<MyProfilePage />} />
+                    <Route path="/teacher/profile" element={<Navigate to="/teacher/dashboard" replace />} />
                     <Route path="/teacher/messages" element={<MessagingStudioPage />} />
                     <Route path="/teacher/chat" element={<InternalMessengerPage />} />
                     <Route path="/teacher/circular" element={<InternalMessengerPage defaultTab="circular" />} />
                     <Route path="/teacher/feedback" element={<CampusOperationsPage />} />
-                    <Route path="/teacher/my-profile" element={<MyProfilePage />} />
-                    <Route path="/teacher/update-picture" element={<MyProfilePage />} />
+                    <Route path="/teacher/my-profile" element={<Navigate to="/teacher/dashboard" replace />} />
+                    <Route path="/teacher/update-picture" element={<Navigate to="/teacher/dashboard" replace />} />
                     <Route path="/teacher/*" element={<TeacherPortalDashboard />} />
                   </Route>
                   <Route element={<ProtectedRoute allowedRoles={['Student', 'Admin', 'Teacher']} />}>

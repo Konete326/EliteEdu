@@ -1,4 +1,4 @@
-const CACHE_NAME = 'eliteedu-pwa-v6';
+const CACHE_NAME = 'eliteedu-pwa-v7';
 const STATIC_ASSETS = [
   '/manifest.json',
   '/logo.png',
@@ -111,4 +111,41 @@ self.addEventListener('fetch', (event) => {
         .catch(() => caches.match(event.request))
     })
   );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = event.notification.data?.url || '/teacher/attendance?tab=leave';
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url && 'focus' in client) {
+          if ('navigate' in client) client.navigate(targetUrl);
+          return client.focus();
+        }
+      }
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
+
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (e) {
+    data = { title: 'EliteEdu Notification', message: event.data ? event.data.text() : '' };
+  }
+  const title = data.title || 'EliteEdu Notification';
+  const options = {
+    body: data.message || data.body || '',
+    icon: '/icons/icon-192.png',
+    badge: '/favicon.png',
+    data: { url: data.action_url || data.url || '/teacher/attendance?tab=leave' },
+    vibrate: [200, 100, 200],
+    tag: data.tag || 'eliteedu-notice'
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
 });

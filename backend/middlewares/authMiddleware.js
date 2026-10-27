@@ -42,6 +42,7 @@ const authMiddleware = async (req, res, next) => {
       custom_role_id: decoded.custom_role_id || null,
       school_id: userSchoolId,
       campus_id: decoded.campus_id || req.headers['x-campus-id'] || null,
+      school_type: decoded.school_type || null,
       school_name: decoded.school_name || 'Global / System',
       session_id: decoded.session_id || null
     };

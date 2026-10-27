@@ -12,6 +12,7 @@ const {
 const {
   getSubstitutions,
   assignSubstitution,
+  createQuickAdjustment,
   cancelSubstitution
 } = require('../controllers/timetableSubstitutionController');
 
@@ -24,6 +25,7 @@ router.put('/bell-schedule', saveBellSchedule);
 router.get('/my-schedule', getMySchedule);
 router.get('/substitutions', getSubstitutions);
 router.post('/substitutions', assignSubstitution);
+router.post('/quick-adjustment', createQuickAdjustment);
 router.delete('/substitutions/:id', cancelSubstitution);
 router.post('/assign', assignTimetableSlot);
 router.get('/', getTimetableSlots);

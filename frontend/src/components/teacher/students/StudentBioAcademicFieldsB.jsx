@@ -6,7 +6,9 @@ const StudentBioAcademicFieldsB = ({ data = {}, onChange }) => {
   return (
     <>
       <div>
-        <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1">Gender</label>
+        <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1">
+          Gender <span className="text-[10px] text-ink-faint font-normal normal-case">(optional)</span>
+        </label>
         <select
           value={data.gender || 'Male'}
           onChange={(e) => onChange('gender', e.target.value)}
@@ -17,7 +19,9 @@ const StudentBioAcademicFieldsB = ({ data = {}, onChange }) => {
       </div>
 
       <div>
-        <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1">B-Form / CNIC</label>
+        <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1">
+          B-Form / CNIC <span className="text-[10px] text-ink-faint font-normal normal-case">(optional)</span>
+        </label>
         <input
           type="text"
           value={data.b_form || data.b_form_id || ''}
@@ -28,17 +32,22 @@ const StudentBioAcademicFieldsB = ({ data = {}, onChange }) => {
       </div>
 
       <div>
-        <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1">Religion</label>
+        <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1">
+          Religion <span className="text-[10px] text-ink-faint font-normal normal-case">(optional)</span>
+        </label>
         <input
           type="text"
           value={data.religion || 'Islam'}
           onChange={(e) => onChange('religion', e.target.value)}
+          placeholder="e.g. Islam"
           className="w-full px-3 py-1.5 rounded-xl border border-line bg-surface text-ink outline-none focus:border-primary"
         />
       </div>
 
       <div>
-        <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1">Blood Group</label>
+        <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1">
+          Blood Group <span className="text-[10px] text-ink-faint font-normal normal-case">(optional)</span>
+        </label>
         <select
           value={data.blood_group || ''}
           onChange={(e) => onChange('blood_group', e.target.value)}
@@ -50,7 +59,9 @@ const StudentBioAcademicFieldsB = ({ data = {}, onChange }) => {
       </div>
 
       <div>
-        <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1">Enrollment Status</label>
+        <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1">
+          Status <span className="text-[10px] text-ink-faint font-normal normal-case">(optional)</span>
+        </label>
         <select
           value={data.status || 'Active'}
           onChange={(e) => onChange('status', e.target.value)}
@@ -61,7 +72,9 @@ const StudentBioAcademicFieldsB = ({ data = {}, onChange }) => {
       </div>
 
       <div>
-        <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1">Photo URL</label>
+        <label className="block text-[11px] font-bold text-ink-muted uppercase mb-1">
+          Photo URL <span className="text-[10px] text-ink-faint font-normal normal-case">(optional)</span>
+        </label>
         <input
           type="text"
           value={data.photo_url || data.avatar_url || ''}

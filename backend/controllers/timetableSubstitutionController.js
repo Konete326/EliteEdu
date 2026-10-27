@@ -73,7 +73,7 @@ const getSubstitutions = async (req, res) => {
 const assignSubstitution = async (req, res) => {
   try {
     const schoolId = req.schoolId || req.user?.school_id;
-    const { slot_id, substitute_teacher_id, date, remarks } = req.body;
+    const { slot_id, substitute_teacher_id, date, remarks, adjustment_type = 'Substitution' } = req.body;
     if (!slot_id || !substitute_teacher_id) {
       return res.status(400).json({ success: false, message: 'Slot ID and substitute teacher are required' });
     }
@@ -87,7 +87,7 @@ const assignSubstitution = async (req, res) => {
         school_id: schoolId, campus_id: slot.campus_id, date: targetDate, timetable_slot_id: slot._id,
         period_no: slot.period_no, day_of_week: slot.day_of_week, grade_id: slot.grade_id?._id || slot.grade_id,
         section: slot.section, subject_id: slot.subject_id?._id || slot.subject_id, original_teacher_id: slot.teacher_id,
-        substitute_teacher_id, status: 'Assigned', remarks: remarks || '', assigned_by: req.user?._id || null
+        substitute_teacher_id, adjustment_type, status: 'Assigned', remarks: remarks || '', assigned_by: req.user?._id || null
       },
       { upsert: true, new: true }
     );
@@ -105,6 +105,84 @@ const assignSubstitution = async (req, res) => {
   }
 };
 
+const createQuickAdjustment = async (req, res) => {
+  try {
+    const schoolId = req.schoolId || req.user?.school_id;
+    const {
+      period_no,
+      grade_id,
+      section = 'A',
+      subject_id,
+      adjustment_type = 'Extra_Class',
+      date,
+      remarks,
+      slot_id
+    } = req.body;
+
+    const teacherId = req.user.id;
+    const targetDate = date || new Date().toISOString().slice(0, 10);
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const targetDay = dayNames[new Date(targetDate).getDay()] || 'Monday';
+
+    let originalTeacherId = null;
+    let slotRef = null;
+    let campusId = req.user.campus_id;
+    let finalGradeId = grade_id;
+    let finalSubjectId = subject_id;
+    let finalSection = section;
+
+    if (slot_id) {
+      const slot = await TimetableSlot.findOne({ _id: slot_id, school_id: schoolId }).lean();
+      if (slot) {
+        slotRef = slot._id;
+        originalTeacherId = slot.teacher_id;
+        campusId = slot.campus_id || campusId;
+        finalGradeId = finalGradeId || slot.grade_id;
+        finalSubjectId = finalSubjectId || slot.subject_id;
+        finalSection = finalSection || slot.section;
+      }
+    }
+
+    if (!finalGradeId || !finalSubjectId) {
+      if (adjustment_type === 'Relieved_Busy' && slotRef) {
+      } else {
+        return res.status(400).json({ success: false, message: 'Class and Subject are required for period adjustment' });
+      }
+    }
+
+    const sub = await TimetableSubstitution.create({
+      school_id: schoolId,
+      campus_id: campusId,
+      date: targetDate,
+      timetable_slot_id: slotRef,
+      period_no: Number(period_no),
+      day_of_week: targetDay,
+      grade_id: finalGradeId,
+      section: finalSection,
+      subject_id: finalSubjectId,
+      original_teacher_id: originalTeacherId || teacherId,
+      substitute_teacher_id: teacherId,
+      adjustment_type,
+      status: 'Assigned',
+      remarks: remarks || '',
+      assigned_by: req.user._id
+    });
+
+    const populated = await TimetableSubstitution.findById(sub._id)
+      .populate('grade_id', 'name code')
+      .populate('subject_id', 'name code')
+      .lean();
+
+    res.status(201).json({
+      success: true,
+      message: 'Quick period adjustment logged successfully',
+      data: populated
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 const cancelSubstitution = async (req, res) => {
   try {
     const schoolId = req.schoolId || req.user?.school_id;
@@ -115,4 +193,4 @@ const cancelSubstitution = async (req, res) => {
   }
 };
 
-module.exports = { getSubstitutions, assignSubstitution, cancelSubstitution };
+module.exports = { getSubstitutions, assignSubstitution, createQuickAdjustment, cancelSubstitution };

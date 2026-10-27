@@ -1,11 +1,12 @@
+import { createPortal } from 'react-dom';
 import React from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 
 const StaffAttendanceResetModal = ({ isOpen, onClose, onConfirm, date, loading }) => {
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+  const modalNode = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="relative w-full max-w-md bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-6 shadow-2xl space-y-5 animate-in zoom-in-95 duration-200">
         <button
           type="button"
@@ -50,6 +51,8 @@ const StaffAttendanceResetModal = ({ isOpen, onClose, onConfirm, date, loading }
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalNode, document.body) : null;
 };
 
 export default StaffAttendanceResetModal;

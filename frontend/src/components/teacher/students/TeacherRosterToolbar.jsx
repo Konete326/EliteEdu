@@ -1,4 +1,4 @@
-import { Search, UserPlus, CalendarCheck } from 'lucide-react';
+import { Search, UserPlus, CalendarCheck, LayoutGrid, List } from 'lucide-react';
 
 const TeacherRosterToolbar = ({
   search,
@@ -6,6 +6,10 @@ const TeacherRosterToolbar = ({
   selectedSection,
   onSectionChange,
   sections = [],
+  viewMode = 'grid',
+  onViewModeChange,
+  totalCount = 0,
+  visibleCount = 0,
   onAddStudent,
   onAttendanceClick
 }) => {
@@ -13,10 +17,49 @@ const TeacherRosterToolbar = ({
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-ink dark:text-ink-dark tracking-tight">My Students Roster</h1>
-          <p className="text-xs text-ink-muted">Complete class enrollment directory with direct profile editing.</p>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-xl sm:text-2xl font-black text-ink dark:text-ink-dark tracking-tight">
+              My Students Roster
+            </h1>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
+              {totalCount} Total
+            </span>
+          </div>
+          <p className="text-xs text-ink-muted">
+            Complete class enrollment directory with cards view and quick profile editing.
+          </p>
         </div>
+
         <div className="flex flex-wrap items-center gap-2">
+          <div className="hidden md:inline-flex p-1 rounded-xl bg-surface-secondary border border-line dark:border-line-dark">
+            <button
+              type="button"
+              onClick={() => onViewModeChange('grid')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                viewMode === 'grid'
+                  ? 'bg-surface dark:bg-surface-dark text-primary shadow-xs'
+                  : 'text-ink-muted hover:text-ink'
+              }`}
+              title="Card View"
+            >
+              <LayoutGrid size={14} />
+              <span>Cards</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onViewModeChange('table')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                viewMode === 'table'
+                  ? 'bg-surface dark:bg-surface-dark text-primary shadow-xs'
+                  : 'text-ink-muted hover:text-ink'
+              }`}
+              title="Table View"
+            >
+              <List size={14} />
+              <span>Table</span>
+            </button>
+          </div>
+
           <button
             type="button"
             onClick={onAddStudent}
@@ -56,6 +99,14 @@ const TeacherRosterToolbar = ({
           ))}
         </select>
       </div>
+
+      {visibleCount > 0 && totalCount > 0 && (
+        <div className="flex items-center justify-between text-[11px] text-ink-muted">
+          <span>
+            Showing <strong className="text-ink dark:text-ink-dark">{visibleCount}</strong> of <strong className="text-ink dark:text-ink-dark">{totalCount}</strong> students
+          </span>
+        </div>
+      )}
     </div>
   );
 };

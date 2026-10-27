@@ -18,11 +18,8 @@ const VoiceNoteComingSoonModal = ({ isOpen, onClose }) => {
           <X className="w-4 h-4" />
         </button>
 
-        <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center mb-4 relative shadow-xs">
+        <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center mb-4 shadow-xs">
           <Mic className="w-7 h-7" />
-          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-surface dark:border-surface-dark flex items-center justify-center text-white">
-            <Radio className="w-2.5 h-2.5 animate-pulse" />
-          </span>
         </div>
 
         <div className="flex items-center gap-1.5 mb-1">

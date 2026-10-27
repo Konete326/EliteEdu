@@ -11,14 +11,14 @@ const { bulkSeedGrades, toggleGradeStatus, reorderGrades } = require('../control
 
 const router = express.Router();
 
-router.use(authMiddleware, authorizeRoles('Admin'));
+router.use(authMiddleware);
 
-router.get('/', getGrades);
-router.post('/', createGrade);
-router.post('/seed-defaults', bulkSeedGrades);
-router.patch('/reorder', reorderGrades);
-router.put('/:id', updateGrade);
-router.patch('/:id/status', toggleGradeStatus);
-router.delete('/:id', deleteGrade);
+router.get('/', authorizeRoles('Admin', 'SuperAdmin', 'Teacher', 'Student'), getGrades);
+router.post('/', authorizeRoles('Admin'), createGrade);
+router.post('/seed-defaults', authorizeRoles('Admin'), bulkSeedGrades);
+router.patch('/reorder', authorizeRoles('Admin'), reorderGrades);
+router.put('/:id', authorizeRoles('Admin'), updateGrade);
+router.patch('/:id/status', authorizeRoles('Admin'), toggleGradeStatus);
+router.delete('/:id', authorizeRoles('Admin'), deleteGrade);
 
 module.exports = router;

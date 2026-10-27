@@ -35,6 +35,7 @@ This document contains strict coding, architectural, and behavioral rules that a
 
 ## 5. UI, UX & Interaction Standards
 * **Professional Icons & UI Aesthetics:** Use clean, professional icons (e.g., `lucide-react`) and modern Tailwind CSS styling. Avoid amateur or generic AI aesthetic patterns.
+* **No Floating Accent Badges / Sparkles on Cards or Icons:** Do NOT place floating corner badge icons (e.g. `absolute -top-1.5 -right-1.5 p-1.5 rounded-full bg-accent text-white shadow-xs` with `Sparkles`, radio dots, or ping animations) over primary icons, cards, or placeholders anywhere in the project. Icons must remain clean, centered, and professional without decorative floating mini-badges.
 * **No Native Browser Dialogs:** Never use browser `alert()`, `confirm()`, or `prompt()`. Always use custom, theme-aware accessible modals or toast alerts.
 
 ---

@@ -2,8 +2,8 @@ import { X, User, Users, ShieldCheck } from 'lucide-react';
 
 const TABS = [
   { id: 'bio', label: 'Student Bio & Academic', icon: User },
-  { id: 'parents', label: 'Father & Mother Details', icon: Users },
-  { id: 'contact', label: 'Contact & Portal Password', icon: ShieldCheck }
+  { id: 'parents', label: 'Parents Details (Optional)', icon: Users },
+  { id: 'contact', label: 'Contact & Credentials (Optional)', icon: ShieldCheck }
 ];
 
 const TeacherStudentProfileModalHeader = ({ isEdit, studentName, activeTab, onSelectTab, onClose }) => {

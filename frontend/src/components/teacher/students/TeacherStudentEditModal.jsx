@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import { useState, useEffect } from 'react';
 import { Save, Loader2, AlertCircle } from 'lucide-react';
 import api from '../../../services/api';
@@ -58,8 +59,8 @@ const TeacherStudentEditModal = ({ isOpen, onClose, student, grades = [], onSave
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
+  const modalNode = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
       <div className="w-full max-w-3xl rounded-3xl bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
         <TeacherStudentModalHeader
           isEdit={isEdit}
@@ -99,6 +100,8 @@ const TeacherStudentEditModal = ({ isOpen, onClose, student, grades = [], onSave
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalNode, document.body) : null;
 };
 
 export default TeacherStudentEditModal;

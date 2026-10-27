@@ -3,6 +3,8 @@ const User = require('../models/User');
 const Grade = require('../models/Grade');
 const Student = require('../models/Student');
 const School = require('../models/School');
+const TimetableSlot = require('../models/TimetableSlot');
+const TimetableSubstitution = require('../models/TimetableSubstitution');
 
 const normSec = (sec) => {
   if (!sec) return '';
@@ -20,16 +22,62 @@ const getTeacherPortalMe = async (req, res) => {
     if (!teacher || teacher.status === 'Inactive') {
       return res.status(403).json({ success: false, message: 'Teacher profile not accessible' });
     }
-    const [ctGrades, school] = await Promise.all([
+    const campusId = teacher.campus_id?._id || teacher.campus_id;
+    const [ctGrades, campusGrades, timetableSlots, substitutions, school] = await Promise.all([
       Grade.find({ school_id: req.user.school_id, class_teacher: req.user.id }).select('name sections campus_id').lean(),
-      School.findById(req.user.school_id).select('theme_settings').lean()
+      campusId
+        ? Grade.find({ school_id: req.user.school_id, campus_id: campusId, status: { $ne: 'Inactive' } }).select('name sections campus_id').lean()
+        : Grade.find({ school_id: req.user.school_id, status: { $ne: 'Inactive' } }).select('name sections campus_id').lean(),
+      TimetableSlot.find({ school_id: req.user.school_id, teacher_id: req.user.id })
+        .populate('grade_id', 'name sections campus_id')
+        .populate('subject_id', 'name code')
+        .select('grade_id section period_no day_of_week subject_id room_no')
+        .lean(),
+      TimetableSubstitution.find({
+        school_id: req.user.school_id,
+        substitute_teacher_id: req.user.id,
+        status: { $ne: 'Cancelled' }
+      })
+        .populate('grade_id', 'name sections campus_id')
+        .populate('subject_id', 'name code')
+        .select('grade_id section period_no day_of_week subject_id adjustment_type')
+        .lean(),
+      School.findById(req.user.school_id).select('theme_settings school_type name').lean()
     ]);
     const permissions = teacher.app_settings || teacher.app_permissions || {};
+
+    const p1Slots = timetableSlots.filter((ts) => Number(ts.period_no) === 1 && ts.grade_id);
+    const p1Grades = p1Slots.map((ts) => ({
+      ...ts.grade_id,
+      section: ts.section,
+      is_period_one_incharge: true
+    }));
+
+    const classTeacherList = [...ctGrades];
+    p1Grades.forEach((pg) => {
+      if (!classTeacherList.some((cg) => String(cg._id) === String(pg._id))) {
+        classTeacherList.push(pg);
+      }
+    });
+
+    const timetableGrades = timetableSlots.map((ts) => ts.grade_id).filter(Boolean);
+    const subGrades = substitutions.map((sub) => sub.grade_id).filter(Boolean);
+    const combinedGrades = [...classTeacherList, ...(teacher.grades || []), ...timetableGrades, ...subGrades];
+    const uniqueAssignedGrades = Array.from(new Map(combinedGrades.map((g) => [String(g._id), g])).values());
+
     res.status(200).json({
-      success: true, teacher, class_teacher_grades: ctGrades, permissions,
+      success: true,
+      teacher,
+      class_teacher_grades: classTeacherList,
+      campus_grades: campusGrades,
+      assigned_grades: uniqueAssignedGrades.length > 0 ? uniqueAssignedGrades : [],
+      timetable_slots: timetableSlots,
+      substitutions,
+      permissions,
       custom_role: teacher.custom_role_id || null,
       role_permissions: teacher.custom_role_id?.permissions || [],
-      theme_settings: school?.theme_settings || null
+      theme_settings: school?.theme_settings || null,
+      school_type: school?.school_type || req.user?.school_type || 'Private'
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to load teacher profile', error: error.message });
@@ -41,7 +89,16 @@ const getTeacherStudents = async (req, res) => {
     const teacher = await User.findOne({ _id: req.user.id, school_id: req.user.school_id }).select('class_assignments grades campus_id').lean();
     if (!teacher) return res.status(404).json({ success: false, message: 'Teacher not found' });
 
-    const ctGrades = await Grade.find({ school_id: req.user.school_id, class_teacher: req.user.id }).select('_id name').lean();
+    const [ctGrades, timetableSlots, substitutions] = await Promise.all([
+      Grade.find({ school_id: req.user.school_id, class_teacher: req.user.id }).select('_id name sections').lean(),
+      TimetableSlot.find({ school_id: req.user.school_id, teacher_id: req.user.id }).select('grade_id section period_no').lean(),
+      TimetableSubstitution.find({
+        school_id: req.user.school_id,
+        substitute_teacher_id: req.user.id,
+        status: { $ne: 'Cancelled' }
+      }).select('grade_id section period_no').lean()
+    ]);
+
     const assignedIds = new Set(ctGrades.map((g) => String(g._id)));
     const assignedNames = new Set(ctGrades.map((g) => g.name.trim()));
     const sectionsByGrade = {};
@@ -68,12 +125,45 @@ const getTeacherStudents = async (req, res) => {
       });
     });
 
+    timetableSlots.forEach((ts) => {
+      if (ts.grade_id) {
+        const gStr = String(ts.grade_id);
+        assignedIds.add(gStr);
+        const sNorm = normSec(ts.section);
+        if (!sectionsByGrade[gStr]) sectionsByGrade[gStr] = new Set();
+        if (Number(ts.period_no) === 1) {
+          if (sNorm) sectionsByGrade[gStr].add(sNorm);
+          else sectionsByGrade[gStr].add('ALL');
+        } else {
+          if (sNorm && !sectionsByGrade[gStr].has('ALL')) {
+            sectionsByGrade[gStr].add(sNorm);
+          }
+        }
+      }
+    });
+
+    substitutions.forEach((sub) => {
+      if (sub.grade_id) {
+        const gStr = String(sub.grade_id);
+        assignedIds.add(gStr);
+        const sNorm = normSec(sub.section);
+        if (!sectionsByGrade[gStr]) sectionsByGrade[gStr] = new Set();
+        if (sNorm && !sectionsByGrade[gStr].has('ALL')) {
+          sectionsByGrade[gStr].add(sNorm);
+        }
+      }
+    });
+
+    if (assignedIds.size === 0 && assignedNames.size === 0) {
+      return res.status(200).json({ success: true, students: [], total: 0 });
+    }
+
     const orClauses = [];
     if (assignedIds.size > 0) orClauses.push({ _id: { $in: Array.from(assignedIds).filter((id) => mongoose.Types.ObjectId.isValid(id)) } });
     if (assignedNames.size > 0) orClauses.push({ name: { $in: Array.from(assignedNames) } });
     if (orClauses.length === 0) return res.status(200).json({ success: true, students: [], total: 0 });
 
-    const matchingGrades = await Grade.find({ school_id: req.user.school_id, $or: orClauses }).select('_id name').lean();
+    const matchingGrades = await Grade.find({ school_id: req.user.school_id, $or: orClauses }).select('_id name sections').lean();
     matchingGrades.forEach((g) => { assignedIds.add(String(g._id)); assignedNames.add(g.name.trim()); });
 
     const finalGradeIds = Array.from(assignedIds).filter((id) => mongoose.Types.ObjectId.isValid(id)).map((id) => new mongoose.Types.ObjectId(id));

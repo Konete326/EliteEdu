@@ -8,9 +8,11 @@ const LeaveRequestRow = ({
   onPrint,
   onDelete,
   onWhatsApp,
-  isProcessing
+  isProcessing,
+  canApprove = true
 }) => {
   const isStudent = leave.applicant_type === 'Student';
+  const canTakeAction = canApprove || isStudent;
   const name = isStudent ? leave.student_id?.name : leave.staff_id?.name;
   const photo = isStudent ? leave.student_id?.photo_url : leave.staff_id?.photo_url;
   const sub = isStudent ? `Class: ${leave.grade_id?.name || '—'} (${leave.section || 'A'}) • GR: ${leave.student_id?.gr_number || '—'}` : `${leave.staff_id?.designation || 'Staff'} • Code: ${leave.staff_id?.employee_code || '—'}`;
@@ -72,7 +74,7 @@ const LeaveRequestRow = ({
       </td>
       <td className="py-2.5 px-3 text-right">
         <div className="flex items-center justify-end gap-1">
-          {leave.status === 'Pending' && (
+          {leave.status === 'Pending' && canTakeAction && (
             <>
               <button
                 type="button"

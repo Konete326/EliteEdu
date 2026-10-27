@@ -2,6 +2,7 @@ const LeaveRequest = require('../models/LeaveRequest');
 const { verifyClassAccess } = require('../utils/attendanceAccessHelper');
 const { syncLeaveToAttendance } = require('../utils/leaveAttendanceSyncHelper');
 const { buildLeaveFilter } = require('../utils/leaveFilterHelper');
+const { notifyLeaveStatusChange, notifyNewLeaveRequest } = require('../utils/leaveNotificationHelper');
 
 const getLeaveRequests = async (req, res) => {
   try {
@@ -46,7 +47,8 @@ const createLeaveRequest = async (req, res) => {
 
     const total_days = Math.max(1, Math.round((new Date(to_date) - new Date(from_date)) / 86400000) + 1);
     const isAdmin = req.user.role === 'Admin' || req.user.role === 'SuperAdmin';
-    const finalStatus = (isAdmin && auto_approve) ? 'Approved' : 'Pending';
+    const isTeacher = req.user.role === 'Teacher';
+    const finalStatus = (isAdmin && auto_approve) || (isTeacher && applicant_type === 'Student') ? 'Approved' : 'Pending';
 
     const leave = await LeaveRequest.create({
       school_id: req.user.school_id,
@@ -69,6 +71,7 @@ const createLeaveRequest = async (req, res) => {
     });
 
     if (finalStatus === 'Approved') await syncLeaveToAttendance(leave, req.user.id);
+    await notifyNewLeaveRequest({ leave, creatorUser: req.user });
     res.status(201).json({ success: true, leave });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -90,6 +93,7 @@ const updateLeaveStatus = async (req, res) => {
     await leave.save();
 
     if (status === 'Approved') await syncLeaveToAttendance(leave, req.user.id);
+    await notifyLeaveStatusChange({ leave, status, adminRemarks: admin_remarks, reviewerId: req.user.id });
     res.json({ success: true, leave });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

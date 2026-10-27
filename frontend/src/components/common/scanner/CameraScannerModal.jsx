@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import React, { useState, useEffect, useId } from 'react';
 import { X, Camera, CheckCircle2, AlertCircle, Maximize2, Minimize2, Clock, ShieldCheck } from 'lucide-react';
 import { useCameraScanner } from './useCameraScanner';
@@ -97,8 +98,8 @@ const CameraScannerModal = ({
   if (!isOpen) return null;
 
   if (isKioskMode) {
-    return (
-      <div className="fixed inset-0 z-50 bg-slate-950 text-white flex flex-col justify-between p-4 sm:p-6 overflow-hidden animate-in fade-in duration-200">
+    const kioskNode = (
+      <div className="fixed inset-0 z-[100] bg-slate-950 text-white flex flex-col justify-between p-4 sm:p-6 overflow-hidden animate-in fade-in duration-200">
         <div className="flex items-center justify-between pb-3 border-b border-slate-800 shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-2xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
@@ -178,10 +179,11 @@ const CameraScannerModal = ({
         </div>
       </div>
     );
+    return typeof document !== 'undefined' ? createPortal(kioskNode, document.body) : null;
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
+  const modalNode = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="fixed inset-0" onClick={handleClose} />
       <div className="relative w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto z-10">
         <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">

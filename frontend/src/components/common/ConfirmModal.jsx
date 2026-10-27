@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import { X, AlertTriangle } from 'lucide-react';
 
 const ConfirmModal = ({
@@ -17,13 +18,13 @@ const ConfirmModal = ({
       ? 'bg-bad hover:bg-bad/90 text-white'
       : 'bg-primary hover:bg-primary-hover text-white';
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  const modalNode = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
         onClick={onClose}
       />
-      <div className="relative w-full max-w-md bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-6 shadow-xl z-10 space-y-4">
+      <div className="relative w-full max-w-md bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-6 shadow-2xl z-10 space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div
@@ -43,7 +44,7 @@ const ConfirmModal = ({
           <button
             type="button"
             onClick={onClose}
-            className="text-ink-muted hover:text-ink dark:hover:text-ink-dark p-1 rounded-lg"
+            className="text-ink-muted hover:text-ink dark:hover:text-ink-dark p-1 rounded-lg cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -53,7 +54,7 @@ const ConfirmModal = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-lg border border-line dark:border-line-dark text-sm font-medium text-ink-sub dark:text-ink-sub-dark hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark transition-colors"
+            className="px-4 py-2 rounded-lg border border-line dark:border-line-dark text-sm font-medium text-ink-sub dark:text-ink-sub-dark hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark transition-colors cursor-pointer"
           >
             {cancelText}
           </button>
@@ -63,7 +64,7 @@ const ConfirmModal = ({
               onConfirm();
               onClose();
             }}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${confirmBtnClass}`}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${confirmBtnClass}`}
           >
             {confirmText}
           </button>
@@ -71,6 +72,8 @@ const ConfirmModal = ({
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalNode, document.body) : null;
 };
 
 export default ConfirmModal;

@@ -1,12 +1,13 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { X, Printer, Calendar, FileText, CheckCircle2 } from 'lucide-react';
 import OfficialSignatureStampBlock from '../../../common/OfficialSignatureStampBlock';
 
 const LeaveSlipModal = ({ leave, isOpen, onClose }) => {
   if (!isOpen || !leave) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs print:p-0 print:bg-white">
+  const modalNode = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs print:p-0 print:bg-white">
       <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden print:border-none print:shadow-none print:max-w-none">
         <div className="flex items-center justify-between p-4 border-b border-line dark:border-line-dark print:hidden">
           <div className="flex items-center gap-2">
@@ -26,7 +27,7 @@ const LeaveSlipModal = ({ leave, isOpen, onClose }) => {
         <div className="p-6 space-y-5 print:p-8">
           <div className="text-center pb-3 border-b border-line dark:border-line-dark">
             <h2 className="text-base font-black uppercase text-ink dark:text-white tracking-wide">ELITE EDUCATIONAL SYSTEM</h2>
-            <p className="text-[11px] font-semibold text-ink-muted">Official Attendance & Leave Management Division</p>
+            <p className="text-[11px] font-semibold text-ink-muted">Official Attendance &amp; Leave Management Division</p>
             <div className="inline-block mt-1 px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-primary/10 text-primary">
               APPROVED LEAVE VOUCHER
             </div>
@@ -71,6 +72,8 @@ const LeaveSlipModal = ({ leave, isOpen, onClose }) => {
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalNode, document.body) : null;
 };
 
 export default LeaveSlipModal;

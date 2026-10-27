@@ -33,8 +33,8 @@ const createTeacherStudent = async (req, res) => {
   try {
     const schoolId = req.user.school_id;
     const { name, father_name, current_grade, current_section, campus_id, ...rest } = req.body;
-    if (!name?.trim() || !father_name?.trim()) {
-      return res.status(400).json({ success: false, message: 'Student Name and Father Name are required' });
+    if (!name?.trim()) {
+      return res.status(400).json({ success: false, message: 'Student Name is required' });
     }
 
     const allowed = await getTeacherAllowedGradeIds(req.user);
@@ -58,7 +58,7 @@ const createTeacherStudent = async (req, res) => {
       school_id: schoolId,
       campus_id: finalCampusId,
       name: name.trim(),
-      father_name: father_name.trim(),
+      father_name: father_name?.trim() || 'N/A',
       current_grade: targetGradeId,
       current_section: current_section?.trim() || 'A',
       gr_number: finalGr,
@@ -84,6 +84,9 @@ const updateTeacherStudent = async (req, res) => {
     if (!hasAccess) return res.status(403).json({ success: false, message: 'Unauthorized to modify student outside assigned class' });
 
     const cleanPayload = sanitizeStudentPayload(req.body);
+    if (cleanPayload.father_name !== undefined && !cleanPayload.father_name?.trim()) {
+      cleanPayload.father_name = 'N/A';
+    }
     if (req.user.role === 'Teacher') {
       delete cleanPayload.school_id;
       delete cleanPayload.monthly_fee;

@@ -8,9 +8,11 @@ const LeaveRequestMobileCard = ({
   onPrint,
   onDelete,
   onWhatsApp,
-  isProcessing
+  isProcessing,
+  canApprove = true
 }) => {
   const isStudent = leave.applicant_type === 'Student';
+  const canTakeAction = canApprove || isStudent;
   const name = isStudent ? leave.student_id?.name : leave.staff_id?.name;
   const photo = isStudent ? leave.student_id?.photo_url : leave.staff_id?.photo_url;
   const sub = isStudent
@@ -86,7 +88,7 @@ const LeaveRequestMobileCard = ({
 
       <div className="flex items-center justify-between gap-1.5 pt-1 border-t border-line/60 dark:border-line-dark/60">
         <div className="flex items-center gap-1.5">
-          {leave.status === 'Pending' && (
+          {leave.status === 'Pending' && canTakeAction && (
             <>
               <button
                 type="button"

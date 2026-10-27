@@ -22,11 +22,22 @@ const SidebarAccordion = ({ category, isOpen, onToggle, isExpanded, onNavigate, 
       <NavLink
         to={singleItem.path}
         onClick={onNavigate}
-        title={!isExpanded ? category.title : undefined}
-        className={`w-full flex items-center ${!isExpanded ? 'justify-center px-2' : 'gap-3 px-3.5'} py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${singleStyle}`}
+        title={singleItem.name || category.title}
+        className={`w-full flex items-center ${!isExpanded ? 'justify-center px-2' : 'justify-between px-3'} py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${singleStyle}`}
       >
-        <Icon className="w-4 h-4 shrink-0" />
-        {isExpanded && <span className="truncate">{category.title}</span>}
+        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+          <Icon className="w-4 h-4 shrink-0" />
+          {isExpanded && <span className="truncate text-left">{singleItem.name || category.title}</span>}
+        </div>
+        {isExpanded && singleItem.badge && (
+          <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold shrink-0 ml-1.5 ${
+            isColored
+              ? 'bg-white/20 text-white border border-white/30'
+              : 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-dark border border-primary/20'
+          }`}>
+            {singleItem.badge}
+          </span>
+        )}
       </NavLink>
     );
   }
@@ -46,27 +57,28 @@ const SidebarAccordion = ({ category, isOpen, onToggle, isExpanded, onNavigate, 
       <button
         type="button"
         onClick={() => onToggle(category.title)}
-        title={!isExpanded ? category.title : undefined}
-        className={`w-full flex items-center ${!isExpanded ? 'justify-center px-2' : 'justify-between px-3.5'} py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer active:scale-95 ${buttonStyle}`}
+        title={category.title}
+        className={`w-full flex items-center ${!isExpanded ? 'justify-center px-2' : 'justify-between px-3'} py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer active:scale-95 ${buttonStyle}`}
       >
-        <div className={`flex items-center ${!isExpanded ? 'justify-center' : 'gap-3'} min-w-0`}>
+        <div className={`flex items-center ${!isExpanded ? 'justify-center' : 'gap-2.5'} min-w-0 flex-1`}>
           <Icon className="w-4 h-4 shrink-0" />
-          {isExpanded && <span className="truncate">{category.title}</span>}
+          {isExpanded && <span className="truncate text-left">{category.title}</span>}
         </div>
         {isExpanded && (
-          isOpen ? <ChevronDown className="w-4 h-4 shrink-0 opacity-70" /> : <ChevronRight className="w-4 h-4 shrink-0 opacity-70" />
+          isOpen ? <ChevronDown className="w-3.5 h-3.5 shrink-0 opacity-70 ml-1.5" /> : <ChevronRight className="w-3.5 h-3.5 shrink-0 opacity-70 ml-1.5" />
         )}
       </button>
 
       {isExpanded && isOpen && (
-        <div className={`ml-4 pl-3 border-l space-y-1 py-1 ${isColored ? 'border-white/20' : 'border-line/70 dark:border-line-dark/70'}`}>
+        <div className={`ml-3.5 pl-2.5 border-l space-y-1 py-1 ${isColored ? 'border-white/20' : 'border-line/70 dark:border-line-dark/70'}`}>
           {category.subItems.map((sub) => (
             <NavLink
               key={sub.path}
               to={sub.path}
               onClick={onNavigate}
+              title={sub.name}
               className={({ isActive }) =>
-                `flex items-center px-3 py-2 rounded-lg text-[13px] font-medium transition-colors ${
+                `flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   isColored
                     ? isActive
                       ? 'bg-white text-slate-900 font-bold shadow-xs'
@@ -77,7 +89,16 @@ const SidebarAccordion = ({ category, isOpen, onToggle, isExpanded, onNavigate, 
                 }`
               }
             >
-              {sub.name}
+              <span className="truncate flex-1 min-w-0 text-left">{sub.name}</span>
+              {sub.badge && (
+                <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold shrink-0 ml-1.5 ${
+                  isColored
+                    ? 'bg-white/20 text-white border border-white/30'
+                    : 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-dark border border-primary/20'
+                }`}>
+                  {sub.badge}
+                </span>
+              )}
             </NavLink>
           ))}
         </div>

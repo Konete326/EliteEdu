@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useCampus } from '../../context/CampusContext';
@@ -43,6 +43,14 @@ const LeaveRequestPage = () => {
   const { data, grades, students, teachers, loading, loadLeaves } = useLeaveRequestData(
     activeCampusId, statusFilter, applicantFilter, search, page
   );
+
+  useEffect(() => {
+    const handleLeaveSync = () => {
+      loadLeaves();
+    };
+    window.addEventListener('eliteedu:leave-updated', handleLeaveSync);
+    return () => window.removeEventListener('eliteedu:leave-updated', handleLeaveSync);
+  }, [loadLeaves]);
 
   const handleReload = async () => {
     await loadLeaves();
@@ -128,6 +136,7 @@ const LeaveRequestPage = () => {
             onWhatsApp={handleWhatsApp}
             isProcessing={loading}
             onPageChange={setPage}
+            canApprove={user?.role === 'Admin' || user?.role === 'SuperAdmin'}
           />
         </div>
 
@@ -143,6 +152,8 @@ const LeaveRequestPage = () => {
           students={students}
           teachers={teachers}
           isAdmin={user?.role === 'Admin' || user?.role === 'SuperAdmin'}
+          isTeacher={user?.role === 'Teacher'}
+          currentUser={user}
         />
 
         <LeaveSlipModal leave={activeSlip} isOpen={Boolean(activeSlip)} onClose={() => setActiveSlip(null)} />

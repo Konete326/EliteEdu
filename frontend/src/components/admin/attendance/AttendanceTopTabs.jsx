@@ -1,37 +1,41 @@
 import React from 'react';
 import { Users, Briefcase, CalendarDays, BarChart3, ScanLine, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useAuth } from '../../../context/AuthContext';
 
-const TABS = [
-  { id: 'student', label: 'Student Attendance', icon: Users },
-  { id: 'staff', label: 'Staff Attendance', icon: Briefcase },
-  { id: 'leave', label: 'Leave Requests', icon: CalendarDays },
-  { id: 'report', label: 'Attendance Reports', icon: BarChart3 },
-  { id: 'realtime', label: 'Realtime Scanner', icon: ScanLine },
-  { id: 'settings', label: 'Settings', icon: Settings }
+const ALL_TABS = [
+  { id: 'student', label: 'Student Attendance', icon: Users, roles: ['Admin', 'SuperAdmin', 'Teacher'] },
+  { id: 'staff', label: 'Staff Attendance', icon: Briefcase, roles: ['Admin', 'SuperAdmin'] },
+  { id: 'leave', label: 'Leave Requests', icon: CalendarDays, roles: ['Admin', 'SuperAdmin', 'Teacher'] },
+  { id: 'report', label: 'Attendance Reports', icon: BarChart3, roles: ['Admin', 'SuperAdmin', 'Teacher'] },
+  { id: 'realtime', label: 'Realtime Scanner', icon: ScanLine, roles: ['Admin', 'SuperAdmin'] },
+  { id: 'settings', label: 'Settings', icon: Settings, roles: ['Admin', 'SuperAdmin'] }
 ];
 
 const AttendanceTopTabs = ({ activeTab, onTabChange, onOpenSettings }) => {
-  const activeIdx = Math.max(0, TABS.findIndex((t) => t.id === activeTab));
+  const { user } = useAuth();
+  const userRole = user?.role || 'Admin';
+  const tabs = ALL_TABS.filter((t) => !t.roles || t.roles.includes(userRole));
+  const activeIdx = Math.max(0, tabs.findIndex((t) => t.id === activeTab));
 
   const handleTabClick = (tabId) => {
     if (tabId === 'settings') {
-      if (onOpenSettings) onOpenSettings();
+      if (onOpenSettings && userRole !== 'Teacher') onOpenSettings();
       return;
     }
     onTabChange(tabId);
   };
 
   const handleMobilePrev = () => {
-    const prevIdx = activeIdx > 0 ? activeIdx - 1 : TABS.length - 1;
-    handleTabClick(TABS[prevIdx].id);
+    const prevIdx = activeIdx > 0 ? activeIdx - 1 : tabs.length - 1;
+    handleTabClick(tabs[prevIdx].id);
   };
 
   const handleMobileNext = () => {
-    const nextIdx = activeIdx < TABS.length - 1 ? activeIdx + 1 : 0;
-    handleTabClick(TABS[nextIdx].id);
+    const nextIdx = activeIdx < tabs.length - 1 ? activeIdx + 1 : 0;
+    handleTabClick(tabs[nextIdx].id);
   };
 
-  const currentTab = TABS[activeIdx] || TABS[0];
+  const currentTab = tabs[activeIdx] || tabs[0];
   const ActiveIcon = currentTab.icon;
 
   return (
@@ -67,7 +71,7 @@ const AttendanceTopTabs = ({ activeTab, onTabChange, onOpenSettings }) => {
         </div>
 
         <div className="flex items-center justify-center gap-1.5 pb-0.5">
-          {TABS.map((tab, idx) => (
+          {tabs.map((tab, idx) => (
             <button
               key={tab.id}
               type="button"
@@ -82,7 +86,7 @@ const AttendanceTopTabs = ({ activeTab, onTabChange, onOpenSettings }) => {
       </div>
 
       <div className="hidden sm:flex items-center gap-1 p-1 bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl w-fit shadow-2xs">
-        {TABS.map((tab) => {
+        {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           return (

@@ -1,6 +1,12 @@
-import { Camera, Mail, Phone, Building } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Camera, Mail, Phone, Building, Loader2, Crop } from 'lucide-react';
+import ImageCropModal from '../ImageCropModal';
 
 const ProfileHeaderHero = ({ profile, onPhotoUpload, saving }) => {
+  const [rawImage, setRawImage] = useState(null);
+  const [isCropOpen, setIsCropOpen] = useState(false);
+  const fileInputRef = useRef(null);
+
   const name = profile?.name || 'User Profile';
   const role = profile?.role || 'Staff';
   const email = profile?.email || '';
@@ -11,31 +17,76 @@ const ProfileHeaderHero = ({ profile, onPhotoUpload, saving }) => {
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!file.type.startsWith('image/')) return;
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === 'string') {
-        onPhotoUpload(reader.result);
+        setRawImage(reader.result);
+        setIsCropOpen(true);
       }
     };
     reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  const handleCropApply = (croppedUrl) => {
+    if (onPhotoUpload) {
+      onPhotoUpload(croppedUrl);
+    }
   };
 
   return (
     <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8 mb-6 px-4 sm:px-6 lg:px-8 py-5 sm:py-6 border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs relative overflow-hidden">
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
         <div className="relative group shrink-0">
-          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-2 border-primary/20 bg-primary/10 flex items-center justify-center text-primary font-black text-3xl shadow-md">
+          <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-2 border-primary/20 bg-primary/10 flex items-center justify-center text-primary font-black text-3xl shadow-md">
             {profile?.photo_url ? (
               <img src={profile.photo_url} alt={name} className="w-full h-full object-cover" />
             ) : (
               <span>{name.charAt(0).toUpperCase()}</span>
             )}
+
+            {saving && (
+              <div className="absolute inset-0 bg-ink/70 backdrop-blur-xs flex flex-col items-center justify-center text-white gap-1 z-10 animate-in fade-in">
+                <Loader2 className="w-6 h-6 animate-spin text-white" />
+                <span className="text-[9px] font-bold tracking-tight">Uploading...</span>
+              </div>
+            )}
+
+            {!saving && profile?.photo_url && (
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRawImage(profile.photo_url);
+                    setIsCropOpen(true);
+                  }}
+                  title="Crop & Resize Avatar"
+                  className="p-1.5 rounded-lg bg-white/20 text-white hover:bg-white/30 backdrop-blur-xs transition-colors cursor-pointer"
+                >
+                  <Crop className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  title="Choose New Photo"
+                  className="p-1.5 rounded-lg bg-white/20 text-white hover:bg-white/30 backdrop-blur-xs transition-colors cursor-pointer"
+                >
+                  <Camera className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
           </div>
-          <label className="absolute -bottom-2 -right-2 p-2 rounded-xl bg-primary text-white shadow-lg cursor-pointer hover:bg-primary-hover transition-colors">
+
+          <label
+            title="Upload and crop photo"
+            className="absolute -bottom-2 -right-2 p-2 rounded-xl bg-primary text-white shadow-lg cursor-pointer hover:bg-primary-hover active:scale-95 transition-all"
+          >
             <Camera className="w-4 h-4" />
             <input
+              ref={fileInputRef}
               type="file"
-              accept="image/png,image/jpeg,image/webp"
+              accept="image/png,image/jpeg,image/webp,image/jpg"
               onChange={handleFileChange}
               disabled={saving}
               className="hidden"
@@ -69,6 +120,13 @@ const ProfileHeaderHero = ({ profile, onPhotoUpload, saving }) => {
           </p>
         </div>
       </div>
+
+      <ImageCropModal
+        isOpen={isCropOpen}
+        imageSrc={rawImage}
+        onClose={() => setIsCropOpen(false)}
+        onApplyCrop={handleCropApply}
+      />
     </div>
   );
 };

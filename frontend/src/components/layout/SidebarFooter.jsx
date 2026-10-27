@@ -5,15 +5,15 @@ import { PanelLeft, Moon, Sun, LogOut } from 'lucide-react';
 const SidebarFooter = ({ user, isExpanded, onToggleCollapse, isDark, toggleTheme, onLogoutClick, isColored }) => {
   const navigate = useNavigate();
   const initial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
-  const profilePath = user?.role === 'SuperAdmin' ? '/superadmin/profile' : user?.role === 'Teacher' ? '/teacher/profile' : '/admin/profile';
+  const profilePath = user?.role === 'SuperAdmin' ? '/superadmin/profile' : user?.role === 'Teacher' ? null : '/admin/profile';
 
   return (
     <div className={`border-t p-3 space-y-2.5 shrink-0 ${isColored ? 'border-white/15 bg-transparent text-white' : 'border-line dark:border-line-dark bg-surface dark:bg-surface-dark'}`}>
       <button
         type="button"
-        onClick={() => navigate(profilePath)}
-        title="View My Profile"
-        className={`w-full flex items-center ${!isExpanded ? 'justify-center' : 'gap-3 px-1'} text-left p-1 rounded-xl transition-colors cursor-pointer group ${
+        onClick={profilePath ? () => navigate(profilePath) : undefined}
+        title={profilePath ? 'View My Profile' : user?.name || 'User'}
+        className={`w-full flex items-center ${!isExpanded ? 'justify-center' : 'gap-3 px-1'} text-left p-1 rounded-xl transition-colors ${profilePath ? 'cursor-pointer' : 'cursor-default'} group ${
           isColored ? 'hover:bg-white/10' : 'hover:bg-surface-secondary/70 dark:hover:bg-white/[0.04]'
         }`}
       >

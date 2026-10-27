@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import React from 'react';
 import { X, Printer, FileSpreadsheet } from 'lucide-react';
 
@@ -22,8 +23,8 @@ const StaffDailyReportModal = ({ isOpen, onClose, date, records = [], summary = 
     window.print();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 print:hidden">
+  const modalNode = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 print:hidden">
       <div className="relative w-full max-w-4xl max-h-[90vh] bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
         <div className="p-4 sm:p-5 border-b border-line dark:border-line-dark flex items-center justify-between bg-surface-secondary/30 dark:bg-surface-secondary-dark/30 print:hidden">
           <div className="flex items-center gap-2.5">
@@ -140,6 +141,8 @@ const StaffDailyReportModal = ({ isOpen, onClose, date, records = [], summary = 
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalNode, document.body) : null;
 };
 
 export default StaffDailyReportModal;

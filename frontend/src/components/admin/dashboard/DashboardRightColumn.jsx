@@ -56,19 +56,19 @@ const DashboardRightColumn = ({ birthdaysToday, upcomingClasses, studentStats, c
               <Video className="w-4 h-4" />
             </div>
             <div className="flex items-center gap-1">
-              <h3 className="text-sm font-bold text-ink dark:text-ink-dark group-hover:text-primary transition-colors">Upcoming Classes</h3>
+              <h3 className="text-sm font-bold text-ink dark:text-ink-dark group-hover:text-primary transition-colors">Virtual Classrooms</h3>
               <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-ink-muted" />
             </div>
           </div>
-          <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-surface-secondary text-ink dark:text-ink-dark">
-            {classes.length}
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
+            Coming Soon
           </span>
         </Link>
 
         {classes.length === 0 ? (
           <div className="py-6 flex flex-col items-center justify-center text-ink-muted">
             <Video className="w-8 h-8 stroke-[1.5] mb-2 opacity-40" />
-            <p className="text-xs font-medium">No upcoming classes</p>
+            <p className="text-xs font-medium">Virtual Classroom Studio coming soon</p>
           </div>
         ) : (
           <div className="space-y-2">

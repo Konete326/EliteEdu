@@ -1,22 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Calendar, FileText, Video, DollarSign, Award, Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import api from '../../utils/axiosConfig';
 import { useToast } from '../../context/ToastContext';
+import api from '../../utils/axiosConfig';
 import StudentSwitcherBar from '../../components/student/StudentSwitcherBar';
 import StudentPortalHeader from '../../components/student/StudentPortalHeader';
 import StudentOverviewTab from '../../components/student/StudentOverviewTab';
-import StudentHomeworkTab from '../../components/student/StudentHomeworkTab';
-import StudentLiveLecturesTab from '../../components/student/StudentLiveLecturesTab';
 import StudentFeeInvoicesTab from '../../components/student/StudentFeeInvoicesTab';
-import StudentExamResultsTab from '../../components/student/StudentExamResultsTab';
+import GlobalComingSoon from '../../components/common/GlobalComingSoon';
 
 const StudentPortalPage = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const isStaff = user?.role === 'Admin' || user?.role === 'Teacher';
+  const isStaff = user?.role === 'Admin' || user?.role === 'SuperAdmin' || user?.role === 'Teacher';
+
   const [activeTab, setActiveTab] = useState('overview');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [allStudents, setAllStudents] = useState([]);
   const [selectedStudentId, setSelectedStudentId] = useState('');
   const [portalData, setPortalData] = useState(null);
@@ -51,10 +50,10 @@ const StudentPortalPage = () => {
 
   const tabs = [
     { id: 'overview', label: 'Overview & Timetable', icon: Calendar },
-    { id: 'homework', label: 'Homework & Quizzes', icon: FileText },
-    { id: 'live', label: 'Live Classes & Lectures', icon: Video },
+    { id: 'homework', label: 'Homework & LMS', icon: FileText, badge: 'Coming Soon' },
+    { id: 'live', label: 'Live Classrooms', icon: Video, badge: 'Coming Soon' },
     { id: 'fees', label: 'Fee Challans & Dues', icon: DollarSign },
-    { id: 'exams', label: 'Exam Results & Attendance', icon: Award }
+    { id: 'exams', label: 'Exam Results & Attendance', icon: Award, badge: 'Coming Soon' }
   ];
 
   return (
@@ -86,7 +85,13 @@ const StudentPortalPage = () => {
                   : 'border-transparent text-ink-muted dark:text-ink-muted-dark hover:text-ink dark:hover:text-ink-dark hover:border-line'
               }`}
             >
-              <Icon className="w-4 h-4" /> {tab.label}
+              <Icon className="w-4 h-4" />
+              <span>{tab.label}</span>
+              {tab.badge && (
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold bg-primary/10 text-primary border border-primary/20">
+                  {tab.badge}
+                </span>
+              )}
             </button>
           );
         })}
@@ -100,10 +105,47 @@ const StudentPortalPage = () => {
       ) : (
         <div>
           {activeTab === 'overview' && <StudentOverviewTab timetable={portalData?.timetable} lmsItems={portalData?.lmsItems} />}
-          {activeTab === 'homework' && <StudentHomeworkTab lmsItems={portalData?.lmsItems} studentId={portalData?.student?._id} onReload={loadOverview} />}
-          {activeTab === 'live' && <StudentLiveLecturesTab lmsItems={portalData?.lmsItems} />}
+          {activeTab === 'homework' && (
+            <GlobalComingSoon
+              title="Homework & LMS Studio"
+              subtitle="Student Digital Learning Space"
+              description="Your digital homework assignments, lecture notes, study materials, and online quizzes will appear here once the LMS module is launched."
+              icon={FileText}
+              badge="Coming Soon"
+              features={[
+                { title: 'Digital Assignments', desc: 'Submit homework and view teacher marks and remarks directly.' },
+                { title: 'Lecture Notes', desc: 'Download class study materials and reference guides.' },
+                { title: 'Interactive Quizzes', desc: 'Practice mock tests and chapter assessments online.' }
+              ]}
+            />
+          )}
+          {activeTab === 'live' && (
+            <GlobalComingSoon
+              title="Live Virtual Classrooms"
+              subtitle="Interactive Online Learning"
+              description="Live virtual lectures, interactive screen sharing, and recorded revision sessions are being integrated and will be available shortly."
+              icon={Video}
+              badge="Coming Soon"
+              features={[
+                { title: 'Live Lectures', desc: 'Join online classes directly from your student portal.' },
+                { title: 'Recorded Archive', desc: 'Rewatch past classroom lectures anytime for revision.' }
+              ]}
+            />
+          )}
           {activeTab === 'fees' && <StudentFeeInvoicesTab invoices={portalData?.invoices} />}
-          {activeTab === 'exams' && <StudentExamResultsTab studentId={portalData?.student?._id} markSheets={portalData?.markSheets} classTests={portalData?.classTests} attendance={portalData?.attendance} />}
+          {activeTab === 'exams' && (
+            <GlobalComingSoon
+              title="Examination & Assessments"
+              subtitle="Student Results & Grade Records"
+              description="Term exam datesheets, online marks, award lists, and printable term report cards will be released here once the examination cycle begins."
+              icon={Award}
+              badge="Coming Soon"
+              features={[
+                { title: 'Exam Date Sheets', desc: 'View complete exam schedules and syllabus breakdowns.' },
+                { title: 'Progress Report Cards', desc: 'Download and print institutional term assessment cards.' }
+              ]}
+            />
+          )}
         </div>
       )}
     </div>

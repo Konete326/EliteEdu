@@ -50,7 +50,7 @@ const SchoolsList = () => {
 
   return (
     <div className="space-y-6">
-      <div className="sticky top-[1px] z-20 mt-[1px] p-4 sm:p-5 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 transition-all">
+      <div className="sticky top-[1px] z-10 mt-[1px] p-4 sm:p-5 rounded-2xl bg-surface/95 dark:bg-[#0c0c0c]/95 backdrop-blur-md border border-line dark:border-white/10 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 transition-all">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-ink dark:text-ink-dark tracking-tight">Institutions Directory</h1>
           <p className="text-xs sm:text-sm text-ink-muted dark:text-ink-muted-dark mt-0.5">Manage schools, hold/pause accounts, edit details, or delete.</p>

@@ -1,4 +1,6 @@
+import { Navigate } from 'react-router-dom';
 import { CheckCircle2, AlertCircle, Save, Loader2 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { useMyProfile } from '../../hooks/useMyProfile';
 import ProfileHeaderHero from '../../components/common/profile/ProfileHeaderHero';
 import ProfileTabNav from '../../components/common/profile/ProfileTabNav';
@@ -9,6 +11,11 @@ import ProfileSecurityTab from '../../components/common/profile/ProfileSecurityT
 import ProfilePermissionsTab from '../../components/common/profile/ProfilePermissionsTab';
 
 const MyProfilePage = () => {
+  const { user } = useAuth();
+  if (user?.role === 'Teacher') {
+    return <Navigate to="/teacher/dashboard" replace />;
+  }
+
   const {
     profile, formData, activeTab, setActiveTab, loading, saving, toast,
     handleFieldChange, handlePhotoUpload, handleSaveProfile, handlePasswordChange

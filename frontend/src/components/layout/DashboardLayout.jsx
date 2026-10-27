@@ -5,6 +5,7 @@ import Topbar from './Topbar';
 import PageLoader from '../common/PageLoader';
 import ConfirmModal from '../common/ConfirmModal';
 import CampusSwitchModal from '../common/CampusSwitchModal';
+import OnboardingWizardModal from '../common/OnboardingWizardModal';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -75,6 +76,7 @@ const DashboardLayout = () => {
       />
 
       <CampusSwitchModal />
+      <OnboardingWizardModal />
     </div>
   );
 };

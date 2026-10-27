@@ -1,10 +1,24 @@
 import StudentBioAcademicFieldsA from './StudentBioAcademicFieldsA';
 import StudentBioAcademicFieldsB from './StudentBioAcademicFieldsB';
 
-const StudentBioAcademicTab = ({ data = {}, onChange, grades = [] }) => {
+const StudentBioAcademicTab = ({
+  data = {},
+  onChange,
+  grades = [],
+  campuses = [],
+  selectedCampusId = '',
+  onCampusChange
+}) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 text-xs">
-      <StudentBioAcademicFieldsA data={data} onChange={onChange} grades={grades} />
+      <StudentBioAcademicFieldsA
+        data={data}
+        onChange={onChange}
+        grades={grades}
+        campuses={campuses}
+        selectedCampusId={selectedCampusId}
+        onCampusChange={onCampusChange}
+      />
       <StudentBioAcademicFieldsB data={data} onChange={onChange} />
     </div>
   );

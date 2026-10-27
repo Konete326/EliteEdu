@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import {
-  Building2, ScanLine, Moon, Sun, Download, Play
-} from 'lucide-react';
+import { Building2, ScanLine, Moon, Sun, Download, Play, Lock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCampus } from '../../context/CampusContext';
 import { usePwaInstall } from '../../hooks/usePwaInstall';
@@ -26,13 +24,16 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
     setVideoModalOpen(false);
   }, [location.pathname]);
 
+  const canSwitchCampus = user?.role === 'Admin' || user?.role === 'SuperAdmin';
+
   const handleCampusSelect = useCallback((val) => {
+    if (!canSwitchCampus) return;
     if (val === activeCampusId) return;
     const targetName = val === 'all'
       ? 'All Campuses'
       : (campuses.find((c) => String(c._id) === String(val))?.name || 'Selected Branch');
     requestCampusSwitch(val, targetName);
-  }, [activeCampusId, campuses, requestCampusSwitch]);
+  }, [canSwitchCampus, activeCampusId, campuses, requestCampusSwitch]);
 
   const getInitials = useCallback((name) => {
     if (!name) return 'ED';
@@ -55,27 +56,55 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
     }))
   ], [campuses, schoolPill]);
 
+  const assignedCampusName = useMemo(() => {
+    const userCampusId = user?.campus_id?._id || user?.campus_id || user?.last_active_campus?._id || user?.last_active_campus;
+    if (userCampusId) {
+      const found = campuses.find((c) => String(c._id) === String(userCampusId));
+      if (found) return found.name;
+    }
+    if (activeCampusId && activeCampusId !== 'all') {
+      const found = campuses.find((c) => String(c._id) === String(activeCampusId));
+      if (found) return found.name;
+    }
+    return user?.campus_name || (campuses[0]?.name) || 'Main Campus';
+  }, [campuses, user, activeCampusId]);
+
   const handleOpenVideo = useCallback(() => setVideoModalOpen(true), []);
   const handleCloseVideo = useCallback(() => setVideoModalOpen(false), []);
   const handleOpenScanner = useCallback(() => setScannerOpen(true), []);
   const handleCloseScanner = useCallback(() => setScannerOpen(false), []);
 
   const handleProfileClick = useCallback(() => {
-    navigate(user?.role === 'SuperAdmin' ? '/superadmin/profile' : user?.role === 'Teacher' ? '/teacher/profile' : '/admin/profile');
+    if (user?.role === 'Teacher') return;
+    navigate(user?.role === 'SuperAdmin' ? '/superadmin/profile' : '/admin/profile');
   }, [navigate, user?.role]);
 
   return (
     <div className="flex items-center gap-1 sm:gap-2">
-      <div className="hidden sm:block w-36 sm:w-44">
-        <SearchableSelect
-          options={campusOptions}
-          value={activeCampusId}
-          onChange={handleCampusSelect}
-          placeholder="Select Campus..."
-          icon={Building2}
-          size="sm"
-        />
-      </div>
+      {canSwitchCampus ? (
+        <div className="hidden sm:block w-36 sm:w-44">
+          <SearchableSelect
+            options={campusOptions}
+            value={activeCampusId}
+            onChange={handleCampusSelect}
+            placeholder="Select Campus..."
+            icon={Building2}
+            size="sm"
+          />
+        </div>
+      ) : (
+        <div
+          title={`Assigned Campus: ${assignedCampusName}`}
+          className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-semibold max-w-[176px] shrink-0 select-none ${
+            isColored
+              ? 'bg-white/10 border-white/20 text-white'
+              : 'bg-surface-secondary/70 dark:bg-surface-dark-secondary/70 border-line dark:border-line-dark text-ink dark:text-ink-dark'
+          }`}
+        >
+          <Building2 className={`w-3.5 h-3.5 shrink-0 ${isColored ? 'text-white' : 'text-primary'}`} />
+          <span className="truncate">{assignedCampusName}</span>
+        </div>
+      )}
 
       <button
         type="button"
@@ -121,7 +150,9 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
       <button
         type="button"
         onClick={handleProfileClick}
-        className={`w-8 h-8 rounded-full font-bold text-xs flex items-center justify-center border shrink-0 overflow-hidden cursor-pointer transition-all hover:scale-105 ${
+        className={`w-8 h-8 rounded-full font-bold text-xs flex items-center justify-center border shrink-0 overflow-hidden transition-all ${
+          user?.role === 'Teacher' ? 'cursor-default' : 'cursor-pointer hover:scale-105'
+        } ${
           isColored ? 'bg-white/20 border-white/40 text-white' : 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-dark border-primary/20'
         }`}
       >

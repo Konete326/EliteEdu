@@ -29,7 +29,7 @@ const IdCardsToolbar = ({
         </button>
       </div>
 
-      <div className="sticky top-[1px] z-20 mt-[1px] flex flex-wrap items-center justify-between gap-3 bg-surface/95 dark:bg-[#0c0c0f]/95 backdrop-blur-md border border-line dark:border-line-dark rounded-2xl p-3 shadow-sm">
+      <div className="sticky top-[1px] z-10 mt-[1px] flex flex-wrap items-center justify-between gap-3 bg-surface/95 dark:bg-[#0c0c0f]/95 backdrop-blur-md border border-line dark:border-line-dark rounded-2xl p-3 shadow-sm">
         <IdCardsStyleSwitcher selectedStyle={selectedStyle} onSelectStyle={onSelectStyle} />
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">

@@ -1,104 +1,41 @@
 import { Link } from 'react-router-dom';
 import {
   CalendarCheck, BookOpen, Award, Calendar, DollarSign, UserCheck,
-  Video, FileText, Users, CreditCard, AlertCircle
+  Video, Users
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const TeacherPermittedActions = ({ permissions = {}, customRole = null }) => {
+  const { user } = useAuth();
+  const schoolType = user?.school_type || user?.school_id?.school_type || 'Private';
   const rolePerms = customRole?.permissions || [];
   const hasCustom = Array.isArray(rolePerms) && rolePerms.length > 0;
 
-  let permittedActions = [];
+  const allowed = hasCustom
+    ? new Set(rolePerms.filter((p) => p.view).map((p) => p.module_key?.toLowerCase()))
+    : null;
 
-  if (hasCustom) {
-    const allowed = new Set(rolePerms.filter((p) => p.view).map((p) => p.module_key?.toLowerCase()));
+  const hasAccess = (key) => {
+    if (allowed) return allowed.has(key);
+    return permissions[key] !== false;
+  };
 
-    if (allowed.has('fees')) {
-      permittedActions.push({
-        key: 'fee_collection',
-        label: 'Collect Fees',
-        path: '/admin/fees/collection',
-        icon: DollarSign,
-        color: 'hover:border-good text-good'
-      });
-      permittedActions.push({
-        key: 'fee_defaulters',
-        label: 'Fee Defaulters',
-        path: '/admin/fees/defaulters',
-        icon: AlertCircle,
-        color: 'hover:border-bad text-bad'
-      });
-    }
+  const actions = [
+    { key: 'attendance', label: 'Mark Attendance', path: '/teacher/attendance', icon: CalendarCheck, color: 'hover:border-primary text-primary' },
+    { key: 'students', label: 'My Students', path: '/teacher/students', icon: Users, color: 'hover:border-emerald-500 text-emerald-500' },
+    { key: 'homework', label: 'Assign Homework', path: '/teacher/homework', icon: BookOpen, color: 'hover:border-indigo-500 text-indigo-500', badge: 'Coming Soon' },
+    { key: 'exams', label: 'Exams & Marks', path: '/teacher/exams', icon: Award, color: 'hover:border-amber-500 text-amber-500', badge: 'Coming Soon' },
+    { key: 'timetable', label: 'Class Timetable', path: '/teacher/timetable', icon: Calendar, color: 'hover:border-emerald-500 text-emerald-500' },
+    { key: 'online_classes', label: 'Virtual Classrooms', path: '/teacher/online-classes', icon: Video, color: 'hover:border-cyan-500 text-cyan-500', badge: 'Coming Soon' },
+    { key: 'salary', label: 'Salary Slip', path: '/teacher/salary', icon: DollarSign, color: 'hover:border-teal-500 text-teal-500', badge: 'Coming Soon' }
+  ];
 
-    if (allowed.has('admission_letter')) {
-      permittedActions.push({
-        key: 'admission_letter',
-        label: 'Admission Letter',
-        path: '/admin/students/admission-letter',
-        icon: FileText,
-        color: 'hover:border-primary text-primary'
-      });
-    }
-
-    if (allowed.has('students')) {
-      permittedActions.push({
-        key: 'students',
-        label: 'Student Directory',
-        path: '/admin/students',
-        icon: Users,
-        color: 'hover:border-primary text-primary'
-      });
-    }
-
-    if (allowed.has('student_id_cards')) {
-      permittedActions.push({
-        key: 'student_id_cards',
-        label: 'Student ID Cards',
-        path: '/admin/students/id-cards',
-        icon: CreditCard,
-        color: 'hover:border-indigo-500 text-indigo-500'
-      });
-    }
-
-    if (allowed.has('attendance')) {
-      permittedActions.push({
-        key: 'attendance',
-        label: 'Mark Attendance',
-        path: '/admin/attendance/students',
-        icon: CalendarCheck,
-        color: 'hover:border-primary text-primary'
-      });
-    }
-
-    if (allowed.has('exams')) {
-      permittedActions.push({
-        key: 'examination',
-        label: 'Examinations',
-        path: '/admin/exam-management/exams',
-        icon: Award,
-        color: 'hover:border-amber-500 text-amber-500'
-      });
-    }
-
-    permittedActions.push({
-      key: 'my_profile',
-      label: 'My Profile',
-      path: '/teacher/profile',
-      icon: UserCheck,
-      color: 'hover:border-purple-500 text-purple-500'
-    });
-  } else {
-    const actions = [
-      { key: 'attendance', label: 'Mark Attendance', path: '/teacher/attendance', icon: CalendarCheck, color: 'hover:border-primary text-primary' },
-      { key: 'homework', label: 'Assign Homework', path: '/teacher/homework', icon: BookOpen, color: 'hover:border-indigo-500 text-indigo-500' },
-      { key: 'examination', label: 'Exams & Marks', path: '/teacher/exams', icon: Award, color: 'hover:border-amber-500 text-amber-500' },
-      { key: 'timetable', label: 'Class Timetable', path: '/teacher/timetable', icon: Calendar, color: 'hover:border-emerald-500 text-emerald-500' },
-      { key: 'online_classes', label: 'Online Lectures', path: '/teacher/online-classes', icon: Video, color: 'hover:border-cyan-500 text-cyan-500' },
-      { key: 'salary', label: 'Salary Slip', path: '/teacher/salary', icon: DollarSign, color: 'hover:border-teal-500 text-teal-500' },
-      { key: 'my_profile', label: 'My Profile', path: '/teacher/profile', icon: UserCheck, color: 'hover:border-purple-500 text-purple-500' }
-    ];
-    permittedActions = actions.filter((a) => permissions[a.key] !== false);
-  }
+  const permittedActions = actions.filter((act) => {
+    if (act.key === 'salary' && schoolType === 'Government') return false;
+    if (act.key === 'exams') return hasAccess('exams') || hasAccess('examination') || Boolean(permissions.exam_management);
+    if (act.key === 'students') return hasAccess('students');
+    return hasAccess(act.key);
+  });
 
   if (permittedActions.length === 0) return null;
 
@@ -124,7 +61,14 @@ const TeacherPermittedActions = ({ permissions = {}, customRole = null }) => {
               <div className="w-10 h-10 rounded-xl bg-surface dark:bg-[#1a1a22] flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform">
                 <Icon className="w-4 h-4" />
               </div>
-              <span className="text-[11px] font-bold text-ink dark:text-ink-dark">{act.label}</span>
+              <span className="text-[11px] font-bold text-ink dark:text-ink-dark flex items-center justify-center gap-1.5 flex-wrap">
+                <span>{act.label}</span>
+                {act.badge && (
+                  <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-primary/10 text-primary border border-primary/20">
+                    {act.badge}
+                  </span>
+                )}
+              </span>
             </Link>
           );
         })}
