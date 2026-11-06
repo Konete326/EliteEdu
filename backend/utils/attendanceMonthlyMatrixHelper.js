@@ -35,13 +35,18 @@ const buildStudentMonthlyMatrix = async (schoolId, campusId, gradeId, section, m
   const startMonth = days[0].date;
   const endMonth = days[days.length - 1].date;
 
-  const attendanceRecords = await StudentAttendance.find({ school_id: new mongoose.Types.ObjectId(schoolId), student_id: { $in: studentIds }, date: { $gte: startMonth, $lte: endMonth } }).lean();
   const recordMap = {};
-  attendanceRecords.forEach((r) => {
+  const cursor = StudentAttendance.find({
+    school_id: new mongoose.Types.ObjectId(schoolId),
+    student_id: { $in: studentIds },
+    date: { $gte: startMonth, $lte: endMonth }
+  }).select('student_id date status').lean().cursor();
+
+  for await (const r of cursor) {
     const sId = String(r.student_id);
     if (!recordMap[sId]) recordMap[sId] = {};
     recordMap[sId][r.date.slice(-2)] = r.status;
-  });
+  }
 
   const matrix = students.map((st) => {
     const sId = String(st._id);
@@ -77,13 +82,18 @@ const buildStaffMonthlyMatrix = async (schoolId, campusId, monthStr, designation
   const startMonth = days[0].date;
   const endMonth = days[days.length - 1].date;
 
-  const attendanceRecords = await StaffAttendance.find({ school_id: new mongoose.Types.ObjectId(schoolId), staff_id: { $in: staffIds }, date: { $gte: startMonth, $lte: endMonth } }).lean();
   const recordMap = {};
-  attendanceRecords.forEach((r) => {
+  const cursor = StaffAttendance.find({
+    school_id: new mongoose.Types.ObjectId(schoolId),
+    staff_id: { $in: staffIds },
+    date: { $gte: startMonth, $lte: endMonth }
+  }).select('staff_id date status check_in_time check_out_time').lean().cursor();
+
+  for await (const r of cursor) {
     const sId = String(r.staff_id);
     if (!recordMap[sId]) recordMap[sId] = {};
     recordMap[sId][r.date.slice(-2)] = { status: r.status, in: r.check_in_time, out: r.check_out_time };
-  });
+  }
 
   const matrix = staffList.map((st) => {
     const sId = String(st._id);

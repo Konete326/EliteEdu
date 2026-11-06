@@ -11,6 +11,19 @@ const STATIC_ASSETS = [
   '/icons/icon-maskable-512.png'
 ];
 
+const trimCache = async (cacheName, maxItems = 30) => {
+  try {
+    const cache = await caches.open(cacheName);
+    const keys = await cache.keys();
+    if (keys.length > maxItems) {
+      const excess = keys.length - maxItems;
+      for (let i = 0; i < excess; i++) {
+        await cache.delete(keys[i]);
+      }
+    }
+  } catch {}
+};
+
 const isLocalhost = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
 
 self.addEventListener('install', (event) => {
@@ -58,7 +71,9 @@ self.addEventListener('fetch', (event) => {
         .then((response) => {
           if (response && response.status === 200) {
             const clone = response.clone();
-            caches.open('eliteedu-verify-cache').then((cache) => cache.put(event.request, clone));
+            caches.open('eliteedu-verify-cache').then((cache) => {
+              cache.put(event.request, clone).then(() => trimCache('eliteedu-verify-cache', 30));
+            });
           }
           return response;
         })
@@ -105,7 +120,9 @@ self.addEventListener('fetch', (event) => {
             return response;
           }
           const toCache = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, toCache));
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, toCache).then(() => trimCache(CACHE_NAME, 30));
+          });
           return response;
         })
         .catch(() => caches.match(event.request))

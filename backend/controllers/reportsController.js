@@ -46,6 +46,28 @@ const getStudentMaster = async (req, res) => {
     if (sub === 'new_admissions') sortOption = { admission_date: -1, createdAt: -1 };
     else if (sub === 'registration_list') sortOption = { registration_date: -1, createdAt: -1 };
 
+    if (req.query.stream === 'true' && sub === 'master_list') {
+      res.setHeader('Content-Type', 'application/json');
+      res.write('{"success":true,"sub_report":"master_list","data":[');
+      let isFirst = true; let count = 0;
+      const cursor = Student.find(filter)
+        .populate('current_grade', 'name')
+        .populate('campus_id', 'name contact_number')
+        .sort(sortOption)
+        .lean()
+        .cursor({ batchSize: 200 });
+
+      for await (const s of cursor) {
+        if (!isFirst) res.write(',');
+        isFirst = false;
+        const row = mapMasterRows([s])[0];
+        row.sr = ++count;
+        res.write(JSON.stringify(row));
+      }
+      res.write(`],"total":${count}}`);
+      return res.end();
+    }
+
     const students = await Student.find(filter)
       .populate('current_grade', 'name')
       .populate('campus_id', 'name contact_number')
