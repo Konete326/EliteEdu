@@ -99,6 +99,17 @@ const BulkDataImportPage = lazy(() => import('./pages/admin/BulkDataImportPage')
 const TransportManagementPage = lazy(() => import('./pages/admin/TransportManagementPage'));
 const MessagingStudioPage = lazy(() => import('./pages/admin/MessagingStudioPage'));
 const ZoomSettingsPage = lazy(() => import('./pages/admin/ZoomSettingsPage'));
+const CrmComingSoonPage = lazy(() => import('./pages/admin/CrmComingSoonPage'));
+const TransportComingSoonPage = lazy(() => import('./pages/admin/TransportComingSoonPage'));
+const ReportsComingSoonPage = lazy(() => import('./pages/admin/ReportsComingSoonPage'));
+const StudentPortalComingSoonPage = lazy(() => import('./pages/admin/StudentPortalComingSoonPage'));
+const BehaviorComingSoonPage = lazy(() => import('./pages/admin/BehaviorComingSoonPage'));
+const PromotionsComingSoonPage = lazy(() => import('./pages/admin/PromotionsComingSoonPage'));
+const CertificatesComingSoonPage = lazy(() => import('./pages/admin/CertificatesComingSoonPage'));
+const AdmissionLetterComingSoonPage = lazy(() => import('./pages/admin/AdmissionLetterComingSoonPage'));
+const ZoomComingSoonPage = lazy(() => import('./pages/admin/ZoomComingSoonPage'));
+const BulkImportComingSoonPage = lazy(() => import('./pages/admin/BulkImportComingSoonPage'));
+const BackupComingSoonPage = lazy(() => import('./pages/admin/BackupComingSoonPage'));
 
 function App() {
   return (
@@ -130,15 +141,15 @@ function App() {
                     <Route path="/admin/students" element={<StudentsList />} />
                     <Route path="/admin/students/new" element={<AddStudentPage />} />
                     <Route path="/admin/students/:id/edit" element={<AddStudentPage />} />
-                    <Route path="/admin/students/admission-letter" element={<AdmissionLetterPage />} />
+                    <Route path="/admin/students/admission-letter" element={<AdmissionLetterComingSoonPage />} />
                     <Route path="/admin/students/id-cards" element={<StudentIdCardsPage />} />
-                    <Route path="/admin/students/promote" element={<PromoteStudentsPage />} />
-                    <Route path="/admin/control-panel/class-transfer" element={<PromoteStudentsPage />} />
+                    <Route path="/admin/students/promote" element={<PromotionsComingSoonPage />} />
+                    <Route path="/admin/control-panel/class-transfer" element={<PromotionsComingSoonPage />} />
                     <Route path="/admin/attendance/students" element={<StudentAttendancePage />} />
                     <Route path="/admin/attendance/staff" element={<EmployeeAttendancePage />} />
                     <Route path="/admin/attendance/employees" element={<EmployeeAttendancePage />} />
                     <Route path="/admin/attendance/leave-request" element={<LeaveRequestPage />} />
-                    <Route path="/admin/attendance/report" element={<AttendanceReportPage />} />
+                    <Route path="/admin/attendance/report" element={<ReportsComingSoonPage />} />
                     <Route path="/admin/exam-management/exams" element={<ExamsListPage />} />
                     <Route path="/admin/exams/schedules" element={<ExamsListPage />} />
                     <Route path="/admin/exams/date-sheets" element={<ExamsListPage />} />
@@ -161,23 +172,23 @@ function App() {
                     <Route path="/teacher/mark-sheets" element={<ExamsListPage />} />
                     <Route path="/teacher/question-papers" element={<ExamsListPage />} />
                     <Route path="/teacher/class-tests" element={<ExamsListPage />} />
-                    <Route path="/admin/reports" element={<MasterReportsHubPage />} />
-                    <Route path="/admin/reports/academic" element={<MasterReportsHubPage />} />
-                    <Route path="/admin/reports/report-cards" element={<StudentReportCardPage />} />
-                    <Route path="/admin/reports/student-info" element={<StudentAdmissionReportPage />} />
-                    <Route path="/admin/reports/parent-info" element={<ParentContactReportPage />} />
-                    <Route path="/admin/reports/staff-info" element={<StaffInfoReportPage />} />
-                    <Route path="/admin/reports/attendance-report" element={<AttendanceReportPage />} />
-                    <Route path="/admin/reports/attendance" element={<AttendanceReportPage />} />
-                    <Route path="/admin/certificates" element={<CertificatesPage key="generate" defaultTab="generate" />} />
-                    <Route path="/admin/certificates/templates" element={<CertificatesPage key="templates" defaultTab="templates" />} />
-                    <Route path="/admin/crm/inquiries" element={<CrmLeadsPage />} />
-                    <Route path="/admin/crm/leads" element={<CrmLeadsPage />} />
-                    <Route path="/admin/crm/inquiries/new" element={<CrmLeadFormPage />} />
-                    <Route path="/admin/crm/inquiries/:id/edit" element={<CrmLeadFormPage />} />
-                    <Route path="/admin/crm/admissions" element={<CrmPipelinePage />} />
-                    <Route path="/admin/crm/follow-ups" element={<CrmFollowUpsPage />} />
-                    <Route path="/admin/crm/analytics" element={<CrmAnalyticsPage />} />
+                    <Route path="/admin/reports" element={<ReportsComingSoonPage />} />
+                    <Route path="/admin/reports/academic" element={<ReportsComingSoonPage />} />
+                    <Route path="/admin/reports/report-cards" element={<ReportsComingSoonPage />} />
+                    <Route path="/admin/reports/student-info" element={<ReportsComingSoonPage />} />
+                    <Route path="/admin/reports/parent-info" element={<ReportsComingSoonPage />} />
+                    <Route path="/admin/reports/staff-info" element={<ReportsComingSoonPage />} />
+                    <Route path="/admin/reports/attendance-report" element={<ReportsComingSoonPage />} />
+                    <Route path="/admin/reports/attendance" element={<ReportsComingSoonPage />} />
+                    <Route path="/admin/certificates" element={<CertificatesComingSoonPage />} />
+                    <Route path="/admin/certificates/templates" element={<CertificatesComingSoonPage />} />
+                    <Route path="/admin/crm/inquiries" element={<CrmComingSoonPage />} />
+                    <Route path="/admin/crm/leads" element={<CrmComingSoonPage />} />
+                    <Route path="/admin/crm/inquiries/new" element={<CrmComingSoonPage />} />
+                    <Route path="/admin/crm/inquiries/:id/edit" element={<CrmComingSoonPage />} />
+                    <Route path="/admin/crm/admissions" element={<CrmComingSoonPage />} />
+                    <Route path="/admin/crm/follow-ups" element={<CrmComingSoonPage />} />
+                    <Route path="/admin/crm/analytics" element={<CrmComingSoonPage />} />
                     <Route path="/admin/lms/courses" element={<LmsSuitePage />} />
                     <Route path="/admin/lms/syllabus" element={<LmsSuitePage />} />
                     <Route path="/admin/lms/assignments" element={<LmsSuitePage />} />
@@ -192,7 +203,7 @@ function App() {
                     <Route path="/admin/planners/lesson-plans" element={<PlannersAndEventsPage />} />
                     <Route path="/admin/planners/activity-planner" element={<PlannersAndEventsPage />} />
                     <Route path="/admin/planners/*" element={<PlannersAndEventsPage />} />
-                    <Route path="/admin/student-portal-preview" element={<StudentPortalPage />} />
+                    <Route path="/admin/student-portal-preview" element={<StudentPortalComingSoonPage />} />
                   </Route>
                   <Route element={<ProtectedRoute allowedRoles={['Admin']} requiredModule="fees" />}>
                     <Route path="/admin/fees" element={<FeeCollectionPage />} />
@@ -218,7 +229,7 @@ function App() {
                     <Route path="/admin/exam-management/grading-policies" element={<ExamsListPage />} />
                     <Route path="/admin/exams/grading-policies" element={<ExamsListPage />} />
                     <Route path="/admin/settings/general" element={<GeneralSettingsPage />} />
-                    <Route path="/admin/settings/integrations/zoom" element={<ZoomSettingsPage />} />
+                    <Route path="/admin/settings/integrations/zoom" element={<ZoomComingSoonPage />} />
                     <Route path="/admin/general-settings/signatures" element={<GeneralSignaturesPage />} />
                     <Route path="/admin/settings/signatures" element={<GeneralSignaturesPage />} />
                     <Route path="/admin/settings/appearance" element={<ThemeSettingsPage />} />
@@ -236,11 +247,11 @@ function App() {
                     <Route path="/admin/messaging/whatsapp" element={<InternalMessengerPage defaultTab="whatsapp" />} />
                     <Route path="/admin/messaging/email" element={<InternalMessengerPage defaultTab="email" />} />
                     <Route path="/admin/circular" element={<InternalMessengerPage defaultTab="circular" />} />
-                    <Route path="/admin/settings/backup" element={<SystemLogsPage />} />
-                    <Route path="/admin/van/routes" element={<TransportManagementPage />} />
-                    <Route path="/admin/van/vehicles" element={<TransportManagementPage />} />
-                    <Route path="/admin/van/drivers" element={<TransportManagementPage />} />
-                    <Route path="/admin/van/allocation" element={<TransportManagementPage />} />
+                    <Route path="/admin/settings/backup" element={<BackupComingSoonPage />} />
+                    <Route path="/admin/van/routes" element={<TransportComingSoonPage />} />
+                    <Route path="/admin/van/vehicles" element={<TransportComingSoonPage />} />
+                    <Route path="/admin/van/drivers" element={<TransportComingSoonPage />} />
+                    <Route path="/admin/van/allocation" element={<TransportComingSoonPage />} />
                     <Route path="/admin/reports/audit-logs" element={<SystemLogsPage />} />
                     <Route path="/admin/profile" element={<MyProfilePage />} />
                     <Route path="/admin/settings/profile" element={<MyProfilePage />} />
@@ -254,8 +265,8 @@ function App() {
                     <Route path="/admin/store" element={<PosStorePage />} />
                     <Route path="/admin/pos" element={<PosStorePage />} />
                     <Route path="/admin/online-store" element={<PosStorePage />} />
-                    <Route path="/admin/behavior" element={<BehaviorSkillsPage />} />
-                    <Route path="/admin/behavior-skills" element={<BehaviorSkillsPage />} />
+                    <Route path="/admin/behavior" element={<BehaviorComingSoonPage />} />
+                    <Route path="/admin/behavior-skills" element={<BehaviorComingSoonPage />} />
                     <Route path="/admin/campus-transfer" element={<CampusTransferPage />} />
                     <Route path="/admin/events" element={<PlannersAndEventsPage />} />
                     <Route path="/admin/news-feed" element={<CampusOperationsPage />} />
@@ -265,13 +276,13 @@ function App() {
                     <Route path="/admin/counseling" element={<CampusOperationsPage />} />
                     <Route path="/admin/operations" element={<CampusOperationsPage />} />
                     <Route path="/admin/operations/*" element={<CampusOperationsPage />} />
-                    <Route path="/admin/control-panel/bulk-import" element={<BulkDataImportPage />} />
-                    <Route path="/admin/bulk-import" element={<BulkDataImportPage />} />
+                    <Route path="/admin/control-panel/bulk-import" element={<BulkImportComingSoonPage />} />
+                    <Route path="/admin/bulk-import" element={<BulkImportComingSoonPage />} />
                     <Route path="/admin/data-migration" element={<BulkMigrationPage />} />
-                    <Route path="/admin/transport" element={<TransportManagementPage />} />
-                    <Route path="/admin/general-settings/transport" element={<TransportManagementPage />} />
-                    <Route path="/admin/van-management" element={<TransportManagementPage />} />
-                    <Route path="/admin/van-management/*" element={<TransportManagementPage />} />
+                    <Route path="/admin/transport" element={<TransportComingSoonPage />} />
+                    <Route path="/admin/general-settings/transport" element={<TransportComingSoonPage />} />
+                    <Route path="/admin/van-management" element={<TransportComingSoonPage />} />
+                    <Route path="/admin/van-management/*" element={<TransportComingSoonPage />} />
                   </Route>
                   <Route element={<ProtectedRoute allowedRoles={['Teacher']} />}>
                     <Route path="/teacher" element={<TeacherPortalDashboard />} />
@@ -279,15 +290,15 @@ function App() {
                     <Route path="/teacher/my-students" element={<TeacherStudentsRosterPage />} />
                     <Route path="/teacher/attendance" element={<StudentAttendancePage />} />
                     <Route path="/teacher/leaves" element={<LeaveRequestPage />} />
-                    <Route path="/teacher/attendance-report" element={<AttendanceReportPage />} />
+                    <Route path="/teacher/attendance-report" element={<ReportsComingSoonPage />} />
                     <Route path="/teacher/homework" element={<LmsSuitePage />} />
                     <Route path="/teacher/timetable" element={<TeacherTimetablePage />} />
                     <Route path="/teacher/quizzes" element={<LmsSuitePage />} />
                     <Route path="/teacher/lectures" element={<LmsSuitePage />} />
                     <Route path="/teacher/online-classes" element={<LmsSuitePage />} />
                     <Route path="/teacher/salary" element={<TeacherSalaryPage />} />
-                    <Route path="/teacher/behavior" element={<BehaviorSkillsPage />} />
-                    <Route path="/teacher/behavior-skills" element={<BehaviorSkillsPage />} />
+                    <Route path="/teacher/behavior" element={<BehaviorComingSoonPage />} />
+                    <Route path="/teacher/behavior-skills" element={<BehaviorComingSoonPage />} />
                     <Route path="/teacher/events" element={<PlannersAndEventsPage />} />
                     <Route path="/teacher/complaints" element={<CampusOperationsPage />} />
                     <Route path="/teacher/counseling" element={<CampusOperationsPage />} />
