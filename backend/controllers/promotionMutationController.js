@@ -2,6 +2,7 @@ const Student = require('../models/Student');
 const Grade = require('../models/Grade');
 const PromotionLog = require('../models/PromotionLog');
 const { createSystemNotification } = require('../utils/notificationDispatcher');
+const { buildPromotionBulkOps } = require('../utils/curriculumSubjectResolver');
 
 const promoteStudents = async (req, res) => {
   try {
@@ -49,20 +50,15 @@ const promoteStudents = async (req, res) => {
     const toName = targetGrade.name;
     const transitionLabel = `${fromName} → ${toName}`;
 
-    await Student.updateMany(
-      { _id: { $in: toPromoteIds }, school_id: schoolId },
-      {
-        $set: {
-          previous_grade_name: fromName,
-          current_grade: targetGrade._id,
-          current_section: target_section,
-          last_promoted_at: new Date(),
-          last_promotion_label: transitionLabel,
-          promotion_status: 'Promoted',
-          'academic_history.last_class': fromName
-        }
-      }
-    );
+    const bulkOps = await buildPromotionBulkOps({
+      schoolId,
+      toPromoteIds,
+      targetGrade,
+      target_section,
+      fromName,
+      transitionLabel
+    });
+    if (bulkOps.length > 0) await Student.bulkWrite(bulkOps);
 
     if (toRetainIds.length > 0) {
       await Student.updateMany(

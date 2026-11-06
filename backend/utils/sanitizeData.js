@@ -23,7 +23,11 @@ const sanitizeTeacherPayload = (data) => {
 const sanitizeStudentPayload = (data) => {
   const idFields = ['campus_id', 'grade_admitted', 'current_grade'];
   const dateFields = ['dob', 'admission_date'];
-  return sanitizeEmptyFields(data, idFields, dateFields);
+  const clean = sanitizeEmptyFields(data, idFields, dateFields);
+  if (!clean.app_settings || typeof clean.app_settings !== 'object') {
+    clean.app_settings = {};
+  }
+  return clean;
 };
 
 const sanitizeApplicantPayload = (data) => {

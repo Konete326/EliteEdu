@@ -60,30 +60,15 @@ const INITIAL_FORM = {
     remarks: ''
   },
   subjects: [],
-  app_settings: {
-    edit_profile: true,
-    homework: true,
-    attendance: true,
-    timetable: true,
-    online_classes: true,
-    lectures: true,
-    date_sheet: true,
-    assessment: true,
-    learning_videos: true,
-    events: true,
-    voice_notes: true,
-    gallery: true,
-    apply_leave: true,
-    library: true,
-    complaints: true,
-    certificate_request: true,
-    id_card: true,
-    admit_card: true,
-    store: true,
-    slc: true
-  },
+  app_settings: {},
   documents: [],
   notes: ''
+};
+
+const sanitizeStudentSubmissionPayload = (raw) => {
+  const payload = { ...raw };
+  payload.app_settings = {};
+  return payload;
 };
 
 const resolveGradeCurriculumSubjects = (gradeId, electiveStream, allGrades = [], allSubjects = []) => {
@@ -294,9 +279,10 @@ export const useStudentForm = (id) => {
     setSubmitting(true);
     setError('');
     try {
+      const payload = sanitizeStudentSubmissionPayload(formData);
       const res = isEditMode
-        ? await api.put(`/students/${id}`, formData)
-        : await api.post('/students', formData);
+        ? await api.put(`/students/${id}`, payload)
+        : await api.post('/students', payload);
       if (!isEditMode) clearDraft();
       navigate('/admin/students');
       return res.data.student;
