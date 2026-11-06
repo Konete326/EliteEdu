@@ -18,14 +18,14 @@ export const getAdminNavItems = (schoolType) => [
       { name: 'Teacher Cards', path: '/admin/teachers/id-cards' },
       { name: 'Applicants', path: '/admin/staff-applicants' },
       { name: 'Students', path: '/admin/students' },
-      { name: 'Admissions', path: '/admin/students/admission-letter' },
+      { name: 'Admissions', path: '/admin/students/admission-letter', badge: 'Coming Soon' },
       { name: 'Student Cards', path: '/admin/students/id-cards' },
-      { name: 'Certificates', path: '/admin/certificates' },
+      { name: 'Certificates', path: '/admin/certificates', badge: 'Coming Soon' },
       { name: 'Templates', path: '/admin/certificates/templates' },
-      { name: 'Promotions', path: '/admin/students/promote' },
+      { name: 'Promotions', path: '/admin/students/promote', badge: 'Coming Soon' },
       { name: 'Activities', path: '/admin/events', badge: 'Coming Soon' },
-      { name: 'Behavior', path: '/admin/behavior-skills' },
-      { name: 'Student Portal', path: '/admin/student-portal-preview' }
+      { name: 'Behavior', path: '/admin/behavior-skills', badge: 'Coming Soon' },
+      { name: 'Student Portal', path: '/admin/student-portal-preview', badge: 'Coming Soon' }
     ]
   },
   {
@@ -303,15 +303,15 @@ export const getNavCategories = (user) => {
     if (allowed.has('subjects')) mainSub.push({ name: 'Subjects', path: '/admin/subjects' });
     if (allowed.has('teachers')) mainSub.push({ name: 'Teachers', path: '/admin/teachers' });
     if (allowed.has('students')) mainSub.push({ name: 'Students', path: '/admin/students' });
-    if (allowed.has('student_promotion')) mainSub.push({ name: 'Promotions', path: '/admin/students/promote' });
-    if (allowed.has('admission_letter')) mainSub.push({ name: 'Admissions', path: '/admin/students/admission-letter' });
+    if (allowed.has('student_promotion')) mainSub.push({ name: 'Promotions', path: '/admin/students/promote', badge: 'Coming Soon' });
+    if (allowed.has('admission_letter')) mainSub.push({ name: 'Admissions', path: '/admin/students/admission-letter', badge: 'Coming Soon' });
     if (allowed.has('student_id_cards')) mainSub.push({ name: 'Student Cards', path: '/admin/students/id-cards' });
     if (allowed.has('teacher_id_cards')) mainSub.push({ name: 'Teacher Cards', path: '/admin/teachers/id-cards' });
     if (allowed.has('certificates')) {
-      mainSub.push({ name: 'Certificates', path: '/admin/certificates' });
+      mainSub.push({ name: 'Certificates', path: '/admin/certificates', badge: 'Coming Soon' });
       mainSub.push({ name: 'Templates', path: '/admin/certificates/templates' });
     }
-    if (allowed.has('student_portal')) mainSub.push({ name: 'Student Portal', path: '/admin/student-portal-preview' });
+    if (allowed.has('student_portal')) mainSub.push({ name: 'Student Portal', path: '/admin/student-portal-preview', badge: 'Coming Soon' });
     if (allowed.has('transport')) mainSub.push({ name: 'Vehicles', path: '/admin/transport', badge: 'Coming Soon' });
 
     groups.push({

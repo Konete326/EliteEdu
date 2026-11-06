@@ -1,9 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
 
+const DRAFT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
 export const usePersistentFormDraft = (key, initialValue = {}) => {
   const [draftData, setDraftData] = useState(() => {
     try {
-      const saved = localStorage.getItem(key);
+      const savedAt = localStorage.getItem(`${key}_saved_at`) || sessionStorage.getItem(`${key}_saved_at`);
+      if (savedAt) {
+        const age = Date.now() - new Date(savedAt).getTime();
+        if (age > DRAFT_MAX_AGE_MS) {
+          try {
+            localStorage.removeItem(key);
+            localStorage.removeItem(`${key}_saved_at`);
+            sessionStorage.removeItem(key);
+            sessionStorage.removeItem(`${key}_saved_at`);
+          } catch {}
+          return initialValue;
+        }
+      }
+      const saved = localStorage.getItem(key) || sessionStorage.getItem(key);
       return saved ? JSON.parse(saved) : initialValue;
     } catch {
       return initialValue;
@@ -12,7 +27,7 @@ export const usePersistentFormDraft = (key, initialValue = {}) => {
 
   const [lastSavedAt, setLastSavedAt] = useState(() => {
     try {
-      return localStorage.getItem(`${key}_saved_at`) || null;
+      return localStorage.getItem(`${key}_saved_at`) || sessionStorage.getItem(`${key}_saved_at`) || null;
     } catch {
       return null;
     }
@@ -21,8 +36,13 @@ export const usePersistentFormDraft = (key, initialValue = {}) => {
   const saveDraft = useCallback((data) => {
     try {
       const now = new Date().toISOString();
-      localStorage.setItem(key, JSON.stringify(data));
-      localStorage.setItem(`${key}_saved_at`, now);
+      try {
+        localStorage.setItem(key, JSON.stringify(data));
+        localStorage.setItem(`${key}_saved_at`, now);
+      } catch {
+        sessionStorage.setItem(key, JSON.stringify(data));
+        sessionStorage.setItem(`${key}_saved_at`, now);
+      }
       setLastSavedAt(now);
     } catch {}
   }, [key]);
@@ -39,6 +59,8 @@ export const usePersistentFormDraft = (key, initialValue = {}) => {
     try {
       localStorage.removeItem(key);
       localStorage.removeItem(`${key}_saved_at`);
+      sessionStorage.removeItem(key);
+      sessionStorage.removeItem(`${key}_saved_at`);
       setDraftData(initialValue);
       setLastSavedAt(null);
     } catch {}
@@ -46,10 +68,10 @@ export const usePersistentFormDraft = (key, initialValue = {}) => {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(key);
+      const saved = localStorage.getItem(key) || sessionStorage.getItem(key);
       if (saved) {
         setDraftData(JSON.parse(saved));
-        setLastSavedAt(localStorage.getItem(`${key}_saved_at`) || null);
+        setLastSavedAt(localStorage.getItem(`${key}_saved_at`) || sessionStorage.getItem(`${key}_saved_at`) || null);
       }
     } catch {}
   }, [key]);

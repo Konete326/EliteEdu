@@ -26,7 +26,7 @@ export const resolveOfflineStaffRecord = (id) => {
         };
       }
     }
-    const local = localStorage.getItem(`eliteedu_staff_${id}`);
+    const local = sessionStorage.getItem(`eliteedu_staff_${id}`) || localStorage.getItem(`eliteedu_staff_${id}`);
     if (local) {
       const parsed = JSON.parse(local);
       return { ...parsed, isOffline: true };
@@ -64,7 +64,7 @@ export const resolveOfflineStudentRecord = (id) => {
         };
       }
     }
-    const local = localStorage.getItem(`eliteedu_student_${id}`);
+    const local = sessionStorage.getItem(`eliteedu_student_${id}`) || localStorage.getItem(`eliteedu_student_${id}`);
     if (local) {
       const parsed = JSON.parse(local);
       return { ...parsed, isOffline: true };

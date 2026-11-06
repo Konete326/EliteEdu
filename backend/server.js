@@ -1,8 +1,6 @@
 require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const compression = require('compression');
-const mongoose = require('mongoose');
+const express = require('express'); const cors = require('cors');
+const compression = require('compression'); const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes'); const schoolRoutes = require('./routes/schoolRoutes');
 const teacherRoutes = require('./routes/teacherRoutes'); const dashboardRoutes = require('./routes/dashboardRoutes');
 const campusRoutes = require('./routes/campusRoutes'); const subjectRoutes = require('./routes/subjectRoutes');
@@ -30,8 +28,16 @@ const auditLogger = require('./middlewares/auditLogger');
 const sanitizePayload = require('./utils/sanitizePayload');
 const dbConnect = require('./utils/dbConnect');
 
-const app = express();
-const PORT = process.env.PORT || 5000;
+const app = express(); const PORT = process.env.PORT || 5000;
+process.on('uncaughtException', (err) => console.error('Uncaught Exception:', err.message));
+process.on('unhandledRejection', (reason) => console.error('Unhandled Rejection:', reason));
+
+app.use((req, res, next) => {
+  req.setTimeout(35000, () => {
+    if (!res.headersSent) res.status(504).json({ message: 'Request Timeout' });
+  });
+  next();
+});
 
 app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: true }));
 app.use(compression({

@@ -22,7 +22,7 @@ const StaffServiceVerifyPage = () => {
       .then((res) => {
         if (isMounted && res.data.success) {
           setData(res.data.data);
-          localStorage.setItem(`eliteedu_staff_${id}`, JSON.stringify(res.data.data));
+          try { sessionStorage.setItem(`eliteedu_staff_${id}`, JSON.stringify(res.data.data)); } catch {}
         }
       })
       .catch((err) => {

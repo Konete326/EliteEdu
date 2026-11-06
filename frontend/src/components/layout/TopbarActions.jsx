@@ -1,13 +1,12 @@
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Building2, ScanLine, Moon, Sun, Download, Play, Lock } from 'lucide-react';
+import { Building2, ScanLine, Moon, Sun, Download, Lock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCampus } from '../../context/CampusContext';
 import { usePwaInstall } from '../../hooks/usePwaInstall';
 import TopbarNotifications from './TopbarNotifications';
 import TopbarMessages from './TopbarMessages';
 import UniversalScannerModal from './scanner/UniversalScannerModal';
-import VideoComingSoonModal from './VideoComingSoonModal';
 import SearchableSelect from '../common/SearchableSelect';
 
 const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
@@ -15,13 +14,11 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
   const { campuses, activeCampusId, requestCampusSwitch } = useCampus();
   const { isInstalled, promptInstall } = usePwaInstall();
   const [scannerOpen, setScannerOpen] = useState(false);
-  const [videoModalOpen, setVideoModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     setScannerOpen(false);
-    setVideoModalOpen(false);
   }, [location.pathname]);
 
   const canSwitchCampus = user?.role === 'Admin' || user?.role === 'SuperAdmin';
@@ -69,8 +66,6 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
     return user?.campus_name || (campuses[0]?.name) || 'Main Campus';
   }, [campuses, user, activeCampusId]);
 
-  const handleOpenVideo = useCallback(() => setVideoModalOpen(true), []);
-  const handleCloseVideo = useCallback(() => setVideoModalOpen(false), []);
   const handleOpenScanner = useCallback(() => setScannerOpen(true), []);
   const handleCloseScanner = useCallback(() => setScannerOpen(false), []);
 
@@ -104,17 +99,6 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
           <span className="truncate">{assignedCampusName}</span>
         </div>
       )}
-
-      <button
-        type="button"
-        onClick={handleOpenVideo}
-        className={`hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${
-          isColored ? 'bg-white/15 border-white/20 text-white hover:bg-white/25' : 'border-line dark:border-line-dark hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark text-ink dark:text-ink-dark'
-        }`}
-      >
-        <Play className={`w-3.5 h-3.5 shrink-0 ${isColored ? 'text-white fill-white/20' : 'text-primary fill-primary/20'}`} />
-        <span>Watch Video</span>
-      </button>
 
       <TopbarMessages isColored={isColored} btnClass={btnClass} />
 
@@ -157,7 +141,6 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
       </button>
 
       <UniversalScannerModal isOpen={scannerOpen} onClose={handleCloseScanner} />
-      <VideoComingSoonModal isOpen={videoModalOpen} onClose={handleCloseVideo} />
     </div>
   );
 };
