@@ -2,21 +2,35 @@ import { useState, useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import PageLoader from '../../components/common/PageLoader';
 import DashboardKpiRow from '../../components/admin/dashboard/DashboardKpiRow';
 import AppStatsWidget from '../../components/admin/dashboard/AppStatsWidget';
 import AdmissionsChartWidget from '../../components/admin/dashboard/AdmissionsChartWidget';
 import FinancialOverviewWidget from '../../components/admin/dashboard/FinancialOverviewWidget';
 import AttendanceHomeworkWidget from '../../components/admin/dashboard/AttendanceHomeworkWidget';
 import DashboardRightColumn from '../../components/admin/dashboard/DashboardRightColumn';
+import DashboardSkeleton from '../../components/admin/dashboard/DashboardSkeleton';
 import Testimonial2 from '../../components/ui/testimonial-section-2';
 
 const EMPTY_ARRAY = [];
+let memoryDashboardStats = null;
+
+const getInitialDashboardStats = () => {
+  if (memoryDashboardStats) return memoryDashboardStats;
+  try {
+    const cached = sessionStorage.getItem('elite_admin_dashboard_cache');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      memoryDashboardStats = parsed;
+      return parsed;
+    }
+  } catch {}
+  return null;
+};
 
 const AdminDashboard = () => {
   const { user } = useAuth();
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(getInitialDashboardStats);
+  const [loading, setLoading] = useState(() => !stats);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -24,13 +38,22 @@ const AdminDashboard = () => {
     const fetchStats = async () => {
       try {
         const res = await api.get('/dashboard/admin');
-        if (isMounted) setStats(res.data);
+        if (isMounted) {
+          setStats(res.data);
+          memoryDashboardStats = res.data;
+          try {
+            sessionStorage.setItem('elite_admin_dashboard_cache', JSON.stringify(res.data));
+          } catch {}
+        }
       } catch (err) {
-        if (isMounted) setError(err.response?.data?.message || 'Failed to load dashboard metrics');
+        if (isMounted && !stats) {
+          setError(err.response?.data?.message || 'Failed to load dashboard metrics');
+        }
       } finally {
         if (isMounted) setLoading(false);
       }
     };
+
     fetchStats();
     return () => {
       isMounted = false;
@@ -41,7 +64,9 @@ const AdminDashboard = () => {
   const spotlightStudents = stats?.spotlightStudents || EMPTY_ARRAY;
   const spotlightTeachers = stats?.spotlightTeachers || EMPTY_ARRAY;
 
-  if (loading) return <PageLoader text="Loading institutional dashboard..." />;
+  if (loading && !stats) {
+    return <DashboardSkeleton />;
+  }
 
   return (
     <div className="space-y-6 pb-12">

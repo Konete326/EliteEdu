@@ -9,11 +9,10 @@ const Student = require('../models/Student');
 const StudentAttendance = require('../models/StudentAttendance');
 const StaffAttendance = require('../models/StaffAttendance');
 const { buildAdminDashboardData } = require('../utils/dashboardDataBuilder');
-const {
-  getAggregatedFeeStats,
-  getAggregatedExpenseStats,
-  getAggregatedStudentStats
-} = require('../utils/dashboardAggregationHelper');
+const { getAggregatedFeeStats, getAggregatedExpenseStats, getAggregatedStudentStats } = require('../utils/dashboardAggregationHelper');
+
+const statsCache = new Map();
+const STATS_TTL_MS = 25000;
 
 const getSuperAdminStats = async (req, res) => {
   try {
@@ -28,13 +27,7 @@ const getSuperAdminStats = async (req, res) => {
     ]);
 
     res.status(200).json({
-      totalSchools,
-      totalUsers,
-      privateSchools,
-      governmentSchools,
-      totalTeachers,
-      totalAdmins,
-      recentSchools
+      totalSchools, totalUsers, privateSchools, governmentSchools, totalTeachers, totalAdmins, recentSchools
     });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch statistics', error: error.message });
@@ -47,12 +40,16 @@ const getAdminStats = async (req, res) => {
     return res.status(403).json({ message: 'Admin is not associated with any school' });
   }
 
+  const cacheKey = String(schoolId);
+  const cached = statsCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < STATS_TTL_MS) {
+    return res.status(200).json(cached.data);
+  }
+
   try {
     const schoolObjId = new mongoose.Types.ObjectId(String(schoolId));
     const now = new Date();
-    const curYear = now.getFullYear();
-    const curMonth = now.getMonth();
-    const curDay = now.getDate();
+    const curYear = now.getFullYear(); const curMonth = now.getMonth(); const curDay = now.getDate();
     const startOfToday = new Date(curYear, curMonth, curDay);
     const startOfMonth = new Date(curYear, curMonth, 1);
     const startOfYear = new Date(curYear, 0, 1);
@@ -104,7 +101,11 @@ const getAdminStats = async (req, res) => {
       expenseStats
     });
 
-    res.status(200).json({ ...dashboardData, spotlightStudents, spotlightTeachers });
+    const payload = { ...dashboardData, spotlightStudents, spotlightTeachers };
+    statsCache.set(cacheKey, { timestamp: Date.now(), data: payload });
+    if (statsCache.size > 50) statsCache.delete(statsCache.keys().next().value);
+
+    res.status(200).json(payload);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch statistics', error: error.message });
   }

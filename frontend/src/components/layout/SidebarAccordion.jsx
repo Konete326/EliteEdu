@@ -8,6 +8,19 @@ const SidebarAccordion = ({ category, isOpen, onToggle, isExpanded, onNavigate, 
   const isSingle = category.subItems?.length === 1;
   const singleItem = isSingle ? category.subItems[0] : null;
 
+  const isAllSubComingSoon = category.subItems && category.subItems.length > 0 && category.subItems.every((s) => s.badge === 'Coming Soon');
+  const groupBadge = category.badge || (isAllSubComingSoon ? 'Coming Soon' : null);
+
+  const getBadgeStyle = (badgeText) => {
+    if (isColored) {
+      return 'bg-white/20 text-white border border-white/30';
+    }
+    if (badgeText === 'Coming Soon') {
+      return 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25';
+    }
+    return 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-dark border border-primary/20';
+  };
+
   if (isSingle && singleItem) {
     const isSingleActive = location.pathname === singleItem.path || (singleItem.path === '/admin/attendance/students' && location.pathname.startsWith('/admin/attendance'));
     const singleStyle = isColored
@@ -17,6 +30,8 @@ const SidebarAccordion = ({ category, isOpen, onToggle, isExpanded, onNavigate, 
       : isSingleActive
         ? 'bg-primary-soft text-primary dark:bg-primary/20 dark:text-primary-dark font-semibold'
         : 'text-ink-sub hover:text-ink hover:bg-surface-secondary dark:text-ink-sub-dark dark:hover:text-ink-dark dark:hover:bg-surface-secondary-dark';
+
+    const itemBadge = singleItem.badge || category.badge;
 
     return (
       <NavLink
@@ -29,13 +44,9 @@ const SidebarAccordion = ({ category, isOpen, onToggle, isExpanded, onNavigate, 
           <Icon className="w-5 h-5 shrink-0" />
           {isExpanded && <span className="truncate text-left">{singleItem.name || category.title}</span>}
         </div>
-        {isExpanded && singleItem.badge && (
-          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 ml-1.5 ${
-            isColored
-              ? 'bg-white/20 text-white border border-white/30'
-              : 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-dark border border-primary/20'
-          }`}>
-            {singleItem.badge}
+        {isExpanded && itemBadge && (
+          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 ml-1.5 ${getBadgeStyle(itemBadge)}`}>
+            {itemBadge}
           </span>
         )}
       </NavLink>
@@ -64,6 +75,11 @@ const SidebarAccordion = ({ category, isOpen, onToggle, isExpanded, onNavigate, 
           <Icon className="w-5 h-5 shrink-0" />
           {isExpanded && <span className="truncate text-left">{category.title}</span>}
         </div>
+        {isExpanded && groupBadge && (
+          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 ml-1.5 ${getBadgeStyle(groupBadge)}`}>
+            {groupBadge}
+          </span>
+        )}
         {isExpanded && (
           isOpen ? <ChevronDown className="w-4 h-4 shrink-0 opacity-70 ml-1.5" /> : <ChevronRight className="w-4 h-4 shrink-0 opacity-70 ml-1.5" />
         )}
@@ -91,11 +107,7 @@ const SidebarAccordion = ({ category, isOpen, onToggle, isExpanded, onNavigate, 
             >
               <span className="truncate flex-1 min-w-0 text-left">{sub.name}</span>
               {sub.badge && (
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 ml-1.5 ${
-                  isColored
-                    ? 'bg-white/20 text-white border border-white/30'
-                    : 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-dark border border-primary/20'
-                }`}>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 ml-1.5 ${getBadgeStyle(sub.badge)}`}>
                   {sub.badge}
                 </span>
               )}

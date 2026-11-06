@@ -67,6 +67,7 @@ export const getAdminNavItems = (schoolType) => [
   {
     type: 'group',
     title: 'E-Learning',
+    badge: 'Coming Soon',
     icon: GraduationCap,
     subItems: [
       { name: 'Courses', path: '/admin/lms/courses', badge: 'Coming Soon' }
@@ -95,15 +96,16 @@ export const getAdminNavItems = (schoolType) => [
   {
     type: 'group',
     title: 'Exams',
+    badge: 'Coming Soon',
     icon: Award,
     subItems: [
-      { name: 'Exam Types', path: '/admin/exam-management/categories' },
+      { name: 'Exam Types', path: '/admin/exam-management/categories', badge: 'Coming Soon' },
       { name: 'Grading', path: '/admin/exam-management/grading-policies', badge: 'Coming Soon' },
-      { name: 'Remarks Rules', path: '/admin/exam-management/remarks-policy' },
-      { name: 'Datesheet', path: '/admin/exam-management/schedule' },
-      { name: 'Remarks', path: '/admin/exam-management/manage-remarks' },
-      { name: 'Marks Entry', path: '/admin/exam-management/mark-sheets' },
-      { name: 'Question Papers', path: '/admin/question-papers' }
+      { name: 'Remarks Rules', path: '/admin/exam-management/remarks-policy', badge: 'Coming Soon' },
+      { name: 'Datesheet', path: '/admin/exam-management/schedule', badge: 'Coming Soon' },
+      { name: 'Remarks', path: '/admin/exam-management/manage-remarks', badge: 'Coming Soon' },
+      { name: 'Marks Entry', path: '/admin/exam-management/mark-sheets', badge: 'Coming Soon' },
+      { name: 'Question Papers', path: '/admin/question-papers', badge: 'Coming Soon' }
     ]
   },
   {
@@ -226,6 +228,7 @@ export const getNavCategories = (user) => {
       groups.push({
         type: 'group',
         title: 'E-Learning',
+        badge: 'Coming Soon',
         icon: BookOpen,
         subItems: lmsItems
       });
@@ -258,6 +261,7 @@ export const getNavCategories = (user) => {
       groups.push({
         type: 'group',
         title: 'Events',
+        badge: 'Coming Soon',
         icon: Calendar,
         subItems: plannerItems
       });
@@ -360,11 +364,11 @@ export const getNavCategories = (user) => {
     if (allowed.has('exams') || allowed.has('grading_policies')) {
       const examSubs = [];
       if (allowed.has('exams')) {
-        examSubs.push({ name: 'Exams', path: '/admin/exam-management/exams' });
-        examSubs.push({ name: 'Class Tests', path: '/admin/class-tests/manage' });
-        examSubs.push({ name: 'Schedules', path: '/admin/exams/schedules' });
-        examSubs.push({ name: 'Datesheets', path: '/admin/exams/date-sheets' });
-        examSubs.push({ name: 'Marks Entry', path: '/admin/exams/marks' });
+        examSubs.push({ name: 'Exams', path: '/admin/exam-management/exams', badge: 'Coming Soon' });
+        examSubs.push({ name: 'Class Tests', path: '/admin/class-tests/manage', badge: 'Coming Soon' });
+        examSubs.push({ name: 'Schedules', path: '/admin/exams/schedules', badge: 'Coming Soon' });
+        examSubs.push({ name: 'Datesheets', path: '/admin/exams/date-sheets', badge: 'Coming Soon' });
+        examSubs.push({ name: 'Marks Entry', path: '/admin/exams/marks', badge: 'Coming Soon' });
       }
       if (allowed.has('grading_policies')) {
         examSubs.push({ name: 'Grading', path: '/admin/exam-management/grading-policies', badge: 'Coming Soon' });
@@ -372,6 +376,7 @@ export const getNavCategories = (user) => {
       groups.push({
         type: 'group',
         title: 'Exams',
+        badge: 'Coming Soon',
         icon: Award,
         subItems: examSubs
       });
