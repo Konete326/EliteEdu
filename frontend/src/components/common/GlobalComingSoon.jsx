@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Clock, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,6 +12,34 @@ const GlobalComingSoon = ({
   backUrl = null
 }) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const originalTitle = document.title;
+    document.title = `${title} - EliteEdu`;
+
+    let meta = document.querySelector('meta[name="robots"]');
+    let created = false;
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.name = 'robots';
+      meta.content = 'noindex, nofollow';
+      document.head.appendChild(meta);
+      created = true;
+    } else {
+      meta.setAttribute('data-prev-content', meta.content);
+      meta.content = 'noindex, nofollow';
+    }
+
+    return () => {
+      document.title = originalTitle;
+      if (created && meta && meta.parentNode) {
+        meta.parentNode.removeChild(meta);
+      } else if (meta && meta.hasAttribute('data-prev-content')) {
+        meta.content = meta.getAttribute('data-prev-content');
+        meta.removeAttribute('data-prev-content');
+      }
+    };
+  }, [title]);
 
   return (
     <div className="w-full space-y-6 animate-in fade-in">
