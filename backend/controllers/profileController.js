@@ -33,7 +33,14 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const userId = req.user?.id || req.user?._id;
+    let user = await User.findById(userId);
+    let isStudent = false;
+    if (!user) {
+      const Student = require('../models/Student');
+      user = await Student.findById(userId);
+      if (user) isStudent = true;
+    }
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
     const updateFields = sanitizeProfileBody(req.body);
@@ -55,6 +62,15 @@ const updateProfile = async (req, res) => {
       updateFields.password = await verifyAndHashPassword(user, req.body.current_password, req.body.new_password);
     }
 
+    if (isStudent) {
+      const Student = require('../models/Student');
+      const stUpdate = {};
+      if (updateFields.password) stUpdate.portal_password = updateFields.password;
+      if (updateFields.photo_url) stUpdate.photo_url = updateFields.photo_url;
+      const updatedStudent = await Student.findByIdAndUpdate(userId, { $set: stUpdate }, { new: true }).lean();
+      return res.status(200).json({ success: true, message: 'Profile updated successfully', user: updatedStudent, profile: updatedStudent });
+    }
+
     if (user.role === 'Teacher') {
       delete updateFields.role;
       delete updateFields.school_id;
@@ -63,9 +79,9 @@ const updateProfile = async (req, res) => {
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
+      userId,
       { $set: updateFields },
-      { new: true, runValidators: true }
+      { new: true }
     )
       .select('-password')
       .populate('campus_id', 'name code address contact_number')
@@ -76,7 +92,7 @@ const updateProfile = async (req, res) => {
       .lean();
 
     let schoolMeta = null;
-    if (updatedUser.school_id) {
+    if (updatedUser?.school_id) {
       schoolMeta = await School.findById(updatedUser.school_id).select('name school_type theme_settings logo slogan').lean();
     }
 
@@ -93,39 +109,6 @@ const updateProfile = async (req, res) => {
   }
 };
 
-const uploadAvatar = async (req, res) => {
-  try {
-    const filePayload = req.body?.image || req.body?.dataUrl || req.body?.file;
-    if (!filePayload) {
-      return res.status(400).json({ success: false, message: 'No image provided for upload' });
-    }
-    const secureUrl = await uploadToCloudinary(filePayload, 'eliteedu/avatars');
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
-      { $set: { photo_url: secureUrl } },
-      { new: true }
-    )
-      .select('-password')
-      .populate('campus_id', 'name code address contact_number')
-      .populate('assigned_campuses', 'name code')
-      .populate('grades', 'name sections')
-      .populate('subjects', 'name code')
-      .populate('custom_role_id')
-      .lean();
-
-    return res.status(200).json({
-      success: true,
-      message: 'Avatar uploaded and updated successfully',
-      photo_url: secureUrl,
-      user: updatedUser,
-      profile: updatedUser
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'Failed to upload avatar to Cloudinary'
-    });
-  }
-};
+const { uploadAvatar } = require('./profileAvatarController');
 
 module.exports = { getProfile, updateProfile, uploadAvatar };

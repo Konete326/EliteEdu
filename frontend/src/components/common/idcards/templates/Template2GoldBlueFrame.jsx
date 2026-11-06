@@ -68,13 +68,12 @@ const Template2GoldBlueFrame = ({
           ])
     : [
         { label: 'STAFF ID', value: holder.employee_code || holder.personal_id || '—' },
-        { label: 'DESIGNATION', value: `${holder.designation || 'Staff'}${holder.bps_grade ? ` (BPS-${holder.bps_grade})` : ''}` },
         { label: 'DEPARTMENT', value: holder.department || 'Faculty' },
         { label: 'JOINED', value: fmtDate(holder.date_of_joining || holder.joining_date) },
+        { label: 'BLOOD GROUP', value: holder.blood_group || '—' },
         ...(isFrontOnly
           ? [
               { label: 'CNIC', value: holder.cnic || '—' },
-              { label: 'BLOOD', value: holder.blood_group || '—' },
               { label: 'PHONE', value: holder.contact_number || holder.whatsapp_number || '—' }
             ]
           : [])
@@ -87,7 +86,7 @@ const Template2GoldBlueFrame = ({
       <div
         onClick={onToggleSelect}
         style={isSelected ? { outline: `2px solid ${GOLD}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${GOLD}50` } : {}}
-        className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[380px] h-[235px] shrink-0 bg-white select-none border-2 border-amber-600/60 p-0.5 ${
+        className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer w-[390px] h-[242px] shrink-0 bg-white select-none border-2 border-amber-600/60 p-0.5 ${
           isSelected ? 'shadow-xl' : ''
         }`}
       >
@@ -158,7 +157,7 @@ const Template2GoldBlueFrame = ({
     <div
       onClick={onToggleSelect}
       style={isSelected ? { outline: `2px solid ${GOLD}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${GOLD}50` } : {}}
-      className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[248px] min-h-[390px] bg-white border-2 border-amber-600/70 p-0.5 select-none ${
+      className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer w-[260px] min-h-[416px] bg-white border-2 border-amber-600/70 p-0.5 select-none ${
         isSelected ? 'shadow-xl' : ''
       }`}
     >

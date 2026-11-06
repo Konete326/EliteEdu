@@ -66,13 +66,12 @@ const Template4ApwaClassic = ({
           ])
     : [
         { label: 'STAFF REG ID', value: holder.employee_code || holder.personal_id || '—' },
-        { label: 'DESIGNATION', value: `${holder.designation || 'Faculty'}${holder.bps_grade ? ` (BPS-${holder.bps_grade})` : ''}` },
         { label: 'DEPARTMENT', value: holder.department || 'Academics' },
         { label: 'JOINED DATE', value: fmtDate(holder.date_of_joining || holder.joining_date) },
+        { label: 'BLOOD GROUP', value: holder.blood_group || '—' },
         ...(isFrontOnly
           ? [
               { label: 'NATIONAL CNIC', value: holder.cnic || '—' },
-              { label: 'BLOOD GROUP', value: holder.blood_group || '—' },
               { label: 'CONTACT NO', value: holder.contact_number || holder.whatsapp_number || '—' }
             ]
           : [])
@@ -85,7 +84,7 @@ const Template4ApwaClassic = ({
       <div
         onClick={onToggleSelect}
         style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
-        className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[380px] h-[235px] shrink-0 bg-[#FAFAFA] select-none border-2 border-slate-300 ${
+        className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer w-[390px] h-[242px] shrink-0 bg-[#FAFAFA] select-none border-2 border-slate-300 ${
           isSelected ? 'shadow-xl' : ''
         }`}
       >
@@ -161,7 +160,7 @@ const Template4ApwaClassic = ({
     <div
       onClick={onToggleSelect}
       style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
-      className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[248px] min-h-[390px] bg-[#FAFAFA] border-2 border-slate-300 select-none ${
+      className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer w-[260px] min-h-[416px] bg-[#FAFAFA] border-2 border-slate-300 select-none ${
         isSelected ? 'shadow-xl' : ''
       }`}
     >

@@ -24,13 +24,13 @@ const IdCardDataRows = ({
 
   if (layout === 'grid') {
     return (
-      <div className={`grid grid-cols-2 gap-x-2.5 gap-y-1 w-full ${fontSize}`}>
+      <div className={`grid grid-cols-2 gap-x-2.5 gap-y-1.5 w-full ${fontSize}`}>
         {visible.map((row, i) => (
-          <div key={i} className="flex items-center justify-between border-b border-slate-100 pb-0.5">
+          <div key={i} className="flex items-center justify-between border-b border-slate-100/90 pb-0.5 gap-1 overflow-hidden">
             <span className={`font-bold uppercase tracking-wider ${labelColorClass} shrink-0 text-[6.5px]`}>
               {row.label}:
             </span>
-            <span className={`font-semibold ${textColorClass} truncate ml-1 text-right`}>
+            <span className={`font-semibold ${textColorClass} truncate text-right text-[7.2px]`} title={row.value}>
               {row.value}
             </span>
           </div>
@@ -42,11 +42,11 @@ const IdCardDataRows = ({
   return (
     <div className={`flex flex-col gap-1 w-full ${fontSize}`}>
       {visible.map((row, i) => (
-        <div key={i} className="flex items-center justify-between border-b border-slate-100/80 pb-0.5 gap-1.5 w-full">
+        <div key={i} className="flex items-center justify-between border-b border-slate-100/90 pb-0.5 gap-1.5 w-full overflow-hidden">
           <span className={`font-bold uppercase tracking-wider ${labelColorClass} shrink-0 text-[7px]`}>
-            {row.label}
+            {row.label}:
           </span>
-          <span className={`font-semibold ${textColorClass} text-right truncate ml-1`}>
+          <span className={`font-semibold ${textColorClass} text-right truncate text-[7.5px] ml-1`} title={row.value}>
             {row.value}
           </span>
         </div>

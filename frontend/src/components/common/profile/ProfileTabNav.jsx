@@ -5,7 +5,7 @@ const TABS = [
   { id: 'contact', label: 'Contact & Address', icon: Phone },
   { id: 'qualification', label: 'Qualifications & Bank', icon: GraduationCap },
   { id: 'security', label: 'Password & Security', icon: Lock },
-  { id: 'permissions', label: 'Permissions & Classes', icon: ShieldCheck }
+  { id: 'permissions', label: 'Permissions & Classes', icon: ShieldCheck, comingSoon: true }
 ];
 
 const ProfileTabNav = ({ activeTab, onSelectTab }) => {
@@ -27,6 +27,15 @@ const ProfileTabNav = ({ activeTab, onSelectTab }) => {
           >
             <Icon className="w-3.5 h-3.5" />
             <span>{tab.label}</span>
+            {tab.comingSoon && (
+              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold border ${
+                isActive
+                  ? 'bg-white/20 text-white border-white/30'
+                  : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+              }`}>
+                Coming Soon
+              </span>
+            )}
           </button>
         );
       })}

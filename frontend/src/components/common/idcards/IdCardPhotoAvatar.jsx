@@ -54,14 +54,13 @@ const IdCardPhotoAvatar = ({
           onError={() => setHasError(true)}
         />
       ) : (
-        <div className="relative w-full h-full flex items-end justify-center select-none bg-slate-100 dark:bg-slate-800 overflow-hidden">
-          <svg
-            className="w-4/5 h-4/5 text-slate-300 dark:text-slate-600 translate-y-1"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-          </svg>
+        <div className="relative w-full h-full flex flex-col items-center justify-center select-none bg-gradient-to-b from-slate-50 to-slate-100 border border-slate-200/50">
+          <span className="font-black text-slate-500 tracking-wider uppercase text-sm select-none">
+            {initials}
+          </span>
+          <span className="text-[6px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+            PHOTO
+          </span>
         </div>
       )}
     </div>

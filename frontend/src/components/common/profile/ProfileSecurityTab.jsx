@@ -11,7 +11,6 @@ const ProfileSecurityTab = ({ onPasswordChange, saving }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLocalError('');
-    if (!currentPassword) return setLocalError('Current password is required.');
     if (!newPassword || newPassword.length < 6) return setLocalError('New password must be at least 6 characters.');
     if (newPassword !== confirmPassword) return setLocalError('New password and confirmation do not match.');
     onPasswordChange(currentPassword, newPassword, () => {
@@ -41,7 +40,7 @@ const ProfileSecurityTab = ({ onPasswordChange, saving }) => {
       <form onSubmit={handleSubmit} className="space-y-3.5">
         <div>
           <label className="block text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1">
-            Current Password <span className="text-bad">*</span>
+            Current Password <span className="text-[10px] font-normal lowercase text-ink-muted">(leave blank if first-time setup)</span>
           </label>
           <input
             type={showPass ? 'text' : 'password'}

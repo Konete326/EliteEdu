@@ -66,13 +66,12 @@ const Template3WaveRibbon = ({
           ])
     : [
         { label: 'FACULTY ID', value: holder.employee_code || holder.personal_id || '—' },
-        { label: 'DESIGNATION', value: `${holder.designation || 'Faculty'}${holder.bps_grade ? ` (BPS-${holder.bps_grade})` : ''}` },
         { label: 'DEPARTMENT', value: holder.department || 'Academics' },
         { label: 'JOINED', value: fmtDate(holder.date_of_joining || holder.joining_date) },
+        { label: 'BLOOD', value: holder.blood_group || '—' },
         ...(isFrontOnly
           ? [
               { label: 'CNIC', value: holder.cnic || '—' },
-              { label: 'BLOOD', value: holder.blood_group || '—' },
               { label: 'PHONE', value: holder.contact_number || holder.whatsapp_number || '—' }
             ]
           : [])
@@ -85,7 +84,7 @@ const Template3WaveRibbon = ({
       <div
         onClick={onToggleSelect}
         style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
-        className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[380px] h-[235px] shrink-0 bg-white select-none border border-slate-200 ${
+        className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer w-[390px] h-[242px] shrink-0 bg-white select-none border border-slate-200 ${
           isSelected ? 'shadow-xl' : ''
         }`}
       >
@@ -172,7 +171,7 @@ const Template3WaveRibbon = ({
     <div
       onClick={onToggleSelect}
       style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
-      className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[248px] min-h-[390px] bg-white border border-slate-200 select-none ${
+      className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer w-[260px] min-h-[416px] bg-white border border-slate-200 select-none ${
         isSelected ? 'shadow-xl' : ''
       }`}
     >
@@ -198,7 +197,7 @@ const Template3WaveRibbon = ({
         <IdCardPhotoAvatar
           photoUrl={holder.photo_url}
           name={holder.name}
-          size={isFrontOnly ? 68 : 74}
+          size={isFrontOnly ? 72 : 76}
           ringColor="#ffffff"
           ringWidth={3}
         />

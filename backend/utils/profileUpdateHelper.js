@@ -86,21 +86,19 @@ const processProfileDocuments = async (documents) => {
 };
 
 const verifyAndHashPassword = async (user, currentPassword, newPassword) => {
-  if (!currentPassword) {
-    const err = new Error('Current password is required to set a new password');
-    err.status = 400;
-    throw err;
-  }
   if (!newPassword || String(newPassword).length < 6) {
     const err = new Error('New password must be at least 6 characters long');
     err.status = 400;
     throw err;
   }
-  const isMatch = await bcrypt.compare(currentPassword, user.password);
-  if (!isMatch) {
-    const err = new Error('Current password is incorrect');
-    err.status = 400;
-    throw err;
+  const existingHash = user?.password || user?.portal_password;
+  if (currentPassword && existingHash) {
+    const isMatch = await bcrypt.compare(currentPassword, existingHash);
+    if (!isMatch) {
+      const err = new Error('Current password is incorrect');
+      err.status = 400;
+      throw err;
+    }
   }
   return bcrypt.hash(newPassword, 10);
 };

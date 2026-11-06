@@ -53,7 +53,7 @@ const UniversalIdCardBack = ({
       <div
         onClick={onToggleSelect}
         style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
-        className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[380px] h-[235px] shrink-0 bg-white p-3 border border-slate-200 select-none ${
+        className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer w-[390px] h-[242px] shrink-0 bg-white p-3 border border-slate-200 select-none ${
           isSelected ? 'shadow-lg' : ''
         }`}
       >
@@ -163,7 +163,7 @@ const UniversalIdCardBack = ({
     <div
       onClick={onToggleSelect}
       style={isSelected ? { outline: `2px solid ${accentColor}`, outlineOffset: '2px', boxShadow: `0 12px 28px -6px ${accentColor}40` } : {}}
-      className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md cursor-pointer w-[248px] min-h-[390px] bg-white p-3 border border-slate-200 select-none ${
+      className={`relative flex flex-col justify-between rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer w-[260px] min-h-[416px] bg-white p-3 border border-slate-200 select-none ${
         isSelected ? 'shadow-lg' : ''
       }`}
     >

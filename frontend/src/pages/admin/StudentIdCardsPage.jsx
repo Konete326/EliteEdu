@@ -118,14 +118,14 @@ const StudentIdCardsPage = () => {
   const masonryCols = useMemo(() => {
     if (orientation === 'horizontal') {
       if (sideMode === 'both') {
-        return 'columns-1 min-[1780px]:columns-2';
+        return 'columns-1 min-[1680px]:columns-2';
       }
-      return 'columns-1 md:columns-2 xl:columns-3 2xl:columns-4';
+      return 'columns-1 md:columns-2 xl:columns-3';
     }
     if (sideMode === 'both') {
       return 'columns-1 min-[1180px]:columns-2';
     }
-    return 'columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6';
+    return 'columns-1 sm:columns-2 md:columns-2 lg:columns-3 xl:columns-4 2xl:columns-4 min-[2200px]:columns-5';
   }, [orientation, sideMode]);
 
   const handlePrintSheet = async (mode = 'current') => {
@@ -445,7 +445,7 @@ const StudentIdCardsPage = () => {
 
           <Masonry cols={masonryCols}>
             {visibleStudents.map((student) => (
-              <div key={student._id} className="flex justify-center transition-all duration-300 hover:-translate-y-1 max-w-full overflow-x-auto sm:overflow-visible">
+              <div key={student._id} className="flex justify-center transition-all duration-300 hover:-translate-y-1 max-w-full mb-6">
                 <UniversalIdCard
                   holder={student}
                   holderType="student"
