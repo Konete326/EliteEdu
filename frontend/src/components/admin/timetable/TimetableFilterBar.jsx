@@ -1,4 +1,5 @@
 import { Plus, Filter, Users, GraduationCap } from 'lucide-react';
+import SearchableSelect from '../../common/SearchableSelect';
 
 const TimetableFilterBar = ({
   viewMode = 'class', grades = [], teachers = [], selectedGrade, setSelectedGrade,
@@ -43,15 +44,21 @@ const TimetableFilterBar = ({
       )}
 
       {viewMode === 'teacher' && (
-        <div className="flex items-center gap-2">
-          <Users className="w-4 h-4 text-emerald-600" />
-          <select
+        <div className="flex items-center gap-2 min-w-[220px]">
+          <Users className="w-4 h-4 text-emerald-600 shrink-0" />
+          <SearchableSelect
+            options={teachers.map((t) => ({
+              value: t._id,
+              label: t.name,
+              subtext: t.designation || t.email || '',
+              badge: t.campus_id?.name || ''
+            }))}
             value={selectedTeacher}
-            onChange={(e) => setSelectedTeacher(e.target.value)}
-            className="px-3 py-1.5 border rounded-xl text-xs font-semibold bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-          >
-            {teachers.map((t) => <option key={t._id} value={t._id}>{t.name} ({t.email})</option>)}
-          </select>
+            onChange={(val) => setSelectedTeacher(val)}
+            placeholder="Filter by Teacher"
+            searchPlaceholder="Search teacher..."
+            size="sm"
+          />
         </div>
       )}
     </div>

@@ -1,4 +1,5 @@
 import { CheckSquare } from 'lucide-react';
+import SearchableSelect from '../../common/SearchableSelect';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -46,10 +47,19 @@ const TimetableSlotFormFields = ({ form, setForm, grades = [], subjects = [], te
     <div className="grid grid-cols-2 gap-3">
       <div>
         <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Teacher *</label>
-        <select value={form.teacher_id} onChange={(e) => setForm({ ...form, teacher_id: e.target.value })} className="w-full px-3 py-2 border rounded-xl text-xs bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" required>
-          <option value="">Select Teacher</option>
-          {teachers.map((t) => <option key={t._id} value={t._id}>{t.name}</option>)}
-        </select>
+        <SearchableSelect
+          options={teachers.map((t) => ({
+            value: t._id,
+            label: t.name,
+            subtext: t.designation ? `${t.designation}${t.department ? ` • ${t.department}` : ''}` : t.email,
+            badge: t.campus_id?.name || ''
+          }))}
+          value={form.teacher_id}
+          onChange={(val) => setForm({ ...form, teacher_id: val })}
+          placeholder="Select Teacher"
+          searchPlaceholder="Search teacher by name or role..."
+          size="sm"
+        />
       </div>
       <div>
         <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Room No</label>

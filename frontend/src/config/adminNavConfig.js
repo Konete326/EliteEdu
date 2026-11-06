@@ -76,12 +76,13 @@ export const getAdminNavItems = (schoolType) => [
   {
     type: 'group',
     title: 'Admissions',
+    badge: 'Coming Soon',
     icon: Users,
     subItems: [
-      { name: 'Inquiries', path: '/admin/crm/inquiries' },
-      { name: 'Status', path: '/admin/crm/admissions' },
-      { name: 'Follow-ups', path: '/admin/crm/follow-ups' },
-      { name: 'Analytics', path: '/admin/crm/analytics' }
+      { name: 'Inquiries', path: '/admin/crm/inquiries', badge: 'Coming Soon' },
+      { name: 'Status', path: '/admin/crm/admissions', badge: 'Coming Soon' },
+      { name: 'Follow-ups', path: '/admin/crm/follow-ups', badge: 'Coming Soon' },
+      { name: 'Analytics', path: '/admin/crm/analytics', badge: 'Coming Soon' }
     ]
   },
   {
@@ -120,10 +121,11 @@ export const getAdminNavItems = (schoolType) => [
   {
     type: 'group',
     title: 'Transport',
+    badge: 'Coming Soon',
     icon: Bus,
     subItems: [
-      { name: 'Vehicles', path: '/admin/transport' },
-      { name: 'Routes', path: '/admin/van-management' }
+      { name: 'Vehicles', path: '/admin/transport', badge: 'Coming Soon' },
+      { name: 'Routes', path: '/admin/van-management', badge: 'Coming Soon' }
     ]
   },
   {
@@ -131,12 +133,12 @@ export const getAdminNavItems = (schoolType) => [
     title: 'Reports',
     icon: BarChart3,
     subItems: [
-      { name: 'Reports Hub', path: '/admin/reports' },
-      { name: 'Students Report', path: '/admin/reports/student-info' },
-      { name: 'Parents Info', path: '/admin/reports/parent-info' },
-      { name: 'Staff Report', path: '/admin/reports/staff-info' },
-      { name: 'Attendance', path: '/admin/attendance/report' },
-      { name: 'Report Cards', path: '/admin/reports/report-cards' },
+      { name: 'Reports Hub', path: '/admin/reports', badge: 'Coming Soon' },
+      { name: 'Students Report', path: '/admin/reports/student-info', badge: 'Coming Soon' },
+      { name: 'Parents Info', path: '/admin/reports/parent-info', badge: 'Coming Soon' },
+      { name: 'Staff Report', path: '/admin/reports/staff-info', badge: 'Coming Soon' },
+      { name: 'Attendance', path: '/admin/attendance/report', badge: 'Coming Soon' },
+      { name: 'Report Cards', path: '/admin/reports/report-cards', badge: 'Coming Soon' },
       { name: 'Audit Logs', path: '/admin/reports/audit-logs' }
     ]
   },
@@ -146,14 +148,14 @@ export const getAdminNavItems = (schoolType) => [
     icon: Sliders,
     subItems: [
       { name: 'General', path: '/admin/settings/general' },
-      { name: 'Zoom Setup', path: '/admin/settings/integrations/zoom' },
+      { name: 'Zoom Setup', path: '/admin/settings/integrations/zoom', badge: 'Coming Soon' },
       { name: 'Signatures', path: '/admin/general-settings/signatures' },
       { name: 'Roles & Rights', path: '/admin/settings/roles' },
       { name: 'Users', path: '/admin/control-panel/user-management' },
       { name: 'Class Transfer', path: '/admin/control-panel/class-transfer' },
       { name: 'Logo & Theme', path: '/admin/control-panel/branding' },
-      { name: 'Bulk Import', path: '/admin/control-panel/bulk-import' },
-      { name: 'Backup', path: '/admin/settings/backup' }
+      { name: 'Bulk Import', path: '/admin/control-panel/bulk-import', badge: 'Coming Soon' },
+      { name: 'Backup', path: '/admin/settings/backup', badge: 'Coming Soon' }
     ]
   }
 ];
@@ -310,7 +312,7 @@ export const getNavCategories = (user) => {
       mainSub.push({ name: 'Templates', path: '/admin/certificates/templates' });
     }
     if (allowed.has('student_portal')) mainSub.push({ name: 'Student Portal', path: '/admin/student-portal-preview' });
-    if (allowed.has('transport')) mainSub.push({ name: 'Vehicles', path: '/admin/transport' });
+    if (allowed.has('transport')) mainSub.push({ name: 'Vehicles', path: '/admin/transport', badge: 'Coming Soon' });
 
     groups.push({
       type: 'group',
@@ -384,13 +386,13 @@ export const getNavCategories = (user) => {
 
     if (allowed.has('reports') || allowed.has('student_reports') || allowed.has('parent_reports') || allowed.has('report_cards')) {
       const repSubs = [
-        { name: 'Reports Hub', path: '/admin/reports' }
+        { name: 'Reports Hub', path: '/admin/reports', badge: 'Coming Soon' }
       ];
-      if (allowed.has('student_reports') || allowed.has('reports')) repSubs.push({ name: 'Students Report', path: '/admin/reports/student-info' });
-      if (allowed.has('parent_reports') || allowed.has('reports')) repSubs.push({ name: 'Parents Info', path: '/admin/reports/parent-info' });
-      if (allowed.has('staff') || allowed.has('reports')) repSubs.push({ name: 'Staff Report', path: '/admin/reports/staff-info' });
-      if (allowed.has('attendance') || allowed.has('reports')) repSubs.push({ name: 'Attendance', path: '/admin/attendance/report' });
-      if (allowed.has('report_cards') || allowed.has('reports')) repSubs.push({ name: 'Report Cards', path: '/admin/reports/report-cards' });
+      if (allowed.has('student_reports') || allowed.has('reports')) repSubs.push({ name: 'Students Report', path: '/admin/reports/student-info', badge: 'Coming Soon' });
+      if (allowed.has('parent_reports') || allowed.has('reports')) repSubs.push({ name: 'Parents Info', path: '/admin/reports/parent-info', badge: 'Coming Soon' });
+      if (allowed.has('staff') || allowed.has('reports')) repSubs.push({ name: 'Staff Report', path: '/admin/reports/staff-info', badge: 'Coming Soon' });
+      if (allowed.has('attendance') || allowed.has('reports')) repSubs.push({ name: 'Attendance', path: '/admin/attendance/report', badge: 'Coming Soon' });
+      if (allowed.has('report_cards') || allowed.has('reports')) repSubs.push({ name: 'Report Cards', path: '/admin/reports/report-cards', badge: 'Coming Soon' });
       repSubs.push({ name: 'Audit Logs', path: '/admin/reports/audit-logs' });
       groups.push({
         type: 'group',
@@ -418,7 +420,7 @@ export const getNavCategories = (user) => {
         cpSubs.push({ name: 'General', path: '/admin/settings/general' });
         cpSubs.push({ name: 'Signatures', path: '/admin/general-settings/signatures' });
         cpSubs.push({ name: 'Logo & Theme', path: '/admin/control-panel/branding' });
-        cpSubs.push({ name: 'Bulk Import', path: '/admin/control-panel/bulk-import' });
+        cpSubs.push({ name: 'Bulk Import', path: '/admin/control-panel/bulk-import', badge: 'Coming Soon' });
       }
       if (allowed.has('user_management')) {
         cpSubs.push({ name: 'Users', path: '/admin/control-panel/user-management' });

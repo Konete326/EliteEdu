@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, HandCoins } from 'lucide-react';
 import api from '../../../services/api';
+import SearchableSelect from '../../common/SearchableSelect';
 
 const RECORD_TYPES = [
   { value: 'Loan', label: 'Personal / Long-Term Staff Loan' },
@@ -58,10 +59,19 @@ const NewLoanModal = ({ isOpen, onClose, onCreated, defaultType = 'Loan' }) => {
         <form onSubmit={handleSubmit} className="p-5 space-y-3.5 text-xs">
           <div>
             <label className="block text-[11px] font-bold text-ink-muted mb-1">Staff Member</label>
-            <select name="staff_id" value={formData.staff_id} onChange={handleChange} required className="w-full px-3 py-2 text-xs rounded-xl border border-line bg-surface-secondary/40 font-semibold outline-none focus:border-primary">
-              <option value="">Select Staff Member</option>
-              {teachers.map((t) => <option key={t._id} value={t._id}>{t.name} ({t.employee_code || t.email})</option>)}
-            </select>
+            <SearchableSelect
+              options={teachers.map((t) => ({
+                value: t._id,
+                label: t.name,
+                subtext: t.email || '',
+                badge: t.employee_code || ''
+              }))}
+              value={formData.staff_id}
+              onChange={(val) => setFormData((prev) => ({ ...prev, staff_id: val }))}
+              placeholder="Select Staff Member"
+              searchPlaceholder="Search staff by name or code..."
+              size="sm"
+            />
           </div>
           <div>
             <label className="block text-[11px] font-bold text-ink-muted mb-1">Facility Type</label>

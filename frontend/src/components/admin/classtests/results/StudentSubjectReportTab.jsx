@@ -1,5 +1,6 @@
 import React from 'react';
 import { User, Award, Printer } from 'lucide-react';
+import SearchableSelect from '../../../common/SearchableSelect';
 
 export default function StudentSubjectReportTab({ grades = [], subjects = [], students = [], selectedGrade, setSelectedGrade, selectedStudent, setSelectedStudent, selectedSubject, setSelectedSubject, data, isLoading, onPrintStudentReport }) {
   const student = data?.student;
@@ -23,10 +24,20 @@ export default function StudentSubjectReportTab({ grades = [], subjects = [], st
 
         <div className="flex-1 min-w-[200px]">
           <label className="block text-[11px] font-bold text-text-muted uppercase mb-1">SELECT STUDENT *</label>
-          <select value={selectedStudent} onChange={(e) => setSelectedStudent(e.target.value)} disabled={!selectedGrade} className="w-full px-3 py-2 text-xs font-bold rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark text-text-primary dark:text-text-primary-dark disabled:opacity-40">
-            <option value="">Select Student</option>
-            {students.map((s) => <option key={s._id} value={s._id}>{s.name} ({s.roll_number ? `Roll: ${s.roll_number}` : `GR: ${s.gr_number}`})</option>)}
-          </select>
+          <SearchableSelect
+            options={students.map((s) => ({
+              value: s._id,
+              label: s.name,
+              subtext: s.roll_number ? `Roll: ${s.roll_number}` : (s.gr_number ? `GR: ${s.gr_number}` : ''),
+              badge: s.current_section ? `Sec ${s.current_section}` : ''
+            }))}
+            value={selectedStudent}
+            onChange={(val) => setSelectedStudent(val)}
+            disabled={!selectedGrade}
+            placeholder="Select Student"
+            searchPlaceholder="Search student..."
+            size="sm"
+          />
         </div>
 
         <div className="flex-1 min-w-[160px]">

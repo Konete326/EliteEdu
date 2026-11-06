@@ -3,6 +3,7 @@ import { Plus, Clock, AlertTriangle, Coffee } from 'lucide-react';
 import { usePersistentFormDraft } from '../../../hooks/usePersistentFormDraft';
 import api from '../../../utils/axiosConfig';
 import { useToast } from '../../../context/ToastContext';
+import SearchableSelect from '../../common/SearchableSelect';
 
 const INITIAL = {
   day_of_week: 'Monday', period_no: 1, start_time: '08:00 AM', end_time: '08:45 AM',
@@ -68,10 +69,19 @@ const TimetableSlotForm = ({ grades = [], subjects = [], teachers = [], onSaved,
             <option value="">Select Subject *</option>
             {subjects.map((s) => <option key={s._id} value={s._id}>{s.name} ({s.code || 'Sub'})</option>)}
           </select>
-          <select value={draft.teacher_id} onChange={(e) => setDraft({ ...draft, teacher_id: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200" required>
-            <option value="">Assign Teacher *</option>
-            {teachers.map((t) => <option key={t._id} value={t._id}>{t.name} ({t.email})</option>)}
-          </select>
+          <SearchableSelect
+            options={teachers.map((t) => ({
+              value: t._id,
+              label: t.name,
+              subtext: t.designation || t.email || '',
+              badge: t.department || ''
+            }))}
+            value={draft.teacher_id}
+            onChange={(val) => setDraft({ ...draft, teacher_id: val })}
+            placeholder="Assign Teacher *"
+            searchPlaceholder="Search teacher..."
+            size="sm"
+          />
           <input type="text" placeholder="Room Number (e.g. Room 101)" value={draft.room_no} onChange={(e) => setDraft({ ...draft, room_no: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200" />
         </>
       )}

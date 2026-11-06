@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Send, RotateCcw, Calendar, UserCheck, ShieldCheck } from 'lucide-react';
+import SearchableSelect from '../../../common/SearchableSelect';
 
 const LEAVE_TYPES = ['Sick Leave', 'Casual Leave', 'Urgent Work', 'Family Event', 'Medical Leave', 'Official Duty', 'Other'];
 
@@ -50,19 +51,37 @@ const LeaveRequestFormCard = ({
           </div>
           <div>
             <label className="text-[11px] font-bold text-ink-muted block mb-1">Select Student *</label>
-            <select value={form.student_id} onChange={(e) => setForm((p) => ({ ...p, student_id: e.target.value }))} className="w-full px-2.5 py-1.5 rounded-xl border border-line bg-transparent text-xs font-semibold" required>
-              <option value="">Choose Student ({filteredStudents.length} available)</option>
-              {filteredStudents.map((s) => <option key={s._id} value={s._id}>{s.name} (GR: {s.gr_number || '—'})</option>)}
-            </select>
+            <SearchableSelect
+              options={filteredStudents.map((s) => ({
+                value: s._id,
+                label: s.name,
+                subtext: s.gr_number ? `GR: ${s.gr_number}` : (s.roll_number ? `Roll: ${s.roll_number}` : ''),
+                badge: s.current_section ? `Sec ${s.current_section}` : ''
+              }))}
+              value={form.student_id}
+              onChange={(val) => setForm((p) => ({ ...p, student_id: val }))}
+              placeholder={`Choose Student (${filteredStudents.length} available)`}
+              searchPlaceholder="Search student by name or GR..."
+              size="sm"
+            />
           </div>
         </div>
       ) : (
         <div>
           <label className="text-[11px] font-bold text-ink-muted block mb-1">Staff Member *</label>
-          <select value={form.staff_id} onChange={(e) => setForm((p) => ({ ...p, staff_id: e.target.value }))} className="w-full px-2.5 py-1.5 rounded-xl border border-line bg-transparent text-xs font-semibold" required>
-            <option value="">Choose Faculty / Staff Member</option>
-            {teachers.map((t) => <option key={t._id} value={t._id}>{t.name} ({t.designation || 'Staff'} • {t.employee_code || '—'})</option>)}
-          </select>
+          <SearchableSelect
+            options={teachers.map((t) => ({
+              value: t._id,
+              label: t.name,
+              subtext: t.designation || t.email || 'Staff',
+              badge: t.employee_code || ''
+            }))}
+            value={form.staff_id}
+            onChange={(val) => setForm((p) => ({ ...p, staff_id: val }))}
+            placeholder="Choose Faculty / Staff Member"
+            searchPlaceholder="Search staff by name or code..."
+            size="sm"
+          />
         </div>
       )}
 

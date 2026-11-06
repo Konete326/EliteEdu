@@ -1,4 +1,5 @@
 import { formatCnic, isValidCnic, isValidPhone, isValidEmail } from '../../../../utils/validators';
+import SearchableSelect from '../../../common/SearchableSelect';
 
 const GENDERS = ['Male', 'Female', 'Other'];
 const MARITAL_STATUSES = ['Single', 'Married', 'Divorced', 'Widowed'];
@@ -152,16 +153,20 @@ const ApplicantBasicInfoCard = ({ formData, onChange, teachers = [], errors = {}
           <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">
             Replacing Existing Staff (Optional)
           </label>
-          <select
+          <SearchableSelect
+            options={teachers.map((t) => ({
+              value: t._id,
+              label: t.name,
+              subtext: t.basic_salary ? `Rs. ${t.basic_salary.toLocaleString()}` : (t.designation || 'Staff'),
+              badge: t.department || ''
+            }))}
             value={formData.replacement_staff || ''}
-            onChange={(e) => onChange('replacement_staff', e.target.value)}
-            className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-[#161616] text-ink dark:text-ink-dark outline-none font-medium cursor-pointer"
-          >
-            <option value="">None (New Position / Vacancy)</option>
-            {teachers.map((t) => (
-              <option key={t._id} value={t._id}>{t.name} {t.basic_salary ? `- Rs. ${t.basic_salary.toLocaleString()}` : ''}</option>
-            ))}
-          </select>
+            onChange={(val) => onChange('replacement_staff', val)}
+            placeholder="None (New Position / Vacancy)"
+            searchPlaceholder="Search staff to replace..."
+            allowClear
+            size="sm"
+          />
         </div>
       </div>
 

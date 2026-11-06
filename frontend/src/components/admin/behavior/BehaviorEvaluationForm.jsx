@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Check, Award } from 'lucide-react';
 import api from '../../../services/api';
 import BehaviorDomainRatings from './BehaviorDomainRatings';
+import SearchableSelect from '../../common/SearchableSelect';
 
 const BADGES = [
   { id: 'Merit_Star', label: 'Merit Star', color: 'bg-amber-500/15 text-amber-600 border-amber-500/30' },
@@ -65,10 +66,19 @@ const BehaviorEvaluationForm = ({ grades = [], activeTerm, onSaved }) => {
           </div>
           <div>
             <label className="block text-[10px] font-bold text-ink-muted mb-1">Student</label>
-            <select value={studentId} onChange={(e) => setStudentId(e.target.value)} required className="w-full px-2.5 py-1.5 rounded-lg border border-line bg-surface-secondary/40 font-bold outline-none">
-              <option value="">Select Student</option>
-              {students.map((s) => <option key={s._id} value={s._id}>{s.name} ({s.roll_number || 'N/A'})</option>)}
-            </select>
+            <SearchableSelect
+              options={students.map((s) => ({
+                value: s._id,
+                label: s.name,
+                subtext: s.roll_number ? `Roll: ${s.roll_number}` : (s.gr_number ? `GR: ${s.gr_number}` : ''),
+                badge: s.current_section ? `Sec ${s.current_section}` : ''
+              }))}
+              value={studentId}
+              onChange={(val) => setStudentId(val)}
+              placeholder="Select Student"
+              searchPlaceholder="Search student..."
+              size="sm"
+            />
           </div>
         </div>
 

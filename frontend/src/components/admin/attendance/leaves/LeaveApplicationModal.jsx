@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Calendar, X, Send, RotateCcw, ShieldCheck, Search, CheckCircle2, User, GraduationCap } from 'lucide-react';
+import SearchableSelect from '../../../common/SearchableSelect';
 
 const LEAVE_TYPES = ['Sick Leave', 'Casual Leave', 'Urgent Work', 'Family Event', 'Medical Leave', 'Official Duty', 'Other'];
 
@@ -293,19 +294,19 @@ const LeaveApplicationModal = ({
           ) : (
             <div>
               <label className="text-xs font-bold text-ink-muted block mb-1">Select Staff Member *</label>
-              <select
+              <SearchableSelect
+                options={teachers.map((t) => ({
+                  value: t._id,
+                  label: t.name,
+                  subtext: t.designation || 'Staff',
+                  badge: t.employee_code || ''
+                }))}
                 value={form.staff_id}
-                onChange={(e) => setForm((p) => ({ ...p, staff_id: e.target.value }))}
-                className="w-full px-3 py-2 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs font-semibold outline-none focus:border-primary cursor-pointer text-ink dark:text-ink-dark"
-                required
-              >
-                <option value="">Choose Faculty / Staff Member ({teachers.length} available)</option>
-                {teachers.map((t) => (
-                  <option key={t._id} value={t._id}>
-                    {t.name} — {t.designation || 'Staff'} ({t.employee_code || 'EMP'})
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => setForm((p) => ({ ...p, staff_id: val }))}
+                placeholder={`Choose Faculty / Staff Member (${teachers.length} available)`}
+                searchPlaceholder="Search staff by name or code..."
+                size="sm"
+              />
             </div>
           )}
 

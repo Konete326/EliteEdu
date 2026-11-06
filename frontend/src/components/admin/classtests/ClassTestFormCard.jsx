@@ -1,6 +1,7 @@
 import React from 'react';
 import { PlusCircle, Save, RotateCcw, RefreshCw, AlertTriangle, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SearchableSelect from '../../common/SearchableSelect';
 
 export default function ClassTestFormCard({ formData, setFormData, onSave, onReset, isSaving, editingTest, onCancelEdit, prereqs, onRefreshPrereqs, isPrereqLoading }) {
   const grades = prereqs?.grades || [];
@@ -68,10 +69,20 @@ export default function ClassTestFormCard({ formData, setFormData, onSave, onRes
         </div>
         <div>
           <label className="block text-[11px] font-bold text-text-muted mb-1">Assigned Teacher</label>
-          <select value={formData.teacher_id || ''} onChange={(e) => setFormData((prev) => ({ ...prev, teacher_id: e.target.value }))} className="w-full px-2.5 py-2 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark font-semibold text-text-primary dark:text-text-primary-dark">
-            <option value="">Select Teacher (Optional)</option>
-            {teachers.map((t) => <option key={t._id} value={t._id}>{t.name} ({t.designation || 'Teacher'})</option>)}
-          </select>
+          <SearchableSelect
+            options={teachers.map((t) => ({
+              value: t._id,
+              label: t.name,
+              subtext: t.designation || 'Teacher',
+              badge: t.department || ''
+            }))}
+            value={formData.teacher_id || ''}
+            onChange={(val) => setFormData((prev) => ({ ...prev, teacher_id: val }))}
+            placeholder="Select Teacher (Optional)"
+            searchPlaceholder="Search teacher..."
+            allowClear
+            size="sm"
+          />
         </div>
         <div className="grid grid-cols-2 gap-2.5">
           <div>
