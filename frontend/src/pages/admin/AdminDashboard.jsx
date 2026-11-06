@@ -39,6 +39,7 @@ const AdminDashboard = () => {
 
   const isPrivate = (user?.school_type || stats?.school?.school_type) === 'Private';
   const spotlightStudents = stats?.spotlightStudents || EMPTY_ARRAY;
+  const spotlightTeachers = stats?.spotlightTeachers || EMPTY_ARRAY;
 
   if (loading) return <PageLoader text="Loading institutional dashboard..." />;
 
@@ -55,7 +56,8 @@ const AdminDashboard = () => {
 
       <Testimonial2
         students={spotlightStudents}
-        title="Active Student Community Spotlight"
+        teachers={spotlightTeachers}
+        title="Academic Community Spotlight"
       />
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">

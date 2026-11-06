@@ -74,7 +74,7 @@ const getAdminStats = async (req, res) => {
     ] = await Promise.all([
       School.findById(schoolObjId).select('name school_type').lean(),
       Campus.find({ school_id: schoolObjId }).select('name address status').sort({ createdAt: -1 }).lean(),
-      User.find({ school_id: schoolObjId, role: 'Teacher' }).select('name dob campus_id status is_active').lean(),
+      User.find({ school_id: schoolObjId, role: 'Teacher' }).select('name dob campus_id status is_active photo_url designation department qualification specialization joining_date').populate('campus_id', 'name').lean(),
       Subject.countDocuments({ school_id: schoolObjId }),
       Grade.find({ school_id: schoolObjId }).select('name sections campus_id').lean(),
       Homework.find({ school_id: schoolObjId }).select('title status is_published campus_id grade_id due_date createdAt').lean(),
@@ -85,6 +85,10 @@ const getAdminStats = async (req, res) => {
       getAggregatedExpenseStats(schoolObjId, startOfYear, startOfMonth, startOfToday),
       Student.find({ school_id: schoolObjId, status: 'Active' }).select('name father_name current_grade current_section photo_url gr_number admission_date campus_id status elective_stream').populate('current_grade', 'name').populate('campus_id', 'name').sort({ createdAt: -1 }).limit(18).lean()
     ]);
+
+    const spotlightTeachers = teachers
+      .filter((t) => t.status !== 'Inactive' && t.is_active !== false)
+      .slice(0, 18);
 
     const dashboardData = buildAdminDashboardData({
       school,
@@ -100,7 +104,7 @@ const getAdminStats = async (req, res) => {
       expenseStats
     });
 
-    res.status(200).json({ ...dashboardData, spotlightStudents });
+    res.status(200).json({ ...dashboardData, spotlightStudents, spotlightTeachers });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch statistics', error: error.message });
   }

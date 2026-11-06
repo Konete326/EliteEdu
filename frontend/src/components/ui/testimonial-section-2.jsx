@@ -1,157 +1,98 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, GraduationCap, Sparkles, Building2, Calendar, User } from 'lucide-react';
+import { X, GraduationCap, Building2, Calendar, Briefcase, Award } from 'lucide-react';
 
-const FALLBACK_STUDENTS = [
-  {
-    id: 'fb-1',
-    name: 'Ayan Ahmed',
-    role: 'Class 10-A • GR: 1001',
-    image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80',
-    quote: 'Focused on science and technological innovations for national leadership.',
-    admissionDate: '2024-03-15',
-    campus: 'Main Branch',
-    status: 'Active'
-  },
-  {
-    id: 'fb-2',
-    name: 'Fatima Noor',
-    role: 'Class 9-B • GR: 1002',
-    image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
-    quote: 'Excelling in mathematics and language arts with high academic distinction.',
-    admissionDate: '2024-04-10',
-    campus: 'Main Branch',
-    status: 'Active'
-  },
-  {
-    id: 'fb-3',
-    name: 'Muhammad Bilal',
-    role: 'Class 8-A • GR: 1003',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-    quote: 'Passionate about computer science, robotics, and creative problem solving.',
-    admissionDate: '2024-05-02',
-    campus: 'Main Branch',
-    status: 'Active'
-  },
-  {
-    id: 'fb-4',
-    name: 'Zainab Bibi',
-    role: 'Class 7-C • GR: 1004',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
-    quote: 'Engaged in extracurricular arts, literature, and school debate competitions.',
-    admissionDate: '2024-06-12',
-    campus: 'Main Branch',
-    status: 'Active'
-  },
-  {
-    id: 'fb-5',
-    name: 'Hamza Tariq',
-    role: 'Class 6-A • GR: 1005',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-    quote: 'Consistently maintaining high attendance and positive behavioral ratings.',
-    admissionDate: '2024-07-20',
-    campus: 'Main Branch',
-    status: 'Active'
-  },
-  {
-    id: 'fb-6',
-    name: 'Ayesha Siddiqui',
-    role: 'Class 5-B • GR: 1006',
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&auto=format&fit=crop&q=80',
-    quote: 'Aspiring healthcare professional with a passion for biological sciences.',
-    admissionDate: '2024-08-01',
-    campus: 'Main Branch',
-    status: 'Active'
-  },
-  {
-    id: 'fb-7',
-    name: 'Usman Ghani',
-    role: 'Class 4-A • GR: 1007',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
-    quote: 'Active participant in sports and STEM junior research activities.',
-    admissionDate: '2024-08-15',
-    campus: 'Main Branch',
-    status: 'Active'
-  },
-  {
-    id: 'fb-8',
-    name: 'Maryam Asif',
-    role: 'Class 3-A • GR: 1008',
-    image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
-    quote: 'Exemplary reading comprehension and creative storytelling abilities.',
-    admissionDate: '2024-09-01',
-    campus: 'Main Branch',
-    status: 'Active'
-  },
-  {
-    id: 'fb-9',
-    name: 'Daniyal Raza',
-    role: 'Class 2-B • GR: 1009',
-    image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80',
-    quote: 'Developing foundational literacy and collaborative classroom teamwork.',
-    admissionDate: '2024-09-10',
-    campus: 'Main Branch',
-    status: 'Active'
-  }
-];
-
-export default function Testimonial2({ students = [], title = 'Registered Scholars Spotlight' }) {
+export default function Testimonial2({ students = [], teachers = [], title = 'Academic Community Spotlight' }) {
   const [selected, setSelected] = useState(null);
 
   const displayList = useMemo(() => {
-    const realMapped = (students || []).map((s) => {
-      const gradeStr = s.current_grade?.name || 'Class';
-      const sectionStr = s.current_section || 'A';
-      const campusStr = s.campus_id?.name || 'Main Branch';
-      const grStr = s.gr_number || '—';
-      const quoteStr = s.elective_stream && s.elective_stream !== 'None'
-        ? `Enrolled in ${s.elective_stream} stream. Actively committed to academic progress.`
-        : `Registered scholar at ${campusStr}. Committed to academic excellence and personal growth.`;
+    const mappedTeachers = (teachers || [])
+      .filter((t) => t && t.name)
+      .map((t) => {
+        const campusStr = t.campus_id?.name || 'Main Campus';
+        const desigStr = t.designation || 'Teacher';
+        const deptStr = t.department ? ` • ${t.department}` : '';
+        const quoteStr = t.specialization
+          ? `Specialized in ${t.specialization}. Mentoring scholars toward academic excellence.`
+          : (t.qualification
+            ? `Academic qualification: ${t.qualification}. Dedicated educator at ${campusStr}.`
+            : `Dedicated educator at ${campusStr}. Committed to nurturing the next generation.`);
 
-      return {
-        id: s._id || String(Math.random()),
-        name: s.name,
-        fatherName: s.father_name || '',
-        role: `${gradeStr} - ${sectionStr} • GR: ${grStr}`,
-        image: s.photo_url || '',
-        quote: quoteStr,
-        admissionDate: s.admission_date ? new Date(s.admission_date).toLocaleDateString() : '—',
-        campus: campusStr,
-        status: s.status || 'Active',
-        isReal: true
-      };
-    });
+        return {
+          id: `teacher-${t._id || Math.random()}`,
+          name: t.name,
+          role: `${desigStr}${deptStr}`,
+          type: 'Teacher',
+          image: t.photo_url || '',
+          quote: quoteStr,
+          dateLabel: 'Joined',
+          dateValue: t.joining_date ? new Date(t.joining_date).toLocaleDateString() : '—',
+          campus: campusStr,
+          status: t.status || 'Active',
+          detailLabel: t.specialization ? 'Specialization' : 'Qualification',
+          detailValue: t.specialization || t.qualification || 'Academics Faculty'
+        };
+      });
 
-    if (realMapped.length >= 9) {
-      return realMapped.slice(0, 18);
+    const mappedStudents = (students || [])
+      .filter((s) => s && s.name)
+      .map((s) => {
+        const gradeStr = s.current_grade?.name || 'Class';
+        const sectionStr = s.current_section || 'A';
+        const campusStr = s.campus_id?.name || 'Main Campus';
+        const grStr = s.gr_number || '—';
+        const quoteStr = s.elective_stream && s.elective_stream !== 'None'
+          ? `Enrolled in ${s.elective_stream} stream. Actively committed to academic progress.`
+          : `Registered scholar at ${campusStr}. Committed to academic excellence and personal growth.`;
+
+        return {
+          id: `student-${s._id || Math.random()}`,
+          name: s.name,
+          fatherName: s.father_name || '',
+          role: `${gradeStr} - ${sectionStr} • GR: ${grStr}`,
+          type: 'Student',
+          image: s.photo_url || '',
+          quote: quoteStr,
+          dateLabel: 'Admitted',
+          dateValue: s.admission_date ? new Date(s.admission_date).toLocaleDateString() : '—',
+          campus: campusStr,
+          status: s.status || 'Active',
+          detailLabel: s.elective_stream && s.elective_stream !== 'None' ? 'Stream' : 'Section',
+          detailValue: s.elective_stream && s.elective_stream !== 'None' ? s.elective_stream : sectionStr
+        };
+      });
+
+    const combined = [];
+    const maxLen = Math.max(mappedTeachers.length, mappedStudents.length);
+    for (let i = 0; i < maxLen; i++) {
+      if (i < mappedTeachers.length) combined.push(mappedTeachers[i]);
+      if (i < mappedStudents.length) combined.push(mappedStudents[i]);
     }
 
-    const needed = 9 - realMapped.length;
-    const fillers = FALLBACK_STUDENTS.slice(0, needed).map((f) => ({ ...f, isReal: false }));
-    return [...realMapped, ...fillers];
-  }, [students]);
+    return combined;
+  }, [students, teachers]);
+
+  if (displayList.length < 6) {
+    return null;
+  }
 
   const rowSize = Math.max(3, Math.ceil(displayList.length / 3));
   const row1 = displayList.slice(0, rowSize);
   const row2 = displayList.slice(rowSize, rowSize * 2);
   const row3 = displayList.slice(rowSize * 2);
 
-  const hasAnyReal = students && students.length > 0;
-
   return (
     <div className="relative w-full py-10 sm:py-14 overflow-hidden rounded-3xl bg-surface dark:bg-[#0c0c0f] border border-line dark:border-white/10 text-ink dark:text-white shadow-xs">
       <div className="max-w-7xl mx-auto px-4 text-center mb-8">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-3 border border-primary/20">
           <GraduationCap className="w-4 h-4" />
-          <span>Learner Community</span>
+          <span>Academic Community</span>
         </div>
         <h2 className="text-2xl md:text-3xl font-black tracking-tight text-ink dark:text-white">
           {title}
         </h2>
         <p className="text-xs sm:text-sm text-ink-muted mt-1 max-w-xl mx-auto">
-          {hasAnyReal
-            ? `Dynamic interactive showcase featuring ${students.length} registered student(s) currently enrolled.`
-            : 'Enrolled students will automatically populate this showcase upon admission.'}
+          {`Dynamic interactive showcase featuring ${teachers.length} faculty member(s) and ${students.length} registered scholar(s).`}
         </p>
       </div>
 
@@ -226,24 +167,31 @@ export default function Testimonial2({ students = [], title = 'Registered Schola
                     />
                   ) : (
                     <span>
-                      {selected.name ? selected.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) : 'ST'}
+                      {selected.name ? selected.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) : 'EP'}
                     </span>
                   )}
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-black text-ink dark:text-white">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-lg font-black text-ink dark:text-white truncate">
                       {selected.name}
                     </h3>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      selected.type === 'Teacher'
+                        ? 'bg-primary/15 text-primary border border-primary/25'
+                        : 'bg-good/15 text-good border border-good/25'
+                    }`}>
+                      {selected.type}
+                    </span>
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-good/10 text-good border border-good/20">
                       {selected.status}
                     </span>
                   </div>
-                  <p className="text-xs font-semibold text-primary">
+                  <p className="text-xs font-semibold text-primary truncate mt-0.5">
                     {selected.role}
                   </p>
                   {selected.fatherName && (
-                    <p className="text-[11px] text-ink-muted">
+                    <p className="text-[11px] text-ink-muted truncate">
                       Father: {selected.fatherName}
                     </p>
                   )}
@@ -256,7 +204,7 @@ export default function Testimonial2({ students = [], title = 'Registered Schola
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                 <div className="flex items-center gap-2 p-2.5 rounded-xl bg-surface-secondary/40 dark:bg-white/5">
                   <Building2 className="w-4 h-4 text-primary shrink-0" />
                   <span className="truncate text-ink-muted">
@@ -266,7 +214,17 @@ export default function Testimonial2({ students = [], title = 'Registered Schola
                 <div className="flex items-center gap-2 p-2.5 rounded-xl bg-surface-secondary/40 dark:bg-white/5">
                   <Calendar className="w-4 h-4 text-primary shrink-0" />
                   <span className="truncate text-ink-muted">
-                    Admitted: <strong className="text-ink dark:text-white">{selected.admissionDate}</strong>
+                    {selected.dateLabel}: <strong className="text-ink dark:text-white">{selected.dateValue}</strong>
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 p-2.5 rounded-xl bg-surface-secondary/40 dark:bg-white/5">
+                  {selected.type === 'Teacher' ? (
+                    <Briefcase className="w-4 h-4 text-primary shrink-0" />
+                  ) : (
+                    <Award className="w-4 h-4 text-primary shrink-0" />
+                  )}
+                  <span className="truncate text-ink-muted">
+                    {selected.detailLabel}: <strong className="text-ink dark:text-white">{selected.detailValue}</strong>
                   </span>
                 </div>
               </div>
@@ -279,7 +237,8 @@ export default function Testimonial2({ students = [], title = 'Registered Schola
 }
 
 function Capsule({ item, onClick }) {
-  const initials = item.name ? item.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) : 'ST';
+  const initials = item.name ? item.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) : 'EP';
+  const isTeacher = item.type === 'Teacher';
 
   return (
     <motion.div
@@ -300,10 +259,19 @@ function Capsule({ item, onClick }) {
         )}
       </div>
       <div className="flex flex-col items-start leading-tight">
-        <span className="text-xs sm:text-sm font-bold text-ink dark:text-white group-hover:text-primary transition-colors">
-          {item.name}
-        </span>
-        <span className="text-[11px] text-ink-muted">
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs sm:text-sm font-bold text-ink dark:text-white group-hover:text-primary transition-colors max-w-[140px] truncate">
+            {item.name}
+          </span>
+          <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-bold ${
+            isTeacher
+              ? 'bg-primary/15 text-primary border border-primary/25'
+              : 'bg-good/15 text-good border border-good/25'
+          }`}>
+            {item.type}
+          </span>
+        </div>
+        <span className="text-[11px] text-ink-muted max-w-[170px] truncate">
           {item.role}
         </span>
       </div>
