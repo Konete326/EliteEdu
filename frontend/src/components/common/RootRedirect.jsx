@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { getDefaultDashboardRoute } from '../../utils/navigation';
 
 const RootRedirect = () => {
   const { isAuthenticated, user } = useAuth();
@@ -8,19 +9,7 @@ const RootRedirect = () => {
     return <Navigate to="/login" replace />;
   }
 
-  if (user?.role === 'SuperAdmin') {
-    return <Navigate to="/superadmin" replace />;
-  }
-
-  if (user?.role === 'Teacher') {
-    return <Navigate to="/teacher" replace />;
-  }
-
-  if (user?.role === 'Student') {
-    return <Navigate to="/student/dashboard" replace />;
-  }
-
-  return <Navigate to="/admin" replace />;
+  return <Navigate to={getDefaultDashboardRoute(user?.role)} replace />;
 };
 
 export default RootRedirect;

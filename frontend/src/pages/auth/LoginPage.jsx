@@ -3,6 +3,7 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { isValidEmail } from '../../utils/validators';
+import { getDefaultDashboardRoute } from '../../utils/navigation';
 import api from '../../services/api';
 import LoginHeader from '../../components/auth/LoginHeader';
 import LoginRoleSwitcher from '../../components/auth/LoginRoleSwitcher';
@@ -21,8 +22,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   if (isAuthenticated) {
-    const target = user?.role === 'Student' ? '/student/dashboard' : user?.role === 'Teacher' ? '/teacher' : user?.role === 'SuperAdmin' ? '/superadmin' : '/admin';
-    return <Navigate to={target} replace />;
+    return <Navigate to={getDefaultDashboardRoute(user?.role)} replace />;
   }
 
   const isStudent = role === 'Student';
@@ -49,8 +49,7 @@ const LoginPage = () => {
       });
       const { user: userData, token } = response.data;
       login(userData, token);
-      const target = userData.role === 'Student' ? '/student/dashboard' : userData.role === 'Teacher' ? '/teacher' : userData.role === 'SuperAdmin' ? '/superadmin' : '/admin';
-      navigate(target);
+      navigate(getDefaultDashboardRoute(userData.role));
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please check credentials.');
     } finally {
