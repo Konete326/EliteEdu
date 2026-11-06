@@ -25,10 +25,18 @@ const getTeachers = async (req, res) => {
       ];
     }
 
+    if (req.query.dropdown === 'true') {
+      const teachers = await User.find(filter)
+        .select('_id name designation campus_id')
+        .sort({ name: 1 })
+        .lean();
+      return res.status(200).json({ success: true, teachers });
+    }
+
     const isCard = req.query.cardView === 'true';
     let query = User.find(filter)
       .populate('campus_id', 'name logo area semis_code address contact_number email phone')
-      .populate('school_id', 'name school_type logo_url slogan address contact_number email principal_name principal_signature_url');
+      .populate('school_id', 'name school_type');
 
     if (!isCard) {
       query = query

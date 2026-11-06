@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const TimetableSlot = require('../models/TimetableSlot');
 const StaffAttendance = require('../models/StaffAttendance');
 
@@ -61,17 +62,19 @@ const buildLiveActivity = (slots, currentMinutes) => {
 
 const enrichTeachersWithRosterAndAttendance = async (schoolId, teachers) => {
   if (!teachers?.length) return [];
+  const schoolObj = mongoose.Types.ObjectId.isValid(schoolId) ? new mongoose.Types.ObjectId(String(schoolId)) : schoolId;
   const teacherIds = teachers.map((t) => t._id);
   const todayDate = getTodayDateString();
   const todayWeekday = getTodayWeekday();
 
   const [attendances, slots, weeklyCounts] = await Promise.all([
-    StaffAttendance.find({ school_id: schoolId, date: todayDate, staff_id: { $in: teacherIds } })
+    StaffAttendance.find({ school_id: schoolObj, date: todayDate, staff_id: { $in: teacherIds } })
       .select('staff_id status check_in_time check_out_time').lean(),
-    TimetableSlot.find({ school_id: schoolId, day_of_week: todayWeekday, teacher_id: { $in: teacherIds }, is_break: false })
+    TimetableSlot.find({ school_id: schoolObj, day_of_week: todayWeekday, teacher_id: { $in: teacherIds }, is_break: false })
+      .select('teacher_id grade_id subject_id room_no period_no start_time end_time section day_of_week')
       .populate('grade_id', 'name code').populate('subject_id', 'name code').sort({ period_no: 1 }).lean(),
     TimetableSlot.aggregate([
-      { $match: { school_id: schoolId, teacher_id: { $in: teacherIds }, is_break: false } },
+      { $match: { school_id: schoolObj, teacher_id: { $in: teacherIds }, is_break: false } },
       { $group: { _id: '$teacher_id', count: { $sum: 1 } } }
     ])
   ]);

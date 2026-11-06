@@ -4,29 +4,46 @@ import { sortGradesInSequence } from '../utils/gradeSortHelper';
 import { useCampus } from '../context/CampusContext';
 import { useToast } from '../context/ToastContext';
 
+let memoryGrades = null;
+let memoryCampuses = null;
+let memoryTeachers = null;
+
 export const useGrades = (customCampusId = '') => {
   const { activeCampusId } = useCampus();
   const { showToast } = useToast();
   const effectiveCampusId = customCampusId || (activeCampusId !== 'all' ? activeCampusId : '');
 
-  const [grades, setGrades] = useState([]);
-  const [campuses, setCampuses] = useState([]);
-  const [teachers, setTeachers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [grades, setGrades] = useState(() => memoryGrades || []);
+  const [campuses, setCampuses] = useState(() => memoryCampuses || []);
+  const [teachers, setTeachers] = useState(() => memoryTeachers || []);
+  const [loading, setLoading] = useState(() => !memoryGrades);
   const [isSeeding, setIsSeeding] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
-      setLoading(true);
+      if (!memoryGrades) setLoading(true);
       const campusQuery = effectiveCampusId ? `?campus_id=${effectiveCampusId}` : '';
-      const [gRes, cRes, tRes] = await Promise.all([
-        api.get(`/grades${campusQuery}`),
-        api.get('/campuses'),
-        api.get('/teachers')
-      ]);
-      setGrades(sortGradesInSequence(gRes.data?.grades || []));
-      setCampuses(cRes.data?.campuses || []);
-      setTeachers(tRes.data?.teachers || []);
+      const gradesPromise = api.get(`/grades${campusQuery}`);
+      const campusesPromise = memoryCampuses ? Promise.resolve({ data: { campuses: memoryCampuses } }) : api.get('/campuses');
+      const teachersPromise = api.get('/teachers?dropdown=true');
+
+      const [gRes, cRes] = await Promise.all([gradesPromise, campusesPromise]);
+      const sortedGrades = sortGradesInSequence(gRes.data?.grades || []);
+      const campusList = cRes.data?.campuses || [];
+
+      memoryGrades = sortedGrades;
+      memoryCampuses = campusList;
+      setGrades(sortedGrades);
+      setCampuses(campusList);
+      setLoading(false);
+
+      teachersPromise
+        .then((tRes) => {
+          const tList = tRes.data?.teachers || [];
+          memoryTeachers = tList;
+          setTeachers(tList);
+        })
+        .catch(() => {});
     } catch {
       showToast('Failed to fetch grades and academic levels', 'error');
     } finally {
@@ -45,11 +62,19 @@ export const useGrades = (customCampusId = '') => {
     };
     if (selectedGradeId) {
       const res = await api.put(`/grades/${selectedGradeId}`, finalPayload);
-      setGrades((prev) => prev.map((g) => (g._id === selectedGradeId ? res.data.grade : g)));
+      setGrades((prev) => {
+        const next = prev.map((g) => (g._id === selectedGradeId ? res.data.grade : g));
+        memoryGrades = next;
+        return next;
+      });
       showToast(`Class "${payload.name}" updated successfully`, 'success');
     } else {
       const res = await api.post('/grades', finalPayload);
-      setGrades((prev) => sortGradesInSequence([res.data.grade, ...prev]));
+      setGrades((prev) => {
+        const next = sortGradesInSequence([res.data.grade, ...prev]);
+        memoryGrades = next;
+        return next;
+      });
       showToast(`Class "${payload.name}" created successfully`, 'success');
     }
   };
@@ -57,7 +82,11 @@ export const useGrades = (customCampusId = '') => {
   const toggleStatus = async (gradeId) => {
     try {
       const res = await api.patch(`/grades/${gradeId}/status`);
-      setGrades((prev) => prev.map((g) => (g._id === gradeId ? res.data.grade : g)));
+      setGrades((prev) => {
+        const next = prev.map((g) => (g._id === gradeId ? res.data.grade : g));
+        memoryGrades = next;
+        return next;
+      });
       showToast(`Class status changed to ${res.data?.grade?.status || 'Active'}`, 'success');
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to update grade status', 'error');
@@ -67,7 +96,11 @@ export const useGrades = (customCampusId = '') => {
   const deleteGrade = async (gradeId) => {
     try {
       await api.delete(`/grades/${gradeId}`);
-      setGrades((prev) => prev.filter((g) => g._id !== gradeId));
+      setGrades((prev) => {
+        const next = prev.filter((g) => g._id !== gradeId);
+        memoryGrades = next;
+        return next;
+      });
       showToast('Class removed successfully', 'success');
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to delete grade', 'error');
@@ -80,6 +113,7 @@ export const useGrades = (customCampusId = '') => {
       ...g,
       order: index + 1
     }));
+    memoryGrades = updated;
     setGrades(updated);
     try {
       await api.patch('/grades/reorder', {

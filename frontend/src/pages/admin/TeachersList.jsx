@@ -74,7 +74,7 @@ const TeachersList = () => {
   const paginatedTeachers = filteredTeachers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
-    <div className="space-y-4">
+    <div className="w-full space-y-4 pb-12">
       <TeacherTopBar
         searchQuery={searchQuery}
         onSearchChange={(val) => {
@@ -134,7 +134,12 @@ const TeachersList = () => {
       )}
 
       <div className="bg-surface dark:bg-[#0c0c0c] border border-line dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
-        {loading ? (
+        {loading && (
+          <div className="h-0.5 w-full bg-primary/20 overflow-hidden">
+            <div className="h-full bg-primary animate-pulse w-full" />
+          </div>
+        )}
+        {loading && teachers.length === 0 ? (
           <PageLoader text="Loading staff directory..." />
         ) : filteredTeachers.length === 0 ? (
           <div className="p-12 text-center space-y-4">

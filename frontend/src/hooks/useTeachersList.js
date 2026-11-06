@@ -7,29 +7,38 @@ export const DESIGNATIONS = [
   'MALI', 'CHOWKIDAR', 'SWEEPER', 'PEON'
 ];
 
+let memoryTeachers = null;
+let memoryCampuses = null;
+let memoryDesignations = null;
+
 export const useTeachersList = () => {
-  const [teachers, setTeachers] = useState([]);
-  const [campuses, setCampuses] = useState([]);
+  const [teachers, setTeachers] = useState(() => memoryTeachers || []);
+  const [campuses, setCampuses] = useState(() => memoryCampuses || []);
   const [selectedCampus, setSelectedCampus] = useState('all');
   const [selectedDesignation, setSelectedDesignation] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !memoryTeachers);
   const [error, setError] = useState('');
   const [viewTeacher, setViewTeacher] = useState(null);
   const [teacherToDelete, setTeacherToDelete] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [designations, setDesignations] = useState(DESIGNATIONS);
+  const [designations, setDesignations] = useState(() => memoryDesignations || DESIGNATIONS);
 
   const fetchCampuses = async () => {
     try {
       const [cRes, rRes] = await Promise.allSettled([
-        api.get('/campuses'),
-        api.get('/user-management/roles')
+        memoryCampuses ? Promise.resolve({ data: { campuses: memoryCampuses } }) : api.get('/campuses'),
+        memoryDesignations ? Promise.resolve({ data: { roles: [] } }) : api.get('/user-management/roles')
       ]);
-      if (cRes.status === 'fulfilled') setCampuses(cRes.value.data.campuses || []);
-      if (rRes.status === 'fulfilled' && rRes.value.data.roles) {
+      if (cRes.status === 'fulfilled' && cRes.value.data?.campuses) {
+        memoryCampuses = cRes.value.data.campuses;
+        setCampuses(cRes.value.data.campuses);
+      }
+      if (rRes.status === 'fulfilled' && rRes.value.data?.roles?.length) {
         const names = rRes.value.data.roles.map((ro) => ro.name);
-        setDesignations(Array.from(new Set([...DESIGNATIONS, ...names])));
+        const merged = Array.from(new Set([...DESIGNATIONS, ...names]));
+        memoryDesignations = merged;
+        setDesignations(merged);
       }
     } catch (err) {
       console.error(err);
@@ -38,7 +47,7 @@ export const useTeachersList = () => {
 
   const fetchTeachers = useCallback(async () => {
     try {
-      setLoading(true);
+      if (!memoryTeachers) setLoading(true);
       setError('');
       const params = {
         campus_id: selectedCampus,
@@ -46,7 +55,11 @@ export const useTeachersList = () => {
         search: searchQuery
       };
       const res = await api.get('/teachers', { params });
-      setTeachers(res.data.teachers || []);
+      const list = res.data.teachers || [];
+      if (selectedCampus === 'all' && selectedDesignation === 'all' && !searchQuery) {
+        memoryTeachers = list;
+      }
+      setTeachers(list);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load teachers');
     } finally {
@@ -71,15 +84,23 @@ export const useTeachersList = () => {
 
   const handleToggleStatus = async (id, currentStatus) => {
     const nextStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
-    setTeachers((prev) =>
-      prev.map((t) => (t._id === id ? { ...t, status: nextStatus, is_active: nextStatus === 'Active' } : t))
-    );
+    setTeachers((prev) => {
+      const next = prev.map((t) => (t._id === id ? { ...t, status: nextStatus, is_active: nextStatus === 'Active' } : t));
+      if (selectedCampus === 'all' && selectedDesignation === 'all' && !searchQuery) {
+        memoryTeachers = next;
+      }
+      return next;
+    });
     try {
       await api.patch(`/teachers/${id}/status`, { status: nextStatus });
     } catch (err) {
-      setTeachers((prev) =>
-        prev.map((t) => (t._id === id ? { ...t, status: currentStatus, is_active: currentStatus === 'Active' } : t))
-      );
+      setTeachers((prev) => {
+        const rollback = prev.map((t) => (t._id === id ? { ...t, status: currentStatus, is_active: currentStatus === 'Active' } : t));
+        if (selectedCampus === 'all' && selectedDesignation === 'all' && !searchQuery) {
+          memoryTeachers = rollback;
+        }
+        return rollback;
+      });
       setError(err.response?.data?.message || 'Failed to toggle status');
     }
   };
@@ -90,6 +111,13 @@ export const useTeachersList = () => {
       setDeleteLoading(true);
       await api.delete(`/teachers/${teacherToDelete._id}`);
       setTeacherToDelete(null);
+      setTeachers((prev) => {
+        const next = prev.filter((t) => t._id !== teacherToDelete._id);
+        if (selectedCampus === 'all' && selectedDesignation === 'all' && !searchQuery) {
+          memoryTeachers = next;
+        }
+        return next;
+      });
       await fetchTeachers();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete');
@@ -99,13 +127,25 @@ export const useTeachersList = () => {
   };
 
   return {
-    teachers, campuses, loading, error, setError, designations,
-    selectedCampus, setSelectedCampus,
-    selectedDesignation, setSelectedDesignation,
-    searchQuery, setSearchQuery,
-    viewTeacher, setViewTeacher,
-    teacherToDelete, setTeacherToDelete,
-    deleteLoading, handleToggleStatus, handleDeleteConfirm,
+    teachers,
+    campuses,
+    loading,
+    error,
+    setError,
+    designations,
+    selectedCampus,
+    setSelectedCampus,
+    selectedDesignation,
+    setSelectedDesignation,
+    searchQuery,
+    setSearchQuery,
+    viewTeacher,
+    setViewTeacher,
+    teacherToDelete,
+    setTeacherToDelete,
+    deleteLoading,
+    handleToggleStatus,
+    handleDeleteConfirm,
     fetchTeachers
   };
 };
