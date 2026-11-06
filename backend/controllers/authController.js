@@ -30,8 +30,10 @@ const buildUserPayload = (user, meta) => {
     school_logo: meta.school_logo,
     school_slogan: meta.school_slogan,
     theme_settings: meta.theme_settings,
-    first_login: user.first_login !== undefined ? user.first_login : !user.onboarding_completed,
-    onboarding_completed: Boolean(user.onboarding_completed),
+    first_login: Boolean(user.first_login && !user.onboarding_completed && !user.onboarding_skipped && user.onboarding_status !== 'skipped' && user.onboarding_status !== 'completed'),
+    onboarding_completed: Boolean(user.onboarding_completed || user.onboarding_status === 'completed'),
+    onboarding_skipped: Boolean(user.onboarding_skipped || user.onboarding_status === 'skipped'),
+    onboarding_status: user.onboarding_status || (user.onboarding_completed ? 'completed' : user.onboarding_skipped ? 'skipped' : 'pending'),
     app_settings: appSettings
   };
 };

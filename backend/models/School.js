@@ -81,6 +81,11 @@ const schoolSchema = new mongoose.Schema(
       trim: true,
       default: 'PKR'
     },
+    academic_session: {
+      type: String,
+      trim: true,
+      default: '2026-2027'
+    },
     is_active: {
       type: Boolean,
       default: true

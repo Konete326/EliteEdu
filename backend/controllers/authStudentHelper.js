@@ -52,8 +52,10 @@ const buildStudentUserPayload = (student, meta = {}) => ({
   school_name: meta.school_name || 'Elite Educational System',
   school_logo: meta.school_logo || '',
   theme_settings: meta.theme_settings || {},
-  first_login: student.first_login !== undefined ? student.first_login : !student.onboarding_completed,
-  onboarding_completed: Boolean(student.onboarding_completed),
+  first_login: Boolean(student.first_login && !student.onboarding_completed && !student.onboarding_skipped && student.onboarding_status !== 'skipped' && student.onboarding_status !== 'completed'),
+  onboarding_completed: Boolean(student.onboarding_completed || student.onboarding_status === 'completed'),
+  onboarding_skipped: Boolean(student.onboarding_skipped || student.onboarding_status === 'skipped'),
+  onboarding_status: student.onboarding_status || (student.onboarding_completed ? 'completed' : student.onboarding_skipped ? 'skipped' : 'pending'),
   app_settings: student.app_settings || {}
 });
 

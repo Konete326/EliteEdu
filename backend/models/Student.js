@@ -27,6 +27,8 @@ const studentSchema = new mongoose.Schema(
     portal_password: { type: String, trim: true, default: '' },
     first_login: { type: Boolean, default: true },
     onboarding_completed: { type: Boolean, default: false },
+    onboarding_skipped: { type: Boolean, default: false },
+    onboarding_status: { type: String, enum: ['pending', 'completed', 'skipped'], default: 'pending' },
     name: { type: String, required: true, trim: true },
     father_name: { type: String, required: true, trim: true },
     surname: { type: String, trim: true, default: '' },

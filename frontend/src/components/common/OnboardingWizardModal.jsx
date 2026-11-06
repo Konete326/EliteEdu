@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Sparkles, ChevronRight, ChevronLeft, Check, Loader2, ArrowRight } from 'lucide-react';
+import { Compass, ChevronRight, ChevronLeft, Check, Loader2, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import TeacherOnboardingSteps from './onboarding/TeacherOnboardingSteps';
@@ -30,42 +30,67 @@ const STEP_TITLES = {
 
 const OnboardingWizardModal = () => {
   const { user, updateUser } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [dismissedUserId, setDismissedUserId] = useState(null);
 
+  const userId = user ? String(user.id || user._id || user.student_id || '') : '';
   const role = user?.role === 'Admin' ? 'Admin' : user?.role === 'Student' ? 'Student' : 'Teacher';
   const stepsList = STEP_TITLES[role] || STEP_TITLES.Teacher;
 
-  const [form, setForm] = useState({});
+  const [form, setForm] = useState({
+    name: user?.name || '',
+    school_name: user?.school_name || '',
+    slogan: user?.school_slogan || '',
+    school_type: user?.school_type || 'Private',
+    contact_number: user?.contact_number || '',
+    school_phone: user?.contact_number || '',
+    school_email: user?.email || '',
+    gender: user?.gender || 'Male',
+    currency: 'PKR',
+    session: '2026-2027',
+    academic_session: '2026-2027'
+  });
 
   useEffect(() => {
-    if (!user) return;
-    if (user.role === 'SuperAdmin') {
-      setIsOpen(false);
-      return;
-    }
+    if (!userId) return;
+    setStep(1);
+    setError('');
+    setForm({
+      name: user?.name || '',
+      school_name: user?.school_name || '',
+      slogan: user?.school_slogan || '',
+      school_type: user?.school_type || 'Private',
+      contact_number: user?.contact_number || '',
+      school_phone: user?.contact_number || '',
+      school_email: user?.email || '',
+      gender: user?.gender || 'Male',
+      currency: 'PKR',
+      session: '2026-2027',
+      academic_session: '2026-2027'
+    });
+  }, [userId, user?.name, user?.school_name, user?.contact_number, user?.email, user?.gender, user?.school_slogan, user?.school_type]);
 
-    const needsOnboarding = user.first_login === true || user.onboarding_completed === false;
-    if (needsOnboarding) {
-      setIsOpen(true);
-      setForm({
-        name: user.name || '',
-        school_name: user.school_name || '',
-        slogan: user.school_slogan || '',
-        school_type: user.school_type || 'Private',
-        contact_number: user.contact_number || '',
-        school_phone: user.contact_number || '',
-        school_email: user.email || '',
-        gender: user.gender || 'Male',
-        currency: 'PKR',
-        academic_session: '2025-2026'
-      });
-    } else {
-      setIsOpen(false);
+  const isOpen = useMemo(() => {
+    if (!user || user.role === 'SuperAdmin') return false;
+    if (dismissedUserId && dismissedUserId === userId) return false;
+    let localDismissed = false;
+    try {
+      localDismissed = userId ? localStorage.getItem(`onboarding_dismissed_${userId}`) === 'true' : false;
+    } catch (err) {
+      void err;
     }
-  }, [user]);
+    const isDismissed =
+      localDismissed ||
+      user.onboarding_completed === true ||
+      user.onboarding_skipped === true ||
+      user.onboarding_status === 'completed' ||
+      user.onboarding_status === 'skipped' ||
+      user.first_login === false;
+
+    return !isDismissed;
+  }, [dismissedUserId, userId, user]);
 
   const handleChange = useCallback((field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -84,16 +109,6 @@ const OnboardingWizardModal = () => {
         return;
       }
     }
-    if (step === 4) {
-      if (form.new_password && form.confirm_password && form.new_password !== form.confirm_password) {
-        setError('Passwords do not match. Please verify your confirmation password.');
-        return;
-      }
-      if (form.new_password && form.new_password.length < 6) {
-        setError('Password must be at least 6 characters.');
-        return;
-      }
-    }
     setStep((prev) => Math.min(prev + 1, 4));
   };
 
@@ -103,18 +118,28 @@ const OnboardingWizardModal = () => {
   };
 
   const handleSkip = async () => {
+    if (userId) {
+      try {
+        localStorage.setItem(`onboarding_dismissed_${userId}`, 'true');
+      } catch (err) {
+        void err;
+      }
+      setDismissedUserId(userId);
+    }
+    updateUser({
+      first_login: false,
+      onboarding_skipped: true,
+      onboarding_status: 'skipped'
+    });
     try {
       setLoading(true);
       setError('');
       const res = await api.post('/auth/complete-onboarding', { skip: true });
       if (res.data?.user) {
         updateUser(res.data.user);
-      } else {
-        updateUser({ onboarding_completed: true, first_login: false });
       }
-      setIsOpen(false);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to skip onboarding.');
+      void err;
     } finally {
       setLoading(false);
     }
@@ -122,22 +147,55 @@ const OnboardingWizardModal = () => {
 
   const handleSubmit = async () => {
     try {
-      if (form.new_password && form.confirm_password && form.new_password !== form.confirm_password) {
-        setError('Passwords do not match.');
-        return;
+      if (role === 'Admin') {
+        if (!form.school_name || !form.school_name.trim()) {
+          setError('Institution / school name is required.');
+          return;
+        }
+        if (!form.name || !form.name.trim()) {
+          setError('Administrator name is required.');
+          return;
+        }
+      } else {
+        if (!form.name || !form.name.trim()) {
+          setError('Full name is required.');
+          return;
+        }
+      }
+      if (form.new_password) {
+        if (form.new_password.length < 6) {
+          setError('Password must be at least 6 characters.');
+          return;
+        }
+        if (!form.confirm_password || form.new_password !== form.confirm_password) {
+          setError('Passwords do not match.');
+          return;
+        }
       }
       setLoading(true);
       setError('');
       const payload = { ...form, skip: false };
       const res = await api.post('/auth/complete-onboarding', payload);
+      if (userId) {
+        try {
+          localStorage.setItem(`onboarding_dismissed_${userId}`, 'true');
+        } catch (err) {
+          void err;
+        }
+        setDismissedUserId(userId);
+      }
       if (res.data?.user) {
         updateUser(res.data.user);
       } else {
-        updateUser({ onboarding_completed: true, first_login: false });
+        updateUser({
+          onboarding_completed: true,
+          onboarding_skipped: false,
+          onboarding_status: 'completed',
+          first_login: false
+        });
       }
-      setIsOpen(false);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to complete profile onboarding.');
+      setError(err.response?.data?.message || err.message || 'Failed to complete profile onboarding.');
     } finally {
       setLoading(false);
     }
@@ -154,7 +212,7 @@ const OnboardingWizardModal = () => {
           <div className="flex items-center justify-between gap-2.5 sm:gap-3 mb-3 sm:mb-3.5">
             <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
               <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">
-                <Sparkles className="w-5 h-5" />
+                <Compass className="w-5 h-5" />
               </div>
               <div className="min-w-0 flex-1">
                 <h3 className="font-extrabold text-sm sm:text-base md:text-lg text-ink dark:text-ink-dark truncate">

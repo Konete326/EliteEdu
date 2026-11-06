@@ -25,6 +25,8 @@ const userSchema = new mongoose.Schema(
     token_version: { type: Number, default: 0 },
     first_login: { type: Boolean, default: true },
     onboarding_completed: { type: Boolean, default: false },
+    onboarding_skipped: { type: Boolean, default: false },
+    onboarding_status: { type: String, enum: ['pending', 'completed', 'skipped'], default: 'pending' },
     photo_url: { type: String, default: '' },
     dob: { type: Date, default: null },
     gender: { type: String, enum: ['Male', 'Female', 'Other'], default: 'Male' },
