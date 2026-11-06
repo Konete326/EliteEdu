@@ -56,6 +56,10 @@ export const useSchoolGeneralSettings = () => {
     setSettings((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleBatchChange = (updates) => {
+    setSettings((prev) => ({ ...prev, ...updates }));
+  };
+
   const handleSave = async (e) => {
     if (e) e.preventDefault();
     if (!settings.name.trim()) {
@@ -104,6 +108,7 @@ export const useSchoolGeneralSettings = () => {
     feedback,
     isDirty,
     handleChange,
+    handleBatchChange,
     handleSave,
     closeFeedback: () => setFeedback(null),
     reload: fetchSettings

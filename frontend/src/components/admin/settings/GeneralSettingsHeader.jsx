@@ -1,6 +1,20 @@
-import { Sliders, Save, CheckCircle2, Building, ShieldCheck } from 'lucide-react';
+import { useEffect } from 'react';
+import { Sliders, Save, CheckCircle2, Building, ShieldCheck, AlertCircle } from 'lucide-react';
 
 const GeneralSettingsHeader = ({ settings, isDirty, saving, onSave }) => {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (isDirty && !saving) {
+          onSave();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDirty, saving, onSave]);
+
   return (
     <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8 mb-6 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div className="flex items-center gap-3.5">
@@ -8,7 +22,7 @@ const GeneralSettingsHeader = ({ settings, isDirty, saving, onSave }) => {
           <Sliders className="w-6 h-6" />
         </div>
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center flex-wrap gap-2">
             <h1 className="text-xl font-black text-ink dark:text-ink-dark tracking-tight">
               General Settings
             </h1>
@@ -21,17 +35,26 @@ const GeneralSettingsHeader = ({ settings, isDirty, saving, onSave }) => {
             {settings?.school_type && (
               <span className="hidden md:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-secondary text-ink-muted">
                 <ShieldCheck className="w-3 h-3 text-good" />
-                {settings.school_type} School
+                {settings.school_type} Institution
+              </span>
+            )}
+            {isDirty && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                <AlertCircle className="w-2.5 h-2.5" />
+                Unsaved Changes
               </span>
             )}
           </div>
           <p className="text-xs font-semibold text-ink-muted">
-            Manage institutional identity, official report credentials, and dynamic PDF templates
+            Configure institutional identity, official report credentials, digital signatures, and dynamic PDF templates
           </p>
         </div>
       </div>
 
       <div className="flex items-center gap-2.5">
+        <span className="hidden lg:inline text-[11px] font-mono text-ink-muted">
+          Ctrl + S to save
+        </span>
         <button
           type="button"
           onClick={onSave}

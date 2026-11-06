@@ -11,7 +11,6 @@ import {
   printStudentCardsBackground
 } from '../../services/idCardExportService';
 import { exportStudentCardsPdf } from '../../utils/pdf/studentCardPdfExporter';
-import { Masonry } from '../../components/ui/responsive-masonry-layout';
 import {
   GraduationCap,
   Sparkles,
@@ -115,17 +114,17 @@ const StudentIdCardsPage = () => {
   const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
   const visibleStudents = useMemo(() => selectedStudents.slice(0, visibleCount), [selectedStudents, visibleCount]);
 
-  const masonryCols = useMemo(() => {
+  const gridColsClass = useMemo(() => {
     if (orientation === 'horizontal') {
       if (sideMode === 'both') {
-        return 'columns-1 min-[1680px]:columns-2';
+        return 'grid-cols-1 min-[1700px]:grid-cols-2';
       }
-      return 'columns-1 md:columns-2 xl:columns-3';
+      return 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3 min-[1880px]:grid-cols-4';
     }
     if (sideMode === 'both') {
-      return 'columns-1 min-[1180px]:columns-2';
+      return 'grid-cols-1 min-[1180px]:grid-cols-2 min-[1780px]:grid-cols-3';
     }
-    return 'columns-1 sm:columns-2 md:columns-2 lg:columns-3 xl:columns-4 2xl:columns-4 min-[2200px]:columns-5';
+    return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 min-[1880px]:grid-cols-6';
   }, [orientation, sideMode]);
 
   const handlePrintSheet = async (mode = 'current') => {
@@ -443,9 +442,9 @@ const StudentIdCardsPage = () => {
             )}
           </div>
 
-          <Masonry cols={masonryCols}>
+          <div className={`grid ${gridColsClass} gap-6 justify-items-center w-full`}>
             {visibleStudents.map((student) => (
-              <div key={student._id} className="flex justify-center transition-all duration-300 hover:-translate-y-1 max-w-full mb-6">
+              <div key={student._id} className="w-full flex justify-center transition-all duration-300 hover:-translate-y-1">
                 <UniversalIdCard
                   holder={student}
                   holderType="student"
@@ -459,7 +458,7 @@ const StudentIdCardsPage = () => {
                 />
               </div>
             ))}
-          </Masonry>
+          </div>
 
           {visibleCount < selectedStudents.length && (
             <div ref={sentinelRef} className="pt-8 pb-4 text-center">
