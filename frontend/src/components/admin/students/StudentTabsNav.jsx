@@ -6,7 +6,7 @@ const TABS = [
   { id: 'contact', label: 'Contact & Address', icon: Phone },
   { id: 'academic', label: 'Academic Record', icon: GraduationCap },
   { id: 'subjects', label: 'Subjects', icon: BookOpen },
-  { id: 'app_settings', label: 'App Settings', icon: Smartphone },
+  { id: 'app_settings', label: 'App Settings', icon: Smartphone, badge: 'Coming Soon' },
   { id: 'documents', label: 'Media & Docs', icon: FileText }
 ];
 
@@ -29,6 +29,15 @@ const StudentTabsNav = ({ activeTab, onTabChange }) => {
           >
             <Icon className={`w-3.5 h-3.5 transition-colors ${isActive ? 'text-white' : 'text-ink-muted dark:text-ink-muted-dark group-hover:text-ink dark:group-hover:text-white'}`} />
             <span>{tab.label}</span>
+            {tab.badge && (
+              <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                isActive
+                  ? 'bg-white/20 text-white'
+                  : 'bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark border border-primary/20'
+              }`}>
+                {tab.badge}
+              </span>
+            )}
           </button>
         );
       })}

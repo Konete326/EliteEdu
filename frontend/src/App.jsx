@@ -314,11 +314,13 @@ function App() {
                     <Route path="/teacher/update-picture" element={<MyProfilePage />} />
                     <Route path="/teacher/*" element={<TeacherPortalDashboard />} />
                   </Route>
-                  <Route element={<ProtectedRoute allowedRoles={['Student', 'Admin', 'Teacher']} />}>
-                    <Route path="/student" element={<StudentPortalPage />} />
-                    <Route path="/student/dashboard" element={<StudentPortalPage />} />
-                    <Route path="/student/messages" element={<MessagingStudioPage />} />
-                    <Route path="/student/*" element={<StudentPortalPage />} />
+                  <Route element={<ProtectedRoute allowedRoles={['Student', 'Admin', 'Teacher', 'SuperAdmin']} />}>
+                    <Route path="/student" element={<StudentPortalComingSoonPage />} />
+                    <Route path="/student/dashboard" element={<StudentPortalComingSoonPage />} />
+                    <Route path="/student/messages" element={<StudentPortalComingSoonPage />} />
+                    <Route path="/student/*" element={<StudentPortalComingSoonPage />} />
+                    <Route path="/parent" element={<StudentPortalComingSoonPage />} />
+                    <Route path="/parent/*" element={<StudentPortalComingSoonPage />} />
                   </Route>
                 </Route>
                 <Route path="*" element={<NotFoundPage />} />

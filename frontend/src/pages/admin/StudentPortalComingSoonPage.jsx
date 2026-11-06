@@ -1,19 +1,23 @@
 import { GraduationCap, BookOpen, Calendar, Award } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import GlobalComingSoon from '../../components/common/GlobalComingSoon';
 
 export default function StudentPortalComingSoonPage() {
+  const { user } = useAuth();
+  const backUrl = user?.role === 'Teacher' ? '/teacher' : user?.role === 'SuperAdmin' ? '/superadmin' : '/admin';
+
   return (
     <GlobalComingSoon
-      title="Student Portal Studio"
-      subtitle="Learner Academic & Activity Hub"
-      description="The Student Portal environment is being engineered for Milestone 2. Student timetables, digital homework submissions, grade cards, and fee status will be available soon."
+      title="Student & Parent Portal"
+      subtitle="Learner & Guardian Digital Access Hub"
+      description="The Student and Parent Digital Access Portals are currently being engineered for Milestone 2. Currently, Admin, SuperAdmin, and Teacher portals remain fully active."
       icon={GraduationCap}
       badge="Coming Soon"
-      backUrl="/admin"
+      backUrl={backUrl}
       features={[
         {
           title: 'Academic Dashboard',
-          desc: 'Personalized timetable, subject teacher contacts, and notices.',
+          desc: 'Personalized timetable, subject teacher contacts, and institutional notices.',
           icon: BookOpen
         },
         {
@@ -28,11 +32,10 @@ export default function StudentPortalComingSoonPage() {
         },
         {
           title: 'Fee Invoices',
-          desc: 'Instant fee voucher views and transaction history.',
+          desc: 'Instant fee voucher views and transaction history for parents.',
           icon: GraduationCap
         }
       ]}
     />
   );
 }
-

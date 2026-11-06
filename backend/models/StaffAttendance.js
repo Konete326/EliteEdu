@@ -57,5 +57,6 @@ const staffAttendanceSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 staffAttendanceSchema.index({ school_id: 1, staff_id: 1, date: 1 }, { unique: true });
+staffAttendanceSchema.index({ school_id: 1, date: 1, staff_id: 1 });
 
 module.exports = mongoose.model('StaffAttendance', staffAttendanceSchema);

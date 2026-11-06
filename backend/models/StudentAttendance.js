@@ -26,6 +26,7 @@ const studentAttendanceSchema = new mongoose.Schema(
 );
 
 studentAttendanceSchema.index({ school_id: 1, student_id: 1, date: 1 }, { unique: true });
+studentAttendanceSchema.index({ school_id: 1, date: 1, student_id: 1 });
 studentAttendanceSchema.index({ school_id: 1, grade_id: 1, section: 1, date: 1 });
 
 module.exports = mongoose.model('StudentAttendance', studentAttendanceSchema);
