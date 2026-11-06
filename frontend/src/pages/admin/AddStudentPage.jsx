@@ -21,7 +21,7 @@ const AddStudentPage = () => {
   const {
     formData, campuses, grades, subjects, loading, submitting, error, setError,
     errors, saveStudent, handleField, handleNestedField, handleToggleAppSetting,
-    handleToggleAllAppSettings, handleToggleSubject, refreshFamilyNumber,
+    handleToggleAllAppSettings, handleToggleSubject, resyncCurriculumSubjects, refreshFamilyNumber,
     clearDraft, draftSavedAt, fetchPrereqs
   } = useStudentForm(id);
 
@@ -82,6 +82,8 @@ const AddStudentPage = () => {
           onChange={handleField}
           currentGradeName={currentGradeName}
           electiveStream={formData.elective_stream || 'None'}
+          onResyncCurriculum={resyncCurriculumSubjects}
+          currentSection={formData.current_section || 'A'}
         />
       )}
       {activeTab === 'app_settings' && (

@@ -1,4 +1,5 @@
 import { MapPin, Phone, Home, Navigation } from 'lucide-react';
+import { formatPakistaniPhone } from '../../../../utils/validators';
 
 const StudentContactTab = ({ formData, onNestedChange, onChange }) => {
   const address = formData.address || {};
@@ -23,9 +24,10 @@ const StudentContactTab = ({ formData, onNestedChange, onChange }) => {
             <input
               type="text"
               value={formData.contact_number || ''}
-              onChange={(e) => onChange('contact_number', e.target.value)}
-              placeholder="+92 300 1234567"
-              className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none"
+              onChange={(e) => onChange('contact_number', formatPakistaniPhone(e.target.value))}
+              placeholder="0300-1234567"
+              maxLength={12}
+              className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none font-mono"
             />
           </div>
 
@@ -36,9 +38,10 @@ const StudentContactTab = ({ formData, onNestedChange, onChange }) => {
             <input
               type="text"
               value={formData.emergency_contact_no || ''}
-              onChange={(e) => onChange('emergency_contact_no', e.target.value)}
-              placeholder="+92 321 7654321"
-              className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none"
+              onChange={(e) => onChange('emergency_contact_no', formatPakistaniPhone(e.target.value))}
+              placeholder="0300-1234567"
+              maxLength={12}
+              className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none font-mono"
             />
           </div>
         </div>

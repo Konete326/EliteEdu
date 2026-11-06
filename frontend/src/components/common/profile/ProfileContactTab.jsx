@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Mail } from 'lucide-react';
+import { formatPakistaniPhone } from '../../../utils/validators';
 import ProfileEmergencyContactFields from './ProfileEmergencyContactFields';
 
 const ProfileContactTab = ({ formData, onChange }) => {
@@ -19,15 +20,16 @@ const ProfileContactTab = ({ formData, onChange }) => {
   }, [formData.contact_number, formData.whatsapp_number, customWhatsApp, onChange]);
 
   const handlePhoneChange = (newVal) => {
-    onChange('contact_number', newVal);
+    const formatted = formatPakistaniPhone(newVal);
+    onChange('contact_number', formatted);
     if (!customWhatsApp || !formData.whatsapp_number || formData.whatsapp_number === formData.contact_number) {
-      onChange('whatsapp_number', newVal);
+      onChange('whatsapp_number', formatted);
     }
   };
 
   const handleWhatsAppChange = (newVal) => {
     setCustomWhatsApp(true);
-    onChange('whatsapp_number', newVal);
+    onChange('whatsapp_number', formatPakistaniPhone(newVal));
   };
 
   const handleSyncWhatsApp = () => {
@@ -69,8 +71,9 @@ const ProfileContactTab = ({ formData, onChange }) => {
             type="text"
             value={formData.contact_number || ''}
             onChange={(e) => handlePhoneChange(e.target.value)}
-            placeholder="e.g. +923001234567"
-            className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-[#141419] text-ink dark:text-ink-dark outline-none focus:border-primary"
+            placeholder="0300-1234567"
+            maxLength={12}
+            className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-[#141419] text-ink dark:text-ink-dark outline-none focus:border-primary font-mono"
           />
         </div>
 
@@ -95,8 +98,9 @@ const ProfileContactTab = ({ formData, onChange }) => {
             type="text"
             value={formData.whatsapp_number || ''}
             onChange={(e) => handleWhatsAppChange(e.target.value)}
-            placeholder="e.g. +923001234567"
-            className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-[#141419] text-ink dark:text-ink-dark outline-none focus:border-primary"
+            placeholder="0300-1234567"
+            maxLength={12}
+            className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-[#141419] text-ink dark:text-ink-dark outline-none focus:border-primary font-mono"
           />
         </div>
 

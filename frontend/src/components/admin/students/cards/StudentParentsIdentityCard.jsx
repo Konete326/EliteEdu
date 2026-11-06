@@ -1,4 +1,5 @@
 import { Users, Sparkles } from 'lucide-react';
+import { formatPakistaniPhone, formatCnic } from '../../../../utils/validators';
 
 const StudentParentsIdentityCard = ({ formData, onNestedChange, onChange, onRefreshFamilyNumber }) => {
   const parentsCnic = formData.parents_cnic || {};
@@ -59,9 +60,10 @@ const StudentParentsIdentityCard = ({ formData, onNestedChange, onChange, onRefr
           <input
             type="text"
             value={formData.emergency_contact_no || ''}
-            onChange={(e) => onChange('emergency_contact_no', e.target.value)}
-            placeholder="+92 300 1234567"
-            className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none"
+            onChange={(e) => onChange('emergency_contact_no', formatPakistaniPhone(e.target.value))}
+            placeholder="0300-1234567"
+            maxLength={12}
+            className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none font-mono"
           />
         </div>
 
@@ -72,9 +74,10 @@ const StudentParentsIdentityCard = ({ formData, onNestedChange, onChange, onRefr
           <input
             type="text"
             value={parentsCnic.father_cnic || ''}
-            onChange={(e) => onNestedChange('parents_cnic', 'father_cnic', e.target.value)}
-            placeholder="42101-XXXXXXXX-X"
-            className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none"
+            onChange={(e) => onNestedChange('parents_cnic', 'father_cnic', formatCnic(e.target.value))}
+            placeholder="42101-1234567-1"
+            maxLength={15}
+            className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none font-mono"
           />
         </div>
 
@@ -85,9 +88,10 @@ const StudentParentsIdentityCard = ({ formData, onNestedChange, onChange, onRefr
           <input
             type="text"
             value={parentsCnic.mother_cnic || ''}
-            onChange={(e) => onNestedChange('parents_cnic', 'mother_cnic', e.target.value)}
-            placeholder="42101-XXXXXXXX-X"
-            className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none"
+            onChange={(e) => onNestedChange('parents_cnic', 'mother_cnic', formatCnic(e.target.value))}
+            placeholder="42101-1234567-1"
+            maxLength={15}
+            className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none font-mono"
           />
         </div>
 
@@ -98,9 +102,10 @@ const StudentParentsIdentityCard = ({ formData, onNestedChange, onChange, onRefr
           <input
             type="text"
             value={parentsCnic.guardian_cnic || ''}
-            onChange={(e) => onNestedChange('parents_cnic', 'guardian_cnic', e.target.value)}
-            placeholder="42101-XXXXXXXX-X"
-            className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none"
+            onChange={(e) => onNestedChange('parents_cnic', 'guardian_cnic', formatCnic(e.target.value))}
+            placeholder="42101-1234567-1"
+            maxLength={15}
+            className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none font-mono"
           />
         </div>
       </div>

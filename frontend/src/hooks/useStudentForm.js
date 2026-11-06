@@ -86,6 +86,42 @@ const INITIAL_FORM = {
   notes: ''
 };
 
+const resolveGradeCurriculumSubjects = (gradeId, electiveStream, allGrades = [], allSubjects = []) => {
+  if (!allSubjects || allSubjects.length === 0 || !gradeId) return [];
+  const targetGrade = allGrades.find((g) => String(g._id || g.id) === String(gradeId?._id || gradeId));
+  const gradeName = targetGrade?.name?.toLowerCase().trim() || '';
+
+  const gradeFiltered = allSubjects.filter((s) => {
+    if (s.status === 'Inactive') return false;
+    if (!s.classes || s.classes.length === 0) return true;
+    return s.classes.some((c) => {
+      const cStr = String(c).toLowerCase().trim();
+      return cStr === gradeName || cStr === String(targetGrade?._id);
+    });
+  });
+
+  const pool = gradeFiltered.length > 0 ? gradeFiltered : allSubjects.filter((s) => s.status !== 'Inactive');
+
+  const selected = pool.filter((s) => {
+    if (s.subject_type === 'Compulsory' || s.mandatory) return true;
+    if (electiveStream === 'Science (Biology)') {
+      return s.stream === 'Science (Biology)' || s.code === 'BIO' || (s.name && s.name.toLowerCase().includes('bio'));
+    }
+    if (electiveStream === 'Science (Computer)') {
+      return s.stream === 'Science (Computer)' || s.code === 'CS' || (s.name && s.name.toLowerCase().includes('comp'));
+    }
+    if (electiveStream === 'Arts / Humanities') {
+      return s.stream === 'Arts / Humanities' || (s.name && (s.name.toLowerCase().includes('art') || s.name.toLowerCase().includes('human')));
+    }
+    if (electiveStream === 'Commerce') {
+      return s.stream === 'Commerce' || (s.name && s.name.toLowerCase().includes('comm'));
+    }
+    return false;
+  });
+
+  return selected.map((s) => s._id);
+};
+
 export const useStudentForm = (id) => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -151,6 +187,16 @@ export const useStudentForm = (id) => {
           } catch (e) {
             updateForm((prev) => ({ ...prev, family_number: 'FAM-0001' }));
           }
+          const loadedGrades = gRes.data.grades || [];
+          const loadedSubjects = sRes.data.subjects || [];
+          setFormData((prev) => {
+            const activeGrade = prev.current_grade || prev.grade_admitted;
+            if (activeGrade && (!prev.subjects || prev.subjects.length === 0)) {
+              const auto = resolveGradeCurriculumSubjects(activeGrade, prev.elective_stream, loadedGrades, loadedSubjects);
+              if (auto.length > 0) return { ...prev, subjects: auto };
+            }
+            return prev;
+          });
         }
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to initialize form data');
@@ -172,7 +218,20 @@ export const useStudentForm = (id) => {
   };
 
   const handleField = (field, value) => {
-    updateForm((prev) => ({ ...prev, [field]: value }));
+    updateForm((prev) => {
+      const next = { ...prev, [field]: value };
+      if (field === 'current_grade' || field === 'grade_admitted' || field === 'elective_stream') {
+        const activeGrade = field === 'current_grade' ? value : (next.current_grade || next.grade_admitted);
+        const activeStream = field === 'elective_stream' ? value : next.elective_stream;
+        if (activeGrade && grades.length > 0 && subjects.length > 0) {
+          const autoSubjects = resolveGradeCurriculumSubjects(activeGrade, activeStream, grades, subjects);
+          if (autoSubjects.length > 0) {
+            next.subjects = autoSubjects;
+          }
+        }
+      }
+      return next;
+    });
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
   };
 
@@ -261,6 +320,16 @@ export const useStudentForm = (id) => {
     }
   };
 
+  const resyncCurriculumSubjects = () => {
+    const activeGrade = formData.current_grade || formData.grade_admitted;
+    if (activeGrade && grades.length > 0 && subjects.length > 0) {
+      const autoSubjects = resolveGradeCurriculumSubjects(activeGrade, formData.elective_stream, grades, subjects);
+      if (autoSubjects.length > 0) {
+        updateForm((prev) => ({ ...prev, subjects: autoSubjects }));
+      }
+    }
+  };
+
   return {
     formData,
     campuses,
@@ -277,6 +346,7 @@ export const useStudentForm = (id) => {
     handleToggleAppSetting,
     handleToggleAllAppSettings,
     handleToggleSubject,
+    resyncCurriculumSubjects,
     refreshFamilyNumber,
     clearDraft,
     draftSavedAt,

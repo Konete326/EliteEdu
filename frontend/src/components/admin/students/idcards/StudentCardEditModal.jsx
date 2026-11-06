@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Save, Edit3, Loader2, Camera, UploadCloud, Trash2 } from 'lucide-react';
 import api from '../../../../services/api';
+import { formatCnic, formatPakistaniPhone } from '../../../../utils/validators';
 import WebcamCaptureModal from '../../../common/camera/WebcamCaptureModal';
 
 const StudentCardEditModal = ({ isOpen, student, onClose, onSaveSuccess }) => {
@@ -232,8 +233,9 @@ const StudentCardEditModal = ({ isOpen, student, onClose, onSaveSuccess }) => {
                 <input
                   type="text"
                   value={formData.b_form}
-                  onChange={(e) => setFormData({ ...formData, b_form: e.target.value })}
-                  placeholder="12345-1234567-1"
+                  onChange={(e) => setFormData({ ...formData, b_form: formatCnic(e.target.value) })}
+                  placeholder="42101-1234567-1"
+                  maxLength={15}
                   className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-black/20 font-mono outline-none focus:border-primary"
                 />
               </div>
@@ -292,7 +294,9 @@ const StudentCardEditModal = ({ isOpen, student, onClose, onSaveSuccess }) => {
                 <input
                   type="text"
                   value={formData.contact_number}
-                  onChange={(e) => setFormData({ ...formData, contact_number: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, contact_number: formatPakistaniPhone(e.target.value) })}
+                  placeholder="0300-1234567"
+                  maxLength={12}
                   className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-black/20 font-mono outline-none focus:border-primary"
                 />
               </div>
@@ -301,7 +305,9 @@ const StudentCardEditModal = ({ isOpen, student, onClose, onSaveSuccess }) => {
                 <input
                   type="text"
                   value={formData.emergency_contact_no}
-                  onChange={(e) => setFormData({ ...formData, emergency_contact_no: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, emergency_contact_no: formatPakistaniPhone(e.target.value) })}
+                  placeholder="0300-1234567"
+                  maxLength={12}
                   className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-black/20 font-mono outline-none focus:border-primary"
                 />
               </div>

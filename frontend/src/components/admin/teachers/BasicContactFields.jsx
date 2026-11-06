@@ -1,12 +1,7 @@
 import { Copy } from 'lucide-react';
+import { formatCnic, formatPakistaniPhone } from '../../../utils/validators';
 
 const BasicContactFields = ({ formData, errors = {}, onChange }) => {
-  const formatCnic = (val) => {
-    const raw = val.replace(/\D/g, '').slice(0, 13);
-    if (raw.length > 12) return `${raw.slice(0, 5)}-${raw.slice(5, 12)}-${raw.slice(12)}`;
-    return raw.length > 5 ? `${raw.slice(0, 5)}-${raw.slice(5)}` : raw;
-  };
-
   const copyContact = () => {
     if (formData.contact_number) onChange('whatsapp_number', formData.contact_number);
   };
@@ -29,16 +24,14 @@ const BasicContactFields = ({ formData, errors = {}, onChange }) => {
         </div>
         <div>
           <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Contact Number (Optional)</label>
-          <div className="flex">
-            <span className="px-2.5 py-1.5 rounded-l-xl border border-r-0 border-line dark:border-line-dark bg-surface-secondary text-xs text-ink-muted">PK +92</span>
-            <input
-              type="text"
-              value={formData.contact_number || ''}
-              onChange={(e) => onChange('contact_number', e.target.value)}
-              placeholder="3001234567"
-              className={`flex-1 px-3 py-1.5 rounded-r-xl border text-xs text-ink dark:text-ink-dark outline-none ${errors.contact_number ? 'border-bad ring-2 ring-bad/20 bg-bad/5' : 'border-line dark:border-line-dark bg-surface-secondary/40'}`}
-            />
-          </div>
+          <input
+            type="text"
+            value={formData.contact_number || ''}
+            onChange={(e) => onChange('contact_number', formatPakistaniPhone(e.target.value))}
+            placeholder="0300-1234567"
+            maxLength={12}
+            className={`w-full px-3 py-1.5 rounded-xl border text-xs text-ink dark:text-ink-dark outline-none font-mono ${errors.contact_number ? 'border-bad ring-2 ring-bad/20 bg-bad/5' : 'border-line dark:border-line-dark bg-surface-secondary/40'}`}
+          />
           {errors.contact_number && <p className="text-[10px] text-bad font-semibold mt-1">{errors.contact_number}</p>}
         </div>
         <div>
@@ -51,9 +44,10 @@ const BasicContactFields = ({ formData, errors = {}, onChange }) => {
           <input
             type="text"
             value={formData.whatsapp_number || ''}
-            onChange={(e) => onChange('whatsapp_number', e.target.value)}
-            placeholder="03001234567"
-            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none"
+            onChange={(e) => onChange('whatsapp_number', formatPakistaniPhone(e.target.value))}
+            placeholder="0300-1234567"
+            maxLength={12}
+            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none font-mono"
           />
         </div>
       </div>

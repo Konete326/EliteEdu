@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import api from '../../../services/api';
-import { isValidEmail, isValidWebsite, isValidPhone, isValidCampusName } from '../../../utils/validators';
+import { isValidEmail, isValidWebsite, isValidPhone, isValidCampusName, formatPakistaniPhone } from '../../../utils/validators';
 import CampusModalHeader from './CampusModalHeader';
 import CampusDetailsView from './CampusDetailsView';
 import CampusForm from './CampusForm';
@@ -108,7 +108,10 @@ const CampusModal = ({ isOpen, mode = 'add', campus = null, existingCampuses = [
             isEmailValid={isEmailValid}
             isWebsiteValid={isWebsiteValid}
             isPhoneValid={isPhoneValid}
-            onChange={(e) => setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))}
+            onChange={(e) => setFormData((prev) => ({
+              ...prev,
+              [e.target.name]: e.target.name === 'contact_number' ? formatPakistaniPhone(e.target.value) : e.target.value
+            }))}
             onImageChange={(val) => setFormData((prev) => ({ ...prev, image_url: val }))}
             onBlur={(field) => setTouched((prev) => ({ ...prev, [field]: true }))}
             onSubmit={handleSubmit}

@@ -1,4 +1,4 @@
-import { formatCnic, isValidCnic, isValidPhone, isValidEmail } from '../../../../utils/validators';
+import { formatCnic, formatPakistaniPhone, isValidCnic, isValidPhone, isValidEmail } from '../../../../utils/validators';
 import SearchableSelect from '../../../common/SearchableSelect';
 
 const GENDERS = ['Male', 'Female', 'Other'];
@@ -79,9 +79,10 @@ const ApplicantBasicInfoCard = ({ formData, onChange, teachers = [], errors = {}
           <input
             type="text"
             value={formData.contact_number || ''}
-            onChange={(e) => onChange('contact_number', e.target.value)}
-            placeholder="Phone"
-            className={`w-full px-3.5 py-2 text-xs rounded-xl border bg-surface-secondary/40 dark:bg-black/20 text-ink dark:text-ink-dark outline-none font-medium ${
+            onChange={(e) => onChange('contact_number', formatPakistaniPhone(e.target.value))}
+            placeholder="0300-1234567"
+            maxLength={12}
+            className={`w-full px-3.5 py-2 text-xs rounded-xl border bg-surface-secondary/40 dark:bg-black/20 text-ink dark:text-ink-dark outline-none font-mono ${
               errors.contact_number || !isPhoneValid ? 'border-bad ring-2 ring-bad/20 bg-bad/5' : 'border-line dark:border-white/10 focus:border-primary/60'
             }`}
           />

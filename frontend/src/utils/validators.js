@@ -1,6 +1,6 @@
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const PASSWORD_REGEX = /^.{6,}$/;
-export const PHONE_REGEX = /^(\+92|0)?[0-9]{10,11}$/;
+export const PHONE_REGEX = /^03\d{2}-?\d{7}$/;
 export const CODE_REGEX = /^[A-Za-z0-9_-]{2,10}$/;
 export const WEBSITE_REGEX = /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/;
 export const SUBJECT_NAME_REGEX = /^[a-zA-Z0-9\s\-&]{1,50}$/;
@@ -20,8 +20,51 @@ export const isValidPassword = (password) => {
 };
 
 export const isValidPhone = (phone) => {
-  if (!phone) return true;
-  return PHONE_REGEX.test(String(phone).replace(/[\s-]/g, ''));
+  if (!phone || !String(phone).trim()) return true;
+  const digits = String(phone).replace(/\D/g, '');
+  return digits.length === 11 && digits.startsWith('0');
+};
+
+export const isValidPakistaniPhone = (phone) => {
+  if (!phone || !String(phone).trim()) return true;
+  const digits = String(phone).replace(/\D/g, '');
+  return digits.length === 11 && digits.startsWith('03');
+};
+
+export const formatPakistaniPhone = (val) => {
+  if (!val) return '';
+  let str = String(val).trim();
+  if (str.startsWith('+92')) {
+    str = '0' + str.slice(3);
+  }
+  let digits = str.replace(/\D/g, '');
+  if (digits.startsWith('92')) {
+    digits = '0' + digits.slice(2);
+  } else if (digits === '9') {
+    return '0';
+  } else if (digits.length > 0 && digits[0] !== '0') {
+    digits = '0' + digits;
+  }
+  digits = digits.slice(0, 11);
+  if (digits.length <= 4) return digits;
+  return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+};
+
+export const normalizePakistaniPhone = (val) => {
+  if (!val) return '';
+  let str = String(val).trim();
+  if (str.startsWith('+92')) {
+    str = '0' + str.slice(3);
+  }
+  let digits = str.replace(/\D/g, '');
+  if (digits.startsWith('92')) {
+    digits = '0' + digits.slice(2);
+  } else if (digits === '9') {
+    return '0';
+  } else if (digits.length > 0 && digits[0] !== '0') {
+    digits = '0' + digits;
+  }
+  return digits.slice(0, 11);
 };
 
 export const isValidCode = (code) => {

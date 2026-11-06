@@ -1,3 +1,5 @@
+import { formatCnic } from '../../../../utils/validators';
+
 const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
 const TeacherCardEditFields = ({ formData, setFormData }) => {
@@ -13,8 +15,9 @@ const TeacherCardEditFields = ({ formData, setFormData }) => {
           <input
             type="text"
             value={formData.cnic || ''}
-            onChange={(e) => handleChange('cnic', e.target.value)}
+            onChange={(e) => handleChange('cnic', formatCnic(e.target.value))}
             placeholder="e.g. 42201-1234567-1"
+            maxLength={15}
             className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 outline-none font-mono"
           />
         </div>

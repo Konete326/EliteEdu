@@ -1,4 +1,5 @@
 import { Users, Plus, Trash2 } from 'lucide-react';
+import { formatCnic } from '../../../../utils/validators';
 
 const StudentFamilyMembersCard = ({ familyMembers = [], onChange }) => {
   const handleAddMember = () => {
@@ -77,9 +78,10 @@ const StudentFamilyMembersCard = ({ familyMembers = [], onChange }) => {
                 <input
                   type="text"
                   value={member.cnic || ''}
-                  onChange={(e) => handleMemberChange(idx, 'cnic', e.target.value)}
-                  placeholder="CNIC"
-                  className="w-full px-2.5 py-1.5 rounded-lg border border-line dark:border-white/10 bg-surface dark:bg-[#0c0c0c] text-ink dark:text-ink-dark outline-none"
+                  onChange={(e) => handleMemberChange(idx, 'cnic', formatCnic(e.target.value))}
+                  placeholder="42101-1234567-1"
+                  maxLength={15}
+                  className="w-full px-2.5 py-1.5 rounded-lg border border-line dark:border-white/10 bg-surface dark:bg-[#0c0c0c] text-ink dark:text-ink-dark outline-none font-mono"
                 />
               </div>
 

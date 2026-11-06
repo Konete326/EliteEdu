@@ -1,3 +1,5 @@
+import { formatPakistaniPhone } from '../../../utils/validators';
+
 const ProfileEmergencyContactFields = ({ emergency = {}, onChange }) => {
   return (
     <>
@@ -21,9 +23,10 @@ const ProfileEmergencyContactFields = ({ emergency = {}, onChange }) => {
         <input
           type="text"
           value={emergency.phone || ''}
-          onChange={(e) => onChange('phone', e.target.value)}
-          placeholder="e.g. +923219876543"
-          className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-[#141419] text-ink dark:text-ink-dark outline-none focus:border-primary"
+          onChange={(e) => onChange('phone', formatPakistaniPhone(e.target.value))}
+          placeholder="0300-1234567"
+          maxLength={12}
+          className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-[#141419] text-ink dark:text-ink-dark outline-none focus:border-primary font-mono"
         />
       </div>
 

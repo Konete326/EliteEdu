@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { School, Layers, Check } from 'lucide-react';
+import { School, Layers, Check, CheckCircle2 } from 'lucide-react';
 import SearchableSelect from '../../../common/SearchableSelect';
 
 const ELECTIVE_STREAMS = [
@@ -109,6 +109,12 @@ const StudentPlacementCard = ({ formData, campuses = [], grades = [], onChange }
             placeholder="Select Current Class..."
             size="sm"
           />
+          {formData.current_grade && (
+            <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+              <span>Curriculum & subjects automatically assigned</span>
+            </div>
+          )}
         </div>
 
         <div>

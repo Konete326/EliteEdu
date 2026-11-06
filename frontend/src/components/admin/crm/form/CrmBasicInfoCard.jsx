@@ -1,5 +1,6 @@
 import React from 'react';
 import { User } from 'lucide-react';
+import { formatPakistaniPhone } from '../../../../utils/validators';
 
 export default function CrmBasicInfoCard({ formData, onChange, grades = [] }) {
   const handleDobChange = (e) => {
@@ -49,10 +50,15 @@ export default function CrmBasicInfoCard({ formData, onChange, grades = [] }) {
         </div>
         <div>
           <label className="block text-[11px] font-bold text-text-muted uppercase mb-1">Contact Number *</label>
-          <div className="flex gap-1">
-            <input type="text" value={formData.contact_country_code || '+92'} onChange={(e) => onChange('contact_country_code', e.target.value)} className="w-14 px-2 py-1.5 rounded-xl border border-line dark:border-line-dark bg-transparent text-center font-mono" />
-            <input required type="text" value={formData.contact_number || ''} onChange={(e) => onChange('contact_number', e.target.value)} placeholder="3001234567" className="flex-1 px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-transparent font-mono" />
-          </div>
+          <input
+            required
+            type="text"
+            value={formData.contact_number || ''}
+            onChange={(e) => onChange('contact_number', formatPakistaniPhone(e.target.value))}
+            placeholder="0300-1234567"
+            maxLength={12}
+            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-transparent font-mono"
+          />
         </div>
       </div>
 

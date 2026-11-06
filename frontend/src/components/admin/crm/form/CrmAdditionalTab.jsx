@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home, School, Briefcase, Phone, Percent } from 'lucide-react';
+import { formatPakistaniPhone } from '../../../../utils/validators';
 
 export default function CrmAdditionalTab({ additionalInfo = {}, onChange }) {
   const update = (key, value) => {
@@ -72,9 +73,10 @@ export default function CrmAdditionalTab({ additionalInfo = {}, onChange }) {
           <input
             type="text"
             value={additionalInfo.mother_phone || ''}
-            onChange={(e) => update('mother_phone', e.target.value)}
-            placeholder="03001234567"
-            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-transparent"
+            onChange={(e) => update('mother_phone', formatPakistaniPhone(e.target.value))}
+            placeholder="0300-1234567"
+            maxLength={12}
+            className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-transparent font-mono"
           />
         </div>
 

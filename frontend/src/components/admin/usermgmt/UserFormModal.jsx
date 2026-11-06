@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Eye, EyeOff } from 'lucide-react';
 import { getApiBase } from '../../../utils/apiBase';
+import { formatPakistaniPhone } from '../../../utils/validators';
 
 const UserFormModal = ({ user, roles = [], campuses = [], token, onClose, onSaved }) => {
   const isEdit = Boolean(user?._id);
@@ -116,7 +117,14 @@ const UserFormModal = ({ user, roles = [], campuses = [], token, onClose, onSave
             </div>
             <div>
               <label className="block font-semibold text-ink dark:text-ink-dark mb-1">Phone Number</label>
-              <input type="text" value={formData.contact_number} onChange={(e) => setFormData({ ...formData, contact_number: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-surface-secondary/40 border border-line dark:border-line-dark text-ink dark:text-ink-dark outline-none focus:border-primary" />
+              <input
+                type="text"
+                value={formData.contact_number}
+                onChange={(e) => setFormData({ ...formData, contact_number: formatPakistaniPhone(e.target.value) })}
+                placeholder="0300-1234567"
+                maxLength={12}
+                className="w-full px-3 py-2 rounded-xl bg-surface-secondary/40 border border-line dark:border-line-dark text-ink dark:text-ink-dark outline-none focus:border-primary font-mono"
+              />
             </div>
             <div>
               <label className="block font-semibold text-ink dark:text-ink-dark mb-1">Primary Role</label>

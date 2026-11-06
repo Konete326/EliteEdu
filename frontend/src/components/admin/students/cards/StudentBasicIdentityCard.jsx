@@ -1,5 +1,6 @@
 import { User } from 'lucide-react';
 import AvatarUploadField from '../../../common/AvatarUploadField';
+import { formatCnic } from '../../../../utils/validators';
 
 const StudentBasicIdentityCard = ({ formData, onChange, errors = {} }) => {
   return (
@@ -90,8 +91,9 @@ const StudentBasicIdentityCard = ({ formData, onChange, errors = {} }) => {
             <input
               type="text"
               value={formData.b_form || ''}
-              onChange={(e) => onChange('b_form', e.target.value)}
+              onChange={(e) => onChange('b_form', formatCnic(e.target.value))}
               placeholder="42101-1234567-1"
+              maxLength={15}
               className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark outline-none font-mono"
             />
           </div>
