@@ -1,5 +1,7 @@
-const CACHE_NAME = 'eliteedu-pwa-v8';
+const CACHE_NAME = 'eliteedu-pwa-v9';
 const STATIC_ASSETS = [
+  '/',
+  '/index.html',
   '/manifest.json',
   '/logo.png',
   '/favicon.ico',
@@ -11,7 +13,7 @@ const STATIC_ASSETS = [
   '/icons/icon-maskable-512.png'
 ];
 
-const trimCache = async (cacheName, maxItems = 30) => {
+const trimCache = async (cacheName, maxItems = 250) => {
   try {
     const cache = await caches.open(cacheName);
     const keys = await cache.keys();
@@ -45,7 +47,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
-          if (key !== CACHE_NAME) {
+          if (key !== CACHE_NAME && key !== 'eliteedu-verify-cache') {
             return caches.delete(key);
           }
         })
@@ -72,7 +74,7 @@ self.addEventListener('fetch', (event) => {
           if (response && response.status === 200) {
             const clone = response.clone();
             caches.open('eliteedu-verify-cache').then((cache) => {
-              cache.put(event.request, clone).then(() => trimCache('eliteedu-verify-cache', 30));
+              cache.put(event.request, clone).then(() => trimCache('eliteedu-verify-cache', 50));
             });
           }
           return response;
@@ -94,15 +96,39 @@ self.addEventListener('fetch', (event) => {
 
   if (event.request.mode === 'navigate' || url.pathname === '/' || url.pathname === '/index.html') {
     event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          if (response && response.status === 200) {
+      caches.match('/index.html').then((cached) => {
+        const fetchPromise = fetch(event.request)
+          .then((response) => {
+            if (response && response.status === 200) {
+              const toCache = response.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', toCache));
+            }
+            return response;
+          })
+          .catch(() => cached);
+
+        return cached || fetchPromise;
+      })
+    );
+    return;
+  }
+
+  if (url.pathname.includes('/assets/')) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        return fetch(event.request)
+          .then((response) => {
+            if (!response || response.status !== 200) {
+              return response;
+            }
             const toCache = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, toCache));
-          }
-          return response;
-        })
-        .catch(() => caches.match('/index.html'))
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, toCache).then(() => trimCache(CACHE_NAME, 250));
+            });
+            return response;
+          });
+      })
     );
     return;
   }
@@ -115,13 +141,9 @@ self.addEventListener('fetch', (event) => {
           if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
           }
-          const contentType = response.headers.get('content-type') || '';
-          if (url.pathname.includes('/assets/') && contentType.includes('text/html')) {
-            return response;
-          }
           const toCache = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, toCache).then(() => trimCache(CACHE_NAME, 30));
+            cache.put(event.request, toCache).then(() => trimCache(CACHE_NAME, 250));
           });
           return response;
         })

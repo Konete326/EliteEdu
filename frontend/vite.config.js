@@ -18,7 +18,9 @@ export default defineConfig({
     include: ['react', 'react-dom', 'react-router-dom', 'lucide-react', 'framer-motion']
   },
   build: {
-    chunkSizeWarningLimit: 1000,
+    target: 'es2020',
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -26,8 +28,23 @@ export default defineConfig({
             if (id.includes('react/') || id.includes('react-dom/') || id.includes('react-router-dom/')) {
               return 'vendor-react';
             }
-            if (id.includes('lucide-react') || id.includes('framer-motion')) {
-              return 'vendor-ui';
+            if (id.includes('framer-motion')) {
+              return 'vendor-motion';
+            }
+            if (id.includes('lucide-react')) {
+              return 'vendor-icons';
+            }
+            if (id.includes('pdf-lib')) {
+              return 'vendor-pdf';
+            }
+            if (id.includes('jszip')) {
+              return 'vendor-zip';
+            }
+            if (id.includes('html5-qrcode') || id.includes('qrcode')) {
+              return 'vendor-scanner';
+            }
+            if (id.includes('axios')) {
+              return 'vendor-network';
             }
           }
         }

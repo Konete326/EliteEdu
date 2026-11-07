@@ -10,8 +10,11 @@ import DashboardLayout from './components/layout/DashboardLayout';
 import PageLoader from './components/common/PageLoader';
 import RootRedirect from './components/common/RootRedirect';
 import PwaInstallPrompt from './components/common/PwaInstallPrompt';
-import { Agentation } from 'agentation';
 import './utils/telemetryAgent';
+
+const Agentation = import.meta.env.DEV
+  ? lazy(() => import('agentation').then((m) => ({ default: m.Agentation })))
+  : null;
 
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const UnauthorizedPage = lazy(() => import('./components/common/UnauthorizedPage'));
@@ -327,7 +330,11 @@ function App() {
               </Routes>
             </Suspense>
             </BrowserRouter>
-            {import.meta.env.DEV && <Agentation />}
+            {import.meta.env.DEV && Agentation && (
+              <Suspense fallback={null}>
+                <Agentation />
+              </Suspense>
+            )}
             </ComingSoonProvider>
           </ToastProvider>
         </ThemeProvider>

@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { Download, X } from 'lucide-react';
 import { usePwaInstall } from '../../hooks/usePwaInstall';
-import PwaInstallGuideModal from './PwaInstallGuideModal';
+
+const PwaInstallGuideModal = lazy(() => import('./PwaInstallGuideModal'));
 
 const PwaInstallPrompt = () => {
   const {
@@ -123,11 +124,15 @@ const PwaInstallPrompt = () => {
         </div>
       )}
 
-      <PwaInstallGuideModal
-        isOpen={showGuide}
-        onClose={closeGuide}
-        platform={guidePlatform}
-      />
+      {showGuide && (
+        <Suspense fallback={null}>
+          <PwaInstallGuideModal
+            isOpen={showGuide}
+            onClose={closeGuide}
+            platform={guidePlatform}
+          />
+        </Suspense>
+      )}
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, memo } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo, lazy, Suspense } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Building2, ScanLine, Moon, Sun, Download, Lock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -6,8 +6,9 @@ import { useCampus } from '../../context/CampusContext';
 import { usePwaInstall } from '../../hooks/usePwaInstall';
 import TopbarNotifications from './TopbarNotifications';
 import TopbarMessages from './TopbarMessages';
-import UniversalScannerModal from './scanner/UniversalScannerModal';
 import SearchableSelect from '../common/SearchableSelect';
+
+const UniversalScannerModal = lazy(() => import('./scanner/UniversalScannerModal'));
 
 const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
   const { user } = useAuth();
@@ -140,7 +141,11 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
         {user?.photo_url ? <img src={user.photo_url} alt={user.name || 'User'} className="w-full h-full object-cover" /> : getInitials(user?.name)}
       </button>
 
-      <UniversalScannerModal isOpen={scannerOpen} onClose={handleCloseScanner} />
+      {scannerOpen && (
+        <Suspense fallback={null}>
+          <UniversalScannerModal isOpen={scannerOpen} onClose={handleCloseScanner} />
+        </Suspense>
+      )}
     </div>
   );
 };

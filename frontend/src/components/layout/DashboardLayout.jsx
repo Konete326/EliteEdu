@@ -1,13 +1,14 @@
-import { useState, Suspense, useCallback, useMemo } from 'react';
+import { useState, Suspense, useCallback, useMemo, lazy } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import PageLoader from '../common/PageLoader';
 import ConfirmModal from '../common/ConfirmModal';
-import CampusSwitchModal from '../common/CampusSwitchModal';
-import OnboardingWizardModal from '../common/OnboardingWizardModal';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+
+const CampusSwitchModal = lazy(() => import('../common/CampusSwitchModal'));
+const OnboardingWizardModal = lazy(() => import('../common/OnboardingWizardModal'));
 
 const DashboardLayout = () => {
   const { logout } = useAuth();
@@ -75,8 +76,10 @@ const DashboardLayout = () => {
         confirmStyle="danger"
       />
 
-      <CampusSwitchModal />
-      <OnboardingWizardModal />
+      <Suspense fallback={null}>
+        <CampusSwitchModal />
+        <OnboardingWizardModal />
+      </Suspense>
     </div>
   );
 };
