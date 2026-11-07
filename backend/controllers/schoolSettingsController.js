@@ -1,4 +1,6 @@
 const School = require('../models/School');
+const { uploadToCloudinary } = require('../utils/cloudinaryHelper');
+const { invalidateSchoolMetaCache } = require('../utils/schoolMeta');
 
 const formatSchool = (school) => ({
   id: school._id,
@@ -23,7 +25,11 @@ const formatSchool = (school) => ({
 
 const getSchoolGeneralSettings = async (req, res) => {
   try {
-    const schoolId = req.user?.school_id;
+    let schoolId = req.user?.school_id;
+    if (!schoolId && req.user?.role === 'SuperAdmin') {
+      const defaultSchool = await School.findOne().select('_id').lean();
+      schoolId = defaultSchool?._id;
+    }
     if (!schoolId) return res.status(400).json({ message: 'No school associated with user' });
 
     const school = await School.findById(schoolId).lean();
@@ -37,8 +43,16 @@ const getSchoolGeneralSettings = async (req, res) => {
 
 const updateSchoolGeneralSettings = async (req, res) => {
   try {
-    const schoolId = req.user?.school_id;
+    let schoolId = req.user?.school_id || req.body?.school_id;
+    if (!schoolId && req.user?.role === 'SuperAdmin') {
+      const defaultSchool = await School.findOne().select('_id').lean();
+      schoolId = defaultSchool?._id;
+    }
     if (!schoolId) return res.status(400).json({ message: 'No school associated with user' });
+
+    if (req.body.name !== undefined && !req.body.name.trim()) {
+      return res.status(400).json({ message: 'School name cannot be empty' });
+    }
 
     const fields = [
       'name', 'board', 'address', 'contact_number', 'email', 'logo_url',
@@ -46,16 +60,19 @@ const updateSchoolGeneralSettings = async (req, res) => {
       'principal_name', 'principal_signature_url', 'teacher_signature_url', 'currency'
     ];
 
-    if (req.body.name !== undefined && !req.body.name.trim()) {
-      return res.status(400).json({ message: 'School name cannot be empty' });
-    }
-
     const updateFields = {};
-    fields.forEach((k) => {
+    for (const k of fields) {
       if (req.body[k] !== undefined) {
-        updateFields[k] = k === 'email' ? req.body[k].trim().toLowerCase() : req.body[k].trim();
+        let val = req.body[k];
+        if (typeof val === 'string') {
+          val = k === 'email' ? val.trim().toLowerCase() : val.trim();
+          if (['logo_url', 'principal_signature_url', 'teacher_signature_url'].includes(k) && val.startsWith('data:image/')) {
+            val = await uploadToCloudinary(val, 'eliteedu/school-assets');
+          }
+        }
+        updateFields[k] = val;
       }
-    });
+    }
 
     const school = await School.findByIdAndUpdate(
       schoolId,
@@ -63,6 +80,8 @@ const updateSchoolGeneralSettings = async (req, res) => {
       { new: true, runValidators: true }
     );
     if (!school) return res.status(404).json({ message: 'School not found' });
+
+    invalidateSchoolMetaCache(schoolId);
 
     res.status(200).json({
       success: true,

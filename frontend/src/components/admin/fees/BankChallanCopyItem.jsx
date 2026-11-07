@@ -2,7 +2,13 @@ import React from 'react';
 import { renderSvgBarcode, renderSvgQrCode } from '../../../utils/idCardCodeGenerator';
 import OfficialSignatureStampBlock from '../../common/OfficialSignatureStampBlock';
 
-const BankChallanCopyItem = ({ copyTitle, invoice, bankSettings, schoolName = 'ELITE EDUCATION SYSTEM' }) => {
+const BankChallanCopyItem = ({
+  copyTitle,
+  invoice,
+  bankSettings,
+  schoolName = 'ELITE EDUCATION SYSTEM',
+  institution = {}
+}) => {
   const student = invoice?.student_id || {};
   const grade = invoice?.grade_id || {};
   const heads = Array.isArray(invoice?.fee_heads) ? invoice.fee_heads : [];
@@ -11,20 +17,39 @@ const BankChallanCopyItem = ({ copyTitle, invoice, bankSettings, schoolName = 'E
   const netAfter = netWithin + lateFine;
   const issueDateStr = invoice?.issue_date ? new Date(invoice.issue_date).toLocaleDateString('en-GB') : '—';
   const dueDateStr = invoice?.due_date ? new Date(invoice.due_date).toLocaleDateString('en-GB') : '—';
+  const currency = institution?.school?.currency || 'PKR';
+  const schoolLogo = institution?.logoUrl && institution.logoUrl !== '/logo.png' ? institution.logoUrl : null;
+  const slogan = institution?.slogan || '';
 
   return (
     <div className="flex-1 bg-white text-slate-900 border border-slate-300 p-2 text-[9px] flex flex-col justify-between h-full relative overflow-hidden">
       <div className="space-y-1">
         <div className="text-center border-b border-slate-300 pb-1">
-          <h2 className="font-black text-[11px] uppercase tracking-wider text-slate-950 leading-tight">{schoolName}</h2>
-          <p className="text-[8px] font-bold text-slate-600">{bankSettings?.bank_name || 'Habib Bank Limited (HBL)'}</p>
+          <div className="flex items-center justify-center gap-1.5 mb-0.5">
+            {schoolLogo && (
+              <img src={schoolLogo} alt="Logo" className="w-4 h-4 object-contain shrink-0" />
+            )}
+            <h2 className="font-black text-[11px] uppercase tracking-wider text-slate-950 leading-tight">
+              {schoolName}
+            </h2>
+          </div>
+          {slogan && (
+            <p className="text-[7.5px] font-medium text-slate-500 leading-none mb-0.5">{slogan}</p>
+          )}
+          <div className="flex items-center justify-center gap-1.5 text-[7.5px] text-slate-600 font-bold">
+            <span>{bankSettings?.bank_name || 'Habib Bank Limited (HBL)'}</span>
+            <span className="text-slate-400">•</span>
+            <span className="font-mono text-primary font-black">
+              1BILL: {bankSettings?.onebill_prefix ? `${bankSettings.onebill_prefix}-${invoice?.challan_no}` : invoice?.challan_no}
+            </span>
+          </div>
           <div className="inline-block bg-slate-900 text-white font-black text-[8px] px-2 py-0.5 rounded-sm uppercase tracking-wider mt-0.5">
             {copyTitle}
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-1 text-[8px] bg-slate-50 p-1 border border-slate-200 rounded">
-          <div><span className="font-bold">A/C Title:</span> {bankSettings?.account_title || 'Elite Edu'}</div>
+          <div><span className="font-bold">A/C Title:</span> {bankSettings?.account_title || schoolName}</div>
           <div><span className="font-bold">A/C No:</span> {bankSettings?.account_number || '1234-567890'}</div>
           <div className="col-span-2"><span className="font-bold">IBAN:</span> {bankSettings?.iban || 'PK36HABB0000123456789012'}</div>
         </div>
@@ -43,7 +68,7 @@ const BankChallanCopyItem = ({ copyTitle, invoice, bankSettings, schoolName = 'E
           <thead>
             <tr className="border-b border-slate-300 font-bold bg-slate-100">
               <th className="py-0.5 px-1">Particulars</th>
-              <th className="py-0.5 px-1 text-right">Amount (PKR)</th>
+              <th className="py-0.5 px-1 text-right">Amount ({currency})</th>
             </tr>
           </thead>
           <tbody>
@@ -69,11 +94,11 @@ const BankChallanCopyItem = ({ copyTitle, invoice, bankSettings, schoolName = 'E
           <tfoot>
             <tr className="bg-slate-100 font-black border-t border-slate-400">
               <td className="py-1 px-1">Payable Within Due Date:</td>
-              <td className="py-1 px-1 text-right font-mono text-[9px]">PKR {netWithin.toLocaleString()}</td>
+              <td className="py-1 px-1 text-right font-mono text-[9px]">{currency} {netWithin.toLocaleString()}</td>
             </tr>
             <tr className="bg-red-50 text-red-900 font-bold border-t border-slate-300">
               <td className="py-0.5 px-1">Payable After Due Date (+{lateFine}):</td>
-              <td className="py-0.5 px-1 text-right font-mono text-[9px]">PKR {netAfter.toLocaleString()}</td>
+              <td className="py-0.5 px-1 text-right font-mono text-[9px]">{currency} {netAfter.toLocaleString()}</td>
             </tr>
           </tfoot>
         </table>

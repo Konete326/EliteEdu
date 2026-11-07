@@ -50,6 +50,11 @@ export const ThemeProvider = ({ children }) => {
     d.style.setProperty('--color-primary', meta.hex);
     d.style.setProperty('--color-primary-hover', meta.hover);
     d.style.setProperty('--color-primary-soft', meta.soft);
+
+    if (typeof document !== 'undefined' && document.body) {
+      document.body.classList.remove('bg-[#09090b]', 'text-[#fafafa]');
+      document.body.classList.toggle('dark', isDark);
+    }
   }, []);
 
   useEffect(() => {
@@ -64,6 +69,7 @@ export const ThemeProvider = ({ children }) => {
       setSettings((prev) => {
         const next = sanitizeTheme({ ...prev, ...user.theme_settings });
         localStorage.setItem('elite_theme_settings', JSON.stringify(next));
+        localStorage.setItem('theme', next.mode);
         return next;
       });
     }
@@ -71,7 +77,8 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     const hasUserSelected = localStorage.getItem('elite_theme_user_selected') === 'true';
-    if (hasUserSelected || !user?.school_id) return;
+    if (hasUserSelected) return;
+    if (!user?.school_id && user?.role !== 'SuperAdmin') return;
 
     api.get('/schools/theme')
       .then((res) => {
@@ -79,12 +86,13 @@ export const ThemeProvider = ({ children }) => {
           setSettings((prev) => {
             const next = sanitizeTheme({ ...prev, ...res.data.theme_settings });
             localStorage.setItem('elite_theme_settings', JSON.stringify(next));
+            localStorage.setItem('theme', next.mode);
             return next;
           });
         }
       })
       .catch(() => {});
-  }, [user?.school_id]);
+  }, [user?.school_id, user?.role]);
 
   const syncToBackend = useCallback((next) => {
     if (user?.role !== 'Admin' && user?.role !== 'SuperAdmin') return;
@@ -115,9 +123,7 @@ export const ThemeProvider = ({ children }) => {
       }
       localStorage.setItem('elite_theme_user_selected', 'true');
       localStorage.setItem('elite_theme_settings', JSON.stringify(next));
-      if (key === 'mode') {
-        localStorage.setItem('theme', value);
-      }
+      localStorage.setItem('theme', next.mode);
       syncToBackend(next);
       return next;
     });

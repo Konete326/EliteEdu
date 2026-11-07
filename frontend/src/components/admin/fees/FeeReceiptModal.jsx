@@ -1,4 +1,4 @@
-import { Printer, X, ShieldCheck } from 'lucide-react';
+import { Printer, X, ShieldCheck, School } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import OfficialSignatureStampBlock from '../../common/OfficialSignatureStampBlock';
 
@@ -9,7 +9,11 @@ const FeeReceiptModal = ({ isOpen, onClose, payment }) => {
   const student = payment.student_id || {};
   const campus = payment.campus_id || {};
   const schoolName = user?.school_name || 'Elite Educational System';
-  const formattedDate = payment.payment_date ? new Date(payment.payment_date).toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB');
+  const schoolLogo = user?.school_logo || null;
+  const schoolSlogan = user?.school_slogan || '';
+  const formattedDate = payment.payment_date
+    ? new Date(payment.payment_date).toLocaleDateString('en-GB')
+    : new Date().toLocaleDateString('en-GB');
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
@@ -17,14 +21,24 @@ const FeeReceiptModal = ({ isOpen, onClose, payment }) => {
         <div className="flex items-center justify-between px-5 py-3 border-b border-line dark:border-line-dark">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-good" />
-            <span className="font-bold text-xs text-ink dark:text-ink-dark uppercase tracking-wider">Official Fee Payment Receipt</span>
+            <span className="font-bold text-xs text-ink dark:text-ink-dark uppercase tracking-wider">
+              Official Fee Payment Receipt
+            </span>
           </div>
           <div className="flex items-center gap-2">
-            <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 shadow-sm">
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 shadow-sm cursor-pointer"
+            >
               <Printer className="w-3.5 h-3.5" />
               <span>Print</span>
             </button>
-            <button type="button" onClick={onClose} className="p-1.5 rounded-xl text-ink-muted hover:text-ink">
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-xl text-ink-muted hover:text-ink cursor-pointer"
+            >
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -32,7 +46,17 @@ const FeeReceiptModal = ({ isOpen, onClose, payment }) => {
 
         <div className="p-5 overflow-y-auto space-y-4 printable-receipt text-ink dark:text-ink-dark text-xs">
           <div className="text-center pb-3 border-b border-dashed border-line">
-            <h2 className="text-base font-black tracking-tight uppercase">{schoolName}</h2>
+            <div className="flex items-center justify-center gap-2 mb-1">
+              {schoolLogo ? (
+                <img src={schoolLogo} alt="Logo" className="w-6 h-6 object-contain" />
+              ) : (
+                <School className="w-5 h-5 text-primary" />
+              )}
+              <h2 className="text-base font-black tracking-tight uppercase">{schoolName}</h2>
+            </div>
+            {schoolSlogan && (
+              <p className="text-[10px] font-semibold text-primary">{schoolSlogan}</p>
+            )}
             <p className="text-[11px] text-ink-muted">{campus.name || 'Main Campus'} • Official Fee Collection Voucher</p>
           </div>
 
@@ -54,7 +78,7 @@ const FeeReceiptModal = ({ isOpen, onClose, payment }) => {
             </thead>
             <tbody className="divide-y divide-line">
               <tr>
-                <td className="py-2 px-3">Base Tuition & Charges</td>
+                <td className="py-2 px-3">Base Tuition &amp; Charges</td>
                 <td className="py-2 px-3 text-right font-mono">Rs. {Number(payment.base_fee || 0).toLocaleString()}</td>
               </tr>
               {Number(payment.discount || 0) > 0 && (

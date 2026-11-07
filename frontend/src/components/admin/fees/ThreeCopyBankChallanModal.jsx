@@ -1,9 +1,11 @@
 import React, { useRef } from 'react';
-import { X, Printer, Download } from 'lucide-react';
+import { X, Printer } from 'lucide-react';
 import BankChallanCopyItem from './BankChallanCopyItem';
+import useIdCardInstitution from '../../common/idcards/useIdCardInstitution';
 
 const ThreeCopyBankChallanModal = ({ isOpen, onClose, invoices = [], bankSettings, schoolName }) => {
   const printRef = useRef(null);
+  const institution = useIdCardInstitution();
 
   if (!isOpen || !invoices || invoices.length === 0) return null;
 
@@ -12,6 +14,7 @@ const ThreeCopyBankChallanModal = ({ isOpen, onClose, invoices = [], bankSetting
   };
 
   const copyTitles = bankSettings?.challan_copies || ['Bank Copy', 'Institute Copy', 'Student Copy'];
+  const resolvedSchoolName = schoolName || institution.institutionName || 'ELITE EDUCATION SYSTEM';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
@@ -59,7 +62,8 @@ const ThreeCopyBankChallanModal = ({ isOpen, onClose, invoices = [], bankSetting
                     copyTitle={title}
                     invoice={inv}
                     bankSettings={bankSettings}
-                    schoolName={schoolName}
+                    schoolName={resolvedSchoolName}
+                    institution={institution}
                   />
                   {idx < copyTitles.length - 1 && (
                     <div className="flex flex-col items-center justify-center px-1 text-slate-400 select-none">
