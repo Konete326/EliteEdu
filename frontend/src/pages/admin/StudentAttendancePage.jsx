@@ -34,6 +34,7 @@ const StudentAttendancePage = () => {
 
   const currentGrade = grades.find((g) => g._id === selectedGradeId);
   const classLabel = currentGrade ? currentGrade.name : 'Selected Class';
+  const isSunday = new Date(date + 'T00:00:00').getDay() === 0;
 
   const handleTabChange = (tabId) => {
     if (isTeacher && (tabId === 'staff' || tabId === 'realtime' || tabId === 'settings')) return;
@@ -59,6 +60,20 @@ const StudentAttendancePage = () => {
       {activeTab === 'student' && feedback.success && (
         <div className="shrink-0 p-3 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-bold print:hidden">
           {feedback.success}
+        </div>
+      )}
+
+      {activeTab === 'student' && isSunday && (
+        <div className="shrink-0 p-3 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 text-xs font-semibold flex items-center justify-between print:hidden">
+          <span>📅 <strong>Sunday Notice:</strong> Today is Sunday (Weekly Holiday). Classes are scheduled off.</span>
+          <span className="text-[10px] uppercase font-bold text-amber-600 dark:text-amber-400 bg-amber-500/15 px-2 py-0.5 rounded">Holiday</span>
+        </div>
+      )}
+
+      {activeTab === 'student' && summary.isFreshDefault && loaded && records.length > 0 && (
+        <div className="shrink-0 px-3.5 py-2 rounded-xl bg-primary/10 text-primary border border-primary/20 text-xs font-semibold flex items-center justify-between print:hidden">
+          <span>⚡ <strong>Quick Mark Active:</strong> All students are set to <strong>Present</strong>. Tap <strong>A (Absent)</strong> or <strong>L (Leave)</strong> to adjust, then click Save Attendance.</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/15 px-2 py-0.5 rounded">Auto-Loaded</span>
         </div>
       )}
 

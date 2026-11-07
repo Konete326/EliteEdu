@@ -22,7 +22,7 @@ const StudentAttendanceContentCard = ({
       {!loaded ? (
         <div className="flex-1 p-16 flex items-center justify-center text-center">
           <p className="text-xs sm:text-sm font-medium text-ink-muted dark:text-ink-muted">
-            Select a class and date, then click <strong className="font-bold text-ink dark:text-ink-dark">Show</strong> to load students.
+            Select a class and date to view student attendance records.
           </p>
         </div>
       ) : loading ? (

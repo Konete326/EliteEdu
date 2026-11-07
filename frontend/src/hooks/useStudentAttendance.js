@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import api from '../services/api';
 import { formatStandardTime } from '../utils/timeFormatters';
 
@@ -27,6 +27,54 @@ export const useStudentAttendance = () => {
   const [lastScanned, setLastScanned] = useState(null);
   const [scanHistory, setScanHistory] = useState([]);
   const [feedback, setFeedback] = useState({ error: '', success: '' });
+  const isInitialMount = useRef(true);
+
+  const fetchSheet = useCallback(async (gradeId = selectedGradeId, sec = selectedSection, dt = date) => {
+    const targetGrade = gradeId || selectedGradeId;
+    if (!targetGrade) return;
+    try {
+      setLoading(true);
+      setFeedback({ error: '', success: '' });
+      const params = { date: dt, grade_id: targetGrade };
+      if (sec && sec !== 'ALL') {
+        params.section = sec;
+      }
+      const res = await api.get('/attendance/sheet', { params });
+      const rawRecords = res.data?.records || [];
+      const stats = res.data?.summary || res.data?.stats || {};
+
+      const isFresh = (stats.markedCount === 0) || rawRecords.every((r) => !r.is_marked);
+      const preparedRecords = rawRecords.map((r) => ({
+        ...r,
+        status: r.status || 'P'
+      }));
+
+      setRecords(preparedRecords);
+      if (isFresh && preparedRecords.length > 0) {
+        setSummary({
+          total: preparedRecords.length,
+          present: preparedRecords.length,
+          absent: 0,
+          leave: 0,
+          late: 0,
+          halfDay: 0,
+          markedCount: preparedRecords.length,
+          unmarked: 0,
+          isFreshDefault: true
+        });
+      } else {
+        setSummary({
+          ...stats,
+          isFreshDefault: false
+        });
+      }
+      setLoaded(true);
+    } catch (err) {
+      setFeedback({ error: err.response?.data?.message || 'Failed to load attendance sheet', success: '' });
+    } finally {
+      setLoading(false);
+    }
+  }, [date, selectedGradeId, selectedSection]);
 
   const fetchAllowedClasses = useCallback(async () => {
     try {
@@ -36,48 +84,51 @@ export const useStudentAttendance = () => {
         const fallbackRes = await api.get('/grades');
         list = fallbackRes.data?.grades || fallbackRes.data?.data || fallbackRes.data || [];
       }
-      setGrades(Array.isArray(list) ? list : []);
+      const valid = Array.isArray(list) ? list : [];
+      setGrades(valid);
+
+      if (valid.length > 0 && !selectedGradeId) {
+        const first = valid[0];
+        setSelectedGradeId(first._id);
+        fetchSheet(first._id, selectedSection, date);
+      }
     } catch (_) {
       try {
         const fallbackRes = await api.get('/grades');
         const list = fallbackRes.data?.grades || fallbackRes.data?.data || [];
-        setGrades(Array.isArray(list) ? list : []);
+        const valid = Array.isArray(list) ? list : [];
+        setGrades(valid);
+        if (valid.length > 0 && !selectedGradeId) {
+          const first = valid[0];
+          setSelectedGradeId(first._id);
+          fetchSheet(first._id, selectedSection, date);
+        }
       } catch {
         setGrades([]);
       }
     }
-  }, []);
+  }, [date, selectedGradeId, selectedSection, fetchSheet]);
 
   useEffect(() => {
     fetchAllowedClasses();
   }, [fetchAllowedClasses]);
 
-  const fetchSheet = useCallback(async () => {
-    if (!selectedGradeId) return;
-    try {
-      setLoading(true);
-      setFeedback({ error: '', success: '' });
-      const params = { date, grade_id: selectedGradeId };
-      if (selectedSection && selectedSection !== 'ALL') {
-        params.section = selectedSection;
-      }
-      const res = await api.get('/attendance/sheet', { params });
-      setRecords(res.data?.records || []);
-      setSummary(res.data?.summary || res.data?.stats || {});
-      setLoaded(true);
-    } catch (err) {
-      setFeedback({ error: err.response?.data?.message || 'Failed to load attendance sheet', success: '' });
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
     }
-  }, [date, selectedGradeId, selectedSection]);
+    if (selectedGradeId) {
+      fetchSheet(selectedGradeId, selectedSection, date);
+    }
+  }, [selectedGradeId, selectedSection, date, fetchSheet]);
 
   const handleShow = () => {
     if (!selectedGradeId) {
       setFeedback({ error: 'Please select a class first.', success: '' });
       return;
     }
-    fetchSheet();
+    fetchSheet(selectedGradeId, selectedSection, date);
   };
 
   const recomputeSummary = useCallback((updatedRecords) => {
@@ -102,7 +153,8 @@ export const useStudentAttendance = () => {
       leave,
       late,
       halfDay,
-      markedCount: total
+      markedCount: total,
+      isFreshDefault: false
     }));
   }, []);
 
