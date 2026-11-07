@@ -31,7 +31,14 @@ export const ThemeProvider = ({ children }) => {
   const [settings, setSettings] = useState(() => {
     try {
       const c = localStorage.getItem('elite_theme_settings');
-      return c ? sanitizeTheme(JSON.parse(c)) : DEFAULT_THEME;
+      if (c) {
+        return sanitizeTheme(JSON.parse(c));
+      }
+      const rawMode = localStorage.getItem('theme');
+      if (rawMode) {
+        return sanitizeTheme({ ...DEFAULT_THEME, mode: rawMode === 'dark' ? 'dark' : 'light' });
+      }
+      return DEFAULT_THEME;
     } catch {
       return DEFAULT_THEME;
     }
@@ -64,8 +71,8 @@ export const ThemeProvider = ({ children }) => {
   }, [settings, applyThemeToDom]);
 
   useEffect(() => {
-    const hasUserSelected = localStorage.getItem('elite_theme_user_selected') === 'true';
-    if (hasUserSelected) return;
+    const existing = localStorage.getItem('elite_theme_settings');
+    if (existing) return;
 
     if (user?.theme_settings) {
       setSettings((prev) => {
@@ -78,8 +85,8 @@ export const ThemeProvider = ({ children }) => {
   }, [user]);
 
   useEffect(() => {
-    const hasUserSelected = localStorage.getItem('elite_theme_user_selected') === 'true';
-    if (hasUserSelected) return;
+    const existing = localStorage.getItem('elite_theme_settings');
+    if (existing) return;
     if (!user?.school_id && user?.role !== 'SuperAdmin') return;
 
     api.get('/schools/theme')
@@ -139,7 +146,7 @@ export const ThemeProvider = ({ children }) => {
 
   const resetThemeToDefault = useCallback(() => {
     const doReset = () => {
-      localStorage.removeItem('elite_theme_user_selected');
+      localStorage.setItem('elite_theme_user_selected', 'true');
       localStorage.setItem('elite_theme_settings', JSON.stringify(DEFAULT_THEME));
       localStorage.setItem('theme', DEFAULT_THEME.mode);
       setSettings(DEFAULT_THEME);
