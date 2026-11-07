@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useRef, useCallback, us
 import api from '../services/api';
 import { useAuth } from './AuthContext';
 import { DEFAULT_THEME, getActiveColorMeta } from '../utils/themeConstants';
-import ThemeTransition from '../components/common/ThemeTransition';
+import { useGlimm } from '../components/ui/glimm-transition';
 
 const ThemeContext = createContext(null);
 
@@ -25,6 +25,9 @@ const sanitizeTheme = (raw) => {
 
 export const ThemeProvider = ({ children }) => {
   const { user, updateUser } = useAuth();
+  const glimm = useGlimm();
+  const sweep = glimm?.sweep;
+
   const [settings, setSettings] = useState(() => {
     try {
       const c = localStorage.getItem('elite_theme_settings');
@@ -34,7 +37,6 @@ export const ThemeProvider = ({ children }) => {
     }
   });
 
-  const [isAnimating, setIsAnimating] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const debounceRef = useRef(null);
 
@@ -113,32 +115,44 @@ export const ThemeProvider = ({ children }) => {
   }, [user?.role, updateUser]);
 
   const updateThemeSetting = useCallback((key, value) => {
-    setIsAnimating(true);
-    setTimeout(() => setIsAnimating(false), 300);
+    const doUpdate = () => {
+      setSettings((prev) => {
+        const next = sanitizeTheme({ ...prev, [key]: value });
+        if (key === 'headerBg') {
+          next.sidebarBg = value;
+        }
+        localStorage.setItem('elite_theme_user_selected', 'true');
+        localStorage.setItem('elite_theme_settings', JSON.stringify(next));
+        localStorage.setItem('theme', next.mode);
+        applyThemeToDom(next);
+        syncToBackend(next);
+        return next;
+      });
+    };
 
-    setSettings((prev) => {
-      const next = sanitizeTheme({ ...prev, [key]: value });
-      if (key === 'headerBg') {
-        next.sidebarBg = value;
-      }
-      localStorage.setItem('elite_theme_user_selected', 'true');
-      localStorage.setItem('elite_theme_settings', JSON.stringify(next));
-      localStorage.setItem('theme', next.mode);
-      syncToBackend(next);
-      return next;
-    });
-  }, [syncToBackend]);
+    if (typeof sweep === 'function') {
+      sweep(doUpdate);
+    } else {
+      doUpdate();
+    }
+  }, [sweep, applyThemeToDom, syncToBackend]);
 
   const resetThemeToDefault = useCallback(() => {
-    setIsAnimating(true);
-    setTimeout(() => setIsAnimating(false), 300);
+    const doReset = () => {
+      localStorage.removeItem('elite_theme_user_selected');
+      localStorage.setItem('elite_theme_settings', JSON.stringify(DEFAULT_THEME));
+      localStorage.setItem('theme', DEFAULT_THEME.mode);
+      setSettings(DEFAULT_THEME);
+      applyThemeToDom(DEFAULT_THEME);
+      syncToBackend(DEFAULT_THEME);
+    };
 
-    localStorage.removeItem('elite_theme_user_selected');
-    localStorage.setItem('elite_theme_settings', JSON.stringify(DEFAULT_THEME));
-    localStorage.setItem('theme', DEFAULT_THEME.mode);
-    setSettings(DEFAULT_THEME);
-    syncToBackend(DEFAULT_THEME);
-  }, [syncToBackend]);
+    if (typeof sweep === 'function') {
+      sweep(doReset);
+    } else {
+      doReset();
+    }
+  }, [sweep, applyThemeToDom, syncToBackend]);
 
   const value = useMemo(
     () => ({
@@ -146,15 +160,14 @@ export const ThemeProvider = ({ children }) => {
       updateThemeSetting,
       resetThemeToDefault,
       isSyncing,
-      isAnimating
+      isAnimating: false
     }),
-    [settings, updateThemeSetting, resetThemeToDefault, isSyncing, isAnimating]
+    [settings, updateThemeSetting, resetThemeToDefault, isSyncing]
   );
 
   return (
     <ThemeContext.Provider value={value}>
       {children}
-      <ThemeTransition isAnimating={isAnimating} />
     </ThemeContext.Provider>
   );
 };

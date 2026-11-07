@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CampusProvider } from './context/CampusContext';
 import { ThemeProvider } from './context/ThemeContext';
+import GlimmProvider from './components/ui/glimm-transition';
 import { ToastProvider } from './context/ToastContext';
 import { ComingSoonProvider } from './context/ComingSoonContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -118,7 +119,8 @@ function App() {
   return (
     <AuthProvider>
       <CampusProvider>
-        <ThemeProvider>
+        <GlimmProvider palette="prism">
+          <ThemeProvider>
           <ToastProvider>
             <ComingSoonProvider>
             <BrowserRouter>
@@ -338,6 +340,7 @@ function App() {
             </ComingSoonProvider>
           </ToastProvider>
         </ThemeProvider>
+        </GlimmProvider>
       </CampusProvider>
     </AuthProvider>
   );
