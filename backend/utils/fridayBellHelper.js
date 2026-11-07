@@ -61,3 +61,4 @@ const generateFridayBellSlots = ({
 };
 
 module.exports = { generateFridayBellSlots };
+

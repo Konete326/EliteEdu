@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Zap, Loader2, Sparkles, AlertCircle, BookOpen, CheckCircle2 } from 'lucide-react';
+import { X, Zap, Loader2, AlertCircle, BookOpen, CheckCircle2, AlertTriangle } from 'lucide-react';
 import api from '../../../services/api';
 import { useToast } from '../../../context/ToastContext';
 import SearchableSelect from '../../common/SearchableSelect';
@@ -32,6 +32,7 @@ const ClassTeacherMappingModal = ({
             subject_id: item.subject_id,
             subject_name: item.subject_name,
             subject_code: item.subject_code,
+            subject_type: item.subject_type || 'Compulsory',
             periods_per_week: item.periods_per_week || 5,
             teacher_id: item.teacher_id || ''
           }))
@@ -99,122 +100,146 @@ const ClassTeacherMappingModal = ({
     badge: t.campus_id?.name || ''
   }));
 
-  const allAssigned = assignments.length > 0 && assignments.every((a) => a.teacher_id);
+  const missingCount = assignments.filter((a) => !a.teacher_id).length;
+  const allAssigned = assignments.length > 0 && missingCount === 0;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white dark:bg-gray-800 rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-gray-100 dark:border-gray-700 space-y-5 my-8">
-        <div className="flex items-start justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden">
+      <div className="relative w-full max-w-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="px-5 py-4 border-b border-line dark:border-line-dark flex items-start justify-between gap-3 shrink-0 bg-surface dark:bg-surface-dark">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold mb-1">
-              <Sparkles className="w-3.5 h-3.5" /> 1-Click Clash-Free Scheduler
+            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[11px] font-bold tracking-tight mb-1">
+              <Zap className="w-3 h-3 text-primary" /> Auto-Scheduler
             </div>
-            <h2 className="text-lg font-black text-gray-900 dark:text-gray-100">
-              Auto-Generate Routine: {displayClassName} (Section {selectedSection})
+            <h2 className="text-base font-bold text-ink dark:text-ink-dark tracking-tight">
+              Class Routine: {displayClassName} ({selectedSection})
             </h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Har subject ke aagay Teacher select karein. System Friday short day aur zero teacher clashes ke sath poora hafta auto-fill kar dega.
+            <p className="text-xs text-ink-muted">
+              Select teachers for curriculum subjects. The engine automatically distributes periods and prevents teacher timetable clashes.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-ink-muted hover:text-ink hover:bg-surface-secondary transition-colors cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {loading ? (
-          <div className="py-12 flex flex-col items-center justify-center gap-3 text-gray-400">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-            <span className="text-xs font-bold">Loading curriculum subjects &amp; teachers...</span>
+          <div className="py-16 flex flex-col items-center justify-center gap-2.5 text-ink-muted">
+            <Loader2 className="w-7 h-7 animate-spin text-primary" />
+            <span className="text-xs font-semibold">Loading class curriculum...</span>
           </div>
         ) : assignments.length === 0 ? (
-          <div className="py-10 text-center space-y-2">
-            <AlertCircle className="w-10 h-10 text-amber-500 mx-auto" />
-            <p className="text-sm font-bold text-gray-700 dark:text-gray-300">No active subjects found for this class.</p>
-            <p className="text-xs text-gray-500">Please make sure subjects are created and linked with {displayClassName}.</p>
+          <div className="p-8 text-center space-y-2">
+            <AlertCircle className="w-9 h-9 text-amber-500 mx-auto" />
+            <h3 className="text-sm font-bold text-ink dark:text-ink-dark">No Subjects Found</h3>
+            <p className="text-xs text-ink-muted max-w-sm mx-auto">
+              Please make sure subjects are assigned to {displayClassName} in Subjects setup.
+            </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="max-h-[380px] overflow-y-auto space-y-3 pr-1">
-              {assignments.map((item) => (
-                <div
-                  key={item.subject_id}
-                  className="p-3.5 rounded-2xl border border-gray-100 dark:border-gray-700/80 bg-gray-50/60 dark:bg-gray-800/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                >
-                  <div className="flex items-center gap-2.5 min-w-[180px]">
-                    <div className="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                      <BookOpen className="w-4 h-4" />
+          <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+            <div className="p-5 overflow-y-auto flex-1 min-h-0 space-y-3">
+              <div className="text-[11px] font-bold text-ink-muted uppercase tracking-wider px-1 flex items-center justify-between">
+                <span>Subject &amp; Code</span>
+                <span className="pr-24">Assigned Teacher</span>
+                <span>Periods / Week</span>
+              </div>
+
+              <div className="divide-y divide-line dark:divide-line-dark border border-line dark:border-line-dark rounded-xl overflow-hidden bg-surface-secondary/20">
+                {assignments.map((item) => (
+                  <div
+                    key={item.subject_id}
+                    className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-surface-secondary/40 transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-[190px]">
+                      <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <BookOpen className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-xs font-bold text-ink dark:text-ink-dark truncate">
+                          {item.subject_name}
+                        </div>
+                        <div className="text-[10px] text-ink-muted font-mono flex items-center gap-1.5">
+                          <span>{item.subject_code}</span>
+                          <span>•</span>
+                          <span>{item.subject_type}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="text-xs font-bold text-gray-900 dark:text-gray-100">{item.subject_name}</div>
-                      <div className="text-[11px] text-gray-400">{item.subject_code}</div>
+
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="flex-1 min-w-[200px]">
+                        <SearchableSelect
+                          options={teacherOptions}
+                          value={item.teacher_id}
+                          onChange={(val) => handleTeacherChange(item.subject_id, val)}
+                          placeholder="Select Teacher..."
+                          searchPlaceholder="Search teacher..."
+                          size="sm"
+                        />
+                      </div>
+                      <div className="w-20 shrink-0 flex items-center gap-1">
+                        <input
+                          type="number"
+                          min="1"
+                          max="10"
+                          value={item.periods_per_week}
+                          onChange={(e) => handlePeriodsChange(item.subject_id, e.target.value)}
+                          className="w-full px-2 py-1 text-center text-xs font-bold border border-line dark:border-line-dark rounded-lg bg-surface dark:bg-surface-dark text-ink dark:text-ink-dark focus:outline-hidden focus:ring-1 focus:ring-primary"
+                          title="Periods per week"
+                        />
+                        <span className="text-[10px] text-ink-muted font-bold">/wk</span>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-3 flex-1">
-                    <div className="flex-1 min-w-[200px]">
-                      <SearchableSelect
-                        options={teacherOptions}
-                        value={item.teacher_id}
-                        onChange={(val) => handleTeacherChange(item.subject_id, val)}
-                        placeholder="Select Teacher..."
-                        searchPlaceholder="Search teacher name..."
-                        size="sm"
-                      />
-                    </div>
-                    <div className="w-24 shrink-0 flex items-center gap-1.5">
-                      <input
-                        type="number"
-                        min="1"
-                        max="10"
-                        value={item.periods_per_week}
-                        onChange={(e) => handlePeriodsChange(item.subject_id, e.target.value)}
-                        className="w-full px-2 py-1.5 text-center text-xs font-bold border rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-600"
-                        title="Periods per week"
-                      />
-                      <span className="text-[10px] text-gray-400 font-bold uppercase">/Wk</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            <div className="p-3 bg-blue-50/60 dark:bg-blue-950/20 rounded-2xl border border-blue-100 dark:border-blue-900/30 flex items-center justify-between text-xs text-blue-700 dark:text-blue-300">
-              <span className="flex items-center gap-1.5 font-bold">
-                <CheckCircle2 className="w-4 h-4 text-blue-600" />
-                {allAssigned ? 'All teachers assigned' : 'Select teacher for each subject'}
-              </span>
-              <span className="text-[11px] text-blue-600/80 font-semibold">
-                Automatic multi-class clash solver active
-              </span>
-            </div>
-
-            <div className="flex items-center justify-end gap-3 pt-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={submitting || !allAssigned}
-                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" /> Scheduling Week...
-                  </>
+            <div className="px-5 py-3 border-t border-line dark:border-line-dark bg-surface-secondary/40 dark:bg-surface-secondary-dark/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+              <div className="flex items-center gap-2 text-xs">
+                {allAssigned ? (
+                  <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold">
+                    <CheckCircle2 className="w-4 h-4 shrink-0" />
+                    All {assignments.length} subjects ready
+                  </span>
                 ) : (
-                  <>
-                    <Zap className="w-4 h-4" /> Auto-Generate Timetable
-                  </>
+                  <span className="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-semibold">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    {missingCount} subject{missingCount > 1 ? 's' : ''} need a teacher
+                  </span>
                 )}
-              </button>
+                <span className="text-[11px] text-ink-muted hidden sm:inline">• Clash prevention active</span>
+              </div>
+
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-ink-sub hover:text-ink hover:bg-surface-secondary border border-line dark:border-line-dark transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting || !allAssigned}
+                  className="px-4 py-1.5 bg-primary hover:bg-primary-hover disabled:opacity-50 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Scheduling...
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="w-3.5 h-3.5" /> Auto-Generate
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </form>
         )}

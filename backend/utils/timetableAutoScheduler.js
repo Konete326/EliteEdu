@@ -103,3 +103,4 @@ const autoScheduleClass = async ({ school_id, campus_id, grade_id, section = 'A'
 };
 
 module.exports = { autoScheduleClass };
+

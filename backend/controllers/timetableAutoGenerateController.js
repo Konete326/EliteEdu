@@ -88,3 +88,4 @@ const getClassSubjectAssignments = async (req, res) => {
 };
 
 module.exports = { autoGenerateTimetable, getClassSubjectAssignments };
+
