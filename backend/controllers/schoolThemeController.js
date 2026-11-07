@@ -1,8 +1,13 @@
 const School = require('../models/School');
+const { invalidateSchoolMetaCache } = require('../utils/schoolMeta');
 
 const getSchoolTheme = async (req, res) => {
   try {
-    const schoolId = req.user?.school_id;
+    let schoolId = req.user?.school_id;
+    if (!schoolId && req.user?.role === 'SuperAdmin') {
+      const defaultSchool = await School.findOne().select('_id').lean();
+      schoolId = defaultSchool?._id;
+    }
     if (!schoolId) {
       return res.status(400).json({ message: 'No school associated with user' });
     }
@@ -17,7 +22,7 @@ const getSchoolTheme = async (req, res) => {
       theme_settings: school.theme_settings || {
         mode: 'light',
         placement: 'ltr',
-        sidebarBg: 'light',
+        sidebarBg: 'white',
         headerBg: 'white',
         activeColor: '#0d9488',
         language: 'English'
@@ -30,7 +35,11 @@ const getSchoolTheme = async (req, res) => {
 
 const updateSchoolTheme = async (req, res) => {
   try {
-    const schoolId = req.user?.school_id;
+    let schoolId = req.user?.school_id || req.body?.school_id;
+    if (!schoolId && req.user?.role === 'SuperAdmin') {
+      const defaultSchool = await School.findOne().select('_id').lean();
+      schoolId = defaultSchool?._id;
+    }
     if (!schoolId) {
       return res.status(400).json({ message: 'No school associated with user' });
     }
@@ -66,6 +75,8 @@ const updateSchoolTheme = async (req, res) => {
     if (!school) {
       return res.status(404).json({ message: 'School not found' });
     }
+
+    invalidateSchoolMetaCache(schoolId);
 
     res.status(200).json({
       success: true,

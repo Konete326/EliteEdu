@@ -3,6 +3,7 @@ const WHITELIST = new Set([
   'user',
   'elite_active_campus_id',
   'elite_theme_settings',
+  'elite_theme_user_selected',
   'theme',
   'pwa_installed'
 ]);
@@ -48,4 +49,3 @@ export const runStorageCleanup = () => {
     return false;
   }
 };
-

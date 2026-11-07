@@ -12,7 +12,7 @@ const router = express.Router();
 router.get('/general-settings', authMiddleware, getSchoolGeneralSettings);
 router.put('/general-settings', authMiddleware, authorizeRoles('Admin', 'SuperAdmin'), updateSchoolGeneralSettings);
 router.get('/theme', authMiddleware, getSchoolTheme);
-router.patch('/theme', authMiddleware, authorizeRoles('Admin'), updateSchoolTheme);
+router.patch('/theme', authMiddleware, authorizeRoles('Admin', 'SuperAdmin'), updateSchoolTheme);
 router.post('/reset-data', authMiddleware, authorizeRoles('Admin', 'SuperAdmin'), resetSchoolData);
 router.post('/', authMiddleware, authorizeRoles('SuperAdmin'), registerSchool);
 router.get('/', authMiddleware, authorizeRoles('SuperAdmin'), getSchools);
