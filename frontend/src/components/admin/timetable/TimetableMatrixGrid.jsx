@@ -1,10 +1,19 @@
 import { Trash2, Plus, MapPin, User as UserIcon } from 'lucide-react';
 
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const ALL_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const TimetableMatrixGrid = ({
-  slots = [], viewMode = 'class', bellSchedule, onOpenAssign, onDeleteSlot, canManage = true
+  slots = [],
+  viewMode = 'class',
+  bellSchedule,
+  onOpenAssign,
+  onDeleteSlot,
+  canManage = true
 }) => {
+  const workingDays = bellSchedule?.working_days?.length
+    ? ALL_DAYS.filter((d) => bellSchedule.working_days.includes(d))
+    : ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
   const periodSlots = (bellSchedule?.slots || [])
     .filter((s) => s.slot_type === 'Period')
     .sort((a, b) => Number(a.period_index) - Number(b.period_index));
@@ -12,6 +21,8 @@ const TimetableMatrixGrid = ({
   const periods = periodSlots.length > 0
     ? periodSlots
     : [1, 2, 3, 4, 5, 6, 7].map((p) => ({ period_index: p, start_time: '', end_time: '', label: `P${p}` }));
+
+  const fridayLimit = Number(bellSchedule?.friday_total_periods) || 5;
 
   const getSlot = (day, pNo) => slots.find((s) => s.day_of_week === day && Number(s.period_no) === Number(pNo));
 
@@ -34,61 +45,86 @@ const TimetableMatrixGrid = ({
           </tr>
         </thead>
         <tbody className="divide-y divide-line dark:divide-line-dark">
-          {DAYS.map((day) => (
-            <tr key={day} className="hover:bg-surface-secondary/40 dark:hover:bg-surface-secondary-dark/40 transition-colors">
-              <td className="p-3 font-bold text-ink dark:text-ink-dark bg-surface-secondary/50 dark:bg-surface-secondary-dark/50">
-                {day}
-              </td>
-              {periods.map((p) => {
-                const slot = getSlot(day, p.period_index);
-                if (!slot) {
+          {workingDays.map((day) => {
+            const isFriday = day === 'Friday';
+            return (
+              <tr key={day} className="hover:bg-surface-secondary/40 dark:hover:bg-surface-secondary-dark/40 transition-colors">
+                <td className="p-3 font-bold text-ink dark:text-ink-dark bg-surface-secondary/50 dark:bg-surface-secondary-dark/50">
+                  <div className="flex items-center gap-1.5">
+                    <span>{day}</span>
+                    {isFriday && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 font-bold uppercase">
+                        Short
+                      </span>
+                    )}
+                  </div>
+                </td>
+                {periods.map((p) => {
+                  const pNum = Number(p.period_index);
+                  if (isFriday && pNum > fridayLimit) {
+                    return (
+                      <td key={p.period_index} className="p-2 border-l border-line dark:border-line-dark text-center bg-gray-50/50 dark:bg-gray-800/30">
+                        <span className="text-[10px] font-semibold text-gray-400 dark:text-gray-500">
+                          Jummah Off
+                        </span>
+                      </td>
+                    );
+                  }
+
+                  const slot = getSlot(day, p.period_index);
+                  if (!slot) {
+                    return (
+                      <td key={p.period_index} className="p-2 border-l border-line dark:border-line-dark text-center">
+                        {canManage ? (
+                          <button
+                            type="button"
+                            onClick={() => onOpenAssign?.(day, p.period_index, p)}
+                            className="w-full py-3.5 rounded-xl border border-dashed border-line dark:border-line-dark hover:border-primary hover:bg-primary/5 text-ink-muted hover:text-primary text-[11px] font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer"
+                          >
+                            <Plus className="w-3 h-3" /> Assign
+                          </button>
+                        ) : (
+                          <span className="text-ink-muted/40">—</span>
+                        )}
+                      </td>
+                    );
+                  }
                   return (
-                    <td key={p.period_index} className="p-2 border-l border-line dark:border-line-dark text-center">
-                      {canManage ? (
-                        <button
-                          type="button"
-                          onClick={() => onOpenAssign?.(day, p.period_index, p)}
-                          className="w-full py-3.5 rounded-xl border border-dashed border-line dark:border-line-dark hover:border-primary hover:bg-primary/5 text-ink-muted hover:text-primary text-[11px] font-semibold flex items-center justify-center gap-1 transition-all"
-                        >
-                          <Plus className="w-3 h-3" /> Assign
-                        </button>
-                      ) : (
-                        <span className="text-ink-muted/40">—</span>
-                      )}
+                    <td key={p.period_index} className="p-2 border-l border-line dark:border-line-dark">
+                      <div className="p-2.5 rounded-2xl bg-primary/10 dark:bg-primary/15 border border-primary/20 dark:border-primary/30 space-y-1 relative group shadow-xs">
+                        <div className="font-bold text-ink dark:text-ink-dark truncate pr-5">
+                          {slot.subject_id?.name || 'Subject'}
+                        </div>
+                        <div className="text-[11px] text-ink-sub dark:text-ink-sub-dark flex items-center gap-1 truncate">
+                          <UserIcon className="w-2.5 h-2.5 text-primary" />
+                          {viewMode === 'teacher'
+                            ? `${slot.grade_id?.name || 'Class'} (${slot.section || 'A'})`
+                            : (slot.teacher_id?.name || 'Teacher')}
+                        </div>
+                        <div className="text-[10px] text-ink-muted dark:text-ink-muted-dark flex items-center justify-between pt-0.5">
+                          <span className="flex items-center gap-0.5">
+                            <MapPin className="w-2.5 h-2.5" /> {slot.room_no}
+                          </span>
+                          <span className="font-mono text-[9px] text-primary font-bold">
+                            {slot.start_time}
+                          </span>
+                        </div>
+                        {canManage && (
+                          <button
+                            type="button"
+                            onClick={() => onDeleteSlot(slot._id)}
+                            className="absolute top-1.5 right-1.5 p-1 bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs rounded-lg opacity-0 group-hover:opacity-100 text-ink-muted hover:text-red-500 transition-all cursor-pointer"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
                     </td>
                   );
-                }
-                return (
-                  <td key={p.period_index} className="p-2 border-l border-line dark:border-line-dark">
-                    <div className="p-2.5 rounded-2xl bg-primary/10 dark:bg-primary/15 border border-primary/20 dark:border-primary/30 space-y-1 relative group shadow-xs">
-                      <div className="font-bold text-ink dark:text-ink-dark truncate pr-5">
-                        {slot.subject_id?.name || 'Subject'}
-                      </div>
-                      <div className="text-[11px] text-ink-sub dark:text-ink-sub-dark flex items-center gap-1 truncate">
-                        <UserIcon className="w-2.5 h-2.5 text-primary" />
-                        {viewMode === 'teacher'
-                          ? `${slot.grade_id?.name || 'Class'} (${slot.section || 'A'})`
-                          : (slot.teacher_id?.name || 'Teacher')}
-                      </div>
-                      <div className="text-[10px] text-ink-muted dark:text-ink-muted-dark flex items-center justify-between pt-0.5">
-                        <span className="flex items-center gap-0.5"><MapPin className="w-2.5 h-2.5" /> {slot.room_no}</span>
-                        <span className="font-mono text-[9px] text-primary font-bold">{slot.start_time}</span>
-                      </div>
-                      {canManage && (
-                        <button
-                          type="button"
-                          onClick={() => onDeleteSlot(slot._id)}
-                          className="absolute top-1.5 right-1.5 p-1 bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs rounded-lg opacity-0 group-hover:opacity-100 text-ink-muted hover:text-red-500 transition-all"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
+                })}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

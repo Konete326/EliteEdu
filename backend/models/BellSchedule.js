@@ -22,9 +22,15 @@ const bellScheduleSchema = new mongoose.Schema(
     assembly_duration: { type: Number, default: 15, min: 0, max: 60 },
     period_duration: { type: Number, default: 40, min: 20, max: 90 },
     total_periods: { type: Number, default: 7, min: 4, max: 10 },
+    friday_total_periods: { type: Number, default: 5, min: 2, max: 8 },
+    working_days: {
+      type: [{ type: String, trim: true }],
+      default: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+    },
     break_after_period: { type: Number, default: 4, min: 1, max: 8 },
     break_duration: { type: Number, default: 30, min: 10, max: 60 },
-    slots: [bellSlotSchema]
+    slots: [bellSlotSchema],
+    friday_slots: [bellSlotSchema]
   },
   { timestamps: true }
 );

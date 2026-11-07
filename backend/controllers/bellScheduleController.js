@@ -1,5 +1,6 @@
 const BellSchedule = require('../models/BellSchedule');
 const { generateBellSlots } = require('../utils/bellScheduleHelper');
+const { generateFridayBellSlots } = require('../utils/fridayBellHelper');
 
 const getBellSchedule = async (req, res) => {
   try {
@@ -18,6 +19,13 @@ const getBellSchedule = async (req, res) => {
         break_after_period: 4,
         break_duration: 30
       });
+      const defaultFridaySlots = generateFridayBellSlots({
+        school_start_time: '08:00 AM',
+        friday_end_time: '12:30 PM',
+        assembly_duration: 15,
+        friday_total_periods: 5,
+        break_duration: 20
+      });
       schedule = await BellSchedule.create({
         school_id: schoolId,
         campus_id: campusId,
@@ -27,9 +35,12 @@ const getBellSchedule = async (req, res) => {
         assembly_duration: 15,
         period_duration: 40,
         total_periods: 7,
+        friday_total_periods: 5,
+        working_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
         break_after_period: 4,
         break_duration: 30,
-        slots: defaultSlots
+        slots: defaultSlots,
+        friday_slots: defaultFridaySlots
       });
     }
 
@@ -50,9 +61,12 @@ const saveBellSchedule = async (req, res) => {
       assembly_duration,
       period_duration,
       total_periods,
+      friday_total_periods,
+      working_days,
       break_after_period,
       break_duration,
-      slots: customSlots
+      slots: customSlots,
+      friday_slots: customFridaySlots
     } = req.body;
 
     const slots = (customSlots && customSlots.length > 0)
@@ -64,6 +78,16 @@ const saveBellSchedule = async (req, res) => {
           total_periods,
           break_after_period,
           break_duration
+        });
+
+    const fridaySlots = (customFridaySlots && customFridaySlots.length > 0)
+      ? customFridaySlots
+      : generateFridayBellSlots({
+          school_start_time,
+          friday_end_time,
+          assembly_duration,
+          friday_total_periods: friday_total_periods || 5,
+          break_duration: 20
         });
 
     const filter = { school_id: schoolId };
@@ -80,9 +104,14 @@ const saveBellSchedule = async (req, res) => {
         assembly_duration: Number(assembly_duration ?? 15),
         period_duration: Number(period_duration ?? 40),
         total_periods: Number(total_periods ?? 7),
+        friday_total_periods: Number(friday_total_periods ?? 5),
+        working_days: Array.isArray(working_days) && working_days.length > 0
+          ? working_days
+          : ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
         break_after_period: Number(break_after_period ?? 4),
         break_duration: Number(break_duration ?? 30),
-        slots
+        slots,
+        friday_slots: fridaySlots
       },
       { upsert: true, new: true, runValidators: true }
     );

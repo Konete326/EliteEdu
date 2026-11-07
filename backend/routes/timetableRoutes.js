@@ -15,6 +15,10 @@ const {
   createQuickAdjustment,
   cancelSubstitution
 } = require('../controllers/timetableSubstitutionController');
+const {
+  autoGenerateTimetable,
+  getClassSubjectAssignments
+} = require('../controllers/timetableAutoGenerateController');
 
 const router = express.Router();
 
@@ -27,6 +31,8 @@ router.get('/substitutions', getSubstitutions);
 router.post('/substitutions', assignSubstitution);
 router.post('/quick-adjustment', createQuickAdjustment);
 router.delete('/substitutions/:id', cancelSubstitution);
+router.get('/class-assignments', getClassSubjectAssignments);
+router.post('/auto-generate', autoGenerateTimetable);
 router.post('/assign', assignTimetableSlot);
 router.get('/', getTimetableSlots);
 router.post('/', assignTimetableSlot);

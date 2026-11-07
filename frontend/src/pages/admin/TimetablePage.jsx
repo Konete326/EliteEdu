@@ -13,6 +13,7 @@ import TimetableMatrixGrid from '../../components/admin/timetable/TimetableMatri
 import TimetableSlotAssignModal from '../../components/admin/timetable/TimetableSlotAssignModal';
 import TimetablePrintModal from '../../components/admin/timetable/TimetablePrintModal';
 import TimetableSubstitutionTab from '../../components/admin/timetable/TimetableSubstitutionTab';
+import ClassTeacherMappingModal from '../../components/admin/timetable/ClassTeacherMappingModal';
 
 const TimetablePage = () => {
   const { user } = useAuth();
@@ -30,11 +31,17 @@ const TimetablePage = () => {
   const [selectedSection, setSelectedSection] = useState('A');
   const [selectedTeacher, setSelectedTeacher] = useState('');
   const [assignModal, setAssignModal] = useState({ open: false, data: {} });
+  const [autoGenerateModal, setAutoGenerateModal] = useState(false);
   const [showPrint, setShowPrint] = useState(false);
 
   useEffect(() => {
-    Promise.all([api.get('/grades'), api.get('/subjects'), api.get('/teachers'), api.get('/timetable/bell-schedule')]).then(
-      ([gRes, sRes, tRes, bRes]) => {
+    Promise.all([
+      api.get('/grades'),
+      api.get('/subjects'),
+      api.get('/teachers'),
+      api.get('/timetable/bell-schedule')
+    ])
+      .then(([gRes, sRes, tRes, bRes]) => {
         const gList = gRes.data?.grades || gRes.data || [];
         const tList = tRes.data?.teachers || tRes.data || [];
         setGrades(gList);
@@ -46,8 +53,8 @@ const TimetablePage = () => {
           setBellSchedule(bRes.data.schedule);
           setPreviewSlots(bRes.data.schedule.slots || []);
         }
-      }
-    ).catch(() => {});
+      })
+      .catch(() => {});
   }, [selectedCampus]);
 
   const loadSlots = async () => {
@@ -61,25 +68,36 @@ const TimetablePage = () => {
       if (res.data?.bellSchedule) setBellSchedule(res.data.bellSchedule);
     } catch {
       showToast('Failed to load timetable', 'error');
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => { if (activeMode !== 'substitutions') loadSlots(); }, [activeMode, selectedGrade, selectedSection, selectedTeacher, selectedCampus]);
+  useEffect(() => {
+    if (activeMode !== 'substitutions') loadSlots();
+  }, [activeMode, selectedGrade, selectedSection, selectedTeacher, selectedCampus]);
 
   const handleDeleteSlot = async (id) => {
     try {
       await api.delete(`/timetable/${id}`);
       showToast('Period slot deleted', 'success');
       loadSlots();
-    } catch { showToast('Failed to delete slot', 'error'); }
+    } catch {
+      showToast('Failed to delete slot', 'error');
+    }
   };
 
   const openAssignModal = (day = 'Monday', pNo = 1, pData = {}) => {
     setAssignModal({
       open: true,
       data: {
-        day_of_week: day, period_no: pNo, start_time: pData.start_time, end_time: pData.end_time,
-        grade_id: selectedGrade, section: selectedSection, teacher_id: activeMode === 'teacher' ? selectedTeacher : ''
+        day_of_week: day,
+        period_no: pNo,
+        start_time: pData.start_time,
+        end_time: pData.end_time,
+        grade_id: selectedGrade,
+        section: selectedSection,
+        teacher_id: activeMode === 'teacher' ? selectedTeacher : ''
       }
     });
   };
@@ -87,30 +105,91 @@ const TimetablePage = () => {
   return (
     <div className="w-full space-y-6">
       <TimetableHeaderBar activeMode={activeMode} onChangeMode={setActiveMode} onPrint={() => setShowPrint(true)} />
-      <PrerequisiteGuardBanner prerequisites={[
-        { label: 'Classes / Grades', count: grades.length, link: '/admin/grades' },
-        { label: 'Subjects', count: subjects.length, link: '/admin/subjects' },
-        { label: 'Teachers', count: teachers.length, link: '/admin/teachers' }
-      ]} />
+      <PrerequisiteGuardBanner
+        prerequisites={[
+          { label: 'Classes / Grades', count: grades.length, link: '/admin/grades' },
+          { label: 'Subjects', count: subjects.length, link: '/admin/subjects' },
+          { label: 'Teachers', count: teachers.length, link: '/admin/teachers' }
+        ]}
+      />
       {activeMode === 'timings' ? (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          <div className="lg:col-span-7"><BellScheduleConfigCard schedule={bellSchedule} onSaved={(s) => { setBellSchedule(s); setPreviewSlots(s.slots || []); }} onSlotsPreview={setPreviewSlots} /></div>
-          <div className="lg:col-span-5"><BellScheduleSlotTable slots={previewSlots} /></div>
+          <div className="lg:col-span-7">
+            <BellScheduleConfigCard
+              schedule={bellSchedule}
+              onSaved={(s) => {
+                setBellSchedule(s);
+                setPreviewSlots(s.slots || []);
+              }}
+              onSlotsPreview={setPreviewSlots}
+            />
+          </div>
+          <div className="lg:col-span-5">
+            <BellScheduleSlotTable slots={previewSlots} />
+          </div>
         </div>
       ) : activeMode === 'substitutions' ? (
         <TimetableSubstitutionTab campusId={selectedCampus} />
       ) : (
         <div className="space-y-4">
-          <TimetableFilterBar viewMode={activeMode} grades={grades} teachers={teachers} selectedGrade={selectedGrade} setSelectedGrade={setSelectedGrade} selectedSection={selectedSection} setSelectedSection={setSelectedSection} selectedTeacher={selectedTeacher} setSelectedTeacher={setSelectedTeacher} onOpenAssign={() => openAssignModal()} />
+          <TimetableFilterBar
+            viewMode={activeMode}
+            grades={grades}
+            teachers={teachers}
+            selectedGrade={selectedGrade}
+            setSelectedGrade={setSelectedGrade}
+            selectedSection={selectedSection}
+            setSelectedSection={setSelectedSection}
+            selectedTeacher={selectedTeacher}
+            setSelectedTeacher={setSelectedTeacher}
+            onOpenAssign={() => openAssignModal()}
+            onOpenAutoGenerate={() => setAutoGenerateModal(true)}
+          />
           {loading ? (
-            <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-blue-500" /></div>
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+            </div>
           ) : (
-            <TimetableMatrixGrid slots={slots} viewMode={activeMode} bellSchedule={bellSchedule} onOpenAssign={(day, p, pData) => openAssignModal(day, p, pData)} onDeleteSlot={handleDeleteSlot} canManage={user?.role !== 'Teacher'} />
+            <TimetableMatrixGrid
+              slots={slots}
+              viewMode={activeMode}
+              bellSchedule={bellSchedule}
+              onOpenAssign={(day, p, pData) => openAssignModal(day, p, pData)}
+              onDeleteSlot={handleDeleteSlot}
+              canManage={user?.role !== 'Teacher'}
+            />
           )}
         </div>
       )}
-      <TimetableSlotAssignModal isOpen={assignModal.open} onClose={() => setAssignModal({ open: false, data: {} })} initialData={assignModal.data} grades={grades} subjects={subjects} teachers={teachers} bellSchedule={bellSchedule} onSaved={loadSlots} />
-      <TimetablePrintModal isOpen={showPrint} onClose={() => setShowPrint(false)} slots={slots} title={activeMode === 'class' ? `${grades.find((g) => g._id === selectedGrade)?.name || 'Class'} (${selectedSection}) Timetable` : `${teachers.find((t) => t._id === selectedTeacher)?.name || 'Teacher'} Routine`} />
+      <TimetableSlotAssignModal
+        isOpen={assignModal.open}
+        onClose={() => setAssignModal({ open: false, data: {} })}
+        initialData={assignModal.data}
+        grades={grades}
+        subjects={subjects}
+        teachers={teachers}
+        bellSchedule={bellSchedule}
+        onSaved={loadSlots}
+      />
+      <ClassTeacherMappingModal
+        open={autoGenerateModal}
+        onClose={() => setAutoGenerateModal(false)}
+        selectedGrade={selectedGrade}
+        selectedSection={selectedSection}
+        grades={grades}
+        teachers={teachers}
+        onGenerated={loadSlots}
+      />
+      <TimetablePrintModal
+        isOpen={showPrint}
+        onClose={() => setShowPrint(false)}
+        slots={slots}
+        title={
+          activeMode === 'class'
+            ? `${grades.find((g) => g._id === selectedGrade)?.name || 'Class'} (${selectedSection}) Timetable`
+            : `${teachers.find((t) => t._id === selectedTeacher)?.name || 'Teacher'} Routine`
+        }
+      />
     </div>
   );
 };
