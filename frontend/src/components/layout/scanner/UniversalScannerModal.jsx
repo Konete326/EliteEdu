@@ -1,6 +1,6 @@
-import { useState, useEffect, useId, useCallback } from 'react';
+import { useState, useEffect, useId, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, QrCode, AlertCircle } from 'lucide-react';
+import { X, QrCode, AlertCircle, CheckCircle2, Zap, Search } from 'lucide-react';
 import { useCameraScanner } from '../../common/scanner/useCameraScanner';
 import CameraViewfinder from '../../common/scanner/CameraViewfinder';
 import ScannerActionDispatcher from './ScannerActionDispatcher';
@@ -18,6 +18,9 @@ const UniversalScannerModal = ({ isOpen, onClose }) => {
   const [marking, setMarking] = useState(false);
   const [error, setError] = useState('');
   const [resolvedData, setResolvedData] = useState(null);
+  const [autoMarkMode, setAutoMarkMode] = useState(true);
+  const [rapidBadge, setRapidBadge] = useState(null);
+  const badgeTimerRef = useRef(null);
 
   const handleLookup = useCallback(async (scannedCode) => {
     if (!scannedCode || loading) return;
@@ -26,8 +29,31 @@ const UniversalScannerModal = ({ isOpen, onClose }) => {
       setError('');
       const res = await api.post('/scanner/lookup', { code: scannedCode });
       if (res.data?.success) {
-        playScanSuccessBeep();
-        setResolvedData(res.data);
+        if (autoMarkMode) {
+          try {
+            const markRes = await api.post('/scanner/mark-attendance', {
+              type: res.data.type,
+              id: res.data.record._id,
+              status: 'P'
+            });
+            playScanSuccessBeep();
+            if (badgeTimerRef.current) clearTimeout(badgeTimerRef.current);
+            setRapidBadge({
+              name: res.data.record.name,
+              role: res.data.type === 'student' ? 'Student' : 'Staff',
+              msg: markRes.data?.message || 'Marked Present'
+            });
+            badgeTimerRef.current = setTimeout(() => {
+              setRapidBadge(null);
+            }, 1800);
+          } catch (markErr) {
+            playScanErrorBeep();
+            setError(markErr.response?.data?.message || 'Attendance recording failed');
+          }
+        } else {
+          playScanSuccessBeep();
+          setResolvedData(res.data);
+        }
       } else {
         playScanErrorBeep();
         setError(res.data?.message || 'Code not recognized');
@@ -38,13 +64,13 @@ const UniversalScannerModal = ({ isOpen, onClose }) => {
     } finally {
       setLoading(false);
     }
-  }, [loading]);
+  }, [loading, autoMarkMode]);
 
-  const { isReady, cameraError, restart, stopScanner } = useCameraScanner({
+  const { isReady, cameraError, restart, stopScanner, flipCamera } = useCameraScanner({
     containerId,
     onScan: handleLookup,
     isActive: isOpen && !resolvedData,
-    continuous: false
+    continuous: autoMarkMode
   });
 
   const handleClose = useCallback(async () => {
@@ -60,6 +86,7 @@ const UniversalScannerModal = ({ isOpen, onClose }) => {
       setResolvedData(null);
       setError('');
       setCode('');
+      setRapidBadge(null);
     }
   }, [isOpen, stopScanner]);
 
@@ -129,6 +156,44 @@ const UniversalScannerModal = ({ isOpen, onClose }) => {
           </button>
         </div>
 
+        {!resolvedData && (
+          <div className="flex items-center justify-center p-1 rounded-2xl bg-surface-secondary dark:bg-white/5 border border-line dark:border-white/10">
+            <button
+              type="button"
+              onClick={() => setAutoMarkMode(true)}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                autoMarkMode
+                  ? 'bg-primary text-white shadow-xs'
+                  : 'text-ink-muted hover:text-ink dark:hover:text-ink-dark'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5" />
+              <span>Rapid Auto-Mark</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setAutoMarkMode(false)}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                !autoMarkMode
+                  ? 'bg-primary text-white shadow-xs'
+                  : 'text-ink-muted hover:text-ink dark:hover:text-ink-dark'
+              }`}
+            >
+              <Search className="w-3.5 h-3.5" />
+              <span>Verify Only</span>
+            </button>
+          </div>
+        )}
+
+        {rapidBadge && (
+          <div className="p-3 rounded-2xl text-xs font-bold bg-good-soft text-good border border-good/20 flex items-center gap-2 animate-in zoom-in-95 duration-150">
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <div className="truncate">
+              <span className="font-black">{rapidBadge.name}</span>: {rapidBadge.msg}
+            </div>
+          </div>
+        )}
+
         {error && (
           <div className="p-3 rounded-2xl text-xs font-bold bg-bad-soft text-bad border border-bad/20 flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
@@ -146,7 +211,13 @@ const UniversalScannerModal = ({ isOpen, onClose }) => {
           />
         ) : (
           <div className="space-y-4">
-            <CameraViewfinder containerId={containerId} isReady={isReady} error={cameraError} onRetry={restart} />
+            <CameraViewfinder
+              containerId={containerId}
+              isReady={isReady}
+              error={cameraError}
+              onRetry={restart}
+              onFlipCamera={flipCamera}
+            />
             <ScannerManualBar
               code={code}
               setCode={setCode}

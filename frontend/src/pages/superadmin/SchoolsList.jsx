@@ -71,44 +71,74 @@ const SchoolsList = () => {
             <p className="text-base font-semibold text-ink dark:text-ink-dark">No schools registered yet</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-surface-secondary dark:bg-surface-secondary-dark text-xs font-semibold text-ink-sub dark:text-ink-sub-dark uppercase tracking-wider border-b border-line dark:border-line-dark">
-                <tr>
-                  <th className="px-6 py-3.5">Code</th>
-                  <th className="px-6 py-3.5">School Name</th>
-                  <th className="px-6 py-3.5">Type</th>
-                  <th className="px-6 py-3.5">Status</th>
-                  <th className="px-6 py-3.5">Admin Email</th>
-                  <th className="px-6 py-3.5 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line dark:divide-line-dark">
-                {schools.map((s) => (
-                  <tr key={s._id} className="hover:bg-surface-secondary/50 dark:hover:bg-surface-secondary-dark/50 transition-colors">
-                    <td className="px-6 py-4 font-mono font-medium text-ink dark:text-ink-dark">{s.code}</td>
-                    <td className="px-6 py-4 font-medium text-ink dark:text-ink-dark">{s.name}</td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${s.school_type === 'Government' ? 'bg-info-soft dark:bg-info/10 text-info dark:text-info-dark' : 'bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark'}`}>{s.school_type}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button onClick={() => handleToggleStatus(s)} title="Click to Toggle Active / On Hold" className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${s.is_active ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20'}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${s.is_active ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                        {s.is_active ? 'Active' : 'On Hold'}
-                      </button>
-                    </td>
-                    <td className="px-6 py-4 text-ink-sub dark:text-ink-sub-dark">{s.admin?.email || '—'}</td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => setSchoolToEdit(s)} className="p-1.5 rounded-lg text-ink-muted hover:text-primary hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark transition-colors" title="Edit School"><Pencil className="w-4 h-4" /></button>
-                        <button onClick={() => setSchoolToDelete(s)} className="p-1.5 rounded-lg text-ink-muted hover:text-bad hover:bg-bad-soft dark:hover:bg-bad/10 transition-colors" title="Delete School"><Trash2 className="w-4 h-4" /></button>
-                      </div>
-                    </td>
+          <>
+            <div className="block md:hidden p-3 space-y-3">
+              {schools.map((s) => (
+                <div key={s._id} className="p-3.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 dark:bg-surface-secondary-dark/40 space-y-3 shadow-xs">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <h4 className="text-sm font-bold text-ink dark:text-ink-dark truncate">{s.name}</h4>
+                      <p className="font-mono text-xs text-ink-muted dark:text-ink-muted-dark mt-0.5">{s.code}</p>
+                    </div>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${s.school_type === 'Government' ? 'bg-info-soft dark:bg-info/10 text-info dark:text-info-dark' : 'bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark'}`}>
+                      {s.school_type}
+                    </span>
+                  </div>
+                  <div className="text-xs text-ink-sub dark:text-ink-sub-dark break-all">
+                    <span className="text-ink-muted dark:text-ink-muted-dark">Admin: </span>{s.admin?.email || '—'}
+                  </div>
+                  <div className="pt-2 border-t border-line/60 dark:border-line-dark/60 flex items-center justify-between gap-2">
+                    <button onClick={() => handleToggleStatus(s)} title="Click to Toggle Active / On Hold" className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold min-h-[38px] transition-all ${s.is_active ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20'}`}>
+                      <span className={`w-2 h-2 rounded-full ${s.is_active ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                      {s.is_active ? 'Active' : 'On Hold'}
+                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => setSchoolToEdit(s)} className="p-2 rounded-lg text-ink-muted hover:text-primary hover:bg-surface dark:hover:bg-surface-dark border border-line dark:border-line-dark min-w-[38px] min-h-[38px] flex items-center justify-center transition-colors" title="Edit School"><Pencil className="w-4 h-4" /></button>
+                      <button onClick={() => setSchoolToDelete(s)} className="p-2 rounded-lg text-ink-muted hover:text-bad hover:bg-bad-soft dark:hover:bg-bad/10 border border-line dark:border-line-dark min-w-[38px] min-h-[38px] flex items-center justify-center transition-colors" title="Delete School"><Trash2 className="w-4 h-4" /></button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-surface-secondary dark:bg-surface-secondary-dark text-xs font-semibold text-ink-sub dark:text-ink-sub-dark uppercase tracking-wider border-b border-line dark:border-line-dark">
+                  <tr>
+                    <th className="px-6 py-3.5">Code</th>
+                    <th className="px-6 py-3.5">School Name</th>
+                    <th className="px-6 py-3.5">Type</th>
+                    <th className="px-6 py-3.5">Status</th>
+                    <th className="px-6 py-3.5">Admin Email</th>
+                    <th className="px-6 py-3.5 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-line dark:divide-line-dark">
+                  {schools.map((s) => (
+                    <tr key={s._id} className="hover:bg-surface-secondary/50 dark:hover:bg-surface-secondary-dark/50 transition-colors">
+                      <td className="px-6 py-4 font-mono font-medium text-ink dark:text-ink-dark">{s.code}</td>
+                      <td className="px-6 py-4 font-medium text-ink dark:text-ink-dark">{s.name}</td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${s.school_type === 'Government' ? 'bg-info-soft dark:bg-info/10 text-info dark:text-info-dark' : 'bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark'}`}>{s.school_type}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <button onClick={() => handleToggleStatus(s)} title="Click to Toggle Active / On Hold" className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${s.is_active ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20'}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${s.is_active ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                          {s.is_active ? 'Active' : 'On Hold'}
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 text-ink-sub dark:text-ink-sub-dark">{s.admin?.email || '—'}</td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button onClick={() => setSchoolToEdit(s)} className="p-1.5 rounded-lg text-ink-muted hover:text-primary hover:bg-surface-secondary dark:hover:bg-surface-secondary-dark transition-colors" title="Edit School"><Pencil className="w-4 h-4" /></button>
+                          <button onClick={() => setSchoolToDelete(s)} className="p-1.5 rounded-lg text-ink-muted hover:text-bad hover:bg-bad-soft dark:hover:bg-bad/10 transition-colors" title="Delete School"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
       <EditSchoolModal isOpen={!!schoolToEdit} school={schoolToEdit} onClose={() => setSchoolToEdit(null)} onUpdated={(updated) => setSchools(schools.map((s) => (s._id === updated._id ? { ...s, ...updated } : s)))} />

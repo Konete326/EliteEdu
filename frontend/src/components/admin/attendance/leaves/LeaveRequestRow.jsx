@@ -1,5 +1,4 @@
-import React from 'react';
-import { Check, X, Printer, Trash2, User, GraduationCap, MessageCircle } from 'lucide-react';
+import { Check, X, Printer, Trash2, User, GraduationCap } from 'lucide-react';
 
 const LeaveRequestRow = ({
   leave,
@@ -7,7 +6,6 @@ const LeaveRequestRow = ({
   onReject,
   onPrint,
   onDelete,
-  onWhatsApp,
   isProcessing,
   canApprove = true
 }) => {
@@ -21,21 +19,6 @@ const LeaveRequestRow = ({
     Pending: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
     Approved: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
     Rejected: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
-  };
-
-  const handleWhatsAppClick = () => {
-    if (onWhatsApp) {
-      onWhatsApp(leave);
-      return;
-    }
-    const rawPhone = isStudent
-      ? (leave.student_id?.contact_number || leave.student_id?.emergency_contact_no || '')
-      : (leave.staff_id?.phone || leave.staff_id?.contact_number || '');
-    let cleanPhone = String(rawPhone).replace(/[^0-9]/g, '');
-    if (!cleanPhone) return;
-    if (cleanPhone.startsWith('0')) cleanPhone = '92' + cleanPhone.slice(1);
-    const text = `Assalam-o-Alaikum ${name || 'Applicant'},\n\nYour Leave Application (${leave.leave_type}) from ${leave.from_date} to ${leave.to_date} (${leave.total_days} Day(s)) is: ${leave.status.toUpperCase()}.\nReason: ${leave.reason}\n\nElite Educational Institution`;
-    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -96,14 +79,6 @@ const LeaveRequestRow = ({
               </button>
             </>
           )}
-          <button
-            type="button"
-            onClick={handleWhatsAppClick}
-            className="p-1.5 rounded-lg border border-line hover:bg-emerald-500/10 hover:text-emerald-600 text-ink-muted transition-colors cursor-pointer"
-            title="Notify via WhatsApp"
-          >
-            <MessageCircle size={13} />
-          </button>
           <button
             type="button"
             onClick={() => onPrint(leave)}

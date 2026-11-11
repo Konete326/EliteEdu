@@ -32,7 +32,7 @@ const GovtServiceFields = ({ formData, onChange, isGovt }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Appointment Order No (Optional)</label>
           <input
@@ -52,18 +52,6 @@ const GovtServiceFields = ({ formData, onChange, isGovt }) => {
             className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none"
           />
         </div>
-        {!isGovt && (
-          <div>
-            <label className="block text-[11px] font-semibold text-ink dark:text-ink-dark mb-1">Basic Salary (Optional)</label>
-            <input
-              type="number"
-              value={formData.basic_salary || ''}
-              onChange={(e) => onChange('basic_salary', Number(e.target.value) || 0)}
-              placeholder="e.g. 45000"
-              className="w-full px-3 py-1.5 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/40 text-xs text-ink dark:text-ink-dark outline-none font-bold"
-            />
-          </div>
-        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2 border-t border-line dark:border-line-dark">

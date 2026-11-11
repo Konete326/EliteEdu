@@ -37,28 +37,28 @@ const TransferKpiStrip = ({ kpis = {} }) => {
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
       {cards.map((c, i) => {
         const Icon = c.icon;
         return (
           <div
             key={i}
-            className="p-3.5 rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between"
+            className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between"
           >
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="text-[11px] font-semibold text-ink-muted truncate">
+            <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+              <span className="text-[10px] sm:text-[11px] font-semibold text-ink-muted truncate">
                 {c.label}
               </span>
-              <div className={`p-1.5 rounded-xl border ${c.bg} shrink-0`}>
-                <Icon size={14} className={c.color} />
+              <div className={`p-1 sm:p-1.5 rounded-lg sm:rounded-xl border ${c.bg} shrink-0`}>
+                <Icon size={13} className={c.color} />
               </div>
             </div>
 
             <div>
-              <p className="text-xl sm:text-2xl font-black font-mono text-ink dark:text-white tracking-tight">
+              <p className="text-lg sm:text-2xl font-black font-mono text-ink dark:text-white tracking-tight">
                 {c.value}
               </p>
-              <p className="text-[10px] text-ink-muted mt-0.5 truncate">{c.sub}</p>
+              <p className="text-[9px] sm:text-[10px] text-ink-muted mt-0.5 truncate">{c.sub}</p>
             </div>
           </div>
         );

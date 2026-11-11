@@ -1,4 +1,4 @@
-import { GraduationCap, CheckCircle2, UserX, Sparkles } from 'lucide-react';
+import { GraduationCap, CheckCircle2, UserX, Percent } from 'lucide-react';
 
 const StudentKpiStrip = ({
   kpis = { total: 0, active: 0, left: 0, withDiscount: 0 },
@@ -24,7 +24,7 @@ const StudentKpiStrip = ({
       id: 'Active',
       label: 'Active Students',
       value: activeCount,
-      sub: `${total ? Math.round((activeCount / total) * 100) : 0}% Active Enrollment`,
+      sub: `${total ? Math.round((activeCount / total) * 100) : 0}% Active`,
       icon: CheckCircle2,
       color: 'text-good dark:text-good-dark',
       bg: 'bg-good/10 dark:bg-good/20 border-good/30'
@@ -43,14 +43,14 @@ const StudentKpiStrip = ({
       label: 'Fee Concessions',
       value: discountCount,
       sub: 'Special Scholarships',
-      icon: Sparkles,
+      icon: Percent,
       color: 'text-accent dark:text-accent-dark',
       bg: 'bg-accent/10 dark:bg-accent/20 border-accent/30'
     }
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
       {cards.map((c) => {
         const Icon = c.icon;
         const isSelected = activeFilter === c.id;
@@ -59,26 +59,26 @@ const StudentKpiStrip = ({
             key={c.id}
             type="button"
             onClick={() => onFilterChange && onFilterChange(c.id)}
-            className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+            className={`p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
               isSelected
                 ? 'border-primary ring-2 ring-primary/20 bg-surface dark:bg-[#141414] shadow-xs'
                 : 'border-line dark:border-white/10 bg-surface dark:bg-[#0c0c0c] shadow-2xs hover:border-primary/40'
             }`}
           >
-            <div className="flex items-center justify-between gap-2 mb-2 w-full">
-              <span className="text-[11px] font-semibold text-ink-muted dark:text-ink-muted-dark truncate">
+            <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-1.5 sm:mb-2 w-full">
+              <span className="text-[10px] sm:text-[11px] font-semibold text-ink-muted dark:text-ink-muted-dark truncate">
                 {c.label}
               </span>
-              <div className={`p-1.5 rounded-xl border ${c.bg}`}>
-                <Icon size={14} className={c.color} />
+              <div className={`p-1 sm:p-1.5 rounded-lg sm:rounded-xl border ${c.bg} shrink-0`}>
+                <Icon size={13} className={c.color} />
               </div>
             </div>
 
             <div>
-              <p className="text-xl sm:text-2xl font-black font-mono text-ink dark:text-white tracking-tight">
+              <p className="text-lg sm:text-2xl font-black font-mono text-ink dark:text-white tracking-tight">
                 {c.value.toLocaleString()}
               </p>
-              <p className="text-[10px] text-ink-muted dark:text-ink-muted-dark font-medium mt-0.5 truncate">
+              <p className="text-[9px] sm:text-[10px] text-ink-muted dark:text-ink-muted-dark font-medium mt-0.5 truncate">
                 {c.sub}
               </p>
             </div>

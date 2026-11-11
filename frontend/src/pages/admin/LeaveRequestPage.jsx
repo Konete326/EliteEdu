@@ -79,24 +79,6 @@ const LeaveRequestPage = () => {
     } catch (err) { showToast(err.response?.data?.message || 'Status update failed', 'error'); }
   };
 
-  const handleWhatsApp = (leave) => {
-    const isStudent = leave.applicant_type === 'Student';
-    const name = isStudent ? leave.student_id?.name : leave.staff_id?.name;
-    const rawPhone = isStudent
-      ? (leave.student_id?.contact_number || leave.student_id?.emergency_contact_no || '')
-      : (leave.staff_id?.phone || leave.staff_id?.contact_number || '');
-    const cleanPhone = String(rawPhone).replace(/[^0-9]/g, '');
-    if (!cleanPhone) {
-      showToast(`No contact number registered for ${name || 'applicant'}`, 'warning');
-      return;
-    }
-    let formattedPhone = cleanPhone;
-    if (formattedPhone.startsWith('0')) formattedPhone = '92' + formattedPhone.slice(1);
-    const applicantName = name || 'Applicant';
-    const text = `Assalam-o-Alaikum ${applicantName},\n\nRegarding your Leave Application (${leave.leave_type}) from ${leave.from_date} to ${leave.to_date} (${leave.total_days} Day(s)):\nCurrent Status: ${leave.status.toUpperCase()}\nReason: ${leave.reason}\n\nElite Educational Institution`;
-    window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
-  };
-
   const handleDelete = async () => {
     if (!deleteTarget) return;
     try {
@@ -133,7 +115,6 @@ const LeaveRequestPage = () => {
             onReject={(l) => handleUpdateStatus(l, 'Rejected')}
             onPrint={setActiveSlip}
             onDelete={setDeleteTarget}
-            onWhatsApp={handleWhatsApp}
             isProcessing={loading}
             onPageChange={setPage}
             canApprove={user?.role === 'Admin' || user?.role === 'SuperAdmin'}

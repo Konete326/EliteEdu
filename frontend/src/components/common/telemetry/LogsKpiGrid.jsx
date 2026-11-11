@@ -37,27 +37,27 @@ const LogsKpiGrid = ({ summary }) => {
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
       {cards.map((c) => {
         const Icon = c.icon;
         return (
           <div
             key={c.title}
-            className="p-3.5 sm:p-4 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs flex items-center justify-between"
+            className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-xs flex items-center justify-between"
           >
             <div>
-              <span className="text-[11px] font-semibold text-ink-muted dark:text-ink-muted-dark uppercase tracking-wider block">
+              <span className="text-[10px] sm:text-[11px] font-semibold text-ink-muted dark:text-ink-muted-dark uppercase tracking-wider block">
                 {c.title}
               </span>
-              <div className="text-xl sm:text-2xl font-black text-ink dark:text-ink-dark mt-0.5">
+              <div className="text-lg sm:text-2xl font-black text-ink dark:text-ink-dark mt-0.5">
                 {c.count.toLocaleString()}
               </div>
-              <span className="text-[10px] font-medium text-ink-sub dark:text-ink-sub-dark mt-0.5 block">
+              <span className="text-[9px] sm:text-[10px] font-medium text-ink-sub dark:text-ink-sub-dark mt-0.5 block">
                 {c.badge}
               </span>
             </div>
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${c.bg}`}>
-              <Icon className={`w-5 h-5 ${c.color}`} />
+            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 border ${c.bg}`}>
+              <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${c.color}`} />
             </div>
           </div>
         );

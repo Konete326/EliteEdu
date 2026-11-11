@@ -11,9 +11,23 @@ const DEFAULT_FORMATS = [
   Html5QrcodeSupportedFormats.UPC_E
 ];
 
+const activeMediaStreams = new Set();
+
+const stopStream = (stream) => {
+  if (!stream || typeof stream.getTracks !== 'function') return;
+  try {
+    stream.getTracks().forEach((track) => {
+      try {
+        track.stop();
+      } catch (_) {}
+    });
+  } catch (_) {}
+};
+
 export const useCameraScanner = ({ containerId, onScan, isActive, continuous = true, cooldownMs = 1500 }) => {
   const [cameras, setCameras] = useState([]);
   const [selectedCameraId, setSelectedCameraId] = useState('');
+  const [facingMode, setFacingMode] = useState('environment');
   const [isReady, setIsReady] = useState(false);
   const [isTorchOn, setIsTorchOn] = useState(false);
   const [hasTorch, setHasTorch] = useState(false);
@@ -26,33 +40,31 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
   const isCooldownRef = useRef(false);
   const isStartingRef = useRef(false);
   const isActiveRef = useRef(isActive);
+  const runIdRef = useRef(0);
 
   useEffect(() => {
     isActiveRef.current = isActive;
   }, [isActive]);
 
   const stopScanner = useCallback(async () => {
+    runIdRef.current += 1;
     isStartingRef.current = false;
 
-    if (streamRef.current && typeof streamRef.current.getTracks === 'function') {
-      try {
-        streamRef.current.getTracks().forEach((track) => {
-          try {
-            track.stop();
-          } catch (_) {}
-        });
-      } catch (_) {}
+    if (streamRef.current) {
+      stopStream(streamRef.current);
+      activeMediaStreams.delete(streamRef.current);
       streamRef.current = null;
     }
 
+    activeMediaStreams.forEach((s) => {
+      stopStream(s);
+    });
+    activeMediaStreams.clear();
+
     if (videoRef.current) {
       try {
-        if (videoRef.current.srcObject && typeof videoRef.current.srcObject.getTracks === 'function') {
-          videoRef.current.srcObject.getTracks().forEach((t) => {
-            try {
-              t.stop();
-            } catch (_) {}
-          });
+        if (videoRef.current.srcObject) {
+          stopStream(videoRef.current.srcObject);
           videoRef.current.srcObject = null;
         }
         videoRef.current.pause?.();
@@ -61,15 +73,24 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
       videoRef.current = null;
     }
 
+    try {
+      const allVideos = document.querySelectorAll('video');
+      allVideos.forEach((v) => {
+        try {
+          if (v.srcObject) {
+            stopStream(v.srcObject);
+            v.srcObject = null;
+          }
+          v.pause?.();
+        } catch (_) {}
+      });
+    } catch (_) {}
+
     const scanner = scannerRef.current;
     if (scanner) {
       try {
         if (scanner.renderedCamera?.mediaStream) {
-          scanner.renderedCamera.mediaStream.getTracks().forEach((track) => {
-            try {
-              track.stop();
-            } catch (_) {}
-          });
+          stopStream(scanner.renderedCamera.mediaStream);
         }
       } catch (_) {}
       try {
@@ -89,20 +110,7 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
     try {
       const container = containerId ? document.getElementById(containerId) : null;
       if (container) {
-        const videos = Array.from(container.querySelectorAll('video'));
-        videos.forEach((v) => {
-          try {
-            if (v.srcObject && typeof v.srcObject.getTracks === 'function') {
-              v.srcObject.getTracks().forEach((track) => {
-                try {
-                  track.stop();
-                } catch (_) {}
-              });
-              v.srcObject = null;
-            }
-            v.pause?.();
-          } catch (_) {}
-        });
+        container.innerHTML = '';
       }
     } catch (_) {}
 
@@ -126,19 +134,46 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
     }
   }, [onScan, continuous, cooldownMs]);
 
+  const requestPermissions = useCallback(async () => {
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) return false;
+    let stream = null;
+    try {
+      const constraints = selectedCameraId
+        ? { deviceId: { exact: selectedCameraId } }
+        : { facingMode: { ideal: facingMode } };
+      stream = await navigator.mediaDevices.getUserMedia({ video: constraints, audio: false });
+    } catch (_) {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode }, audio: false });
+      } catch (__) {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      }
+    }
+    if (stream) {
+      activeMediaStreams.add(stream);
+      stopStream(stream);
+      activeMediaStreams.delete(stream);
+      return true;
+    }
+    return false;
+  }, [selectedCameraId, facingMode]);
+
   const startScanner = useCallback(async () => {
     if (!isActiveRef.current || !containerId || isStartingRef.current) return;
+    const currentRunId = runIdRef.current + 1;
+    runIdRef.current = currentRunId;
     isStartingRef.current = true;
     setCameraError('');
+
     await stopScanner();
 
-    if (!isActiveRef.current) {
+    if (!isActiveRef.current || runIdRef.current !== currentRunId) {
       isStartingRef.current = false;
       return;
     }
 
     if (typeof window !== 'undefined' && window.isSecureContext === false && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-      setCameraError('Camera blocked: Insecure LAN origin (HTTP). Modern mobile browsers require HTTPS or localhost to access camera hardware. Run Vite with --https or use Chrome port-forwarding on your mobile device.');
+      setCameraError('Camera blocked: Insecure LAN origin (HTTP). Modern mobile browsers require HTTPS or localhost to access camera hardware.');
       isStartingRef.current = false;
       return;
     }
@@ -149,8 +184,18 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
       return;
     }
 
+    try {
+      await requestPermissions();
+    } catch (permErr) {
+      if (isActiveRef.current && runIdRef.current === currentRunId) {
+        setCameraError(permErr?.message || 'Camera permissions denied. Please allow permissions in browser address bar and click Retry.');
+      }
+      isStartingRef.current = false;
+      return;
+    }
+
     await new Promise((resolve) => setTimeout(resolve, 80));
-    if (!isActiveRef.current) {
+    if (!isActiveRef.current || runIdRef.current !== currentRunId) {
       isStartingRef.current = false;
       return;
     }
@@ -170,12 +215,12 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
 
       const cameraConfig = selectedCameraId
         ? { deviceId: { exact: selectedCameraId } }
-        : { facingMode: 'environment' };
+        : { facingMode: { ideal: facingMode } };
 
       await scanner.start(
         cameraConfig,
         {
-          fps: 12,
+          fps: 15,
           qrbox: (w, h) => {
             const edge = Math.min(w, h);
             const size = Math.max(160, Math.min(Math.floor(edge * 0.75), 260));
@@ -186,7 +231,7 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
         () => {}
       );
 
-      if (!isActiveRef.current) {
+      if (!isActiveRef.current || runIdRef.current !== currentRunId) {
         await stopScanner();
         return;
       }
@@ -198,10 +243,12 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
           videoRef.current = video;
           if (video.srcObject) {
             streamRef.current = video.srcObject;
+            activeMediaStreams.add(video.srcObject);
           }
         }
         if (!streamRef.current && scanner?.renderedCamera?.mediaStream) {
           streamRef.current = scanner.renderedCamera.mediaStream;
+          activeMediaStreams.add(scanner.renderedCamera.mediaStream);
         }
       } catch (_) {}
 
@@ -211,6 +258,10 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
         .then((devices) => {
           if (Array.isArray(devices) && devices.length > 0) {
             setCameras(devices);
+            if (!selectedCameraId) {
+              const backCam = devices.find((d) => /back|rear|environment/i.test(d.label));
+              if (backCam) setSelectedCameraId(backCam.id);
+            }
           }
         })
         .catch(() => {});
@@ -222,14 +273,39 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
         setHasTorch(false);
       }
     } catch (err) {
-      if (isActiveRef.current) {
+      if (isActiveRef.current && runIdRef.current === currentRunId) {
         setCameraError(err?.message || 'Unable to access camera. Please verify permissions in browser.');
       }
       setIsReady(false);
     } finally {
       isStartingRef.current = false;
     }
-  }, [containerId, selectedCameraId, handleDecoded, stopScanner]);
+  }, [containerId, selectedCameraId, facingMode, handleDecoded, stopScanner, requestPermissions]);
+
+  const flipCamera = useCallback(() => {
+    if (cameras.length > 1) {
+      const currentIndex = cameras.findIndex((c) => c.id === selectedCameraId);
+      const nextIndex = (currentIndex + 1) % cameras.length;
+      setSelectedCameraId(cameras[nextIndex].id);
+    } else {
+      setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'));
+      setSelectedCameraId('');
+    }
+  }, [cameras, selectedCameraId]);
+
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.hidden) {
+        stopScanner();
+      } else if (isActiveRef.current) {
+        startScanner();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [stopScanner, startScanner]);
 
   useEffect(() => {
     if (isActive) {
@@ -240,7 +316,7 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
     return () => {
       stopScanner();
     };
-  }, [isActive, selectedCameraId, startScanner, stopScanner]);
+  }, [isActive, selectedCameraId, facingMode, startScanner, stopScanner]);
 
   const toggleTorch = async () => {
     const scanner = scannerRef.current;
@@ -257,7 +333,7 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
     try {
       const result = await scannerRef.current.scanFile(file, true);
       if (result) handleDecoded(result);
-    } catch (err) {
+    } catch (_) {
       setCameraError('No readable QR code or barcode found in this image.');
     }
   };
@@ -266,6 +342,8 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
     cameras,
     selectedCameraId,
     setSelectedCameraId,
+    facingMode,
+    flipCamera,
     isReady,
     isTorchOn,
     hasTorch,

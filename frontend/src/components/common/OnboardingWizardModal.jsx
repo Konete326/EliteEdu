@@ -74,15 +74,16 @@ const OnboardingWizardModal = () => {
 
   const isOpen = useMemo(() => {
     if (!user || user.role === 'SuperAdmin') return false;
-    if (dismissedUserId && dismissedUserId === userId) return false;
-    let localDismissed = false;
+    const uId = String(user.id || user._id || user.student_id || userId || '');
+    if (!uId) return false;
+    if (dismissedUserId && dismissedUserId === uId) return false;
     try {
-      localDismissed = userId ? localStorage.getItem(`onboarding_dismissed_${userId}`) === 'true' : false;
+      if (localStorage.getItem(`eliteedu_onboarding_done_${uId}`) === 'true') return false;
+      if (localStorage.getItem(`onboarding_dismissed_${uId}`) === 'true') return false;
     } catch (err) {
       void err;
     }
     const isDismissed =
-      localDismissed ||
       user.onboarding_completed === true ||
       user.onboarding_skipped === true ||
       user.onboarding_status === 'completed' ||
@@ -118,16 +119,19 @@ const OnboardingWizardModal = () => {
   };
 
   const handleSkip = async () => {
-    if (userId) {
+    const uId = String(userId || user?.id || user?._id || user?.student_id || '');
+    if (uId) {
       try {
-        localStorage.setItem(`onboarding_dismissed_${userId}`, 'true');
+        localStorage.setItem(`eliteedu_onboarding_done_${uId}`, 'true');
+        localStorage.setItem(`onboarding_dismissed_${uId}`, 'true');
       } catch (err) {
         void err;
       }
-      setDismissedUserId(userId);
+      setDismissedUserId(uId);
     }
     updateUser({
       first_login: false,
+      onboarding_completed: true,
       onboarding_skipped: true,
       onboarding_status: 'skipped'
     });
@@ -176,13 +180,15 @@ const OnboardingWizardModal = () => {
       setError('');
       const payload = { ...form, skip: false };
       const res = await api.post('/auth/complete-onboarding', payload);
-      if (userId) {
+      const uId = String(userId || user?.id || user?._id || user?.student_id || '');
+      if (uId) {
         try {
-          localStorage.setItem(`onboarding_dismissed_${userId}`, 'true');
+          localStorage.setItem(`eliteedu_onboarding_done_${uId}`, 'true');
+          localStorage.setItem(`onboarding_dismissed_${uId}`, 'true');
         } catch (err) {
           void err;
         }
-        setDismissedUserId(userId);
+        setDismissedUserId(uId);
       }
       if (res.data?.user) {
         updateUser(res.data.user);

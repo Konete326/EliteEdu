@@ -8,7 +8,9 @@ const generateDateRange = (fromStr, toStr) => {
   const end = new Date(toStr);
   if (isNaN(curr.getTime()) || isNaN(end.getTime())) return [fromStr];
   while (curr <= end) {
-    dates.push(curr.toISOString().split('T')[0]);
+    if (curr.getDay() !== 0) {
+      dates.push(curr.toISOString().split('T')[0]);
+    }
     curr.setDate(curr.getDate() + 1);
   }
   return dates.length > 0 ? dates : [fromStr];

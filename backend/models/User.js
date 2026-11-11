@@ -77,6 +77,14 @@ const userSchema = new mongoose.Schema(
     semis_code: { type: String, trim: true, default: '' },
     vendor_no: { type: String, trim: true, default: '' },
     sed_no: { type: String, trim: true, default: '' },
+    theme_settings: {
+      mode: { type: String, enum: ['light', 'dark'], default: null },
+      placement: { type: String, default: null },
+      sidebarBg: { type: String, default: null },
+      headerBg: { type: String, default: null },
+      activeColor: { type: String, default: null },
+      language: { type: String, default: null }
+    },
     app_permissions: { type: appPermissionsSchema, default: () => ({}) },
     app_settings: { type: appPermissionsSchema, default: () => ({}) },
     payroll_config: { type: payrollConfigSchema, default: () => ({}) },

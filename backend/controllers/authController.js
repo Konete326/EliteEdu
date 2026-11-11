@@ -29,7 +29,7 @@ const buildUserPayload = (user, meta) => {
     school_name: meta.school_name,
     school_logo: meta.school_logo,
     school_slogan: meta.school_slogan,
-    theme_settings: meta.theme_settings,
+    theme_settings: user.theme_settings?.mode ? { ...meta.theme_settings, ...user.theme_settings } : meta.theme_settings,
     first_login: Boolean(user.first_login && !user.onboarding_completed && !user.onboarding_skipped && user.onboarding_status !== 'skipped' && user.onboarding_status !== 'completed'),
     onboarding_completed: Boolean(user.onboarding_completed || user.onboarding_status === 'completed'),
     onboarding_skipped: Boolean(user.onboarding_skipped || user.onboarding_status === 'skipped'),

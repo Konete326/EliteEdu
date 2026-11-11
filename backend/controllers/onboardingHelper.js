@@ -19,7 +19,8 @@ const buildUserPayload = (user, meta = {}) => {
     dashboard_type: user.custom_role_id?.dashboard_type || (user.role === 'Admin' ? 'AdminDashboard' : 'TeacherDashboard'),
     school_type: meta.school_type, school_name: meta.school_name,
     school_logo: meta.school_logo, school_slogan: meta.school_slogan,
-    theme_settings: meta.theme_settings, app_settings: appSettings, first_login: false,
+    theme_settings: user.theme_settings?.mode ? { ...meta.theme_settings, ...user.theme_settings } : meta.theme_settings,
+    app_settings: appSettings, first_login: false,
     onboarding_completed: Boolean(user.onboarding_completed || user.onboarding_status === 'completed'),
     onboarding_skipped: Boolean(user.onboarding_skipped || user.onboarding_status === 'skipped'),
     onboarding_status: user.onboarding_status || (user.onboarding_completed ? 'completed' : user.onboarding_skipped ? 'skipped' : 'pending')
@@ -30,7 +31,7 @@ const handleStudentOnboarding = async (studentId, body = {}, skip = false) => {
   if (skip) {
     const student = await Student.findByIdAndUpdate(
       studentId,
-      { $set: { onboarding_completed: false, onboarding_skipped: true, onboarding_status: 'skipped', first_login: false } },
+      { $set: { onboarding_completed: true, onboarding_skipped: true, onboarding_status: 'skipped', first_login: false } },
       { returnDocument: 'after' }
     ).populate('school_id').populate('campus_id').populate('current_grade').lean();
     return student ? buildStudentUserPayload(student, await getSchoolMeta(student.school_id?._id || student.school_id)) : null;
@@ -64,7 +65,7 @@ const handleUserOnboarding = async (userId, schoolId, body = {}, skip = false, i
   if (skip) {
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { $set: { onboarding_completed: false, onboarding_skipped: true, onboarding_status: 'skipped', first_login: false } },
+      { $set: { onboarding_completed: true, onboarding_skipped: true, onboarding_status: 'skipped', first_login: false } },
       { returnDocument: 'after' }
     ).populate('custom_role_id').lean();
     return updatedUser ? buildUserPayload(updatedUser, await getSchoolMeta(updatedUser.school_id || schoolId)) : null;

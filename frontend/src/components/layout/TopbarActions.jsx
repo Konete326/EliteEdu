@@ -40,8 +40,8 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
   }, []);
 
   const btnClass = isColored
-    ? 'p-1.5 rounded-lg text-white/90 hover:bg-white/15 transition-colors'
-    : 'p-1.5 rounded-lg text-ink-sub hover:bg-surface-secondary dark:text-ink-sub-dark dark:hover:bg-surface-secondary-dark transition-colors';
+    ? 'p-1.5 sm:p-2 rounded-lg text-white/90 hover:bg-white/15 transition-colors flex items-center justify-center'
+    : 'p-1.5 sm:p-2 rounded-lg text-ink-sub hover:bg-surface-secondary dark:text-ink-sub-dark dark:hover:bg-surface-secondary-dark transition-colors flex items-center justify-center';
 
   const schoolPill = user?.school_name || (user?.role === 'SuperAdmin' ? 'System HQ' : 'School');
 
@@ -75,7 +75,7 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
   }, [navigate, user?.role]);
 
   return (
-    <div className="flex items-center gap-1 sm:gap-2">
+    <div className="flex items-center gap-1 sm:gap-1.5">
       {canSwitchCampus ? (
         <div className="hidden sm:block w-36 sm:w-44">
           <SearchableSelect
@@ -101,14 +101,14 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
         </div>
       )}
 
-      <div className="hidden sm:flex items-center">
+      <div className="flex items-center">
         <TopbarMessages isColored={isColored} btnClass={btnClass} />
       </div>
 
       <button
         type="button"
         onClick={handleOpenScanner}
-        className={`${btnClass} hidden sm:flex`}
+        className={btnClass}
         title="Universal QR & Barcode Scanner"
       >
         <ScanLine className="w-4 h-4" />

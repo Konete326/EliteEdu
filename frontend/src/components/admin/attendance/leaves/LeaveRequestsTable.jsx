@@ -1,4 +1,3 @@
-import React from 'react';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import LeaveRequestRow from './LeaveRequestRow';
 import LeaveRequestMobileCard from './LeaveRequestMobileCard';
@@ -6,7 +5,7 @@ import LeaveRequestMobileCard from './LeaveRequestMobileCard';
 const LeaveRequestsTable = ({
   leaves = [], pagination = {}, search = '', onSearchChange,
   statusFilter = 'all', onStatusChange, applicantFilter = 'all', onApplicantChange,
-  onApprove, onReject, onPrint, onDelete, onWhatsApp, isProcessing, onPageChange,
+  onApprove, onReject, onPrint, onDelete, isProcessing, onPageChange,
   canApprove = true
 }) => {
   return (
@@ -63,7 +62,6 @@ const LeaveRequestsTable = ({
               onReject={onReject}
               onPrint={onPrint}
               onDelete={onDelete}
-              onWhatsApp={onWhatsApp}
               isProcessing={isProcessing}
               canApprove={canApprove}
             />
@@ -99,7 +97,6 @@ const LeaveRequestsTable = ({
                   onReject={onReject}
                   onPrint={onPrint}
                   onDelete={onDelete}
-                  onWhatsApp={onWhatsApp}
                   isProcessing={isProcessing}
                   canApprove={canApprove}
                 />

@@ -1,41 +1,21 @@
-import { Smartphone, CheckSquare, Shield, Sparkles } from 'lucide-react';
+import { Smartphone, CheckSquare, ShieldCheck } from 'lucide-react';
 
 const PERMISSION_KEYS = [
   { key: 'my_profile', label: 'My Profile' },
-  { key: 'homework', label: 'Homework' },
   { key: 'attendance', label: 'Attendance' },
-  { key: 'examination', label: 'Examination' },
-  { key: 'resources', label: 'Resources' },
-  { key: 'events', label: 'Events' },
   { key: 'timetable', label: 'Timetable' },
   { key: 'students', label: 'Students' },
   { key: 'update_picture', label: 'Update Picture' },
   { key: 'complaints', label: 'Complaints' },
-  { key: 'feedback', label: 'Feedback' },
-  { key: 'counseling', label: 'Counseling' },
-  { key: 'lost_and_found', label: 'Lost & Found' },
-  { key: 'quizzes', label: 'Quizzes' },
-  { key: 'lectures', label: 'Lectures' },
-  { key: 'online_classes', label: 'Online Classes' },
-  { key: 'planner', label: 'Planner' },
-  { key: 'datesheet', label: 'Datesheet' },
-  { key: 'salary', label: 'Salary Information', privateOnly: true }
+  { key: 'feedback', label: 'Feedback' }
 ];
 
 const MODULE_TO_APP_MAP = {
   attendance: ['attendance'],
-  exams: ['examination', 'datesheet', 'quizzes'],
-  students: ['students', 'timetable', 'planner'],
-  subjects: ['resources', 'lectures'],
+  students: ['students', 'timetable'],
   teachers: ['my_profile', 'update_picture'],
-  fees: ['salary'],
-  homework: ['homework'],
-  online_classes: ['online_classes'],
-  events: ['events'],
   complaints: ['complaints'],
-  feedback: ['feedback'],
-  counseling: ['counseling'],
-  lost_and_found: ['lost_and_found']
+  feedback: ['feedback']
 };
 
 const TeacherAppSettingsTab = ({
@@ -46,9 +26,7 @@ const TeacherAppSettingsTab = ({
   selectedRoleId = '',
   onRoleChange
 }) => {
-  const isGovt = schoolType === 'Government';
-  const visiblePermissions = PERMISSION_KEYS.filter((p) => !(isGovt && p.privateOnly));
-
+  const visiblePermissions = PERMISSION_KEYS;
   const allActive = visiblePermissions.every((p) => permissions[p.key] !== false);
 
   const handleMasterToggle = () => {
@@ -103,7 +81,7 @@ const TeacherAppSettingsTab = ({
       {customRoles.length > 0 && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-surface-secondary/50 dark:bg-white/5 border border-line dark:border-line-dark">
           <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4 text-primary shrink-0" />
+            <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
             <div>
               <span className="text-xs font-bold text-ink dark:text-ink-dark block">Sync with System Role Template</span>
               <span className="text-[11px] text-ink-muted">Inherit module access rules directly from Settings &gt; Roles</span>

@@ -5,6 +5,16 @@ import { useAuth } from '../context/AuthContext';
 import { usePersistentFormDraft } from './usePersistentFormDraft';
 import { isValidEmail } from '../utils/validators';
 
+const DEFAULT_WEEKLY_TIMINGS = [
+  { day: 'Monday', is_active: true, start_time: '08:00', end_time: '13:30' },
+  { day: 'Tuesday', is_active: true, start_time: '08:00', end_time: '13:30' },
+  { day: 'Wednesday', is_active: true, start_time: '08:00', end_time: '13:30' },
+  { day: 'Thursday', is_active: true, start_time: '08:00', end_time: '13:30' },
+  { day: 'Friday', is_active: true, start_time: '08:00', end_time: '12:30' },
+  { day: 'Saturday', is_active: true, start_time: '08:00', end_time: '13:30' },
+  { day: 'Sunday', is_active: false, start_time: '08:00', end_time: '13:30' }
+];
+
 const INITIAL = {
   name: '', father_name: '', surname: '', spouse_name: '', nick_name: '',
   email: '', photo_url: '', dob: '', gender: 'Male', marital_status: 'Single',
@@ -12,11 +22,11 @@ const INITIAL = {
   is_coordinator: false, status: 'Active', employee_code: '', campus_id: '',
   department: 'Academics', designation: 'PST', bps_grade: '', personal_id: '',
   qualification: '', supervisor: '', joining_date: '', regularization_date: '',
-  appointment_order_no: '', appointment_date: '', basic_salary: 0,
+  appointment_order_no: '', appointment_date: '',
   current_address: '', permanent_address: '', notes: '',
   bank_details: { bank_name: '', account_title: '', account_number: '', iban: '', branch_code: '' },
   emergency_contact: { name: '', relation: '', phone: '' },
-  children: [], weekly_timings: [], class_assignments: [],
+  children: [], weekly_timings: DEFAULT_WEEKLY_TIMINGS, class_assignments: [],
   app_permissions: {}, payroll_config: { allowances: [], deductions: [] },
   security_deposits: [], increments: [], loans: [], follow_ups: [], documents: []
 };
@@ -42,14 +52,24 @@ export const useTeacherForm = (id) => {
   }, [isEditMode, draftForm]);
 
   const loadDependencies = async () => {
-    const [cRes, sRes, gRes, rRes] = await Promise.allSettled([
+    const [cRes, sRes, gRes, rRes, tRes] = await Promise.allSettled([
       api.get('/campuses'), api.get('/subjects?limit=200'),
-      api.get('/grades'), api.get('/user-management/roles')
+      api.get('/grades'), api.get('/user-management/roles'),
+      !isEditMode ? api.get('/teachers?limit=1') : Promise.resolve(null)
     ]);
     if (cRes.status === 'fulfilled') setCampuses(cRes.value.data.campuses || []);
     if (sRes.status === 'fulfilled') setSubjects(sRes.value.data.subjects || []);
     if (gRes.status === 'fulfilled') setGrades(gRes.value.data.grades || []);
     if (rRes.status === 'fulfilled') setCustomRoles(rRes.value.data.roles || []);
+    if (!isEditMode && tRes.status === 'fulfilled' && tRes.value?.data?.pagination?.total !== undefined) {
+      const nextCount = (tRes.value.data.pagination.total || 0) + 1;
+      setFormData((prev) => {
+        if (!prev.employee_code) {
+          return { ...prev, employee_code: `EMP${String(nextCount).padStart(3, '0')}` };
+        }
+        return prev;
+      });
+    }
   };
 
   useEffect(() => {
@@ -65,6 +85,7 @@ export const useTeacherForm = (id) => {
             custom_role_id: t.custom_role_id?._id || t.custom_role_id || '',
             bank_details: { ...INITIAL.bank_details, ...(t.bank_details || {}) },
             emergency_contact: { ...INITIAL.emergency_contact, ...(t.emergency_contact || {}) },
+            weekly_timings: Array.isArray(t.weekly_timings) && t.weekly_timings.length > 0 ? t.weekly_timings : DEFAULT_WEEKLY_TIMINGS,
             app_permissions: t.app_permissions || {},
             payroll_config: t.payroll_config || { allowances: [], deductions: [] }
           });
@@ -87,10 +108,21 @@ export const useTeacherForm = (id) => {
   };
 
   const handleField = (f, v) => {
-    updateForm((p) => ({ ...p, [f]: v }));
+    updateForm((p) => {
+      const updated = { ...p, [f]: v };
+      if (f === 'cnic') {
+        const digits = String(v || '').replace(/\D/g, '');
+        if (digits.length === 13) {
+          const lastDigit = parseInt(digits.slice(-1), 10);
+          updated.gender = lastDigit % 2 === 1 ? 'Male' : 'Female';
+        }
+      }
+      return updated;
+    });
     if (errors[f]) setErrors((p) => ({ ...p, [f]: '' }));
     if (error) setError('');
   };
+
   const handleEmergency = (f, v) => updateForm((p) => ({ ...p, emergency_contact: { ...p.emergency_contact, [f]: v } }));
   const handleBank = (f, v) => updateForm((p) => ({ ...p, bank_details: { ...p.bank_details, [f]: v } }));
 

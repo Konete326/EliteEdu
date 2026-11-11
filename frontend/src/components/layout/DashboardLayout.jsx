@@ -9,9 +9,10 @@ import { useTheme } from '../../context/ThemeContext';
 
 const CampusSwitchModal = lazy(() => import('../common/CampusSwitchModal'));
 const OnboardingWizardModal = lazy(() => import('../common/OnboardingWizardModal'));
+const AdvertisemModal = lazy(() => import('../common/AdvertisemModal'));
 
 const DashboardLayout = () => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const { themeSettings, updateThemeSetting } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isDesktopOpen, setIsDesktopOpen] = useState(true);
@@ -25,6 +26,19 @@ const DashboardLayout = () => {
 
   const handleOpenLogout = useCallback(() => setConfirmLogout(true), []);
   const handleCloseLogout = useCallback(() => setConfirmLogout(false), []);
+
+  const showOnboarding = useMemo(() => {
+    if (!user || user.role === 'SuperAdmin') return false;
+    const uId = String(user.id || user._id || user.student_id || '');
+    if (!uId) return false;
+    try {
+      if (localStorage.getItem(`eliteedu_onboarding_done_${uId}`) === 'true') return false;
+      if (localStorage.getItem(`onboarding_dismissed_${uId}`) === 'true') return false;
+    } catch {}
+    if (user.onboarding_completed || user.onboarding_skipped) return false;
+    if (user.onboarding_status === 'completed' || user.onboarding_status === 'skipped') return false;
+    return user.first_login === true;
+  }, [user]);
 
   const isChatRoute = useMemo(
     () => location.pathname.startsWith('/admin/messaging') || location.pathname.startsWith('/admin/messages'),
@@ -59,7 +73,7 @@ const DashboardLayout = () => {
           isDark={isDark}
           toggleTheme={toggleTheme}
         />
-        <main className={`flex-1 min-h-0 flex flex-col ${isChatRoute ? 'p-2 sm:p-3 overflow-hidden' : isCompactDesktopRoute ? 'p-3 sm:p-4 lg:p-5 xl:overflow-hidden overflow-y-auto' : 'p-4 sm:p-6 lg:p-8 overflow-y-auto'}`}>
+        <main className={`flex-1 min-h-0 flex flex-col ${isChatRoute ? 'p-2 sm:p-3 overflow-hidden' : isCompactDesktopRoute ? 'p-2.5 sm:p-4 lg:p-5 xl:overflow-hidden overflow-y-auto' : 'p-2.5 sm:p-6 lg:p-8 overflow-y-auto'}`}>
           <Suspense fallback={<PageLoader text="Loading section..." />}>
             <Outlet />
           </Suspense>
@@ -78,7 +92,8 @@ const DashboardLayout = () => {
 
       <Suspense fallback={null}>
         <CampusSwitchModal />
-        <OnboardingWizardModal />
+        {showOnboarding && <OnboardingWizardModal />}
+        <AdvertisemModal />
       </Suspense>
     </div>
   );

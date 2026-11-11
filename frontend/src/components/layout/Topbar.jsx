@@ -27,8 +27,8 @@ const Topbar = ({ setMobileOpen, setIsDesktopOpen, isDark, toggleTheme }) => {
     : 'bg-surface dark:bg-surface-dark border-b border-line dark:border-line-dark text-ink dark:text-ink-dark';
 
   return (
-    <header className={`h-16 px-3 sm:px-6 flex items-center justify-between shrink-0 sticky top-0 z-20 transition-colors duration-300 ${headerBgClass}`}>
-      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+    <header className={`h-14 sm:h-16 px-2.5 sm:px-6 flex items-center justify-between shrink-0 sticky top-0 z-20 transition-colors duration-300 ${headerBgClass}`}>
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <button
           type="button"
           onClick={handleMenuClick}
@@ -44,7 +44,7 @@ const Topbar = ({ setMobileOpen, setIsDesktopOpen, isDark, toggleTheme }) => {
           <Home className="w-3.5 h-3.5 shrink-0 hidden sm:block" />
           <span className="hidden sm:inline">Home</span>
           <span className="hidden sm:inline">&gt;</span>
-          <span className={`font-bold text-sm sm:text-xs truncate ${isColored ? 'text-white' : 'text-ink dark:text-ink-dark'}`}>{pageTitle}</span>
+          <span className={`font-bold text-xs sm:text-xs truncate max-w-[110px] sm:max-w-none ${isColored ? 'text-white' : 'text-ink dark:text-ink-dark'}`}>{pageTitle}</span>
         </div>
       </div>
 

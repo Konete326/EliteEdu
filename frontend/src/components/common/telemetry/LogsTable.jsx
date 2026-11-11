@@ -2,11 +2,21 @@ import { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { formatDiagnosticReport } from '../../../utils/logDiagnosticsFormatter';
 import LogsTableRow from './LogsTableRow';
+import LogsMobileCard from './LogsMobileCard';
 import LogsPagination from './LogsPagination';
 
 const LogsTable = ({
-  logs, loading, isSuperAdmin, onView, onDelete,
-  page, setPage, totalPages, total, limit, setLimit
+  logs,
+  loading,
+  isSuperAdmin,
+  onView,
+  onDelete,
+  page,
+  setPage,
+  totalPages,
+  total,
+  limit,
+  setLimit
 }) => {
   const [copiedId, setCopiedId] = useState(null);
 
@@ -39,7 +49,21 @@ const LogsTable = ({
 
   return (
     <div className="w-full space-y-3">
-      <div className="w-full overflow-x-auto rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs">
+      <div className="block md:hidden space-y-3">
+        {logs.map((log) => (
+          <LogsMobileCard
+            key={log._id}
+            log={log}
+            onView={onView}
+            onDelete={onDelete}
+            isSuperAdmin={isSuperAdmin}
+            onCopy={handleCopy}
+            isCopied={copiedId === log._id}
+          />
+        ))}
+      </div>
+
+      <div className="hidden md:block w-full overflow-x-auto rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
             <tr className="border-b border-line dark:border-line-dark bg-surface-secondary/50 dark:bg-surface-secondary-dark/50 text-ink-muted font-semibold">
@@ -59,9 +83,9 @@ const LogsTable = ({
                 log={log}
                 onView={onView}
                 onDelete={onDelete}
+                isSuperAdmin={isSuperAdmin}
                 onCopy={handleCopy}
                 isCopied={copiedId === log._id}
-                isSuperAdmin={isSuperAdmin}
               />
             ))}
           </tbody>
@@ -70,11 +94,11 @@ const LogsTable = ({
 
       <LogsPagination
         page={page}
+        setPage={setPage}
         totalPages={totalPages}
         total={total}
         limit={limit}
-        onPageChange={setPage}
-        onLimitChange={setLimit}
+        setLimit={setLimit}
       />
     </div>
   );

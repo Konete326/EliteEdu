@@ -51,7 +51,7 @@ const buildStudentUserPayload = (student, meta = {}) => ({
   school_type: meta.school_type || 'Private',
   school_name: meta.school_name || 'Elite Educational System',
   school_logo: meta.school_logo || '',
-  theme_settings: meta.theme_settings || {},
+  theme_settings: student.theme_settings?.mode ? { ...(meta.theme_settings || {}), ...student.theme_settings } : (meta.theme_settings || {}),
   first_login: Boolean(student.first_login && !student.onboarding_completed && !student.onboarding_skipped && student.onboarding_status !== 'skipped' && student.onboarding_status !== 'completed'),
   onboarding_completed: Boolean(student.onboarding_completed || student.onboarding_status === 'completed'),
   onboarding_skipped: Boolean(student.onboarding_skipped || student.onboarding_status === 'skipped'),

@@ -48,7 +48,7 @@ const CampusKpiStrip = ({ kpis = {}, activeCampusName = 'All Campuses' }) => {
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
       {cards.map((c, i) => {
         const Icon = c.icon;
         return (
@@ -58,29 +58,29 @@ const CampusKpiStrip = ({ kpis = {}, activeCampusName = 'All Campuses' }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: i * 0.05, ease: 'easeOut' }}
             whileHover={{ y: -3 }}
-            className={`relative overflow-hidden p-3.5 rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xs hover:shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between before:absolute before:inset-0 before:-z-10 before:bg-[radial-gradient(circle_at_50%_50%,currentColor_2%,transparent_2%)] before:opacity-[0.04] before:bg-[length:16px_16px] ${
+            className={`relative overflow-hidden p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-2xs hover:shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between before:absolute before:inset-0 before:-z-10 before:bg-[radial-gradient(circle_at_50%_50%,currentColor_2%,transparent_2%)] before:opacity-[0.04] before:bg-[length:16px_16px] ${
               i === 4 ? 'col-span-2 sm:col-span-1' : ''
             }`}
           >
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="text-[11px] font-semibold text-ink-muted truncate">
+            <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+              <span className="text-[10px] sm:text-[11px] font-semibold text-ink-muted truncate">
                 {c.label}
               </span>
-              <div className={`p-1.5 rounded-xl border ${c.bg} shrink-0`}>
-                <Icon size={14} className={c.color} />
+              <div className={`p-1 sm:p-1.5 rounded-lg sm:rounded-xl border ${c.bg} shrink-0`}>
+                <Icon size={13} className={c.color} />
               </div>
             </div>
 
             <div>
               <p
                 className={`font-black text-ink dark:text-white tracking-tight ${
-                  c.isText ? 'text-xs sm:text-sm truncate' : 'text-xl sm:text-2xl font-mono'
+                  c.isText ? 'text-xs sm:text-sm truncate' : 'text-lg sm:text-2xl font-mono'
                 }`}
                 title={c.isText ? String(c.value) : undefined}
               >
                 {c.isText ? c.value : <AnimatedNumber value={c.value} />}
               </p>
-              <p className="text-[10px] text-ink-muted mt-0.5 truncate">{c.sub}</p>
+              <p className="text-[9px] sm:text-[10px] text-ink-muted mt-0.5 truncate">{c.sub}</p>
             </div>
           </motion.div>
         );

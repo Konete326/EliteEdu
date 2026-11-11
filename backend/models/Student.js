@@ -74,6 +74,14 @@ const studentSchema = new mongoose.Schema(
       default: 'None'
     },
     subjects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subject' }],
+    theme_settings: {
+      mode: { type: String, enum: ['light', 'dark'], default: null },
+      placement: { type: String, default: null },
+      sidebarBg: { type: String, default: null },
+      headerBg: { type: String, default: null },
+      activeColor: { type: String, default: null },
+      language: { type: String, default: null }
+    },
     app_settings: { type: appSettingsSchema, default: () => ({}) },
     admin_notes: { type: String, trim: true, default: '' },
     additional_notes: { type: String, trim: true, default: '' },

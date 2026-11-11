@@ -44,11 +44,11 @@ const SubjectTopBar = ({
   ];
 
   return (
-    <div className="p-4 sm:p-5 rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs space-y-4">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-2xs">
-            <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
+    <div className="p-3 sm:p-5 rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs space-y-2.5 sm:space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-2xs">
+            <BookOpen className="w-4 h-4 sm:w-6 sm:h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -59,43 +59,43 @@ const SubjectTopBar = ({
                 {totalItems} {totalItems === 1 ? 'Subject' : 'Subjects'}
               </span>
             </div>
-            <p className="text-xs text-ink-muted">
+            <p className="hidden sm:block text-xs text-ink-muted">
               Manage school subjects, classes, and teachers
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap self-end md:self-center">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap self-end sm:self-center">
           <button
             type="button"
             onClick={onAutoLoad}
             disabled={isSeeding}
-            className="px-3.5 py-2 rounded-xl border border-primary/30 text-primary dark:text-primary-dark hover:bg-primary/10 text-xs font-bold transition-all shadow-2xs disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+            className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-primary/30 text-primary dark:text-primary-dark hover:bg-primary/10 text-xs font-bold transition-all shadow-2xs disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
           >
-            <DownloadCloud size={14} className="text-primary" />
-            <span>{isSeeding ? 'Loading...' : 'Load Standard Subjects'}</span>
+            <DownloadCloud size={13} className="text-primary" />
+            <span>{isSeeding ? 'Loading...' : 'Standard Subjects'}</span>
           </button>
 
           <button
             type="button"
             onClick={onAddClick}
-            className="px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+            className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
           >
-            <Plus size={14} />
+            <Plus size={13} />
             <span>Add Subject</span>
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 pt-0.5 sm:pt-1">
         <div className="relative">
-          <Search size={14} className="text-ink-muted absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search size={13} className="text-ink-muted absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search by subject or code..."
-            className="w-full pl-9 pr-7 py-2 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 text-xs text-ink dark:text-white outline-none focus:border-primary"
+            className="w-full pl-8 sm:pl-9 pr-7 py-1.5 sm:py-2 rounded-xl border border-line dark:border-line-dark bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 text-xs text-ink dark:text-white outline-none focus:border-primary"
           />
           {searchQuery && (
             <button

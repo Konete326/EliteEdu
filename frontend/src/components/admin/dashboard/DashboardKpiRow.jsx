@@ -59,7 +59,7 @@ const DashboardKpiRow = ({ topKpis }) => {
   ], [topKpis]);
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4">
       {cards.map((c, idx) => {
         const Icon = c.icon;
         return (
@@ -73,23 +73,23 @@ const DashboardKpiRow = ({ topKpis }) => {
           >
             <Link
               to={c.path}
-              className={`relative overflow-hidden p-4 rounded-2xl border shadow-xs transition-all duration-200 hover:shadow-md cursor-pointer block group h-full ${c.bg} before:absolute before:inset-0 before:-z-10 before:bg-[radial-gradient(circle_at_50%_50%,currentColor_2%,transparent_2%)] before:opacity-[0.04] before:bg-[length:16px_16px]`}
+              className={`relative overflow-hidden p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border shadow-xs transition-all duration-200 hover:shadow-md cursor-pointer block group h-full ${c.bg} before:absolute before:inset-0 before:-z-10 before:bg-[radial-gradient(circle_at_50%_50%,currentColor_2%,transparent_2%)] before:opacity-[0.04] before:bg-[length:16px_16px]`}
             >
               <div className="flex items-center justify-between">
-                <div className={`p-2 rounded-xl ${c.iconBg} ${c.color} transition-transform group-hover:scale-110`}>
-                  <Icon className="w-4 h-4" />
+                <div className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl ${c.iconBg} ${c.color} transition-transform group-hover:scale-110`}>
+                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
                 <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-80 transition-all transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-ink-muted dark:text-ink-muted-dark" />
               </div>
-              <div className="mt-3">
-                <span className="text-2xl font-black text-ink dark:text-ink-dark tracking-tight">
+              <div className="mt-2 sm:mt-3">
+                <span className="text-lg sm:text-2xl font-black text-ink dark:text-ink-dark tracking-tight">
                   <AnimatedNumber value={c.value} />
                 </span>
-                <p className="text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mt-0.5">
+                <p className="text-[11px] sm:text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mt-0.5">
                   {c.title}
                 </p>
                 {c.sub && (
-                  <p className="text-[11px] text-ink-muted dark:text-ink-muted-dark mt-0.5">
+                  <p className="text-[10px] sm:text-[11px] text-ink-muted dark:text-ink-muted-dark mt-0.5">
                     {c.sub}
                   </p>
                 )}

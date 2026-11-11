@@ -11,6 +11,7 @@ import DashboardLayout from './components/layout/DashboardLayout';
 import PageLoader from './components/common/PageLoader';
 import RootRedirect from './components/common/RootRedirect';
 import PwaInstallPrompt from './components/common/PwaInstallPrompt';
+import AppStartupSplash from './components/common/AppStartupSplash';
 import './utils/telemetryAgent';
 
 const Agentation = import.meta.env.DEV
@@ -120,11 +121,23 @@ function App() {
   return (
     <AuthProvider>
       <CampusProvider>
-        <GlimmProvider palette="prism">
+        <GlimmProvider
+          palette="prism"
+          sweepMs={650}
+          outroMs={180}
+          midpoint={0.5}
+          easing="easeInOutCubic"
+          waveAmount={0.5}
+          rippleAmount={0.3}
+          swellAmount={0.6}
+          brightness={0.95}
+          zIndex={99999}
+        >
           <ThemeProvider>
           <ToastProvider>
             <ComingSoonProvider>
             <BrowserRouter>
+              <AppStartupSplash />
               <PwaInstallPrompt />
               <Suspense fallback={<PageLoader text="Loading section..." />}>
                 <Routes>

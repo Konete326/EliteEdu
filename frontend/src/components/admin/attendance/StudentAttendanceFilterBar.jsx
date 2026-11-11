@@ -44,10 +44,10 @@ const StudentAttendanceFilterBar = ({
   };
 
   return (
-    <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-3 sm:p-4 shadow-xs space-y-2.5 sm:space-y-3">
-      <div className="grid grid-cols-2 lg:grid-cols-12 gap-2.5 sm:gap-3 items-end">
+    <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-xl sm:rounded-2xl p-2.5 sm:p-4 shadow-xs space-y-2 sm:space-y-3">
+      <div className="grid grid-cols-2 lg:grid-cols-12 gap-2 sm:gap-3 items-end">
         <div className="col-span-1 lg:col-span-3">
-          <label className="block text-[11px] sm:text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
+          <label className="block text-[10px] sm:text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
             Class
           </label>
           <ClassSearchableSelect
@@ -59,7 +59,7 @@ const StudentAttendanceFilterBar = ({
         </div>
 
         <div className="col-span-1 lg:col-span-3">
-          <label className="block text-[11px] sm:text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
+          <label className="block text-[10px] sm:text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
             Section
           </label>
           <div className="relative">
@@ -67,10 +67,10 @@ const StudentAttendanceFilterBar = ({
               value={selectedSection}
               disabled={!selectedGradeId}
               onChange={(e) => onSectionChange(e.target.value)}
-              className="w-full appearance-none bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-3 sm:px-3.5 py-2 text-xs font-medium text-ink dark:text-ink-dark outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full appearance-none bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-medium text-ink dark:text-ink-dark outline-none focus:border-primary transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {!selectedGradeId ? (
-                <option value="">Select Class first</option>
+                <option value="">Select Class</option>
               ) : (
                 <>
                   <option value="">All Sections</option>
@@ -85,31 +85,29 @@ const StudentAttendanceFilterBar = ({
                 </>
               )}
             </select>
-            <ChevronDown className="w-4 h-4 text-ink-muted absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <ChevronDown className="w-3.5 h-3.5 text-ink-muted absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
 
-        <div className="col-span-1 lg:col-span-2">
-          <label className="block text-[11px] sm:text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
+        <div className="col-span-2 sm:col-span-1 lg:col-span-2">
+          <label className="block text-[10px] sm:text-xs font-semibold text-ink-sub dark:text-ink-sub-dark mb-1">
             Date
           </label>
-          <div className="relative">
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => onDateChange(e.target.value)}
-              className="w-full bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-3 sm:px-3.5 py-2 text-xs font-medium text-ink dark:text-ink-dark outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer"
-            />
-          </div>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => onDateChange(e.target.value)}
+            className="w-full bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-medium text-ink dark:text-ink-dark outline-none focus:border-primary transition-all cursor-pointer"
+          />
         </div>
 
-        <div className="col-span-1 lg:col-span-4 flex items-center justify-end gap-1.5 sm:gap-2 flex-wrap">
+        <div className="col-span-2 sm:col-span-1 lg:col-span-4 flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2">
           <button
             type="button"
             onClick={onShow}
             disabled={!selectedGradeId || loading}
             title="Reload latest sheet"
-            className="px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold bg-surface-secondary dark:bg-surface-secondary-dark hover:bg-surface-secondary/80 text-ink dark:text-ink-dark border border-line dark:border-line-dark transition-all shadow-xs cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+            className="p-2 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold bg-surface-secondary dark:bg-surface-secondary-dark hover:bg-surface-secondary/80 text-ink dark:text-ink-dark border border-line dark:border-line-dark transition-all shadow-xs cursor-pointer disabled:opacity-50 flex items-center gap-1.5 shrink-0"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-primary ${loading ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Refresh</span>
@@ -119,21 +117,20 @@ const StudentAttendanceFilterBar = ({
             type="button"
             onClick={onSave}
             disabled={saving || !loaded || !hasRecords}
-            className="px-3.5 sm:px-5 py-2 rounded-xl text-xs font-bold bg-primary hover:bg-primary-hover text-white transition-all shadow-xs cursor-pointer disabled:opacity-40 flex items-center gap-1.5"
+            className="flex-1 sm:flex-initial px-3 sm:px-5 py-2 rounded-xl text-xs font-bold bg-primary hover:bg-primary-hover text-white transition-all shadow-xs cursor-pointer disabled:opacity-40 flex items-center justify-center gap-1.5 min-h-[36px]"
           >
             <Check className="w-3.5 h-3.5" />
-            <span>{saving ? 'Saving...' : 'Save Attendance'}</span>
+            <span>{saving ? 'Saving...' : 'Save'}</span>
           </button>
 
-          <div className="relative" ref={bulkMenuRef}>
+          <div className="relative shrink-0" ref={bulkMenuRef}>
             <button
               type="button"
               onClick={() => setBulkMenuOpen((prev) => !prev)}
               disabled={!loaded || !hasRecords}
-              className="px-3 sm:px-4 py-2 rounded-xl text-xs font-bold bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark hover:border-primary text-ink dark:text-ink-dark transition-all shadow-xs cursor-pointer flex items-center gap-1 disabled:opacity-40"
+              className="px-2.5 sm:px-4 py-2 rounded-xl text-xs font-bold bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark hover:border-primary text-ink dark:text-ink-dark transition-all shadow-xs cursor-pointer flex items-center gap-1 disabled:opacity-40 min-h-[36px]"
             >
-              <span className="hidden sm:inline">Mark All</span>
-              <span className="sm:hidden">Mark</span>
+              <span>Mark</span>
               <ChevronDown className="w-3.5 h-3.5 text-ink-muted" />
             </button>
 
@@ -179,7 +176,7 @@ const StudentAttendanceFilterBar = ({
             type="button"
             title="Attendance Statistics"
             onClick={onOpenStats}
-            className="p-2 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark text-ink-muted hover:text-primary hover:border-primary transition-all cursor-pointer"
+            className="p-2 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark text-ink-muted hover:text-primary hover:border-primary transition-all cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center shrink-0"
           >
             <BarChart3 className="w-4 h-4 text-primary" />
           </button>
@@ -188,7 +185,7 @@ const StudentAttendanceFilterBar = ({
             type="button"
             title="Print Attendance Sheet"
             onClick={onPrint}
-            className="p-2 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark text-ink-muted hover:text-primary hover:border-primary transition-all cursor-pointer"
+            className="p-2 rounded-xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark text-ink-muted hover:text-primary hover:border-primary transition-all cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center shrink-0"
           >
             <Printer className="w-4 h-4" />
           </button>
@@ -201,8 +198,8 @@ const StudentAttendanceFilterBar = ({
             type="text"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search by student name, roll number, or GR..."
-            className="w-full bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-3 sm:px-3.5 py-1.5 sm:py-2 text-xs font-medium text-ink dark:text-ink-dark outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+            placeholder="Search student, roll, or GR..."
+            className="w-full bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-medium text-ink dark:text-ink-dark outline-none focus:border-primary transition-all"
           />
         </div>
 
@@ -211,10 +208,10 @@ const StudentAttendanceFilterBar = ({
             <select
               value={sortBy}
               onChange={(e) => onSortChange(e.target.value)}
-              className="w-full appearance-none bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-medium text-ink dark:text-ink-dark outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer"
+              className="w-full appearance-none bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 border border-line dark:border-line-dark rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-medium text-ink dark:text-ink-dark outline-none focus:border-primary transition-all cursor-pointer"
             >
               <option value="name">Sort: Name</option>
-              <option value="roll">Sort: Roll / GR</option>
+              <option value="roll">Sort: Roll/GR</option>
               <option value="status">Sort: Status</option>
             </select>
             <ChevronDown className="w-3.5 h-3.5 text-ink-muted absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />

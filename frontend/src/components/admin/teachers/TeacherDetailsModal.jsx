@@ -1,4 +1,4 @@
-import { X, UserCheck, Calendar, BookOpen, CreditCard, FileText, ExternalLink } from 'lucide-react';
+import { X, UserCheck, Calendar, FileText, ExternalLink } from 'lucide-react';
 
 const TeacherDetailsModal = ({ isOpen, teacher, onClose }) => {
   if (!isOpen || !teacher) return null;
@@ -46,7 +46,6 @@ const TeacherDetailsModal = ({ isOpen, teacher, onClose }) => {
             <p><span className="text-ink-muted">Campus:</span> {teacher.campus_id?.name || 'Main School'}</p>
             <p><span className="text-ink-muted">Department:</span> {teacher.department || 'Academics'}</p>
             <p><span className="text-ink-muted">Joining Date:</span> {teacher.joining_date ? new Date(teacher.joining_date).toLocaleDateString() : 'N/A'}</p>
-            <p><span className="text-ink-muted">Basic Salary:</span> Rs. {Number(teacher.basic_salary || 0).toLocaleString()}</p>
           </div>
         </div>
 

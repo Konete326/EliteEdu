@@ -23,36 +23,45 @@ const TeacherTopBar = ({
   ];
 
   return (
-    <div className="p-4 sm:p-5 rounded-2xl bg-surface dark:bg-[#111111] border border-line dark:border-white/10 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-1">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0 border border-primary/20">
-            <Users className="w-5 h-5" />
+    <div className="p-3 sm:p-5 rounded-2xl bg-surface dark:bg-[#111111] border border-line dark:border-white/10 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-3 sm:gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3 flex-1">
+        <div className="flex items-center justify-between sm:justify-start gap-2.5 sm:gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0 border border-primary/20">
+              <Users className="w-4 h-4 sm:w-5 sm:h-5" />
+            </div>
+            <div>
+              <h1 className="text-base sm:text-xl font-black text-ink dark:text-white tracking-tight">
+                Staff &amp; Faculty Directory
+              </h1>
+              <p className="hidden sm:block text-xs font-semibold text-ink-muted dark:text-ink-muted-dark">
+                Faculty roster, live period tracking and attendance
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-lg sm:text-xl font-black text-ink dark:text-white tracking-tight">
-              Staff &amp; Faculty Directory
-            </h1>
-            <p className="text-xs font-semibold text-ink-muted dark:text-ink-muted-dark">
-              Faculty roster, live period tracking and attendance
-            </p>
-          </div>
+          <Link
+            to="/admin/teachers/new"
+            className="sm:hidden inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-sm shadow-primary/20 shrink-0"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add</span>
+          </Link>
         </div>
 
         <div className="relative flex-1 max-w-md sm:ml-4">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted dark:text-ink-muted-dark pointer-events-none" />
+          <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted dark:text-ink-muted-dark pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search faculty by name, phone, code..."
-            className="w-full pl-10 pr-9 py-2 rounded-xl text-xs sm:text-sm bg-surface-secondary/50 dark:bg-[#181818] border border-line dark:border-white/10 text-ink dark:text-white placeholder:text-ink-muted outline-none focus:border-primary transition-all"
+            className="w-full pl-9 pr-8 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm bg-surface-secondary/50 dark:bg-[#181818] border border-line dark:border-white/10 text-ink dark:text-white placeholder:text-ink-muted outline-none focus:border-primary transition-all"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => onSearchChange('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink dark:hover:text-white p-0.5 rounded cursor-pointer"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink dark:hover:text-white p-0.5 rounded cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -60,8 +69,8 @@ const TeacherTopBar = ({
         </div>
       </div>
 
-      <div className="flex items-center flex-wrap gap-2.5">
-        <div className="w-36 sm:w-44">
+      <div className="flex items-center flex-wrap gap-2">
+        <div className="flex-1 min-w-[130px] sm:flex-initial sm:w-44">
           <SearchableSelect
             options={campusOptions}
             value={selectedCampus}
@@ -72,7 +81,7 @@ const TeacherTopBar = ({
           />
         </div>
 
-        <div className="w-36 sm:w-44">
+        <div className="flex-1 min-w-[130px] sm:flex-initial sm:w-44">
           <SearchableSelect
             options={designationOptions}
             value={selectedDesignation}
@@ -85,7 +94,7 @@ const TeacherTopBar = ({
 
         <Link
           to="/admin/teachers/id-cards"
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#181818] hover:bg-surface-secondary text-ink dark:text-white text-xs font-semibold transition-all shadow-xs shrink-0"
+          className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#181818] hover:bg-surface-secondary text-ink dark:text-white text-xs font-semibold transition-all shadow-xs shrink-0"
         >
           <CreditCard className="w-3.5 h-3.5 text-primary" />
           <span className="hidden sm:inline">Service Cards</span>
@@ -93,7 +102,7 @@ const TeacherTopBar = ({
 
         <Link
           to="/admin/attendance/employees"
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#181818] hover:bg-surface-secondary text-ink dark:text-white text-xs font-semibold transition-all shadow-xs shrink-0"
+          className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#181818] hover:bg-surface-secondary text-ink dark:text-white text-xs font-semibold transition-all shadow-xs shrink-0"
         >
           <CalendarCheck className="w-3.5 h-3.5 text-primary" />
           <span className="hidden sm:inline">Staff Attendance</span>
@@ -101,7 +110,7 @@ const TeacherTopBar = ({
 
         <Link
           to="/admin/teachers/new"
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-sm shadow-primary/20 shrink-0"
+          className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-sm shadow-primary/20 shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Add Teacher</span>

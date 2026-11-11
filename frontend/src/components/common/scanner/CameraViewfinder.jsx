@@ -1,10 +1,27 @@
-import React from 'react';
-import { Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Loader2, AlertTriangle, RefreshCw, SwitchCamera } from 'lucide-react';
 
-const CameraViewfinder = ({ containerId, isReady, error, onRetry, className = '' }) => {
+const CameraViewfinder = ({
+  containerId,
+  isReady,
+  error,
+  onRetry,
+  onFlipCamera,
+  className = ''
+}) => {
   return (
     <div className={`relative w-full aspect-square max-w-sm mx-auto overflow-hidden rounded-2xl bg-slate-950 border-2 border-slate-800 shadow-2xl flex items-center justify-center ${className}`}>
       <div id={containerId} className="w-full h-full object-cover" />
+
+      {isReady && !error && onFlipCamera && (
+        <button
+          type="button"
+          onClick={onFlipCamera}
+          className="absolute top-3 right-3 z-30 p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-white border border-slate-700/80 backdrop-blur-xs transition-colors cursor-pointer"
+          title="Switch Camera"
+        >
+          <SwitchCamera className="w-4 h-4" />
+        </button>
+      )}
 
       {!isReady && !error && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-950/80 backdrop-blur-xs text-slate-300 z-10">
