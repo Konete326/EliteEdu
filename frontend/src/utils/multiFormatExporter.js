@@ -9,16 +9,36 @@ const triggerDownload = (blob, filename) => {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
 
-export const exportToExcel = (title, columns, rows, filename = 'export.xls') => {
+const processInChunks = async (items, chunkSize, worker) => {
+  const chunksCount = Math.ceil(items.length / chunkSize);
+  const results = [];
+  for (let i = 0; i < chunksCount; i++) {
+    const start = i * chunkSize;
+    const chunk = items.slice(start, start + chunkSize);
+    results.push(...worker(chunk, start));
+    if (i < chunksCount - 1) {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
+  }
+  return results;
+};
+
+export const exportToExcel = async (title, columns, rows, filename = 'export.xls') => {
   const tableHeaders = columns.map(col => `<th style="background-color:#1e293b;color:#ffffff;padding:8px 12px;border:1px solid #cbd5e1;font-weight:bold;text-align:left;">${col.header}</th>`).join('');
-  const tableRows = rows.map((row, idx) => {
-    const bg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
-    const cells = columns.map(col => {
-      const val = row[col.key] !== undefined && row[col.key] !== null ? String(row[col.key]) : '';
-      return `<td style="padding:6px 10px;border:1px solid #cbd5e1;mso-number-format:'\\@';">${val}</td>`;
-    }).join('');
-    return `<tr style="background-color:${bg};">${cells}</tr>`;
-  }).join('');
+
+  const rowStrings = await processInChunks(rows, 350, (chunk, baseIdx) => {
+    return chunk.map((row, idx) => {
+      const overallIdx = baseIdx + idx;
+      const bg = overallIdx % 2 === 0 ? '#ffffff' : '#f8fafc';
+      const cells = columns.map(col => {
+        const val = row[col.key] !== undefined && row[col.key] !== null ? String(row[col.key]) : '';
+        return `<td style="padding:6px 10px;border:1px solid #cbd5e1;mso-number-format:'\\@';">${val}</td>`;
+      }).join('');
+      return `<tr style="background-color:${bg};">${cells}</tr>`;
+    });
+  });
+
+  const tableRows = rowStrings.join('');
 
   const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
   <head>
@@ -55,7 +75,7 @@ export const exportToExcel = (title, columns, rows, filename = 'export.xls') => 
   triggerDownload(blob, filename.endsWith('.xls') ? filename : `${filename}.xls`);
 };
 
-export const exportToCsv = (columns, rows, filename = 'export.csv') => {
+export const exportToCsv = async (columns, rows, filename = 'export.csv') => {
   const escapeCsv = (val) => {
     if (val === null || val === undefined) return '""';
     const str = String(val).replace(/"/g, '""');
@@ -63,23 +83,31 @@ export const exportToCsv = (columns, rows, filename = 'export.csv') => {
   };
 
   const headerRow = columns.map(col => escapeCsv(col.header)).join(',');
-  const dataRows = rows.map(row => columns.map(col => escapeCsv(row[col.key])).join(','));
-  const csvContent = '\uFEFF' + [headerRow, ...dataRows].join('\r\n');
+  const dataRows = await processInChunks(rows, 500, (chunk) => {
+    return chunk.map(row => columns.map(col => escapeCsv(row[col.key])).join(','));
+  });
 
+  const csvContent = '\uFEFF' + [headerRow, ...dataRows].join('\r\n');
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   triggerDownload(blob, filename.endsWith('.csv') ? filename : `${filename}.csv`);
 };
 
-export const exportToWord = (title, columns, rows, filename = 'export.doc') => {
+export const exportToWord = async (title, columns, rows, filename = 'export.doc') => {
   const tableHeaders = columns.map(col => `<th style="background-color:#1e3a8a;color:#ffffff;padding:8px 10px;border:1px solid #94a3b8;font-size:10pt;">${col.header}</th>`).join('');
-  const tableRows = rows.map((row, idx) => {
-    const bg = idx % 2 === 0 ? '#ffffff' : '#f1f5f9';
-    const cells = columns.map(col => {
-      const val = row[col.key] !== undefined && row[col.key] !== null ? String(row[col.key]) : '';
-      return `<td style="padding:6px 8px;border:1px solid #cbd5e1;font-size:9.5pt;">${val}</td>`;
-    }).join('');
-    return `<tr style="background-color:${bg};">${cells}</tr>`;
-  }).join('');
+
+  const rowStrings = await processInChunks(rows, 350, (chunk, baseIdx) => {
+    return chunk.map((row, idx) => {
+      const overallIdx = baseIdx + idx;
+      const bg = overallIdx % 2 === 0 ? '#ffffff' : '#f1f5f9';
+      const cells = columns.map(col => {
+        const val = row[col.key] !== undefined && row[col.key] !== null ? String(row[col.key]) : '';
+        return `<td style="padding:6px 8px;border:1px solid #cbd5e1;font-size:9.5pt;">${val}</td>`;
+      }).join('');
+      return `<tr style="background-color:${bg};">${cells}</tr>`;
+    });
+  });
+
+  const tableRows = rowStrings.join('');
 
   const html = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
   <head>
@@ -107,7 +135,7 @@ export const exportToWord = (title, columns, rows, filename = 'export.doc') => {
   triggerDownload(blob, filename.endsWith('.doc') ? filename : `${filename}.doc`);
 };
 
-export const exportToText = (title, columns, rows, filename = 'export.txt') => {
+export const exportToText = async (title, columns, rows, filename = 'export.txt') => {
   const colWidths = columns.map(col => {
     const maxValLen = rows.reduce((max, r) => Math.max(max, String(r[col.key] || '').length), 0);
     return Math.max(col.header.length, Math.min(maxValLen, 35));
@@ -116,12 +144,14 @@ export const exportToText = (title, columns, rows, filename = 'export.txt') => {
   const divider = '+' + colWidths.map(w => '-'.repeat(w + 2)).join('+') + '+';
   const headerLine = '|' + columns.map((col, i) => ` ${col.header.padEnd(colWidths[i])} `).join('|') + '|';
 
-  const dataLines = rows.map(row => {
-    return '|' + columns.map((col, i) => {
-      const raw = String(row[col.key] !== undefined && row[col.key] !== null ? row[col.key] : '');
-      const truncated = raw.length > colWidths[i] ? raw.slice(0, colWidths[i] - 1) + '…' : raw;
-      return ` ${truncated.padEnd(colWidths[i])} `;
-    }).join('|') + '|';
+  const dataLines = await processInChunks(rows, 500, (chunk) => {
+    return chunk.map(row => {
+      return '|' + columns.map((col, i) => {
+        const raw = String(row[col.key] !== undefined && row[col.key] !== null ? row[col.key] : '');
+        const truncated = raw.length > colWidths[i] ? raw.slice(0, colWidths[i] - 1) + '…' : raw;
+        return ` ${truncated.padEnd(colWidths[i])} `;
+      }).join('|') + '|';
+    });
   });
 
   const banner = [
@@ -151,4 +181,3 @@ export const exportToJson = (title, datasetName, rows, filename = 'export.json')
   const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' });
   triggerDownload(blob, filename.endsWith('.json') ? filename : `${filename}.json`);
 };
-

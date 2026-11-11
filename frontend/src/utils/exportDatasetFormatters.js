@@ -209,33 +209,81 @@ export const DATASET_DEFINITIONS = [
   },
   {
     id: 'attendance',
-    name: "Today's Attendance Snapshot",
-    description: 'Live attendance records marked today across all classes and faculty members.',
+    name: "Today's Attendance Roll Call",
+    description: 'Daily attendance records across all students and staff, with optional full roster reconciliation.',
     category: 'Operations',
-    defaultFilename: 'EliteEdu_Attendance_Today_Export',
+    defaultFilename: 'EliteEdu_Attendance_RollCall_Export',
     columns: () => [
       { header: 'Date', key: 'date' },
       { header: 'Member Name', key: 'name' },
       { header: 'Member Type', key: 'type' },
       { header: 'Roll / Code', key: 'code' },
       { header: 'Class / Department', key: 'group' },
+      { header: 'Campus', key: 'campus' },
       { header: 'Attendance Status', key: 'status' },
       { header: 'Marked At', key: 'time' }
     ],
     fetcher: async (filters = {}) => {
       const today = new Date().toISOString().split('T')[0];
-      const res = await api.get('/attendance', { params: { date: today } }).catch(() => ({ data: [] }));
-      const rawList = res.data?.records || res.data?.attendance || res.data || [];
-      return rawList.map((a) => ({
-        date: today,
-        name: a.student_id?.name || a.teacher_id?.name || a.name || 'Member',
-        type: a.student_id ? 'Student' : a.teacher_id ? 'Staff' : 'Student',
-        code: a.student_id?.roll_no || a.teacher_id?.employee_code || '-',
-        group: a.grade_id?.name || a.teacher_id?.designation || '-',
-        status: a.status || 'Present',
-        time: a.check_in || (a.createdAt ? new Date(a.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-')
-      }));
+      const isFullRollCall = filters.attendanceScope === 'full';
+
+      const attendanceRes = await api.get('/attendance', { params: { date: today } }).catch(() => ({ data: [] }));
+      const rawRecords = attendanceRes.data?.records || attendanceRes.data?.attendance || attendanceRes.data || [];
+
+      if (!isFullRollCall) {
+        return rawRecords.map((a) => ({
+          date: today,
+          name: a.student_id?.name || a.teacher_id?.name || a.name || 'Member',
+          type: a.student_id ? 'Student' : a.teacher_id ? 'Staff' : 'Student',
+          code: a.student_id?.roll_no || a.teacher_id?.employee_code || '-',
+          group: a.grade_id?.name || a.teacher_id?.designation || '-',
+          campus: a.campus_id?.name || a.student_id?.campus_id?.name || '-',
+          status: a.status || 'Present',
+          time: a.check_in || (a.createdAt ? new Date(a.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-')
+        }));
+      }
+
+      const studentParams = { limit: 5000, status: 'Active' };
+      if (filters.campus && filters.campus !== 'all') studentParams.campus = filters.campus;
+      const studentsRes = await api.get('/students', { params: studentParams }).catch(() => ({ data: [] }));
+      const allStudents = studentsRes.data?.students || studentsRes.data || [];
+
+      const markedStudentMap = new Map();
+      const staffRecords = [];
+
+      rawRecords.forEach((rec) => {
+        const studentId = rec.student_id?._id || rec.student_id;
+        if (studentId) {
+          markedStudentMap.set(String(studentId), rec);
+        } else if (rec.teacher_id) {
+          staffRecords.push({
+            date: today,
+            name: rec.teacher_id?.name || rec.name || 'Staff Member',
+            type: 'Staff',
+            code: rec.teacher_id?.employee_code || '-',
+            group: rec.teacher_id?.designation || 'Faculty',
+            campus: rec.campus_id?.name || '-',
+            status: rec.status || 'Present',
+            time: rec.check_in || (rec.createdAt ? new Date(rec.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-')
+          });
+        }
+      });
+
+      const studentRollCall = allStudents.map((s) => {
+        const marked = markedStudentMap.get(String(s._id));
+        return {
+          date: today,
+          name: s.name || '',
+          type: 'Student',
+          code: s.roll_no || s.admission_no || s.gr_no || '-',
+          group: s.current_grade?.name || s.grade?.name || '-',
+          campus: s.campus_id?.name || s.campus?.name || '-',
+          status: marked ? (marked.status || 'Present') : 'Not Marked (Pending)',
+          time: marked?.check_in || (marked?.createdAt ? new Date(marked.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-')
+        };
+      });
+
+      return [...studentRollCall, ...staffRecords];
     }
   }
 ];
-

@@ -63,6 +63,7 @@ const DataExportStudioPage = () => {
   const [selectedCampus, setSelectedCampus] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [attendanceScope, setAttendanceScope] = useState('full');
   const [loadingMap, setLoadingMap] = useState({});
   const [batchLoading, setBatchLoading] = useState(false);
 
@@ -78,7 +79,12 @@ const DataExportStudioPage = () => {
     setLoadingMap((prev) => ({ ...prev, [key]: true }));
 
     try {
-      const rows = await dataset.fetcher({ campus: selectedCampus, status: selectedStatus }, isGovt);
+      const rows = await dataset.fetcher({
+        campus: selectedCampus,
+        status: selectedStatus,
+        attendanceScope
+      }, isGovt);
+
       if (!rows || rows.length === 0) {
         showError(`No records found for ${dataset.name} to export.`);
         setLoadingMap((prev) => ({ ...prev, [key]: false }));
@@ -89,13 +95,13 @@ const DataExportStudioPage = () => {
       const baseFilename = `${dataset.defaultFilename}_${new Date().toISOString().split('T')[0]}`;
 
       if (format === 'xls') {
-        exportToExcel(dataset.name, columns, rows, `${baseFilename}.xls`);
+        await exportToExcel(dataset.name, columns, rows, `${baseFilename}.xls`);
       } else if (format === 'csv') {
-        exportToCsv(columns, rows, `${baseFilename}.csv`);
+        await exportToCsv(columns, rows, `${baseFilename}.csv`);
       } else if (format === 'doc') {
-        exportToWord(dataset.name, columns, rows, `${baseFilename}.doc`);
+        await exportToWord(dataset.name, columns, rows, `${baseFilename}.doc`);
       } else if (format === 'txt') {
-        exportToText(dataset.name, columns, rows, `${baseFilename}.txt`);
+        await exportToText(dataset.name, columns, rows, `${baseFilename}.txt`);
       } else if (format === 'json') {
         exportToJson(dataset.name, dataset.id, rows, `${baseFilename}.json`);
       }
@@ -114,19 +120,24 @@ const DataExportStudioPage = () => {
 
     for (const dataset of DATASET_DEFINITIONS) {
       try {
-        const rows = await dataset.fetcher({ campus: selectedCampus, status: selectedStatus }, isGovt);
+        const rows = await dataset.fetcher({
+          campus: selectedCampus,
+          status: selectedStatus,
+          attendanceScope
+        }, isGovt);
+
         if (rows && rows.length > 0) {
           const columns = typeof dataset.columns === 'function' ? dataset.columns(isGovt) : dataset.columns;
           const baseFilename = `${dataset.defaultFilename}_${new Date().toISOString().split('T')[0]}`;
           if (format === 'xls') {
-            exportToExcel(dataset.name, columns, rows, `${baseFilename}.xls`);
+            await exportToExcel(dataset.name, columns, rows, `${baseFilename}.xls`);
           } else if (format === 'csv') {
-            exportToCsv(columns, rows, `${baseFilename}.csv`);
+            await exportToCsv(columns, rows, `${baseFilename}.csv`);
           } else if (format === 'json') {
             exportToJson(dataset.name, dataset.id, rows, `${baseFilename}.json`);
           }
           successCount++;
-          await new Promise((r) => setTimeout(r, 400));
+          await new Promise((r) => setTimeout(r, 300));
         }
       } catch (err) {}
     }
@@ -217,6 +228,16 @@ const DataExportStudioPage = () => {
             <option value="Active">Active Only</option>
             <option value="Inactive">Inactive / Left</option>
           </select>
+
+          <select
+            value={attendanceScope}
+            onChange={(e) => setAttendanceScope(e.target.value)}
+            title="Attendance Scope"
+            className="px-3 py-1.5 rounded-xl text-xs bg-surface-secondary/60 dark:bg-[#141414] border border-line dark:border-white/10 text-ink dark:text-white outline-none focus:border-primary transition-all font-medium cursor-pointer"
+          >
+            <option value="full">Roll Call: Full (Marked + Pending)</option>
+            <option value="marked">Roll Call: Marked Only</option>
+          </select>
         </div>
       </div>
 
@@ -260,6 +281,15 @@ const DataExportStudioPage = () => {
                 <p className="text-xs text-ink-muted dark:text-ink-muted-dark leading-relaxed">
                   {dataset.description}
                 </p>
+
+                {dataset.id === 'attendance' && (
+                  <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-primary/10 border border-primary/20 text-[10px] font-semibold text-primary dark:text-primary-dark">
+                    <span>Scope:</span>
+                    <span className="font-bold">
+                      {attendanceScope === 'full' ? 'Full Daily Roll Call (Marked + Pending)' : 'Marked Only'}
+                    </span>
+                  </div>
+                )}
 
                 <div className="space-y-1.5 pt-1">
                   <span className="text-[10px] font-bold text-ink-sub dark:text-ink-sub-dark uppercase tracking-wider block">
