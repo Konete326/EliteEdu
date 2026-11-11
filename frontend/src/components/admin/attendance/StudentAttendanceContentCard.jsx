@@ -18,7 +18,7 @@ const StudentAttendanceContentCard = ({
   const rate = total > 0 ? Math.round((present / total) * 100) : 0;
 
   return (
-    <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl shadow-xs overflow-hidden flex flex-col flex-1 min-h-0">
+    <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl shadow-xs overflow-hidden flex flex-col md:flex-1 md:min-h-0">
       {!loaded ? (
         <div className="flex-1 p-16 flex items-center justify-center text-center">
           <p className="text-xs sm:text-sm font-medium text-ink-muted dark:text-ink-muted">
@@ -43,8 +43,8 @@ const StudentAttendanceContentCard = ({
           </p>
         </div>
       ) : (
-        <div className="flex flex-col h-full flex-1 min-h-0">
-          <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+        <div className="flex flex-col md:h-full md:flex-1 md:min-h-0">
+          <div className="md:flex-1 md:min-h-0 flex flex-col md:overflow-hidden">
             <StudentAttendanceSheetTable
               records={records}
               onStatusChange={onStatusChange}

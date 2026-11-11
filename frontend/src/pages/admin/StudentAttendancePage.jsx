@@ -42,7 +42,7 @@ const StudentAttendancePage = () => {
   };
 
   return (
-    <div className="w-full min-h-full flex flex-col gap-3">
+    <div className="w-full flex flex-col gap-3 pb-6 md:min-h-full">
       <div className="shrink-0 sticky top-0 z-10 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur-xs pb-1 print:hidden">
         <AttendanceTopTabs
           activeTab={activeTab}
@@ -109,7 +109,7 @@ const StudentAttendancePage = () => {
 
       {activeTab === 'student' && (
         <>
-          <div className="flex-1 min-h-0 flex flex-col gap-3 print:hidden">
+          <div className="w-full md:flex-1 md:min-h-0 flex flex-col gap-3 print:hidden">
             <div className="shrink-0">
               <StudentAttendanceFilterBar
                 grades={grades}

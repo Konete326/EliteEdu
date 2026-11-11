@@ -1,4 +1,4 @@
-import { Sparkles, Wand2, Check, ArrowRight } from 'lucide-react';
+import { Wand2, Check, ArrowRight } from 'lucide-react';
 
 const PRESETS = [
   {
@@ -73,7 +73,7 @@ const SchoolSmartPresetsBar = ({ settings, onApplyPreset, onAutoFormatAll }) => 
           onClick={onAutoFormatAll}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-secondary hover:bg-surface-secondary/80 text-ink dark:text-white border border-line dark:border-white/10 text-xs font-bold transition-all cursor-pointer shrink-0"
         >
-          <Sparkles className="w-3.5 h-3.5 text-primary" />
+          <Wand2 className="w-3.5 h-3.5 text-primary" />
           <span>Auto-Clean & Format</span>
         </button>
       </div>

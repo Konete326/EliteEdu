@@ -63,7 +63,7 @@ const EmployeeAttendancePage = () => {
 
   return (
     <>
-      <div className="w-full h-full flex flex-col min-h-0 gap-3 print:hidden">
+      <div className="w-full flex flex-col gap-3 pb-6 md:h-full md:min-h-0 print:hidden">
         <div className="shrink-0 space-y-3">
           <StaffAttendanceKpiRow summary={summary} />
 
@@ -102,7 +102,7 @@ const EmployeeAttendancePage = () => {
           />
         </div>
 
-        <div className="flex-1 min-h-0 flex flex-col">
+        <div className="w-full md:flex-1 md:min-h-0 flex flex-col">
           <StaffAttendanceTableCard
             records={filteredRecords}
             loading={loading}

@@ -1,4 +1,4 @@
-import { Building2, Award, Hash, Calendar, DollarSign, Lock, Building, Sparkles } from 'lucide-react';
+import { Building2, Award, Hash, Calendar, DollarSign, Lock, Building, Wand2 } from 'lucide-react';
 import SchoolInfoInput from './SchoolInfoInput';
 
 const BOARD_SUGGESTIONS = [
@@ -62,7 +62,7 @@ const SchoolBasicInfoCard = ({ settings, onChange }) => {
                 onClick={generateCodeFromName}
                 className="text-[10px] font-bold text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
               >
-                <Sparkles className="w-2.5 h-2.5" />
+                <Wand2 className="w-2.5 h-2.5" />
                 <span>Auto-Code</span>
               </button>
             )}

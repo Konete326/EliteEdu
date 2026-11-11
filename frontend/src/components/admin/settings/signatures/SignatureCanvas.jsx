@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { PenTool, RotateCcw, Check, Sparkles } from 'lucide-react';
+import { PenTool, RotateCcw, Check } from 'lucide-react';
 import CanvasPenControls from './CanvasPenControls';
 
 const SignatureCanvas = ({ onSave, saving }) => {
@@ -13,14 +13,16 @@ const SignatureCanvas = ({ onSave, saving }) => {
 
   const getCoords = (e) => {
     const c = canvasRef.current;
+    if (!c) return { x: 0, y: 0 };
     const r = c.getBoundingClientRect();
-    const cx = e.touches ? e.touches[0].clientX : e.clientX;
-    const cy = e.touches ? e.touches[0].clientY : e.clientY;
-    return { x: (cx - r.left) * (c.width / r.width), y: (cy - r.top) * (c.height / r.height) };
+    return {
+      x: (e.clientX - r.left) * (c.width / r.width),
+      y: (e.clientY - r.top) * (c.height / r.height)
+    };
   };
 
   const start = (e) => {
-    e.preventDefault();
+    e.currentTarget.setPointerCapture?.(e.pointerId);
     const { x, y } = getCoords(e);
     const ctx = canvasRef.current.getContext('2d');
     ctx.lineCap = 'round';
@@ -35,21 +37,36 @@ const SignatureCanvas = ({ onSave, saving }) => {
 
   const move = (e) => {
     if (!isDrawing) return;
-    e.preventDefault();
     const { x, y } = getCoords(e);
     const ctx = canvasRef.current.getContext('2d');
     ctx.lineTo(x, y);
     ctx.stroke();
   };
 
+  const stop = (e) => {
+    if (isDrawing) {
+      setIsDrawing(false);
+      e.currentTarget.releasePointerCapture?.(e.pointerId);
+    }
+  };
+
   const clear = () => {
-    canvasRef.current.getContext('2d').clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    const c = canvasRef.current;
+    if (c) {
+      c.getContext('2d').clearRect(0, 0, c.width, c.height);
+    }
     setHasDrawn(false);
   };
 
   const submit = () => {
     if (!hasDrawn || !label.trim()) return;
-    onSave({ label: label.trim(), type: 'Touch_Pad', image_url: canvasRef.current.toDataURL('image/png'), is_stamp: false, is_default: isDefault });
+    onSave({
+      label: label.trim(),
+      type: 'Touch_Pad',
+      image_url: canvasRef.current.toDataURL('image/png'),
+      is_stamp: false,
+      is_default: isDefault
+    });
   };
 
   return (
@@ -64,7 +81,11 @@ const SignatureCanvas = ({ onSave, saving }) => {
             <p className="text-xs text-text-muted">Draw live vector-style signature</p>
           </div>
         </div>
-        <button type="button" onClick={clear} className="px-2.5 py-1 text-xs text-text-muted hover:text-red-500 flex items-center gap-1 border border-line rounded-lg">
+        <button
+          type="button"
+          onClick={clear}
+          className="px-2.5 py-1 text-xs text-text-muted hover:text-red-500 flex items-center gap-1 border border-line rounded-lg cursor-pointer"
+        >
           <RotateCcw className="w-3.5 h-3.5" /> Clear
         </button>
       </div>
@@ -74,18 +95,17 @@ const SignatureCanvas = ({ onSave, saving }) => {
           ref={canvasRef}
           width={600}
           height={180}
-          onMouseDown={start}
-          onMouseMove={move}
-          onMouseUp={() => setIsDrawing(false)}
-          onMouseLeave={() => setIsDrawing(false)}
-          onTouchStart={start}
-          onTouchMove={move}
-          onTouchEnd={() => setIsDrawing(false)}
+          onPointerDown={start}
+          onPointerMove={move}
+          onPointerUp={stop}
+          onPointerLeave={stop}
+          onPointerCancel={stop}
+          style={{ touchAction: 'none' }}
           className="w-full h-36 touch-none cursor-crosshair block"
         />
         {!hasDrawn && (
           <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-xs text-text-muted/60">
-            <Sparkles className="w-4 h-4 mb-1 text-primary/50" />
+            <PenTool className="w-4 h-4 mb-1 text-primary/50" />
             <span>Sign with stylus, mouse, or touch inside canvas</span>
           </div>
         )}
@@ -94,17 +114,32 @@ const SignatureCanvas = ({ onSave, saving }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
         <div>
           <label className="block text-xs font-medium text-text dark:text-text-dark mb-1">Label</label>
-          <input type="text" value={label} onChange={(e) => setLabel(e.target.value)} className="w-full px-3 py-1.5 text-xs rounded-xl border border-line bg-transparent text-text dark:text-text-dark focus:outline-hidden" />
+          <input
+            type="text"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            className="w-full px-3 py-1.5 text-xs rounded-xl border border-line bg-transparent text-text dark:text-text-dark focus:outline-hidden"
+          />
         </div>
         <CanvasPenControls color={color} setColor={setColor} lineWidth={lineWidth} setLineWidth={setLineWidth} />
       </div>
 
       <div className="flex items-center justify-between pt-2 border-t border-line dark:border-white/10">
         <label className="flex items-center gap-2 cursor-pointer text-xs text-text dark:text-text-dark">
-          <input type="checkbox" checked={isDefault} onChange={(e) => setIsDefault(e.target.checked)} className="rounded border-line text-primary focus:ring-primary" />
+          <input
+            type="checkbox"
+            checked={isDefault}
+            onChange={(e) => setIsDefault(e.target.checked)}
+            className="rounded border-line text-primary focus:ring-primary"
+          />
           <span>Default document signature</span>
         </label>
-        <button type="button" onClick={submit} disabled={!hasDrawn || saving} className="px-4 py-2 text-xs font-semibold rounded-xl bg-primary text-white hover:bg-primary-hover disabled:opacity-50 flex items-center gap-1.5 transition-colors">
+        <button
+          type="button"
+          onClick={submit}
+          disabled={!hasDrawn || saving}
+          className="px-4 py-2 text-xs font-semibold rounded-xl bg-primary text-white hover:bg-primary-hover disabled:opacity-50 flex items-center gap-1.5 transition-colors cursor-pointer"
+        >
           <Check className="w-3.5 h-3.5" /> {saving ? 'Saving...' : 'Save Signature'}
         </button>
       </div>

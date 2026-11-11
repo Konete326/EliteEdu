@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Stamp, Check, Sparkles, X, ShieldCheck } from 'lucide-react';
+import { Stamp, Check, X, ShieldCheck } from 'lucide-react';
 import cleanImageBackground from '../../../../utils/cleanImageBackground';
 
 const StampUploadCard = ({ onSave, saving }) => {
@@ -64,7 +64,7 @@ const StampUploadCard = ({ onSave, saving }) => {
             <img src={cleaned} alt="Stamp Preview" className="max-h-full max-w-full object-contain" />
           </div>
           <span className="absolute bottom-2 right-2 px-2 py-0.5 text-[10px] rounded-md bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 flex items-center gap-1 font-medium">
-            <Sparkles className="w-2.5 h-2.5" /> Stamp Cleaned
+            <ShieldCheck className="w-2.5 h-2.5" /> Stamp Cleaned
           </span>
         </div>
       )}

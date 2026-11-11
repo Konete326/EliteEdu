@@ -1,8 +1,23 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { FileText, CreditCard, School, Building2, CheckCircle, Receipt, ShieldCheck } from 'lucide-react';
+import MobileTabStepper from '../../common/MobileTabStepper';
 
 const LiveDocumentHeaderPreview = ({ settings }) => {
+  const isGovernment = settings.school_type === 'Government';
   const [activeTab, setActiveTab] = useState('letterhead');
+
+  const previewTabs = useMemo(() => {
+    const list = [
+      { id: 'letterhead', label: 'Letterhead', icon: FileText },
+      { id: 'idcard', label: 'ID Card', icon: CreditCard }
+    ];
+    if (!isGovernment) {
+      list.push({ id: 'voucher', label: 'Fee Voucher', icon: Receipt });
+    }
+    return list;
+  }, [isGovernment]);
+
+  const effectiveTab = isGovernment && activeTab === 'voucher' ? 'letterhead' : activeTab;
 
   const schoolName = settings.name || 'Elite Edu Higher Secondary School';
   const slogan = settings.slogan || '';
@@ -28,46 +43,13 @@ const LiveDocumentHeaderPreview = ({ settings }) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5 p-1 bg-surface-secondary/70 dark:bg-[#141414] rounded-xl border border-line/60 dark:border-white/5">
-        <button
-          type="button"
-          onClick={() => setActiveTab('letterhead')}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-            activeTab === 'letterhead'
-              ? 'bg-surface dark:bg-[#1c1c1c] text-primary shadow-xs'
-              : 'text-ink-muted hover:text-ink dark:hover:text-white'
-          }`}
-        >
-          <FileText className="w-3.5 h-3.5" />
-          <span>Letterhead</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('idcard')}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-            activeTab === 'idcard'
-              ? 'bg-surface dark:bg-[#1c1c1c] text-primary shadow-xs'
-              : 'text-ink-muted hover:text-ink dark:hover:text-white'
-          }`}
-        >
-          <CreditCard className="w-3.5 h-3.5" />
-          <span>ID Card</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('voucher')}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-            activeTab === 'voucher'
-              ? 'bg-surface dark:bg-[#1c1c1c] text-primary shadow-xs'
-              : 'text-ink-muted hover:text-ink dark:hover:text-white'
-          }`}
-        >
-          <Receipt className="w-3.5 h-3.5" />
-          <span>Fee Voucher</span>
-        </button>
-      </div>
+      <MobileTabStepper
+        tabs={previewTabs}
+        activeTab={effectiveTab}
+        onChange={setActiveTab}
+      />
 
-      {activeTab === 'letterhead' && (
+      {effectiveTab === 'letterhead' && (
         <div className="rounded-xl border border-line dark:border-white/15 bg-white text-black p-4 space-y-3 shadow-xs">
           <div className="flex items-center gap-3 border-b-2 border-black/80 pb-3">
             <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center overflow-hidden shrink-0">
@@ -139,7 +121,7 @@ const LiveDocumentHeaderPreview = ({ settings }) => {
         </div>
       )}
 
-      {activeTab === 'idcard' && (
+      {effectiveTab === 'idcard' && (
         <div className="rounded-xl border border-line dark:border-white/15 bg-white text-black overflow-hidden shadow-xs">
           <div className="bg-[#0f3d64] text-white p-3 flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center overflow-hidden shrink-0">
@@ -168,7 +150,7 @@ const LiveDocumentHeaderPreview = ({ settings }) => {
         </div>
       )}
 
-      {activeTab === 'voucher' && (
+      {!isGovernment && effectiveTab === 'voucher' && (
         <div className="rounded-xl border border-line dark:border-white/15 bg-white text-black p-3 space-y-2 shadow-xs">
           <div className="flex items-center justify-between border-b border-gray-200 pb-2">
             <div className="flex items-center gap-2">

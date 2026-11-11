@@ -6,6 +6,13 @@ import SignatureUploadCard from '../../components/admin/settings/signatures/Sign
 import StampUploadCard from '../../components/admin/settings/signatures/StampUploadCard';
 import SignaturesList from '../../components/admin/settings/signatures/SignaturesList';
 import SettingsFeedbackModal from '../../components/admin/settings/SettingsFeedbackModal';
+import MobileTabStepper from '../../components/common/MobileTabStepper';
+
+const SIGNATURE_MODES = [
+  { id: 'canvas', label: 'Draw Vector', icon: PenTool },
+  { id: 'upload', label: 'Upload Photo', icon: Upload },
+  { id: 'stamp', label: 'Official Seal', icon: Stamp }
+];
 
 const GeneralSignaturesPage = () => {
   const [activeTab, setActiveTab] = useState('canvas');
@@ -51,31 +58,11 @@ const GeneralSignaturesPage = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
         <div className="xl:col-span-5 space-y-4">
-          <div className="flex items-center gap-1.5 p-1 bg-surface-alt dark:bg-white/5 rounded-xl border border-line dark:border-white/10 text-xs">
-            {[
-              { id: 'canvas', label: 'Draw Vector', icon: PenTool },
-              { id: 'upload', label: 'Upload Photo', icon: Upload },
-              { id: 'stamp', label: 'Official Seal', icon: Stamp }
-            ].map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 py-2 px-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                    isActive
-                      ? 'bg-primary text-white shadow-xs'
-                      : 'text-text-muted hover:text-text'
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
+          <MobileTabStepper
+            tabs={SIGNATURE_MODES}
+            activeTab={activeTab}
+            onChange={setActiveTab}
+          />
 
           <div>
             {activeTab === 'canvas' && <SignatureCanvas onSave={saveSignature} saving={saving} />}

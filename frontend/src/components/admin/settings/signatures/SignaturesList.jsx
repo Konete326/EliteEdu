@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import { CheckCircle2, Trash2, Stamp, PenTool, Star } from 'lucide-react';
 import SignatureDeleteModal from './SignatureDeleteModal';
+import MobileTabStepper from '../../../common/MobileTabStepper';
 
 const SignaturesList = ({ signatures, onSetDefault, onDelete }) => {
   const [tab, setTab] = useState('all');
   const [deleteTarget, setDeleteTarget] = useState(null);
+
+  const listTabs = [
+    { id: 'all', label: 'All', count: signatures.length },
+    { id: 'pens', label: 'Signatures', count: signatures.filter((s) => !s.is_stamp).length },
+    { id: 'stamps', label: 'Stamps', count: signatures.filter((s) => s.is_stamp).length }
+  ];
 
   const filtered = signatures.filter((s) => {
     if (tab === 'stamps') return s.is_stamp;
@@ -19,21 +26,12 @@ const SignaturesList = ({ signatures, onSetDefault, onDelete }) => {
           <h3 className="text-sm font-semibold text-text dark:text-text-dark">Saved Signatures & Stamps Library</h3>
           <p className="text-xs text-text-muted dark:text-text-muted-dark">Manage active document signers and official seals</p>
         </div>
-        <div className="flex items-center gap-1 p-1 bg-surface-alt dark:bg-white/5 rounded-xl border border-line dark:border-white/10 text-xs">
-          {[
-            { id: 'all', label: `All (${signatures.length})` },
-            { id: 'pens', label: `Signatures (${signatures.filter((s) => !s.is_stamp).length})` },
-            { id: 'stamps', label: `Stamps (${signatures.filter((s) => s.is_stamp).length})` }
-          ].map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setTab(t.id)}
-              className={`px-3 py-1 rounded-lg font-medium transition-colors ${tab === t.id ? 'bg-primary text-white shadow-xs' : 'text-text-muted hover:text-text'}`}
-            >
-              {t.label}
-            </button>
-          ))}
+        <div className="w-full sm:w-auto">
+          <MobileTabStepper
+            tabs={listTabs}
+            activeTab={tab}
+            onChange={setTab}
+          />
         </div>
       </div>
 

@@ -91,7 +91,7 @@ const LeaveRequestPage = () => {
 
   return (
     <>
-      <div className="w-full h-full flex flex-col min-h-0 gap-3 print:hidden">
+      <div className="w-full flex flex-col gap-3 pb-6 md:h-full md:min-h-0 print:hidden">
         <div className="shrink-0 space-y-3">
           <LeaveHeader
             onNewLeave={() => setIsModalOpen(true)}
@@ -101,7 +101,7 @@ const LeaveRequestPage = () => {
           <LeaveKpiStrip kpis={data.kpis} activeStatus={statusFilter} onSelectStatus={setStatusFilter} />
         </div>
 
-        <div className="flex-1 min-h-0 flex flex-col">
+        <div className="w-full md:flex-1 md:min-h-0 flex flex-col">
           <LeaveRequestsTable
             leaves={data.leaves || []}
             pagination={data.pagination || {}}

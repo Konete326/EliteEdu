@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { Building2, Phone, PenTool, FileText } from 'lucide-react';
 import useSchoolGeneralSettings from '../../hooks/useSchoolGeneralSettings';
 import GeneralSettingsHeader from '../../components/admin/settings/GeneralSettingsHeader';
 import SchoolSmartPresetsBar from '../../components/admin/settings/SchoolSmartPresetsBar';
@@ -6,8 +8,17 @@ import SchoolContactAndPdfCard from '../../components/admin/settings/SchoolConta
 import SchoolBrandAssetsStudioCard from '../../components/admin/settings/SchoolBrandAssetsStudioCard';
 import LiveDocumentHeaderPreview from '../../components/admin/settings/LiveDocumentHeaderPreview';
 import SettingsFeedbackModal from '../../components/admin/settings/SettingsFeedbackModal';
+import MobileTabStepper from '../../components/common/MobileTabStepper';
+
+const SETTINGS_STEPS = [
+  { id: 'identity', label: 'Identity & Board', icon: Building2 },
+  { id: 'contact', label: 'Contact & Motto', icon: Phone },
+  { id: 'brand', label: 'Brand & Signatures', icon: PenTool },
+  { id: 'preview', label: 'Live Preview', icon: FileText }
+];
 
 const GeneralSettingsPage = () => {
+  const [activeStep, setActiveStep] = useState('identity');
   const {
     settings,
     loading,
@@ -16,6 +27,7 @@ const GeneralSettingsPage = () => {
     isDirty,
     handleChange,
     handleBatchChange,
+    syncSignaturesFromStudio,
     handleSave,
     closeFeedback
   } = useSchoolGeneralSettings();
@@ -46,7 +58,7 @@ const GeneralSettingsPage = () => {
       updates.email = settings.email.trim().toLowerCase();
     }
     if (settings.name && !settings.code) {
-      const words = settings.name.trim().split(/\s+/);
+      const words = settings.name.trim().split(/\s+/).filter(Boolean);
       const initials = words.map((w) => w[0]).join('').toUpperCase().slice(0, 5);
       updates.code = `${initials || 'SCH'}-01`;
     }
@@ -75,7 +87,7 @@ const GeneralSettingsPage = () => {
   }
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-4 pb-12">
       <GeneralSettingsHeader
         settings={settings}
         isDirty={isDirty}
@@ -83,32 +95,79 @@ const GeneralSettingsPage = () => {
         onSave={handleSave}
       />
 
-      <SchoolSmartPresetsBar
-        settings={settings}
-        onApplyPreset={handleApplyPreset}
-        onAutoFormatAll={handleAutoFormatAll}
-      />
+      <div className="xl:hidden space-y-4">
+        <MobileTabStepper
+          tabs={SETTINGS_STEPS}
+          activeTab={activeStep}
+          onChange={setActiveStep}
+          mobileBreakpoint="xl"
+        />
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
-        <div className="xl:col-span-7 space-y-4">
-          <SchoolBasicInfoCard
-            settings={settings}
-            onChange={handleChange}
-          />
+        {activeStep === 'identity' && (
+          <div className="space-y-4">
+            <SchoolSmartPresetsBar
+              settings={settings}
+              onApplyPreset={handleApplyPreset}
+              onAutoFormatAll={handleAutoFormatAll}
+            />
+            <SchoolBasicInfoCard
+              settings={settings}
+              onChange={handleChange}
+            />
+          </div>
+        )}
+
+        {activeStep === 'contact' && (
           <SchoolContactAndPdfCard
             settings={settings}
             onChange={handleChange}
           />
+        )}
+
+        {activeStep === 'brand' && (
           <SchoolBrandAssetsStudioCard
             logoUrl={settings.logo_url}
             principalSignatureUrl={settings.principal_signature_url}
             teacherSignatureUrl={settings.teacher_signature_url}
             onAssetChange={handleChange}
+            onSyncSignatures={syncSignaturesFromStudio}
           />
-        </div>
+        )}
 
-        <div className="xl:col-span-5 space-y-4 sticky top-6">
+        {activeStep === 'preview' && (
           <LiveDocumentHeaderPreview settings={settings} />
+        )}
+      </div>
+
+      <div className="hidden xl:block space-y-4">
+        <SchoolSmartPresetsBar
+          settings={settings}
+          onApplyPreset={handleApplyPreset}
+          onAutoFormatAll={handleAutoFormatAll}
+        />
+
+        <div className="grid grid-cols-12 gap-5 items-start">
+          <div className="col-span-7 space-y-4">
+            <SchoolBasicInfoCard
+              settings={settings}
+              onChange={handleChange}
+            />
+            <SchoolContactAndPdfCard
+              settings={settings}
+              onChange={handleChange}
+            />
+            <SchoolBrandAssetsStudioCard
+              logoUrl={settings.logo_url}
+              principalSignatureUrl={settings.principal_signature_url}
+              teacherSignatureUrl={settings.teacher_signature_url}
+              onAssetChange={handleChange}
+              onSyncSignatures={syncSignaturesFromStudio}
+            />
+          </div>
+
+          <div className="col-span-5 space-y-4 sticky top-6">
+            <LiveDocumentHeaderPreview settings={settings} />
+          </div>
         </div>
       </div>
 

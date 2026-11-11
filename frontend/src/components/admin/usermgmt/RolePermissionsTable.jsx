@@ -35,7 +35,7 @@ const RolePermissionsTable = ({ permissions, toggleAction, toggleAllForModule, t
   const activePermissions = permissions.filter((p) => !COMING_SOON_KEYS.has(p.module_key));
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
         <span className="font-bold text-ink dark:text-ink-dark uppercase text-[11px] tracking-wider">
           Active Modules Permissions Matrix
@@ -49,7 +49,56 @@ const RolePermissionsTable = ({ permissions, toggleAction, toggleAllForModule, t
         </button>
       </div>
 
-      <div className="border border-line dark:border-line-dark rounded-xl overflow-x-auto">
+      <div className="sm:hidden space-y-2">
+        {activePermissions.map((p) => {
+          const allSelected = ACTIONS.every((a) => Boolean(p[a]));
+          return (
+            <div
+              key={p.module_key}
+              className="p-3 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/30 dark:bg-white/[0.02] space-y-2"
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-xs text-ink dark:text-white">
+                  {p.module_name}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => toggleAllForModule(p.module_key)}
+                  className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                    allSelected
+                      ? 'bg-primary text-white shadow-2xs'
+                      : 'bg-surface-secondary dark:bg-white/10 text-ink-muted'
+                  }`}
+                >
+                  {allSelected ? 'All Selected' : 'Select All'}
+                </button>
+              </div>
+
+              <div className="grid grid-cols-3 gap-1.5 pt-1">
+                {ACTIONS.map((action) => {
+                  const isChecked = Boolean(p[action]);
+                  return (
+                    <button
+                      key={action}
+                      type="button"
+                      onClick={() => toggleAction(p.module_key, action)}
+                      className={`px-2 py-1.5 rounded-lg text-[10px] font-bold capitalize transition-all border cursor-pointer ${
+                        isChecked
+                          ? 'bg-primary/10 border-primary text-primary dark:text-primary-dark font-black'
+                          : 'border-line dark:border-white/10 text-ink-muted bg-surface dark:bg-[#141414]'
+                      }`}
+                    >
+                      {action}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="hidden sm:block border border-line dark:border-line-dark rounded-xl overflow-x-auto">
         <table className="w-full text-left text-xs">
           <thead className="bg-surface-secondary/40 border-b border-line text-ink-muted">
             <tr>

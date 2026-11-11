@@ -1,5 +1,4 @@
 import React from 'react';
-import MobileStepSlider from '../../../common/MobileStepSlider';
 
 const StaffAttendanceKpiRow = ({ summary = {} }) => {
   const items = [
@@ -13,21 +12,21 @@ const StaffAttendanceKpiRow = ({ summary = {} }) => {
   ];
 
   return (
-    <MobileStepSlider desktopClassName="sm:grid-cols-4 lg:grid-cols-7 sm:gap-2.5">
+    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-2.5">
       {items.map((item) => (
         <div
           key={item.label}
-          className={`p-3 sm:p-3.5 rounded-2xl border ${item.cardClass} flex flex-col justify-between w-full max-w-xs mx-auto text-center sm:text-left transition-all`}
+          className={`p-2.5 sm:p-3 rounded-2xl border ${item.cardClass} flex flex-col justify-between transition-all shadow-2xs`}
         >
-          <span className={`text-[10px] sm:text-[10px] font-bold tracking-wider ${item.textClass}`}>
+          <span className={`text-[10px] font-bold tracking-wider ${item.textClass} truncate`}>
             {item.label}
           </span>
-          <span className={`text-2xl sm:text-2xl font-black mt-1 ${item.textClass}`}>
+          <span className={`text-xl sm:text-2xl font-black mt-0.5 ${item.textClass}`}>
             {item.count}
           </span>
         </div>
       ))}
-    </MobileStepSlider>
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Upload, Check, Image as ImageIcon, Sparkles, X } from 'lucide-react';
+import { Upload, Check, Image as ImageIcon, Wand2, X } from 'lucide-react';
 import cleanImageBackground from '../../../../utils/cleanImageBackground';
 
 const SignatureUploadCard = ({ onSave, saving }) => {
@@ -70,7 +70,7 @@ const SignatureUploadCard = ({ onSave, saving }) => {
         <div className="relative border border-line dark:border-white/15 rounded-xl h-36 bg-white dark:bg-white/5 flex items-center justify-center p-3">
           <img src={cleaned} alt="Preview" className="max-h-full max-w-full object-contain" />
           <button type="button" onClick={() => toggleClean(!autoClean)} className="absolute bottom-2 right-2 px-2 py-1 text-[11px] rounded-lg border bg-surface dark:bg-black text-text-muted flex items-center gap-1">
-            <Sparkles className="w-3 h-3 text-emerald-500" /> {autoClean ? 'Background Cleaned' : 'Raw Image'}
+            <Wand2 className="w-3 h-3 text-emerald-500" /> {autoClean ? 'Background Cleaned' : 'Raw Image'}
           </button>
         </div>
       )}

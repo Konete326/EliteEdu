@@ -9,7 +9,7 @@ const LeaveRequestsTable = ({
   canApprove = true
 }) => {
   return (
-    <div className="rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs overflow-hidden flex flex-col flex-1 min-h-0">
+    <div className="rounded-2xl border border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs overflow-hidden flex flex-col md:flex-1 md:min-h-0">
       <div className="shrink-0 p-3 border-b border-line dark:border-line-dark flex flex-wrap items-center justify-between gap-3 bg-surface-secondary/30 dark:bg-white/[0.01]">
         <div className="flex items-center gap-1.5 flex-wrap">
           {['all', 'Pending', 'Approved', 'Rejected'].map((st) => (
@@ -48,7 +48,7 @@ const LeaveRequestsTable = ({
         </div>
       </div>
 
-      <div className="block sm:hidden flex-1 overflow-y-auto p-3 space-y-2.5">
+      <div className="block sm:hidden p-3 space-y-2.5">
         {leaves.length === 0 ? (
           <div className="py-12 text-center text-xs text-ink-muted">
             No leave applications found matching filters.
@@ -69,7 +69,7 @@ const LeaveRequestsTable = ({
         )}
       </div>
 
-      <div className="hidden sm:block overflow-x-auto overflow-y-auto flex-1 min-h-0 h-full">
+      <div className="hidden sm:block overflow-x-auto overflow-y-auto md:flex-1 md:min-h-0 md:h-full">
         <table className="w-full text-left text-xs border-collapse">
           <thead className="sticky top-0 z-10 bg-surface dark:bg-surface-dark shadow-2xs border-b border-line dark:border-line-dark text-[11px] font-bold text-ink-muted uppercase">
             <tr>

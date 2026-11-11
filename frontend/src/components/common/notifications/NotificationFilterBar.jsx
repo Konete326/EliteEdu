@@ -1,4 +1,5 @@
 import { Search, CheckCheck } from 'lucide-react';
+import MobileTabStepper from '../MobileTabStepper';
 
 const CATEGORIES = ['All', 'Announcement', 'Academic', 'Attendance', 'Promotion', 'Admission', 'Security'];
 
@@ -12,6 +13,8 @@ const NotificationFilterBar = ({
   onMarkAllRead,
   unreadCount = 0
 }) => {
+  const categoryTabs = CATEGORIES.map((c) => ({ id: c, label: c }));
+
   return (
     <div className="bg-surface dark:bg-[#0c0c0c] border border-line dark:border-white/10 rounded-2xl p-3 sm:p-4 shadow-xs space-y-3">
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
@@ -50,25 +53,11 @@ const NotificationFilterBar = ({
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-        {CATEGORIES.map((cat) => {
-          const isActive = category === cat;
-          return (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => setCategory(cat)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-                isActive
-                  ? 'bg-primary text-white shadow-xs'
-                  : 'bg-surface-secondary/30 dark:bg-white/5 text-ink-muted hover:text-ink dark:hover:text-ink-dark'
-              }`}
-            >
-              {cat}
-            </button>
-          );
-        })}
-      </div>
+      <MobileTabStepper
+        tabs={categoryTabs}
+        activeTab={category}
+        onChange={setCategory}
+      />
     </div>
   );
 };

@@ -15,9 +15,9 @@ import {
   CalendarCheck,
   BookOpen,
   HelpCircle,
-  Sparkles as _NoSparkles,
   Archive
 } from 'lucide-react';
+import MobileTabStepper from '../../components/common/MobileTabStepper';
 import { useAuth } from '../../context/AuthContext';
 import { useCampus } from '../../context/CampusContext';
 import { useToast } from '../../context/ToastContext';
@@ -185,25 +185,21 @@ const DataExportStudioPage = () => {
         </div>
       </div>
 
-      <div className="p-3 sm:p-4 rounded-2xl bg-surface dark:bg-[#0c0c0c] border border-line dark:border-white/10 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0 cursor-pointer ${
-                selectedCategory === cat
-                  ? 'bg-primary text-white shadow-xs'
-                  : 'bg-surface-secondary/70 dark:bg-[#141414] text-ink-sub dark:text-ink-muted-dark hover:text-ink dark:hover:text-white border border-line/60 dark:border-white/5'
-              }`}
-            >
-              {cat === 'all' ? 'All Datasets' : cat}
-            </button>
-          ))}
-        </div>
+      <div className="p-3 sm:p-4 rounded-2xl bg-surface dark:bg-[#0c0c0c] border border-line dark:border-white/10 shadow-xs flex flex-col gap-3">
+        <MobileTabStepper
+          tabs={[
+            { id: 'all', label: 'All Datasets' },
+            { id: 'Academic', label: 'Academic' },
+            { id: 'HR & Staff', label: 'HR & Staff' },
+            { id: 'Admissions', label: 'Admissions' },
+            { id: 'Structure', label: 'Structure' },
+            { id: 'Operations', label: 'Operations' }
+          ]}
+          activeTab={selectedCategory}
+          onChange={setSelectedCategory}
+        />
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap justify-end pt-1 border-t border-line/60 dark:border-white/5">
           {campuses && campuses.length > 0 && (
             <select
               value={selectedCampus}

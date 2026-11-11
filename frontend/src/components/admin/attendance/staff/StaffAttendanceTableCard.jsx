@@ -93,8 +93,8 @@ const StaffAttendanceTableCard = ({
   };
 
   return (
-    <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl shadow-xs overflow-hidden flex flex-col flex-1 min-h-0">
-      <div className="overflow-x-auto overflow-y-auto flex-1 min-h-0 h-full">
+    <div className="bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl shadow-xs overflow-hidden flex flex-col md:flex-1 md:min-h-0">
+      <div className="md:overflow-x-auto md:overflow-y-auto md:flex-1 md:min-h-0 md:h-full">
         <table className="hidden md:table w-full text-left border-collapse min-w-[820px]">
           <thead className="sticky top-0 z-10 bg-surface dark:bg-surface-dark shadow-2xs border-b border-line dark:border-line-dark text-[11px] font-bold uppercase tracking-wider text-ink-muted">
             <tr className="border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark">
@@ -295,17 +295,17 @@ const StaffAttendanceTableCard = ({
                     <div className="flex items-center gap-1 shrink-0 text-[10px]">
                       <button
                         type="button"
-                        onClick={(e) => handleOpenTimePicker(e, staff._id || index, 'in', item.time_in, defaultInPlaceholder)}
+                        onClick={(e) => handleOpenTimePicker(e, staff._id || index, 'check_in_time', item.check_in_time, defaultInPlaceholder)}
                         className="px-2 py-1 rounded-lg border border-line dark:border-line-dark bg-surface-secondary dark:bg-surface-secondary-dark font-mono font-bold text-ink dark:text-ink-dark hover:border-primary transition-all cursor-pointer"
                       >
-                        In: {item.time_in || defaultInPlaceholder}
+                        In: {item.check_in_time || defaultInPlaceholder}
                       </button>
                       <button
                         type="button"
-                        onClick={(e) => handleOpenTimePicker(e, staff._id || index, 'out', item.time_out, defaultOutPlaceholder)}
+                        onClick={(e) => handleOpenTimePicker(e, staff._id || index, 'check_out_time', item.check_out_time, defaultOutPlaceholder)}
                         className="px-2 py-1 rounded-lg border border-line dark:border-line-dark bg-surface-secondary dark:bg-surface-secondary-dark font-mono font-bold text-ink dark:text-ink-dark hover:border-primary transition-all cursor-pointer"
                       >
-                        Out: {item.time_out || defaultOutPlaceholder}
+                        Out: {item.check_out_time || defaultOutPlaceholder}
                       </button>
                     </div>
                   </div>

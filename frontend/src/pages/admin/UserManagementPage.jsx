@@ -154,7 +154,7 @@ const UserManagementPage = ({ defaultTab }) => {
           {activeTab === 'sessions' && <SessionMgmtTab />}
         </div>
 
-        <div className="xl:col-span-4 2xl:col-span-3 shrink-0">
+        <div className={`xl:col-span-4 2xl:col-span-3 shrink-0 ${activeTab !== 'users' ? 'hidden xl:block' : ''}`}>
           <UserMgmtSidebar
             selectedUser={selectedUser}
             onClearSelected={() => setSelectedUser(null)}

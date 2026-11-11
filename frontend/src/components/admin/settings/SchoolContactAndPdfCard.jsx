@@ -1,4 +1,4 @@
-import { Phone, Mail, Globe, MapPin, Sparkles, UserCheck } from 'lucide-react';
+import { Phone, Mail, Globe, MapPin, Wand2, UserCheck } from 'lucide-react';
 import SchoolInfoInput from './SchoolInfoInput';
 
 const SLOGAN_SUGGESTIONS = [
@@ -44,12 +44,20 @@ const SchoolContactAndPdfCard = ({ settings, onChange }) => {
     }
   };
 
+  const autoFillDomainAndMotto = () => {
+    if (!settings.name) return;
+    const slug = settings.name.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16);
+    if (!settings.email) onChange('email', `info@${slug || 'school'}.edu.pk`);
+    if (!settings.website) onChange('website', `https://${slug || 'school'}.edu.pk`);
+    if (!settings.slogan) onChange('slogan', 'Excellence in Education & Character Building');
+  };
+
   return (
     <div className="bg-surface dark:bg-[#0c0c0c] border border-line dark:border-white/10 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
-      <div className="flex items-center justify-between pb-3 border-b border-line dark:border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-line dark:border-white/10">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary dark:bg-primary/20 flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4" />
+            <Wand2 className="w-4 h-4" />
           </div>
           <div>
             <h3 className="text-xs sm:text-sm font-bold text-ink dark:text-ink-dark">
@@ -60,6 +68,17 @@ const SchoolContactAndPdfCard = ({ settings, onChange }) => {
             </p>
           </div>
         </div>
+
+        {settings.name && (
+          <button
+            type="button"
+            onClick={autoFillDomainAndMotto}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-xs font-bold transition-all cursor-pointer shrink-0 self-start sm:self-auto"
+          >
+            <Wand2 className="w-3.5 h-3.5" />
+            <span>Auto-Generate Domain &amp; Motto</span>
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">

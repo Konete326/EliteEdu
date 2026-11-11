@@ -16,7 +16,7 @@ const GeneralSettingsHeader = ({ settings, isDirty, saving, onSave }) => {
   }, [isDirty, saving, onSave]);
 
   return (
-    <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8 mb-6 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8 mb-6 px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-5 border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div className="flex items-center gap-3.5">
         <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 font-bold">
           <Sliders className="w-6 h-6" />
@@ -45,7 +45,7 @@ const GeneralSettingsHeader = ({ settings, isDirty, saving, onSave }) => {
               </span>
             )}
           </div>
-          <p className="text-xs font-semibold text-ink-muted">
+          <p className="hidden sm:block text-xs font-semibold text-ink-muted">
             Configure institutional identity, official report credentials, digital signatures, and dynamic PDF templates
           </p>
         </div>
