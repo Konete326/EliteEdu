@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import {
   School,
   PenTool,
@@ -9,7 +10,8 @@ import {
   Link as LinkIcon,
   CheckCircle2,
   ShieldCheck,
-  AlertCircle
+  AlertCircle,
+  ExternalLink
 } from 'lucide-react';
 import MobileTabStepper from '../../common/MobileTabStepper';
 
@@ -102,14 +104,22 @@ const SchoolBrandAssetsStudioCard = ({
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+          <Link
+            to="/admin/general-settings/signatures"
+            className="px-2.5 py-1.5 rounded-xl bg-surface-secondary/70 dark:bg-white/5 hover:bg-surface-secondary text-ink dark:text-white border border-line dark:border-white/10 text-xs font-semibold transition-all flex items-center gap-1.5"
+            title="Open Signatures & Stamps Studio"
+          >
+            <PenTool className="w-3.5 h-3.5 text-primary" />
+            <span>Signatures Studio</span>
+            <ExternalLink className="w-3 h-3 text-ink-muted" />
+          </Link>
           {onSyncSignatures && (
             <button
               type="button"
               onClick={onSyncSignatures}
               className="px-2.5 py-1.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
             >
-              <PenTool className="w-3.5 h-3.5" />
-              <span>Sync from Signatures Studio</span>
+              <span>Sync Defaults</span>
             </button>
           )}
           <button

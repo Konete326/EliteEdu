@@ -111,7 +111,9 @@ export const useSchoolGeneralSettings = () => {
       setFeedback({
         type: 'error',
         title: 'No Signatures Found',
-        message: 'Please add signatures in General Settings > Signatures first.'
+        message: 'Please add signatures in General Settings > Signatures first.',
+        actionLink: '/admin/general-settings/signatures',
+        actionLabel: 'Open Signatures Studio'
       });
       return false;
     } catch (err) {

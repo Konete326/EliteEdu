@@ -6,7 +6,8 @@ const MobileTabStepper = ({
   onChange,
   className = '',
   desktopVariant = 'tabs',
-  mobileBreakpoint = 'sm'
+  mobileBreakpoint = 'sm',
+  scrollToTop = false
 }) => {
   if (!tabs || tabs.length === 0) return null;
 
@@ -14,14 +15,21 @@ const MobileTabStepper = ({
   const currentTab = tabs[activeIdx] || tabs[0];
   const ActiveIcon = currentTab?.icon;
 
+  const triggerChange = (newId) => {
+    onChange(newId);
+    if (scrollToTop && typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const handlePrev = () => {
     const prevIdx = activeIdx > 0 ? activeIdx - 1 : tabs.length - 1;
-    onChange(tabs[prevIdx].id);
+    triggerChange(tabs[prevIdx].id);
   };
 
   const handleNext = () => {
     const nextIdx = activeIdx < tabs.length - 1 ? activeIdx + 1 : 0;
-    onChange(tabs[nextIdx].id);
+    triggerChange(tabs[nextIdx].id);
   };
 
   const isXl = mobileBreakpoint === 'xl';
@@ -71,7 +79,7 @@ const MobileTabStepper = ({
             <button
               key={tab.id}
               type="button"
-              onClick={() => onChange(tab.id)}
+              onClick={() => triggerChange(tab.id)}
               className={`h-1.5 rounded-full transition-all cursor-pointer ${
                 idx === activeIdx
                   ? 'w-5 bg-primary'
@@ -91,7 +99,7 @@ const MobileTabStepper = ({
             <button
               key={tab.id}
               type="button"
-              onClick={() => onChange(tab.id)}
+              onClick={() => triggerChange(tab.id)}
               className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                 isActive
                   ? 'bg-primary text-white shadow-xs'
@@ -123,3 +131,4 @@ const MobileTabStepper = ({
 };
 
 export default MobileTabStepper;
+

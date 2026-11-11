@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { CheckCircle2, AlertTriangle, X } from 'lucide-react';
 
 const SettingsFeedbackModal = ({ feedback, onClose }) => {
@@ -33,15 +34,34 @@ const SettingsFeedbackModal = ({ feedback, onClose }) => {
             {feedback.message}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className={`w-full py-2.5 rounded-xl text-xs font-bold text-white transition-all shadow-sm cursor-pointer ${
-            isSuccess ? 'bg-primary hover:bg-primary-hover' : 'bg-bad hover:bg-bad/90'
-          }`}
-        >
-          Acknowledge
-        </button>
+        {feedback.actionLink ? (
+          <div className="flex flex-col gap-2">
+            <Link
+              to={feedback.actionLink}
+              onClick={onClose}
+              className="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-hover transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <span>{feedback.actionLabel || 'Proceed'}</span>
+            </Link>
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full py-2 text-xs font-semibold text-ink-muted hover:text-ink dark:hover:text-white cursor-pointer"
+            >
+              Dismiss
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={onClose}
+            className={`w-full py-2.5 rounded-xl text-xs font-bold text-white transition-all shadow-sm cursor-pointer ${
+              isSuccess ? 'bg-primary hover:bg-primary-hover' : 'bg-bad hover:bg-bad/90'
+            }`}
+          >
+            Acknowledge
+          </button>
+        )}
         <button
           type="button"
           onClick={onClose}

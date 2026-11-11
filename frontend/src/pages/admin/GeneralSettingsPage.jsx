@@ -101,6 +101,7 @@ const GeneralSettingsPage = () => {
           activeTab={activeStep}
           onChange={setActiveStep}
           mobileBreakpoint="xl"
+          scrollToTop={true}
         />
 
         {activeStep === 'identity' && (
