@@ -41,10 +41,25 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
   const isStartingRef = useRef(false);
   const isActiveRef = useRef(isActive);
   const runIdRef = useRef(0);
+  const onScanRef = useRef(onScan);
+  const continuousRef = useRef(continuous);
+  const cooldownMsRef = useRef(cooldownMs);
 
   useEffect(() => {
     isActiveRef.current = isActive;
   }, [isActive]);
+
+  useEffect(() => {
+    onScanRef.current = onScan;
+  }, [onScan]);
+
+  useEffect(() => {
+    continuousRef.current = continuous;
+  }, [continuous]);
+
+  useEffect(() => {
+    cooldownMsRef.current = cooldownMs;
+  }, [cooldownMs]);
 
   const stopScanner = useCallback(async () => {
     runIdRef.current += 1;
@@ -124,39 +139,17 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
     isCooldownRef.current = true;
     setLastScannedCode(trimmed);
     try {
-      await onScan(trimmed);
+      if (onScanRef.current) {
+        await onScanRef.current(trimmed);
+      }
     } finally {
-      if (continuous) {
+      if (continuousRef.current) {
         setTimeout(() => {
           isCooldownRef.current = false;
-        }, cooldownMs);
+        }, cooldownMsRef.current || 1500);
       }
     }
-  }, [onScan, continuous, cooldownMs]);
-
-  const requestPermissions = useCallback(async () => {
-    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) return false;
-    let stream = null;
-    try {
-      const constraints = selectedCameraId
-        ? { deviceId: { exact: selectedCameraId } }
-        : { facingMode: { ideal: facingMode } };
-      stream = await navigator.mediaDevices.getUserMedia({ video: constraints, audio: false });
-    } catch (_) {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode }, audio: false });
-      } catch (__) {
-        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-      }
-    }
-    if (stream) {
-      activeMediaStreams.add(stream);
-      stopStream(stream);
-      activeMediaStreams.delete(stream);
-      return true;
-    }
-    return false;
-  }, [selectedCameraId, facingMode]);
+  }, []);
 
   const startScanner = useCallback(async () => {
     if (!isActiveRef.current || !containerId || isStartingRef.current) return;
@@ -184,24 +177,12 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
       return;
     }
 
-    try {
-      await requestPermissions();
-    } catch (permErr) {
-      if (isActiveRef.current && runIdRef.current === currentRunId) {
-        setCameraError(permErr?.message || 'Camera permissions denied. Please allow permissions in browser address bar and click Retry.');
-      }
-      isStartingRef.current = false;
-      return;
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 80));
-    if (!isActiveRef.current || runIdRef.current !== currentRunId) {
-      isStartingRef.current = false;
-      return;
-    }
-
-    const containerEl = document.getElementById(containerId);
+    let containerEl = document.getElementById(containerId);
     if (!containerEl) {
+      await new Promise((resolve) => setTimeout(resolve, 30));
+      containerEl = document.getElementById(containerId);
+    }
+    if (!containerEl || !isActiveRef.current || runIdRef.current !== currentRunId) {
       isStartingRef.current = false;
       return;
     }
@@ -258,10 +239,6 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
         .then((devices) => {
           if (Array.isArray(devices) && devices.length > 0) {
             setCameras(devices);
-            if (!selectedCameraId) {
-              const backCam = devices.find((d) => /back|rear|environment/i.test(d.label));
-              if (backCam) setSelectedCameraId(backCam.id);
-            }
           }
         })
         .catch(() => {});
@@ -280,7 +257,7 @@ export const useCameraScanner = ({ containerId, onScan, isActive, continuous = t
     } finally {
       isStartingRef.current = false;
     }
-  }, [containerId, selectedCameraId, facingMode, handleDecoded, stopScanner, requestPermissions]);
+  }, [containerId, selectedCameraId, facingMode, handleDecoded, stopScanner]);
 
   const flipCamera = useCallback(() => {
     if (cameras.length > 1) {
