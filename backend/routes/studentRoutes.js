@@ -6,7 +6,8 @@ const {
   getStudentById,
   getNextFamilyNumber,
   createStudent,
-  updateStudent
+  updateStudent,
+  familyLookup
 } = require('../controllers/studentController');
 const {
   toggleStudentStatus,
@@ -21,6 +22,7 @@ router.use(authMiddleware, authorizeRoles('Admin'));
 router.get('/export-cards-pdf', exportStudentCardsPdfHandler);
 router.post('/export-cards-pdf', exportStudentCardsPdfHandler);
 router.get('/next-family-number', getNextFamilyNumber);
+router.get('/family-lookup', familyLookup);
 router.get('/', getStudents);
 router.get('/:id', getStudentById);
 router.post('/', createStudent);

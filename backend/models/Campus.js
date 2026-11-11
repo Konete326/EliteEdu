@@ -39,6 +39,15 @@ const campusSchema = new mongoose.Schema(
       type: String,
       enum: ['Active', 'Inactive'],
       default: 'Active'
+    },
+    code: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    is_main: {
+      type: Boolean,
+      default: false
     }
   },
   {

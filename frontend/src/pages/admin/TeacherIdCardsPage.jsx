@@ -10,7 +10,7 @@ import {
   exportTeacherCardsZipBackground,
   printTeacherCardsBackground
 } from '../../services/idCardExportService';
-import { UserCheck, Sparkles, CheckCircle2, Printer } from 'lucide-react';
+import { UserCheck, CreditCard, CheckCircle2, Printer, Upload } from 'lucide-react';
 
 const BATCH_SIZE = 24;
 
@@ -42,6 +42,12 @@ const TeacherIdCardsPage = () => {
   const [template, setTemplate] = useState('template_1_curve_blue');
   const [orientation, setOrientation] = useState('vertical');
   const [accentColor, setAccentColor] = useState('#003B73');
+
+  useEffect(() => {
+    if (institution?.activeColor) {
+      setAccentColor(institution.activeColor);
+    }
+  }, [institution?.activeColor]);
   const [sideMode, setSideMode] = useState('front');
   const [selectedTeacherId, setSelectedTeacherId] = useState(initialTeacherId || 'all');
   const [editingTeacher, setEditingTeacher] = useState(null);
@@ -298,7 +304,7 @@ const TeacherIdCardsPage = () => {
         </div>
       ) : selectedTeachers.length === 0 ? (
         <div className="bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark rounded-2xl p-12 text-center text-xs text-ink-muted space-y-2">
-          <Sparkles className="w-8 h-8 text-primary mx-auto opacity-40" />
+          <CreditCard className="w-8 h-8 text-primary mx-auto opacity-40" />
           <p className="font-bold text-sm text-ink dark:text-white">No faculty cards selected</p>
           <p className="max-w-sm mx-auto text-ink-muted">
             {searchQuery
@@ -325,7 +331,7 @@ const TeacherIdCardsPage = () => {
 
           <div className={`grid ${gridColsClass} gap-6 justify-items-center w-full`}>
             {visibleTeachers.map((teacher) => (
-              <div key={teacher._id} className="w-full flex justify-center transition-all duration-300 hover:-translate-y-1">
+              <div key={teacher._id} className="w-full flex flex-col items-center gap-2 transition-all duration-300 hover:-translate-y-1">
                 <UniversalIdCard
                   holder={teacher}
                   holderType="teacher"
@@ -337,6 +343,15 @@ const TeacherIdCardsPage = () => {
                   isSelected={selectedSet.has(teacher._id)}
                   onToggleSelect={() => handleToggleSelect(teacher._id)}
                 />
+                {!teacher.photo_url && (
+                  <button
+                    type="button"
+                    onClick={() => setEditingTeacher(teacher)}
+                    className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Upload className="w-3.5 h-3.5" /> Upload Photo
+                  </button>
+                )}
               </div>
             ))}
           </div>

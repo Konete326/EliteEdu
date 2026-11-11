@@ -1,12 +1,14 @@
 import { memo } from 'react';
 import AttendanceWidget from './AttendanceWidget';
-import HomeworkWidget from './HomeworkWidget';
+import TodayAbsentStudentsWidget from './TodayAbsentStudentsWidget';
 
-const AttendanceHomeworkWidget = ({ stats, attendanceSummary, homeworkSummary }) => {
+const AttendanceHomeworkWidget = ({ stats, attendanceSummary }) => {
+  const absentStudents = stats?.absentStudentsToday || [];
+
   return (
     <div className="space-y-6">
       <AttendanceWidget stats={stats} attendanceSummary={attendanceSummary} />
-      <HomeworkWidget stats={stats} homeworkSummary={homeworkSummary} />
+      <TodayAbsentStudentsWidget absentStudents={absentStudents} />
     </div>
   );
 };

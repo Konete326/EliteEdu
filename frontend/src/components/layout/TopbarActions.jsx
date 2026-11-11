@@ -101,12 +101,14 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
         </div>
       )}
 
-      <TopbarMessages isColored={isColored} btnClass={btnClass} />
+      <div className="hidden sm:flex items-center">
+        <TopbarMessages isColored={isColored} btnClass={btnClass} />
+      </div>
 
       <button
         type="button"
         onClick={handleOpenScanner}
-        className={btnClass}
+        className={`${btnClass} hidden sm:flex`}
         title="Universal QR & Barcode Scanner"
       >
         <ScanLine className="w-4 h-4" />
@@ -118,7 +120,7 @@ const TopbarActions = ({ isDark, toggleTheme, isColored }) => {
         <button
           type="button"
           onClick={promptInstall}
-          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-xs ${
+          className={`hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-xs ${
             isColored ? 'bg-white text-ink hover:bg-white/90' : 'bg-primary-soft dark:bg-primary/20 text-primary dark:text-primary-dark hover:bg-primary hover:text-white'
           }`}
         >

@@ -5,7 +5,6 @@ import ApplicantTopBar from '../../components/admin/applicants/ApplicantTopBar';
 import ApplicantTable from '../../components/admin/applicants/ApplicantTable';
 import ApplicantPagination from '../../components/admin/applicants/ApplicantPagination';
 import ApplicantDetailsModal from '../../components/admin/applicants/ApplicantDetailsModal';
-import ApplicantSalaryModal from '../../components/admin/applicants/ApplicantSalaryModal';
 import CustomizeFormModal from '../../components/admin/applicants/CustomizeFormModal';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import PageLoader from '../../components/common/PageLoader';
@@ -105,7 +104,6 @@ const StaffApplicantsList = () => {
               applicants={applicants}
               onStatusChange={handleStatusChange}
               onOpenConvert={setApplicantToConvert}
-              onOpenSalary={setApplicantForSalary}
               onView={setViewApplicant}
               onEdit={(app) => navigate(`/admin/staff-applicants/${app._id}/edit`)}
               onDelete={setApplicantToDelete}
@@ -131,12 +129,6 @@ const StaffApplicantsList = () => {
         }}
       />
 
-      <ApplicantSalaryModal
-        isOpen={Boolean(applicantForSalary)}
-        applicant={applicantForSalary}
-        onClose={() => setApplicantForSalary(null)}
-        onConfirm={handleStatusChange}
-      />
 
       <CustomizeFormModal
         isOpen={isCustomizeModalOpen}

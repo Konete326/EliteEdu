@@ -107,8 +107,6 @@ const ApplicantDetailsModal = ({ isOpen, applicant, onClose, onConvert }) => {
               <div className="flex justify-between"><span className="text-ink-muted">Target Department:</span> <span className="font-medium">{applicant.department || '—'}</span></div>
               <div className="flex justify-between"><span className="text-ink-muted">Designation:</span> <span className="font-medium">{applicant.designation || '—'}</span></div>
               <div className="flex justify-between"><span className="text-ink-muted">Work Availability:</span> <span className="font-medium">{applicant.availability || 'Full Time'}</span></div>
-              <div className="flex justify-between"><span className="text-ink-muted">Expected Salary:</span> <span className="font-mono font-bold text-ink dark:text-white">{applicant.expected_salary ? `PKR ${Number(applicant.expected_salary).toLocaleString()}` : '—'}</span></div>
-              <div className="flex justify-between"><span className="text-ink-muted">Approved Salary:</span> <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{applicant.approved_salary ? `PKR ${Number(applicant.approved_salary).toLocaleString()}` : 'Pending Agreement'}</span></div>
             </div>
           </div>
 

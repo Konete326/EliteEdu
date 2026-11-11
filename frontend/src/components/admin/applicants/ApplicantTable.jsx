@@ -4,7 +4,6 @@ const ApplicantTable = ({
   applicants = [],
   onStatusChange,
   onOpenConvert,
-  onOpenSalary,
   onView,
   onEdit,
   onDelete
@@ -18,7 +17,6 @@ const ApplicantTable = ({
             <th className="py-3 px-3">Position &amp; Department</th>
             <th className="py-3 px-3">Qualification &amp; Experience</th>
             <th className="py-3 px-3">Applied Date</th>
-            <th className="py-3 px-3">Salary (Exp / Appr)</th>
             <th className="py-3 px-3">Resume / CV</th>
             <th className="py-3 px-3">Hiring Status</th>
             <th className="py-3 px-3.5 text-right">Quick Actions</th>
@@ -31,7 +29,6 @@ const ApplicantTable = ({
               applicant={app}
               onStatusChange={onStatusChange}
               onOpenConvert={onOpenConvert}
-              onOpenSalary={onOpenSalary}
               onView={onView}
               onEdit={onEdit}
               onDelete={onDelete}

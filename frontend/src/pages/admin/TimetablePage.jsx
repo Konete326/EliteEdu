@@ -27,6 +27,7 @@ const TimetablePage = () => {
   const [slots, setSlots] = useState([]);
   const [bellSchedule, setBellSchedule] = useState(null);
   const [previewSlots, setPreviewSlots] = useState([]);
+  const [fridayPreviewSlots, setFridayPreviewSlots] = useState([]);
   const [selectedGrade, setSelectedGrade] = useState('');
   const [selectedSection, setSelectedSection] = useState('A');
   const [selectedTeacher, setSelectedTeacher] = useState('');
@@ -120,12 +121,19 @@ const TimetablePage = () => {
               onSaved={(s) => {
                 setBellSchedule(s);
                 setPreviewSlots(s.slots || []);
+                setFridayPreviewSlots(s.friday_slots || []);
               }}
-              onSlotsPreview={setPreviewSlots}
+              onSlotsPreview={(s, fs) => {
+                setPreviewSlots(s || []);
+                if (fs) setFridayPreviewSlots(fs);
+              }}
             />
           </div>
           <div className="lg:col-span-5">
-            <BellScheduleSlotTable slots={previewSlots} />
+            <BellScheduleSlotTable
+              slots={previewSlots}
+              fridaySlots={fridayPreviewSlots.length > 0 ? fridayPreviewSlots : (bellSchedule?.friday_slots || [])}
+            />
           </div>
         </div>
       ) : activeMode === 'substitutions' ? (

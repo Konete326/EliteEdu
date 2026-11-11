@@ -17,8 +17,9 @@ const getTeacherAllowedGradeIds = async (user) => {
 
   if (user.role === 'Admin' || user.role === 'SuperAdmin') {
     return Grade.find({ school_id: schoolId })
-      .select('_id name sections campus_id class_teacher status')
+      .select('_id name sections campus_id class_teacher section_teachers status')
       .populate('class_teacher', 'name email')
+      .populate('section_teachers.teacher_id', 'name email')
       .lean();
   }
 
@@ -49,6 +50,7 @@ const getTeacherAllowedGradeIds = async (user) => {
 
   const orConditions = [
     { class_teacher: user.id },
+    { 'section_teachers.teacher_id': user.id },
     { _id: { $in: [...assignedIds, ...classAssignmentGradeIds, ...timetableGradeIds, ...subGradeIds] } }
   ];
   if (classNames.length > 0) {
@@ -59,14 +61,16 @@ const getTeacherAllowedGradeIds = async (user) => {
     school_id: schoolId,
     $or: orConditions
   })
-    .select('_id name sections campus_id class_teacher status')
+    .select('_id name sections campus_id class_teacher section_teachers status')
     .populate('class_teacher', 'name email')
+    .populate('section_teachers.teacher_id', 'name email')
     .lean();
 
   if (grades.length === 0 && assignedIds.length === 0 && classAssignmentGradeIds.length === 0 && timetableGradeIds.length === 0 && subGradeIds.length === 0) {
     grades = await Grade.find({ school_id: schoolId, status: { $ne: 'Inactive' } })
-      .select('_id name sections campus_id class_teacher status')
+      .select('_id name sections campus_id class_teacher section_teachers status')
       .populate('class_teacher', 'name email')
+      .populate('section_teachers.teacher_id', 'name email')
       .lean();
   }
 

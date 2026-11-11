@@ -81,15 +81,26 @@ const GradeTableRow = ({
       </td>
 
       <td className="py-3 px-3.5">
-        <div className="flex flex-wrap gap-1 items-center">
-          {grade.sections?.map((sec, i) => (
-            <span
-              key={i}
-              className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-primary/10 text-primary border border-primary/20"
-            >
-              {sec}
-            </span>
-          ))}
+        <div className="flex flex-wrap gap-1.5 items-center">
+          {grade.sections?.map((sec, i) => {
+            const st = Array.isArray(grade.section_teachers)
+              ? grade.section_teachers.find((item) => item.section === sec)
+              : null;
+            const teacherName = st?.teacher_id?.name;
+            return (
+              <span
+                key={i}
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-primary/10 text-primary border border-primary/20"
+              >
+                <span className="font-bold">{sec}</span>
+                {teacherName && (
+                  <span className="text-[9px] text-ink-muted dark:text-ink-muted-dark border-l border-primary/30 pl-1 font-normal">
+                    {teacherName}
+                  </span>
+                )}
+              </span>
+            );
+          })}
         </div>
       </td>
 

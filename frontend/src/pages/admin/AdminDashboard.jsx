@@ -5,7 +5,6 @@ import { useAuth } from '../../context/AuthContext';
 import DashboardKpiRow from '../../components/admin/dashboard/DashboardKpiRow';
 import AppStatsWidget from '../../components/admin/dashboard/AppStatsWidget';
 import AdmissionsChartWidget from '../../components/admin/dashboard/AdmissionsChartWidget';
-import FinancialOverviewWidget from '../../components/admin/dashboard/FinancialOverviewWidget';
 import AttendanceHomeworkWidget from '../../components/admin/dashboard/AttendanceHomeworkWidget';
 import DashboardRightColumn from '../../components/admin/dashboard/DashboardRightColumn';
 import DashboardSkeleton from '../../components/admin/dashboard/DashboardSkeleton';
@@ -89,7 +88,6 @@ const AdminDashboard = () => {
         <div className="xl:col-span-8 space-y-6">
           <AppStatsWidget appStats={stats?.appDownloadStats} stats={stats} />
           <AdmissionsChartWidget admissionsStats={stats?.admissionsStats} stats={stats} />
-          {isPrivate && <FinancialOverviewWidget financialOverview={stats?.financialOverview} stats={stats} />}
           <AttendanceHomeworkWidget
             attendanceSummary={stats?.attendanceSummary}
             homeworkSummary={stats?.homeworkSummary}
@@ -102,7 +100,7 @@ const AdminDashboard = () => {
             birthdaysToday={stats?.birthdaysToday}
             upcomingClasses={stats?.upcomingClasses}
             studentStats={stats?.studentStats}
-            crmPipeline={stats?.crmPipeline}
+            stats={stats}
           />
         </div>
       </div>

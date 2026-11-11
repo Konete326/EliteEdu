@@ -27,24 +27,24 @@ const Topbar = ({ setMobileOpen, setIsDesktopOpen, isDark, toggleTheme }) => {
     : 'bg-surface dark:bg-surface-dark border-b border-line dark:border-line-dark text-ink dark:text-ink-dark';
 
   return (
-    <header className={`h-16 px-4 sm:px-6 flex items-center justify-between shrink-0 sticky top-0 z-20 transition-colors duration-300 ${headerBgClass}`}>
-      <div className="flex items-center gap-3 min-w-0">
+    <header className={`h-16 px-3 sm:px-6 flex items-center justify-between shrink-0 sticky top-0 z-20 transition-colors duration-300 ${headerBgClass}`}>
+      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
         <button
           type="button"
           onClick={handleMenuClick}
           aria-label="Toggle navigation menu"
-          className={`p-1.5 rounded-lg transition-colors ${
+          className={`p-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
             isColored ? 'text-white/90 hover:bg-white/15' : 'text-ink-sub hover:bg-surface-secondary dark:text-ink-sub-dark dark:hover:bg-surface-secondary-dark'
           }`}
         >
           <PanelLeft className="w-4 h-4" />
         </button>
 
-        <div className={`flex items-center gap-2 text-xs truncate ${isColored ? 'text-white/70' : 'text-ink-muted dark:text-ink-muted-dark'}`}>
-          <Home className="w-3.5 h-3.5 shrink-0" />
+        <div className={`flex items-center gap-1.5 text-xs truncate ${isColored ? 'text-white/70' : 'text-ink-muted dark:text-ink-muted-dark'}`}>
+          <Home className="w-3.5 h-3.5 shrink-0 hidden sm:block" />
           <span className="hidden sm:inline">Home</span>
           <span className="hidden sm:inline">&gt;</span>
-          <span className={`font-semibold truncate ${isColored ? 'text-white' : 'text-ink dark:text-ink-dark'}`}>{pageTitle}</span>
+          <span className={`font-bold text-sm sm:text-xs truncate ${isColored ? 'text-white' : 'text-ink dark:text-ink-dark'}`}>{pageTitle}</span>
         </div>
       </div>
 

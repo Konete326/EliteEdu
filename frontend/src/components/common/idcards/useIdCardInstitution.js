@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../../services/api';
 
 let cachedSchool = null;
+let cachedSignatures = null;
 const campusCache = new Map();
 
 const getInitialSchool = () => {
@@ -36,6 +37,20 @@ const fetchSchoolOnce = async () => {
   return cachedSchool;
 };
 
+const fetchSignaturesOnce = async () => {
+  if (cachedSignatures) return cachedSignatures;
+  try {
+    const res = await api.get('/signatures');
+    const items = res.data?.data || [];
+    const defaultSig = items.find((s) => !s.is_stamp && s.is_default)?.image_url || '';
+    const defaultStamp = items.find((s) => s.is_stamp && s.is_default)?.image_url || '';
+    cachedSignatures = { defaultSig, defaultStamp };
+    return cachedSignatures;
+  } catch {
+    return { defaultSig: '', defaultStamp: '' };
+  }
+};
+
 const fetchCampusOnce = async (id) => {
   if (!id) return null;
   if (campusCache.has(id)) return campusCache.get(id);
@@ -51,6 +66,7 @@ const fetchCampusOnce = async (id) => {
 
 const useIdCardInstitution = (campusIdProp) => {
   const [school, setSchool] = useState(getInitialSchool);
+  const [signatures, setSignatures] = useState(() => cachedSignatures || { defaultSig: '', defaultStamp: '' });
   const [campus, setCampus] = useState(() => (campusIdProp ? campusCache.get(campusIdProp) || null : null));
   const [loading, setLoading] = useState(false);
 
@@ -66,6 +82,9 @@ const useIdCardInstitution = (campusIdProp) => {
         });
       }
     });
+    fetchSignaturesOnce().then((sigs) => {
+      if (mounted && sigs) setSignatures(sigs);
+    });
     return () => { mounted = false; };
   }, [campusIdProp]);
 
@@ -80,7 +99,9 @@ const useIdCardInstitution = (campusIdProp) => {
   const schoolEmail = campus?.email || school?.email || '';
   const schoolWebsite = school?.website || '';
   const principalName = school?.principal_name || 'Principal';
-  const principalSignatureUrl = school?.principal_signature_url || '';
+  const principalSignatureUrl = signatures.defaultSig || school?.principal_signature_url || '';
+  const stampUrl = signatures.defaultStamp || school?.stamp_url || '';
+  const activeColor = school?.theme_settings?.activeColor || '#0d9488';
 
   return {
     school,
@@ -97,7 +118,9 @@ const useIdCardInstitution = (campusIdProp) => {
     schoolEmail,
     schoolWebsite,
     principalName,
-    principalSignatureUrl
+    principalSignatureUrl,
+    stampUrl,
+    activeColor
   };
 };
 

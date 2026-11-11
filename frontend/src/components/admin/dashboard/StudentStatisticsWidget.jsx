@@ -12,10 +12,9 @@ const StudentStatisticsWidget = ({ studentStats }) => {
   };
 
   const items = useMemo(() => [
-    { label: 'Inquiries', data: stats.enquiries, path: '/admin/crm/inquiries', theme: 'text-blue-700 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-950/30 border-blue-100 dark:border-blue-900/30' },
-    { label: 'Registered', data: stats.registrations, path: '/admin/crm/admissions', theme: 'text-emerald-700 dark:text-emerald-400 bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/30' },
-    { label: 'Admissions', data: stats.admissions, path: '/admin/students', theme: 'text-violet-700 dark:text-violet-400 bg-violet-50/60 dark:bg-violet-950/30 border-violet-100 dark:border-violet-900/30' }
-  ], [stats.enquiries, stats.registrations, stats.admissions]);
+    { label: 'Active Students', data: stats.registrations, path: '/admin/students', theme: 'text-emerald-700 dark:text-emerald-400 bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/30' },
+    { label: 'Total Admissions', data: stats.admissions, path: '/admin/students', theme: 'text-violet-700 dark:text-violet-400 bg-violet-50/60 dark:bg-violet-950/30 border-violet-100 dark:border-violet-900/30' }
+  ], [stats.registrations, stats.admissions]);
 
   return (
     <div className="p-4 sm:p-5 rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm">
@@ -28,7 +27,7 @@ const StudentStatisticsWidget = ({ studentStats }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 mb-4">
+      <div className="grid grid-cols-2 gap-2 mb-4">
         {items.map((item) => (
           <Link
             key={item.label}

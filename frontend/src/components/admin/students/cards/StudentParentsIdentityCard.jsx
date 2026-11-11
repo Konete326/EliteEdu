@@ -1,4 +1,4 @@
-import { Users, Sparkles } from 'lucide-react';
+import { Users, RefreshCw } from 'lucide-react';
 import { formatPakistaniPhone, formatCnic } from '../../../../utils/validators';
 
 const StudentParentsIdentityCard = ({ formData, onNestedChange, onChange, onRefreshFamilyNumber }) => {
@@ -24,7 +24,7 @@ const StudentParentsIdentityCard = ({ formData, onNestedChange, onChange, onRefr
                 className="text-[11px] text-primary hover:underline flex items-center gap-1 font-medium cursor-pointer"
                 title="Regenerate next sequential family number"
               >
-                <Sparkles className="w-3 h-3" /> Auto-Seq
+                <RefreshCw className="w-3 h-3" /> Auto-Seq
               </button>
             )}
           </div>
@@ -108,6 +108,21 @@ const StudentParentsIdentityCard = ({ formData, onNestedChange, onChange, onRefr
             className="w-full px-3 py-2 rounded-xl border border-line dark:border-white/10 bg-surface-secondary/50 dark:bg-[#141414] text-ink dark:text-ink-dark focus:border-primary outline-none font-mono"
           />
         </div>
+
+        {Array.isArray(formData.family_members) && formData.family_members.length > 0 && (
+          <div className="col-span-full p-3.5 rounded-xl bg-primary/5 border border-primary/20 text-xs space-y-2">
+            <span className="font-bold text-primary block">Enrolled Siblings in Same Family:</span>
+            <div className="flex flex-wrap gap-2">
+              {formData.family_members.map((sib, i) => (
+                <span key={i} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface dark:bg-[#141414] border border-line dark:border-white/10 font-medium text-ink dark:text-ink-dark text-[11px]">
+                  <strong>{sib.name}</strong>
+                  <span className="text-ink-muted">({sib.grade_name || 'Class'} - {sib.section || 'A'})</span>
+                  {sib.gr_number && <span className="text-primary font-mono text-[10px]">GR: {sib.gr_number}</span>}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ export const getAdminNavItems = (schoolType) => [
       { name: 'Admissions', path: '/admin/students/admission-letter', badge: 'Coming Soon' },
       { name: 'Student Cards', path: '/admin/students/id-cards' },
       { name: 'Certificates', path: '/admin/certificates', badge: 'Coming Soon' },
-      { name: 'Templates', path: '/admin/certificates/templates' },
+      { name: 'Templates', path: '/admin/certificates/templates', badge: 'Coming Soon' },
       { name: 'Promotions', path: '/admin/students/promote', badge: 'Coming Soon' },
       { name: 'Activities', path: '/admin/events', badge: 'Coming Soon' },
       { name: 'Behavior', path: '/admin/behavior-skills', badge: 'Coming Soon' },
@@ -40,27 +40,29 @@ export const getAdminNavItems = (schoolType) => [
     {
       type: 'group',
       title: 'Fees',
+      badge: 'Coming Soon',
       icon: DollarSign,
       subItems: [
-        { name: 'Collect Fees', path: '/admin/fees/collection' },
-        { name: 'Fee Plans', path: '/admin/fees/structure' },
-        { name: 'Defaulters', path: '/admin/fees/defaulters' },
-        { name: 'Fee Reports', path: '/admin/fees/reports' },
-        { name: 'Concessions', path: '/admin/fees/concession' }
+        { name: 'Collect Fees', path: '/admin/fees/collection', badge: 'Coming Soon' },
+        { name: 'Fee Plans', path: '/admin/fees/structure', badge: 'Coming Soon' },
+        { name: 'Defaulters', path: '/admin/fees/defaulters', badge: 'Coming Soon' },
+        { name: 'Fee Reports', path: '/admin/fees/reports', badge: 'Coming Soon' },
+        { name: 'Concessions', path: '/admin/fees/concession', badge: 'Coming Soon' }
       ]
     },
     {
       type: 'group',
       title: 'Accounts',
+      badge: 'Coming Soon',
       icon: Landmark,
       subItems: [
-        { name: 'Account Heads', path: '/admin/accounts/chart' },
-        { name: 'Income', path: '/admin/accounts/income' },
-        { name: 'Expenses', path: '/admin/accounts/expenses' },
-        { name: 'Transactions', path: '/admin/accounts/transactions' },
-        { name: 'Balance Sheet', path: '/admin/accounts/balance-sheet' },
-        { name: 'Payroll', path: '/admin/payroll' },
-        { name: 'Store / POS', path: '/admin/store' }
+        { name: 'Account Heads', path: '/admin/accounts/chart', badge: 'Coming Soon' },
+        { name: 'Income', path: '/admin/accounts/income', badge: 'Coming Soon' },
+        { name: 'Expenses', path: '/admin/accounts/expenses', badge: 'Coming Soon' },
+        { name: 'Transactions', path: '/admin/accounts/transactions', badge: 'Coming Soon' },
+        { name: 'Balance Sheet', path: '/admin/accounts/balance-sheet', badge: 'Coming Soon' },
+        { name: 'Payroll', path: '/admin/payroll', badge: 'Coming Soon' },
+        { name: 'Store / POS', path: '/admin/store', badge: 'Coming Soon' }
       ]
     }
   ] : []),
@@ -152,7 +154,7 @@ export const getAdminNavItems = (schoolType) => [
       { name: 'Signatures', path: '/admin/general-settings/signatures' },
       { name: 'Roles & Rights', path: '/admin/settings/roles' },
       { name: 'Users', path: '/admin/control-panel/user-management' },
-      { name: 'Class Transfer', path: '/admin/control-panel/class-transfer' },
+      { name: 'Class Transfer', path: '/admin/control-panel/class-transfer', badge: 'Coming Soon' },
       { name: 'Logo & Theme', path: '/admin/control-panel/branding' },
       { name: 'Bulk Import', path: '/admin/control-panel/bulk-import', badge: 'Coming Soon' },
       { name: 'Backup', path: '/admin/settings/backup', badge: 'Coming Soon' }
@@ -241,8 +243,8 @@ export const getNavCategories = (user) => {
       examItems.push({ name: 'Exam Marks', path: '/teacher/exams', badge: 'Coming Soon' });
     }
     if (has('datesheet')) examItems.push({ name: 'Datesheet', path: '/teacher/datesheet', badge: 'Coming Soon' });
-    if (has('class_tests')) examItems.push({ name: 'Class Tests', path: '/teacher/class-tests' });
-    if (has('question_papers')) examItems.push({ name: 'Question Papers', path: '/teacher/question-papers' });
+    if (has('class_tests')) examItems.push({ name: 'Class Tests', path: '/teacher/class-tests', badge: 'Coming Soon' });
+    if (has('question_papers')) examItems.push({ name: 'Question Papers', path: '/teacher/question-papers', badge: 'Coming Soon' });
     if (examItems.length > 0) {
       groups.push({
         type: 'group',
@@ -309,7 +311,7 @@ export const getNavCategories = (user) => {
     if (allowed.has('teacher_id_cards')) mainSub.push({ name: 'Teacher Cards', path: '/admin/teachers/id-cards' });
     if (allowed.has('certificates')) {
       mainSub.push({ name: 'Certificates', path: '/admin/certificates', badge: 'Coming Soon' });
-      mainSub.push({ name: 'Templates', path: '/admin/certificates/templates' });
+      mainSub.push({ name: 'Templates', path: '/admin/certificates/templates', badge: 'Coming Soon' });
     }
     if (allowed.has('student_portal')) mainSub.push({ name: 'Student Portal', path: '/admin/student-portal-preview', badge: 'Coming Soon' });
     if (allowed.has('transport')) mainSub.push({ name: 'Vehicles', path: '/admin/transport', badge: 'Coming Soon' });
@@ -321,35 +323,40 @@ export const getNavCategories = (user) => {
       subItems: mainSub
     });
 
-    if (allowed.has('fees')) {
-      groups.push({
-        type: 'group',
-        title: 'Fees',
-        icon: DollarSign,
-        subItems: [
-          { name: 'Collect Fees', path: '/admin/fees/collection' },
-          { name: 'Fee Plans', path: '/admin/fees/structure' },
-          { name: 'Defaulters', path: '/admin/fees/defaulters' },
-          { name: 'Fee Reports', path: '/admin/fees/reports' },
-          { name: 'Concessions', path: '/admin/fees/concession' }
-        ]
-      });
-    }
+    const schoolType = user?.school_type || user?.school_id?.school_type || 'Private';
+    if (schoolType !== 'Government') {
+      if (allowed.has('fees')) {
+        groups.push({
+          type: 'group',
+          title: 'Fees',
+          badge: 'Coming Soon',
+          icon: DollarSign,
+          subItems: [
+            { name: 'Collect Fees', path: '/admin/fees/collection', badge: 'Coming Soon' },
+            { name: 'Fee Plans', path: '/admin/fees/structure', badge: 'Coming Soon' },
+            { name: 'Defaulters', path: '/admin/fees/defaulters', badge: 'Coming Soon' },
+            { name: 'Fee Reports', path: '/admin/fees/reports', badge: 'Coming Soon' },
+            { name: 'Concessions', path: '/admin/fees/concession', badge: 'Coming Soon' }
+          ]
+        });
+      }
 
-    if (allowed.has('accounts') || allowed.has('payroll')) {
-      groups.push({
-        type: 'group',
-        title: 'Accounts',
-        icon: Landmark,
-        subItems: [
-          { name: 'Account Heads', path: '/admin/accounts/chart' },
-          { name: 'Income', path: '/admin/accounts/income' },
-          { name: 'Expenses', path: '/admin/accounts/expenses' },
-          { name: 'Transactions', path: '/admin/accounts/transactions' },
-          { name: 'Balance Sheet', path: '/admin/accounts/balance-sheet' },
-          { name: 'Payroll', path: '/admin/payroll' }
-        ]
-      });
+      if (allowed.has('accounts') || allowed.has('payroll')) {
+        groups.push({
+          type: 'group',
+          title: 'Accounts',
+          badge: 'Coming Soon',
+          icon: Landmark,
+          subItems: [
+            { name: 'Account Heads', path: '/admin/accounts/chart', badge: 'Coming Soon' },
+            { name: 'Income', path: '/admin/accounts/income', badge: 'Coming Soon' },
+            { name: 'Expenses', path: '/admin/accounts/expenses', badge: 'Coming Soon' },
+            { name: 'Transactions', path: '/admin/accounts/transactions', badge: 'Coming Soon' },
+            { name: 'Balance Sheet', path: '/admin/accounts/balance-sheet', badge: 'Coming Soon' },
+            { name: 'Payroll', path: '/admin/payroll', badge: 'Coming Soon' }
+          ]
+        });
+      }
     }
 
     if (allowed.has('attendance')) {

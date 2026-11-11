@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { QrCode } from 'lucide-react';
+import { QrCode, MessageCircle } from 'lucide-react';
 
 const STATUS_OPTIONS = [
   { code: 'P', label: 'P', activeClass: 'bg-emerald-600 text-white shadow-xs' },
@@ -9,9 +9,22 @@ const STATUS_OPTIONS = [
   { code: 'HD', label: 'HD', activeClass: 'bg-purple-600 text-white shadow-xs' }
 ];
 
+const formatWhatsAppNumber = (phone) => {
+  if (!phone) return '';
+  const digits = String(phone).replace(/\D/g, '');
+  if (digits.startsWith('92')) return digits;
+  if (digits.startsWith('03')) return '92' + digits.slice(1);
+  if (digits.startsWith('3') && digits.length === 10) return '92' + digits;
+  return digits.length >= 10 ? digits : '';
+};
+
 const StudentAttendanceRow = memo(({ item, onStatusChange, onRemarksChange }) => {
   const { student, status, marked_via, remarks } = item;
-  const fullName = `${student.first_name || ''} ${student.last_name || ''}`.trim() || 'Student';
+  const fullName = student.name || `${student.first_name || ''} ${student.last_name || ''}`.trim() || 'Student';
+  const rawPhone = student.contact_number || student.emergency_contact_no || student.parent_phone || '';
+  const waNumber = formatWhatsAppNumber(rawPhone);
+  const waText = encodeURIComponent(`Assalam-o-Alaikum, Moazziz Walid/Walida, aap ka bacha ${fullName} (GR: ${student.gr_number || 'N/A'}) aaj school se ghair-hazir (Absent) hai. Baraye meherbani school idara se rabta karein.`);
+  const waUrl = waNumber ? `https://wa.me/${waNumber}?text=${waText}` : null;
 
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 rounded-xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark hover:border-primary/40 transition-all">
@@ -36,11 +49,25 @@ const StudentAttendanceRow = memo(({ item, onStatusChange, onRemarksChange }) =>
             GR: <span className="font-semibold text-ink dark:text-ink-dark">{student.gr_number || 'N/A'}</span>
             {student.roll_number && <> • Roll: <span className="font-semibold">{student.roll_number}</span></>}
             {student.father_name && <> • S/O {student.father_name}</>}
+            {rawPhone && <> • {rawPhone}</>}
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
+      <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
+        {status === 'A' && waUrl && (
+          <a
+            href={waUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Send Absent Alert via WhatsApp"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors shrink-0"
+          >
+            <MessageCircle className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">WhatsApp Alert</span>
+          </a>
+        )}
+
         <div className="inline-flex items-center p-1 rounded-xl bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark gap-1">
           {STATUS_OPTIONS.map((opt) => (
             <button
@@ -68,6 +95,8 @@ const StudentAttendanceRow = memo(({ item, onStatusChange, onRemarksChange }) =>
       </div>
     </div>
   );
-};
+});
+
+StudentAttendanceRow.displayName = 'StudentAttendanceRow';
 
 export default StudentAttendanceRow;

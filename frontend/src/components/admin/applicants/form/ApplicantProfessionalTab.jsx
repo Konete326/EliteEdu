@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '../../../../context/AuthContext';
 import { getApiBase } from '../../../../utils/apiBase';
 
 const AVAILABILITIES = ['Full Time', 'Part Time', 'Contract', 'Visiting'];
@@ -7,6 +8,8 @@ const DEPT_CHIPS = ['Academics', 'Administration', 'Science', 'Mathematics', 'En
 const DESIG_CHIPS = ['Primary Teacher', 'Assistant', 'Campus Head', 'JEST', 'PST', 'Subject Specialist'];
 
 const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
+  const { user } = useAuth();
+  const isGovt = user?.school_type === 'Government' || user?.school_id?.school_type === 'Government';
   const [customRoles, setCustomRoles] = useState([]);
 
   useEffect(() => {
@@ -28,13 +31,13 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Campus (Optional)</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Campus Branch</label>
           <select
             value={formData.campus_id || ''}
             onChange={(e) => onChange('campus_id', e.target.value)}
             className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-[#161616] text-ink dark:text-ink-dark outline-none font-medium"
           >
-            <option value="">Main / Unassigned Campus</option>
+            <option value="">All Campuses / Main</option>
             {campuses.map((c) => (
               <option key={c._id} value={c._id}>{c.name}</option>
             ))}
@@ -42,12 +45,23 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Department (Optional)</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Applying For Position</label>
+          <input
+            type="text"
+            value={formData.applying_for_position || ''}
+            onChange={(e) => onChange('applying_for_position', e.target.value)}
+            placeholder="e.g. Senior Math Teacher"
+            className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-black/20 text-ink dark:text-ink-dark outline-none focus:border-primary/60 font-medium"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Department</label>
           <input
             type="text"
             value={formData.department || ''}
             onChange={(e) => onChange('department', e.target.value)}
-            placeholder="e.g. Science, Academics"
+            placeholder="e.g. Academics"
             className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-black/20 text-ink dark:text-ink-dark outline-none focus:border-primary/60 font-medium"
           />
           <div className="flex flex-wrap gap-1 mt-1.5">
@@ -56,30 +70,11 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
                 key={chip}
                 type="button"
                 onClick={() => onChange('department', chip)}
-                className="px-2 py-0.5 text-[10px] rounded-md bg-surface-secondary dark:bg-white/5 hover:bg-primary/10 text-ink-muted hover:text-primary transition-colors cursor-pointer"
-              >
-                {chip}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Designation (Optional)</label>
-          <input
-            type="text"
-            value={formData.designation || ''}
-            onChange={(e) => onChange('designation', e.target.value)}
-            placeholder="e.g. Primary Teacher, Assistant"
-            className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-black/20 text-ink dark:text-ink-dark outline-none focus:border-primary/60 font-medium"
-          />
-          <div className="flex flex-wrap gap-1 mt-1.5">
-            {allDesigChips.slice(0, 10).map((chip) => (
-              <button
-                key={chip}
-                type="button"
-                onClick={() => onChange('designation', chip)}
-                className="px-2 py-0.5 text-[10px] rounded-md bg-surface-secondary dark:bg-white/5 hover:bg-primary/10 text-ink-muted hover:text-primary transition-colors cursor-pointer"
+                className={`text-[10px] px-2 py-0.5 rounded-full font-medium transition-colors cursor-pointer ${
+                  formData.department === chip
+                    ? 'bg-primary text-white font-bold'
+                    : 'bg-surface-secondary dark:bg-white/5 text-ink-muted hover:text-ink'
+                }`}
               >
                 {chip}
               </button>
@@ -88,31 +83,36 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Qualification (Optional)</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Designation (Standard)</label>
           <input
             type="text"
-            value={formData.qualification || ''}
-            onChange={(e) => onChange('qualification', e.target.value)}
-            placeholder="e.g. M.Sc Physics, B.Ed"
+            value={formData.designation || ''}
+            onChange={(e) => onChange('designation', e.target.value)}
+            placeholder="e.g. Subject Specialist"
             className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-black/20 text-ink dark:text-ink-dark outline-none focus:border-primary/60 font-medium"
           />
+          <div className="flex flex-wrap gap-1 mt-1.5">
+            {allDesigChips.slice(0, 6).map((chip) => (
+              <button
+                key={chip}
+                type="button"
+                onClick={() => onChange('designation', chip)}
+                className={`text-[10px] px-2 py-0.5 rounded-full font-medium transition-colors cursor-pointer ${
+                  formData.designation === chip
+                    ? 'bg-primary text-white font-bold'
+                    : 'bg-surface-secondary dark:bg-white/5 text-ink-muted hover:text-ink'
+                }`}
+              >
+                {chip}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Experience (Years) (Optional)</label>
-          <input
-            type="number"
-            min="0"
-            value={formData.experience_years ?? 0}
-            onChange={(e) => onChange('experience_years', e.target.value)}
-            className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-black/20 text-ink dark:text-ink-dark outline-none focus:border-primary/60 font-medium"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Availability (Optional)</label>
+          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Availability</label>
           <select
             value={formData.availability || 'Full Time'}
             onChange={(e) => onChange('availability', e.target.value)}
@@ -124,44 +124,24 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
           </select>
         </div>
 
-        <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">BPS Grade (Optional)</label>
-          <select
-            value={formData.bps_grade || ''}
-            onChange={(e) => onChange('bps_grade', e.target.value)}
-            className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-[#161616] text-ink dark:text-ink-dark outline-none font-medium"
-          >
-            <option value="">Non-Govt / Standard</option>
-            {BPS_GRADES.map((g) => (
-              <option key={g} value={g}>{g}</option>
-            ))}
-          </select>
-        </div>
+        {isGovt && (
+          <div>
+            <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">BPS Grade (Optional)</label>
+            <select
+              value={formData.bps_grade || ''}
+              onChange={(e) => onChange('bps_grade', e.target.value)}
+              className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-[#161616] text-ink dark:text-ink-dark outline-none font-medium"
+            >
+              <option value="">Select BPS Grade</option>
+              {BPS_GRADES.map((g) => (
+                <option key={g} value={g}>{g}</option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Expected Salary (PKR) (Optional)</label>
-          <input
-            type="number"
-            min="0"
-            value={formData.expected_salary ?? 0}
-            onChange={(e) => onChange('expected_salary', e.target.value)}
-            className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-black/20 text-ink dark:text-ink-dark outline-none focus:border-primary/60 font-semibold"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Approved Salary (PKR) (Optional)</label>
-          <input
-            type="number"
-            min="0"
-            value={formData.approved_salary ?? 0}
-            onChange={(e) => onChange('approved_salary', e.target.value)}
-            className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-black/20 text-ink dark:text-ink-dark outline-none focus:border-primary/60 font-semibold"
-          />
-        </div>
-
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Previous Employer (Optional)</label>
           <input
@@ -172,17 +152,6 @@ const ApplicantProfessionalTab = ({ formData, onChange, campuses = [] }) => {
             className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-black/20 text-ink dark:text-ink-dark outline-none focus:border-primary/60 font-medium"
           />
         </div>
-      </div>
-
-      <div>
-        <label className="block text-xs font-semibold text-ink dark:text-ink-dark mb-1.5">Skills & Specializations (Optional)</label>
-        <textarea
-          rows={2}
-          value={formData.skills || ''}
-          onChange={(e) => onChange('skills', e.target.value)}
-          placeholder="e.g. Science Laboratory Handling, Robotics, Lesson Planning, Sports Coaching"
-          className="w-full px-3.5 py-2 text-xs rounded-xl border border-line dark:border-white/10 bg-surface-secondary/40 dark:bg-black/20 text-ink dark:text-ink-dark outline-none focus:border-primary/60 font-medium"
-        />
       </div>
     </div>
   );

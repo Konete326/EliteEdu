@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { usePersistentFormDraft } from './usePersistentFormDraft';
 
 const INITIAL_FORM = {
@@ -110,6 +111,7 @@ const resolveGradeCurriculumSubjects = (gradeId, electiveStream, allGrades = [],
 export const useStudentForm = (id) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const toast = useToast();
   const isEditMode = Boolean(id);
   const draftKey = `student_draft_${user?.school_id || 'default'}`;
   const [draftForm, setDraftForm, clearDraft, draftSavedAt] = usePersistentFormDraft(draftKey, INITIAL_FORM);
@@ -205,9 +207,9 @@ export const useStudentForm = (id) => {
   const handleField = (field, value) => {
     updateForm((prev) => {
       const next = { ...prev, [field]: value };
-      if (field === 'current_grade' || field === 'grade_admitted' || field === 'elective_stream') {
-        const activeGrade = field === 'current_grade' ? value : (next.current_grade || next.grade_admitted);
-        const activeStream = field === 'elective_stream' ? value : next.elective_stream;
+      if ((field === 'current_grade' || field === 'grade_admitted') && (!prev.subjects || prev.subjects.length === 0)) {
+        const activeGrade = value;
+        const activeStream = next.elective_stream;
         if (activeGrade && grades.length > 0 && subjects.length > 0) {
           const autoSubjects = resolveGradeCurriculumSubjects(activeGrade, activeStream, grades, subjects);
           if (autoSubjects.length > 0) {
@@ -220,7 +222,7 @@ export const useStudentForm = (id) => {
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
   };
 
-  const handleNestedField = (parent, field, value) => {
+  const handleNestedField = async (parent, field, value) => {
     updateForm((prev) => ({
       ...prev,
       [parent]: {
@@ -228,6 +230,30 @@ export const useStudentForm = (id) => {
         [field]: value
       }
     }));
+
+    if (parent === 'parents_cnic' && field === 'father_cnic' && value && value.length === 15) {
+      try {
+        const res = await api.get(`/students/family-lookup?cnic=${encodeURIComponent(value)}`);
+        if (res.data?.success && res.data?.found && res.data?.data) {
+          const d = res.data.data;
+          updateForm((prev) => ({
+            ...prev,
+            family_number: d.family_number || prev.family_number,
+            father_name: d.father_name || prev.father_name,
+            surname: d.surname || prev.surname,
+            mother_guardian_name: d.mother_guardian_name || prev.mother_guardian_name,
+            contact_number: d.contact_number || prev.contact_number,
+            emergency_contact_no: d.emergency_contact_no || prev.emergency_contact_no,
+            address: d.address || prev.address,
+            father_details: { ...prev.father_details, ...d.father_details },
+            mother_details: { ...prev.mother_details, ...d.mother_details },
+            family_members: d.siblings || prev.family_members || []
+          }));
+          toast.success('Existing family found — Sibling & Parent details auto-filled');
+        }
+      } catch (err) {
+      }
+    }
   };
 
   const handleToggleAppSetting = (key) => {

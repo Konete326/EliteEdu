@@ -75,7 +75,7 @@ const getAdminStats = async (req, res) => {
       Subject.countDocuments({ school_id: schoolObjId }),
       Grade.find({ school_id: schoolObjId }).select('name sections campus_id').lean(),
       Homework.find({ school_id: schoolObjId }).select('title status is_published campus_id grade_id due_date createdAt').lean(),
-      StudentAttendance.find({ school_id: schoolObjId, date: todayStr }).select('status student_id campus_id').lean(),
+      StudentAttendance.find({ school_id: schoolObjId, date: todayStr }).select('status student_id campus_id').populate('student_id', 'name gr_number current_section').lean(),
       StaffAttendance.find({ school_id: schoolObjId, date: todayStr }).select('status staff_id campus_id').lean(),
       getAggregatedStudentStats(schoolObjId, curYear, curMonth, curDay),
       getAggregatedFeeStats(schoolObjId, startOfYear, startOfMonth, startOfToday),
@@ -101,7 +101,12 @@ const getAdminStats = async (req, res) => {
       expenseStats
     });
 
-    const payload = { ...dashboardData, spotlightStudents, spotlightTeachers };
+    const absentStudentsToday = todayAttendance
+      .filter((r) => r.status === 'A')
+      .map((r) => ({ id: r.student_id?._id, name: r.student_id?.name || 'Student', gr: r.student_id?.gr_number || '—', section: r.student_id?.current_section || 'A' }))
+      .slice(0, 10);
+
+    const payload = { ...dashboardData, spotlightStudents, spotlightTeachers, absentStudentsToday };
     statsCache.set(cacheKey, { timestamp: Date.now(), data: payload });
     if (statsCache.size > 50) statsCache.delete(statsCache.keys().next().value);
 

@@ -2,13 +2,12 @@ const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const School = require('../models/School');
 const User = require('../models/User');
+const { onboardSchoolDefaults } = require('../utils/schoolOnboardingHelper');
 
 const registerSchool = async (req, res) => {
   const { schoolData, adminData } = req.body;
 
-  if (!schoolData || !adminData) {
-    return res.status(400).json({ message: 'School data and admin data are required' });
-  }
+  if (!schoolData || !adminData) return res.status(400).json({ message: 'School data and admin data are required' });
 
   const { name, code, school_type, board, address, contact_number, email } = schoolData;
   const { name: adminName, email: adminEmail, password: adminPassword } = adminData;
@@ -16,7 +15,6 @@ const registerSchool = async (req, res) => {
   if (!name || !code || !school_type || !adminName || !adminEmail || !adminPassword) {
     return res.status(400).json({ message: 'Required school or admin fields missing' });
   }
-
   if (!['Government', 'Private'].includes(school_type)) {
     return res.status(400).json({ message: 'School type must be Government or Private' });
   }
@@ -51,7 +49,8 @@ const registerSchool = async (req, res) => {
           board: board ? board.trim() : undefined,
           address,
           contact_number,
-          email
+          email,
+          academic_session: schoolData.academic_session?.trim() || '2026-2027'
         }
       ],
       { session }
@@ -69,6 +68,8 @@ const registerSchool = async (req, res) => {
       ],
       { session }
     );
+
+    await onboardSchoolDefaults(school, session);
 
     await session.commitTransaction();
     session.endSession();
@@ -96,9 +97,7 @@ const registerSchool = async (req, res) => {
 };
 
 const getSchools = async (req, res) => {
-  if (mongoose.connection.readyState !== 1) {
-    return res.status(503).json({ message: 'Database connecting, please retry shortly' });
-  }
+  if (mongoose.connection.readyState !== 1) return res.status(503).json({ message: 'Database connecting, please retry shortly' });
 
   try {
     const [schools, admins] = await Promise.all([

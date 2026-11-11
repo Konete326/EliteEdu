@@ -9,7 +9,6 @@ import TeacherTabsNav from '../../components/admin/teachers/TeacherTabsNav';
 import TeacherProfileTab from '../../components/admin/teachers/TeacherProfileTab';
 import TeacherClassesTab from '../../components/admin/teachers/TeacherClassesTab';
 import TeacherAppSettingsTab from '../../components/admin/teachers/TeacherAppSettingsTab';
-import TeacherPayrollTab from '../../components/admin/teachers/TeacherPayrollTab';
 import TeacherDependentTabs from '../../components/admin/teachers/TeacherDependentTabs';
 
 const AddTeacherPage = () => {
@@ -63,10 +62,7 @@ const AddTeacherPage = () => {
       {activeTab === 'app_settings' && (
         <TeacherAppSettingsTab permissions={formData.app_permissions} onChange={(p) => handleField('app_permissions', p)} schoolType={schoolType} customRoles={customRoles} selectedRoleId={formData.custom_role_id} onRoleChange={(roleId) => handleField('custom_role_id', roleId)} />
       )}
-      {activeTab === 'payroll' && schoolType !== 'Government' && (
-        <TeacherPayrollTab payrollConfig={formData.payroll_config} onPayrollChange={(p) => handleField('payroll_config', p)} basicSalary={formData.basic_salary} onSalaryChange={(s) => handleField('basic_salary', s)} bankDetails={formData.bank_details} onBankChange={handleBank} staffName={formData.name} />
-      )}
-      {['security_deposit', 'increment_history', 'loan_advance', 'follow_up', 'documents', 'active_sessions'].includes(activeTab) && (
+      {['follow_up', 'documents', 'active_sessions'].includes(activeTab) && (
         <TeacherDependentTabs activeTab={activeTab} teacherId={id} formData={formData} onSaveNow={() => handleSaveAction(false)} onUpdateField={handleField} />
       )}
     </div>

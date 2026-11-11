@@ -111,7 +111,7 @@ const GradesPage = () => {
         activeCampusName={targetCampusName}
       />
 
-      <div className="w-full rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm p-4 sm:p-5">
+      <div className="w-full rounded-2xl bg-surface dark:bg-surface-dark border border-line dark:border-line-dark shadow-sm p-3 sm:p-5">
         {loading && (
           <div className="h-0.5 w-full bg-primary/20 overflow-hidden rounded-full mb-3">
             <div className="h-full bg-primary animate-pulse w-full" />

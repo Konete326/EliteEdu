@@ -43,6 +43,24 @@ const TransferExecutionModal = ({
     setSelectedPerson(p || null);
   }, [form.person_id, personList]);
 
+  useEffect(() => {
+    if (isStudent && selectedPerson && form.to_campus_id && grades.length > 0) {
+      const curGradeName = selectedPerson?.current_grade?.name;
+      if (curGradeName) {
+        const destGrades = grades.filter((g) => {
+          const cId = g.campus_id?._id || g.campus_id;
+          return String(cId) === String(form.to_campus_id);
+        });
+        const match = destGrades.find(
+          (g) => g.name?.trim().toLowerCase() === curGradeName.trim().toLowerCase()
+        );
+        if (match && form.to_grade_id !== match._id) {
+          setForm((prev) => ({ ...prev, to_grade_id: match._id }));
+        }
+      }
+    }
+  }, [isStudent, selectedPerson, form.to_campus_id, grades, form.to_grade_id, setForm]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {

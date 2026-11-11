@@ -1,6 +1,6 @@
 import { renderSvgBarcode } from '../../../../utils/idCardCodeGenerator';
 import OfficialSignatureStampBlock from '../../../common/OfficialSignatureStampBlock';
-import { Sparkles, GraduationCap } from 'lucide-react';
+import { GraduationCap } from 'lucide-react';
 
 const TeacherCardLandscapeBadge = ({ teacher, config = {} }) => {
   const campus = teacher?.campus_id || {};
@@ -28,8 +28,8 @@ const TeacherCardLandscapeBadge = ({ teacher, config = {} }) => {
             <span className="text-[7px] text-teal-100 uppercase tracking-wider">Academic Staff Pass</span>
           </div>
         </div>
-        <span className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-white text-teal-800 text-[7px] font-black uppercase shadow-2xs">
-          <Sparkles className="w-2.5 h-2.5 text-teal-600" /> FACULTY
+        <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white text-teal-800 text-[7px] font-black uppercase shadow-2xs">
+          <GraduationCap className="w-2.5 h-2.5 text-teal-600" /> FACULTY
         </span>
       </div>
 

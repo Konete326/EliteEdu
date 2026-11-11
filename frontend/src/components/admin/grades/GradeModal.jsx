@@ -14,6 +14,7 @@ const GradeModal = ({
 }) => {
   const [name, setName] = useState('');
   const [sections, setSections] = useState(['A']);
+  const [sectionTeachers, setSectionTeachers] = useState([]);
   const [sectionInput, setSectionInput] = useState('');
   const [campusId, setCampusId] = useState('');
   const [classTeacher, setClassTeacher] = useState('');
@@ -24,13 +25,20 @@ const GradeModal = ({
   useEffect(() => {
     if (grade) {
       setName(grade.name || '');
-      setSections(Array.isArray(grade.sections) && grade.sections.length > 0 ? grade.sections : ['A']);
+      const rawSections = Array.isArray(grade.sections) && grade.sections.length > 0 ? grade.sections : ['A'];
+      setSections(rawSections);
+      const rawSecTeachers = Array.isArray(grade.section_teachers) ? grade.section_teachers.map((st) => ({
+        section: st.section,
+        teacher_id: st.teacher_id?._id || st.teacher_id || ''
+      })) : [];
+      setSectionTeachers(rawSecTeachers);
       setCampusId(grade.campus_id?._id || grade.campus_id || '');
       setClassTeacher(grade.class_teacher?._id || grade.class_teacher || '');
       setStatus(grade.status || 'Active');
     } else {
       setName('');
       setSections(['A']);
+      setSectionTeachers([]);
       setCampusId('');
       setClassTeacher('');
       setStatus('Active');
@@ -51,7 +59,21 @@ const GradeModal = ({
 
   const handleRemoveSection = (idx) => {
     if (sections.length <= 1) return setError('At least one section is required');
+    const removed = sections[idx];
     setSections(sections.filter((_, i) => i !== idx));
+    setSectionTeachers((prev) => prev.filter((st) => st.section !== removed));
+  };
+
+  const handleSectionTeacherChange = (sec, teacherId) => {
+    setSectionTeachers((prev) => {
+      const idx = prev.findIndex((st) => st.section === sec);
+      if (idx >= 0) {
+        const copy = [...prev];
+        copy[idx] = { section: sec, teacher_id: teacherId };
+        return copy;
+      }
+      return [...prev, { section: sec, teacher_id: teacherId }];
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -64,6 +86,7 @@ const GradeModal = ({
       await onSave({
         name: name.trim(),
         sections,
+        section_teachers: sectionTeachers,
         status,
         campus_id: campusId || null,
         class_teacher: classTeacher || null
@@ -78,7 +101,7 @@ const GradeModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="relative w-full max-w-lg bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-6 shadow-2xl z-10 space-y-4">
+      <div className="relative w-full max-w-lg bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-6 shadow-2xl z-10 space-y-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between pb-3.5 border-b border-line dark:border-line-dark">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
@@ -89,7 +112,7 @@ const GradeModal = ({
                 {grade ? 'Edit Class & Sections' : 'Add New Class & Sections'}
               </h2>
               <p className="text-[11px] text-ink-muted">
-                Configure grade level, branch allocation, and assigned class teacher
+                Configure grade level, branch allocation, and assigned section teachers
               </p>
             </div>
           </div>
@@ -125,10 +148,13 @@ const GradeModal = ({
 
           <GradeSectionsInput
             sections={sections}
+            sectionTeachers={sectionTeachers}
+            onSectionTeacherChange={handleSectionTeacherChange}
             onAdd={handleAddSection}
             onRemove={handleRemoveSection}
             inputVal={sectionInput}
             setInputVal={setSectionInput}
+            teachers={teachers}
           />
 
           <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-line dark:border-line-dark">

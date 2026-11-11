@@ -13,10 +13,11 @@ import {
 import { exportStudentCardsPdf } from '../../utils/pdf/studentCardPdfExporter';
 import {
   GraduationCap,
-  Sparkles,
+  CreditCard,
   CheckCircle2,
   Archive,
-  Printer
+  Printer,
+  Upload
 } from 'lucide-react';
 
 const BATCH_SIZE = 24;
@@ -55,6 +56,12 @@ const StudentIdCardsPage = () => {
   const [template, setTemplate] = useState('template_1_curve_blue');
   const [orientation, setOrientation] = useState('vertical');
   const [accentColor, setAccentColor] = useState('#003B73');
+
+  useEffect(() => {
+    if (institution?.activeColor) {
+      setAccentColor(institution.activeColor);
+    }
+  }, [institution?.activeColor]);
   const [sideMode, setSideMode] = useState('front');
   const [selectedStudentId, setSelectedStudentId] = useState(initialStudentId || 'all');
   const [editingStudent, setEditingStudent] = useState(null);
@@ -416,7 +423,7 @@ const StudentIdCardsPage = () => {
         </div>
       ) : selectedStudents.length === 0 ? (
         <div className="bg-surface dark:bg-[#0c0c0f] border border-line dark:border-line-dark rounded-2xl p-12 text-center text-xs text-ink-muted space-y-2">
-          <Sparkles className="w-8 h-8 text-primary mx-auto opacity-40" />
+          <CreditCard className="w-8 h-8 text-primary mx-auto opacity-40" />
           <p className="font-bold text-sm text-ink dark:text-white">No student cards selected</p>
           <p className="max-w-sm mx-auto text-ink-muted">
             {searchQuery
@@ -443,7 +450,7 @@ const StudentIdCardsPage = () => {
 
           <div className={`grid ${gridColsClass} gap-6 justify-items-center w-full`}>
             {visibleStudents.map((student) => (
-              <div key={student._id} className="w-full flex justify-center transition-all duration-300 hover:-translate-y-1">
+              <div key={student._id} className="w-full flex flex-col items-center gap-2 transition-all duration-300 hover:-translate-y-1">
                 <UniversalIdCard
                   holder={student}
                   holderType="student"
@@ -455,6 +462,15 @@ const StudentIdCardsPage = () => {
                   isSelected={selectedSet.has(student._id)}
                   onToggleSelect={() => handleToggleSelect(student._id)}
                 />
+                {photoFilter === 'without' && (
+                  <button
+                    type="button"
+                    onClick={() => setEditingStudent(student)}
+                    className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Upload className="w-3.5 h-3.5" /> Upload Photo
+                  </button>
+                )}
               </div>
             ))}
           </div>

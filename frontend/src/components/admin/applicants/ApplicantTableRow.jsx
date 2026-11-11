@@ -23,7 +23,6 @@ const ApplicantTableRow = ({
   applicant,
   onStatusChange,
   onOpenConvert,
-  onOpenSalary,
   onView,
   onEdit,
   onDelete
@@ -105,21 +104,6 @@ const ApplicantTableRow = ({
         </span>
       </td>
 
-      <td className="py-3 px-3 whitespace-nowrap">
-        <div className="space-y-0.5">
-          <p className="text-[11px] text-ink-muted font-medium">
-            Exp: <span className="font-bold text-ink dark:text-white">{applicant.expected_salary ? `PKR ${Number(applicant.expected_salary).toLocaleString()}` : '—'}</span>
-          </p>
-          <button
-            type="button"
-            onClick={() => onOpenSalary(applicant)}
-            className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer block"
-            title="Click to set/update approved salary"
-          >
-            Appr: {applicant.approved_salary ? `PKR ${Number(applicant.approved_salary).toLocaleString()}` : 'Set Salary'}
-          </button>
-        </div>
-      </td>
 
       <td className="py-3 px-3 whitespace-nowrap">
         {resumeHref ? (
@@ -196,8 +180,8 @@ const ApplicantTableRow = ({
               </button>
               <button
                 type="button"
-                onClick={() => onOpenSalary(applicant)}
-                title="Approve & Set Agreed Salary"
+                onClick={() => onStatusChange(applicant._id, 'Approved')}
+                title="Approve Candidate"
                 className="p-1.5 rounded-lg hover:bg-surface-secondary dark:hover:bg-white/10 text-emerald-500 transition-colors cursor-pointer"
               >
                 <Check className="w-4 h-4" />

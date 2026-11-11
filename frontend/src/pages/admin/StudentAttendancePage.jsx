@@ -10,7 +10,7 @@ import AttendanceStatsModal from '../../components/admin/attendance/AttendanceSt
 import AttendanceSettingsModal from '../../components/admin/attendance/AttendanceSettingsModal';
 import EmployeeAttendancePage from './EmployeeAttendancePage';
 import LeaveRequestPage from './LeaveRequestPage';
-import AttendanceReportPage from './AttendanceReportPage';
+import ReportsComingSoonPage from './ReportsComingSoonPage';
 import StudentAttendancePrintSheet from '../../components/admin/attendance/StudentAttendancePrintSheet';
 
 const StudentAttendancePage = () => {
@@ -91,7 +91,7 @@ const StudentAttendancePage = () => {
 
       {activeTab === 'report' && (
         <div className="flex-1 min-h-0 flex flex-col">
-          <AttendanceReportPage />
+          <ReportsComingSoonPage />
         </div>
       )}
 

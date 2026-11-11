@@ -33,29 +33,40 @@ const AttendanceWidget = ({ stats, attendanceSummary }) => {
         {[
           { key: 'students', label: 'Students', path: '/admin/attendance/students', item: data?.students },
           { key: 'staff', label: 'Staff', path: '/admin/attendance/staff', item: data?.staff }
-        ].map((g) => (
-          <Link
-            key={g.key}
-            to={g.path}
-            className="p-3 rounded-xl bg-surface-secondary/50 dark:bg-surface-secondary-dark/30 border border-line dark:border-line-dark space-y-2 block hover:-translate-y-0.5 hover:shadow-xs transition-all duration-200 group"
-          >
-            <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-1.5 font-semibold text-ink dark:text-ink-dark group-hover:text-primary transition-colors">
-                <span>{g.label}</span>
-                <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+        ].map((g) => {
+          const totalMarked = (g.item?.p || 0) + (g.item?.late || 0) + (g.item?.a || 0) + (g.item?.l || 0) + (g.item?.hd || 0);
+          const presentTotal = (g.item?.p || 0) + (g.item?.late || 0);
+          const pct = totalMarked > 0 ? Math.round((presentTotal / totalMarked) * 100) : 0;
+
+          return (
+            <Link
+              key={g.key}
+              to={g.path}
+              className="p-3 rounded-xl bg-surface-secondary/50 dark:bg-surface-secondary-dark/30 border border-line dark:border-line-dark space-y-2 block hover:-translate-y-0.5 hover:shadow-xs transition-all duration-200 group"
+            >
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1.5 font-semibold text-ink dark:text-ink-dark group-hover:text-primary transition-colors">
+                  <span>{g.label}</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 font-bold text-[10px]">
+                    {pct}% Live Present
+                  </span>
+                  <span className="text-ink-muted text-[11px]">{g.item?.marked}</span>
+                </div>
               </div>
-              <span className="text-ink-muted text-[11px]">{g.item?.marked}</span>
-            </div>
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {pills.map((p) => (
-                <span key={p.key} className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold border ${p.color}`}>
-                  <span>{p.label}:</span>
-                  <span>{g.item?.[p.key] ?? 0}</span>
-                </span>
-              ))}
-            </div>
-          </Link>
-        ))}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {pills.map((p) => (
+                  <span key={p.key} className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold border ${p.color}`}>
+                    <span>{p.label}:</span>
+                    <span>{g.item?.[p.key] ?? 0}</span>
+                  </span>
+                ))}
+              </div>
+            </Link>
+          );
+        })}
       </div>
 
       <div className="overflow-x-auto">

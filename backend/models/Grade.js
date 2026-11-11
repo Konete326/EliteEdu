@@ -27,6 +27,16 @@ const gradeSchema = new mongoose.Schema(
       ref: 'User',
       default: null
     },
+    section_teachers: [
+      {
+        section: { type: String, trim: true },
+        teacher_id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          default: null
+        }
+      }
+    ],
     status: {
       type: String,
       enum: ['Active', 'Inactive'],

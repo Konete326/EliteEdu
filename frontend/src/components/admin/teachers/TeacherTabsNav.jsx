@@ -1,29 +1,22 @@
 import {
-  User, BookOpen, Smartphone, DollarSign, Shield,
-  TrendingUp, CreditCard, MessageSquare, FileText, Activity
+  User, BookOpen, Smartphone,
+  MessageSquare, FileText, Activity
 } from 'lucide-react';
 
 const ALL_TABS = [
-  { id: 'profile', label: 'Profile', icon: User, privateOnly: false },
-  { id: 'classes', label: 'Classes', icon: BookOpen, privateOnly: false },
-  { id: 'app_settings', label: 'App Settings', icon: Smartphone, privateOnly: false },
-  { id: 'payroll', label: 'Payroll', icon: DollarSign, privateOnly: true },
-  { id: 'security_deposit', label: 'Security Deposit', icon: Shield, privateOnly: true },
-  { id: 'increment_history', label: 'Increment History', icon: TrendingUp, privateOnly: false },
-  { id: 'loan_advance', label: 'Loan / Advance', icon: CreditCard, privateOnly: true },
-  { id: 'follow_up', label: 'Follow-up History', icon: MessageSquare, privateOnly: false },
-  { id: 'documents', label: 'Documents', icon: FileText, privateOnly: false },
-  { id: 'active_sessions', label: 'Active Sessions', icon: Activity, privateOnly: false }
+  { id: 'profile', label: 'Profile', icon: User },
+  { id: 'classes', label: 'Classes', icon: BookOpen },
+  { id: 'app_settings', label: 'App Settings', icon: Smartphone },
+  { id: 'follow_up', label: 'Follow-up History', icon: MessageSquare },
+  { id: 'documents', label: 'Documents', icon: FileText },
+  { id: 'active_sessions', label: 'Active Sessions', icon: Activity }
 ];
 
-const TeacherTabsNav = ({ activeTab, onTabChange, schoolType }) => {
-  const isGovt = schoolType === 'Government';
-  const visibleTabs = ALL_TABS.filter((tab) => !(isGovt && tab.privateOnly));
-
+const TeacherTabsNav = ({ activeTab, onTabChange }) => {
   return (
     <div className="border-b border-line dark:border-line-dark overflow-x-auto">
       <div className="flex items-center gap-1 min-w-max pb-px">
-        {visibleTabs.map((tab) => {
+        {ALL_TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           return (

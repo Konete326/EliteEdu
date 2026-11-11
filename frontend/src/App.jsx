@@ -103,6 +103,7 @@ const BulkDataImportPage = lazy(() => import('./pages/admin/BulkDataImportPage')
 const TransportManagementPage = lazy(() => import('./pages/admin/TransportManagementPage'));
 const MessagingStudioPage = lazy(() => import('./pages/admin/MessagingStudioPage'));
 const ZoomSettingsPage = lazy(() => import('./pages/admin/ZoomSettingsPage'));
+const ComingSoonPage = lazy(() => import('./pages/admin/ComingSoonPage'));
 const CrmComingSoonPage = lazy(() => import('./pages/admin/CrmComingSoonPage'));
 const TransportComingSoonPage = lazy(() => import('./pages/admin/TransportComingSoonPage'));
 const ReportsComingSoonPage = lazy(() => import('./pages/admin/ReportsComingSoonPage'));
@@ -155,28 +156,28 @@ function App() {
                     <Route path="/admin/attendance/employees" element={<EmployeeAttendancePage />} />
                     <Route path="/admin/attendance/leave-request" element={<LeaveRequestPage />} />
                     <Route path="/admin/attendance/report" element={<ReportsComingSoonPage />} />
-                    <Route path="/admin/exam-management/exams" element={<ExamsListPage />} />
-                    <Route path="/admin/exams/schedules" element={<ExamsListPage />} />
-                    <Route path="/admin/exams/date-sheets" element={<ExamsListPage />} />
-                    <Route path="/admin/exams/marks" element={<ExamsListPage />} />
-                    <Route path="/admin/exam-management/exams/new" element={<ExamsListPage />} />
-                    <Route path="/admin/exam-management/exams/:id/edit" element={<ExamsListPage />} />
-                    <Route path="/admin/exam-management/categories" element={<ExamsListPage />} />
-                    <Route path="/admin/exam-management/remarks-policy" element={<ExamsListPage />} />
-                    <Route path="/admin/exam-management/schedule" element={<ExamsListPage />} />
-                    <Route path="/admin/exam-management/schedule/new" element={<ExamsListPage />} />
-                    <Route path="/admin/exam-management/manage-remarks" element={<ExamsListPage />} />
-                    <Route path="/admin/exam-management/mark-sheets" element={<ExamsListPage />} />
-                    <Route path="/admin/exam-management/results" element={<ExamsListPage />} />
-                    <Route path="/admin/question-papers" element={<ExamsListPage />} />
-                    <Route path="/admin/class-tests/manage" element={<ExamsListPage />} />
-                    <Route path="/admin/class-tests/results" element={<ExamsListPage />} />
-                    <Route path="/teacher/exams" element={<ExamsListPage />} />
-                    <Route path="/teacher/examination" element={<ExamsListPage />} />
-                    <Route path="/teacher/datesheet" element={<ExamsListPage />} />
-                    <Route path="/teacher/mark-sheets" element={<ExamsListPage />} />
-                    <Route path="/teacher/question-papers" element={<ExamsListPage />} />
-                    <Route path="/teacher/class-tests" element={<ExamsListPage />} />
+                    <Route path="/admin/exam-management/exams" element={<ComingSoonPage title="Exams & Assessments" />} />
+                    <Route path="/admin/exams/schedules" element={<ComingSoonPage title="Exams & Assessments" />} />
+                    <Route path="/admin/exams/date-sheets" element={<ComingSoonPage title="Exams & Assessments" />} />
+                    <Route path="/admin/exams/marks" element={<ComingSoonPage title="Exams & Assessments" />} />
+                    <Route path="/admin/exam-management/exams/new" element={<ComingSoonPage title="Exams & Assessments" />} />
+                    <Route path="/admin/exam-management/exams/:id/edit" element={<ComingSoonPage title="Exams & Assessments" />} />
+                    <Route path="/admin/exam-management/categories" element={<ComingSoonPage title="Exams & Assessments" />} />
+                    <Route path="/admin/exam-management/remarks-policy" element={<ComingSoonPage title="Exams & Assessments" />} />
+                    <Route path="/admin/exam-management/schedule" element={<ComingSoonPage title="Exams & Assessments" />} />
+                    <Route path="/admin/exam-management/schedule/new" element={<ComingSoonPage title="Exams & Assessments" />} />
+                    <Route path="/admin/exam-management/manage-remarks" element={<ComingSoonPage title="Exams & Assessments" />} />
+                    <Route path="/admin/exam-management/mark-sheets" element={<ComingSoonPage title="Exams & Assessments" />} />
+                    <Route path="/admin/exam-management/results" element={<ComingSoonPage title="Exams & Assessments" />} />
+                    <Route path="/admin/question-papers" element={<ComingSoonPage title="Question Papers" />} />
+                    <Route path="/admin/class-tests/manage" element={<ComingSoonPage title="Class Tests" />} />
+                    <Route path="/admin/class-tests/results" element={<ComingSoonPage title="Class Tests" />} />
+                    <Route path="/teacher/exams" element={<ComingSoonPage title="Exams & Assessments" />} />
+                    <Route path="/teacher/examination" element={<ComingSoonPage title="Exams & Assessments" />} />
+                    <Route path="/teacher/datesheet" element={<ComingSoonPage title="Datesheets" />} />
+                    <Route path="/teacher/mark-sheets" element={<ComingSoonPage title="Marks Entry" />} />
+                    <Route path="/teacher/question-papers" element={<ComingSoonPage title="Question Papers" />} />
+                    <Route path="/teacher/class-tests" element={<ComingSoonPage title="Class Tests" />} />
                     <Route path="/admin/reports" element={<ReportsComingSoonPage />} />
                     <Route path="/admin/reports/academic" element={<ReportsComingSoonPage />} />
                     <Route path="/admin/reports/report-cards" element={<ReportsComingSoonPage />} />
@@ -194,29 +195,29 @@ function App() {
                     <Route path="/admin/crm/admissions" element={<CrmComingSoonPage />} />
                     <Route path="/admin/crm/follow-ups" element={<CrmComingSoonPage />} />
                     <Route path="/admin/crm/analytics" element={<CrmComingSoonPage />} />
-                    <Route path="/admin/lms/courses" element={<LmsSuitePage />} />
-                    <Route path="/admin/lms/syllabus" element={<LmsSuitePage />} />
-                    <Route path="/admin/lms/assignments" element={<LmsSuitePage />} />
-                    <Route path="/admin/lms/material" element={<LmsSuitePage />} />
-                    <Route path="/admin/lms/live" element={<LmsSuitePage />} />
-                    <Route path="/admin/online-classes" element={<LmsSuitePage />} />
+                    <Route path="/admin/lms/courses" element={<ComingSoonPage title="E-Learning & LMS" />} />
+                    <Route path="/admin/lms/syllabus" element={<ComingSoonPage title="E-Learning & LMS" />} />
+                    <Route path="/admin/lms/assignments" element={<ComingSoonPage title="E-Learning & LMS" />} />
+                    <Route path="/admin/lms/material" element={<ComingSoonPage title="E-Learning & LMS" />} />
+                    <Route path="/admin/lms/live" element={<ComingSoonPage title="Live Classes" />} />
+                    <Route path="/admin/online-classes" element={<ComingSoonPage title="Live Classes" />} />
                     <Route path="/admin/timetable" element={<TimetablePage />} />
                     <Route path="/admin/academics/timetable" element={<TimetablePage />} />
                     <Route path="/admin/planners/timetable" element={<TimetablePage />} />
-                    <Route path="/admin/planners" element={<PlannersAndEventsPage />} />
-                    <Route path="/admin/planners/academic-calendar" element={<PlannersAndEventsPage />} />
-                    <Route path="/admin/planners/lesson-plans" element={<PlannersAndEventsPage />} />
-                    <Route path="/admin/planners/activity-planner" element={<PlannersAndEventsPage />} />
-                    <Route path="/admin/planners/*" element={<PlannersAndEventsPage />} />
+                    <Route path="/admin/planners" element={<ComingSoonPage title="Academic Planners" />} />
+                    <Route path="/admin/planners/academic-calendar" element={<ComingSoonPage title="Academic Calendar" />} />
+                    <Route path="/admin/planners/lesson-plans" element={<ComingSoonPage title="Lesson Plans" />} />
+                    <Route path="/admin/planners/activity-planner" element={<ComingSoonPage title="Activity Planner" />} />
+                    <Route path="/admin/planners/*" element={<ComingSoonPage title="Academic Planners" />} />
                     <Route path="/admin/student-portal-preview" element={<StudentPortalComingSoonPage />} />
                   </Route>
                   <Route element={<ProtectedRoute allowedRoles={['Admin']} requiredModule="fees" />}>
-                    <Route path="/admin/fees" element={<FeeCollectionPage />} />
-                    <Route path="/admin/fees/collection" element={<FeeCollectionPage />} />
-                    <Route path="/admin/fees/structure" element={<FeeStructurePage />} />
-                    <Route path="/admin/fees/defaulters" element={<FeeDefaultersPage />} />
-                    <Route path="/admin/fees/reports" element={<FeeReportsPage />} />
-                    <Route path="/admin/fees/concession" element={<FeeConcessionsPage />} />
+                    <Route path="/admin/fees" element={<ComingSoonPage title="Fees Management" />} />
+                    <Route path="/admin/fees/collection" element={<ComingSoonPage title="Fee Collection" />} />
+                    <Route path="/admin/fees/structure" element={<ComingSoonPage title="Fee Plans" />} />
+                    <Route path="/admin/fees/defaulters" element={<ComingSoonPage title="Fee Defaulters" />} />
+                    <Route path="/admin/fees/reports" element={<ComingSoonPage title="Fee Reports" />} />
+                    <Route path="/admin/fees/concession" element={<ComingSoonPage title="Fee Concessions" />} />
                   </Route>
                   <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
                     <Route path="/admin" element={<AdminDashboard />} />
@@ -231,8 +232,8 @@ function App() {
                     <Route path="/admin/staff-applicants" element={<StaffApplicantsList />} />
                     <Route path="/admin/staff-applicants/new" element={<AddStaffApplicantPage />} />
                     <Route path="/admin/staff-applicants/:id/edit" element={<AddStaffApplicantPage />} />
-                    <Route path="/admin/exam-management/grading-policies" element={<ExamsListPage />} />
-                    <Route path="/admin/exams/grading-policies" element={<ExamsListPage />} />
+                    <Route path="/admin/exam-management/grading-policies" element={<ComingSoonPage title="Grading System" />} />
+                    <Route path="/admin/exams/grading-policies" element={<ComingSoonPage title="Grading System" />} />
                     <Route path="/admin/settings/general" element={<GeneralSettingsPage />} />
                     <Route path="/admin/settings/integrations/zoom" element={<ZoomComingSoonPage />} />
                     <Route path="/admin/general-settings/signatures" element={<GeneralSignaturesPage />} />
@@ -260,20 +261,20 @@ function App() {
                     <Route path="/admin/reports/audit-logs" element={<SystemLogsPage />} />
                     <Route path="/admin/profile" element={<MyProfilePage />} />
                     <Route path="/admin/settings/profile" element={<MyProfilePage />} />
-                    <Route path="/admin/accounts" element={<AccountsSuitePage />} />
-                    <Route path="/admin/accounts/chart" element={<AccountsSuitePage />} />
-                    <Route path="/admin/accounts/income" element={<AccountsSuitePage />} />
-                    <Route path="/admin/accounts/expenses" element={<AccountsSuitePage />} />
-                    <Route path="/admin/accounts/transactions" element={<AccountsSuitePage />} />
-                    <Route path="/admin/accounts/balance-sheet" element={<AccountsSuitePage />} />
-                    <Route path="/admin/payroll" element={<StaffPayrollPage />} />
-                    <Route path="/admin/store" element={<PosStorePage />} />
-                    <Route path="/admin/pos" element={<PosStorePage />} />
-                    <Route path="/admin/online-store" element={<PosStorePage />} />
+                    <Route path="/admin/accounts" element={<ComingSoonPage title="Accounts & Finance" />} />
+                    <Route path="/admin/accounts/chart" element={<ComingSoonPage title="Chart of Accounts" />} />
+                    <Route path="/admin/accounts/income" element={<ComingSoonPage title="Income Management" />} />
+                    <Route path="/admin/accounts/expenses" element={<ComingSoonPage title="Expense Management" />} />
+                    <Route path="/admin/accounts/transactions" element={<ComingSoonPage title="Transactions" />} />
+                    <Route path="/admin/accounts/balance-sheet" element={<ComingSoonPage title="Balance Sheet" />} />
+                    <Route path="/admin/payroll" element={<ComingSoonPage title="Payroll Management" />} />
+                    <Route path="/admin/store" element={<ComingSoonPage title="Store / POS" />} />
+                    <Route path="/admin/pos" element={<ComingSoonPage title="Store / POS" />} />
+                    <Route path="/admin/online-store" element={<ComingSoonPage title="Store / POS" />} />
                     <Route path="/admin/behavior" element={<BehaviorComingSoonPage />} />
                     <Route path="/admin/behavior-skills" element={<BehaviorComingSoonPage />} />
                     <Route path="/admin/campus-transfer" element={<CampusTransferPage />} />
-                    <Route path="/admin/events" element={<PlannersAndEventsPage />} />
+                    <Route path="/admin/events" element={<ComingSoonPage title="School Events" />} />
                     <Route path="/admin/news-feed" element={<CampusOperationsPage />} />
                     <Route path="/admin/complaints" element={<CampusOperationsPage />} />
                     <Route path="/admin/consent" element={<CampusOperationsPage />} />
@@ -296,19 +297,19 @@ function App() {
                     <Route path="/teacher/attendance" element={<StudentAttendancePage />} />
                     <Route path="/teacher/leaves" element={<LeaveRequestPage />} />
                     <Route path="/teacher/attendance-report" element={<ReportsComingSoonPage />} />
-                    <Route path="/teacher/homework" element={<LmsSuitePage />} />
+                    <Route path="/teacher/homework" element={<ComingSoonPage title="Homework Management" />} />
                     <Route path="/teacher/timetable" element={<TeacherTimetablePage />} />
-                    <Route path="/teacher/quizzes" element={<LmsSuitePage />} />
-                    <Route path="/teacher/lectures" element={<LmsSuitePage />} />
-                    <Route path="/teacher/online-classes" element={<LmsSuitePage />} />
-                    <Route path="/teacher/salary" element={<TeacherSalaryPage />} />
+                    <Route path="/teacher/quizzes" element={<ComingSoonPage title="Quizzes" />} />
+                    <Route path="/teacher/lectures" element={<ComingSoonPage title="Lectures" />} />
+                    <Route path="/teacher/online-classes" element={<ComingSoonPage title="Live Classes" />} />
+                    <Route path="/teacher/salary" element={<ComingSoonPage title="Salary Slip" />} />
                     <Route path="/teacher/behavior" element={<BehaviorComingSoonPage />} />
                     <Route path="/teacher/behavior-skills" element={<BehaviorComingSoonPage />} />
-                    <Route path="/teacher/events" element={<PlannersAndEventsPage />} />
-                    <Route path="/teacher/complaints" element={<CampusOperationsPage />} />
-                    <Route path="/teacher/counseling" element={<CampusOperationsPage />} />
-                    <Route path="/teacher/planner" element={<PlannersAndEventsPage />} />
-                    <Route path="/teacher/lost-and-found" element={<CampusOperationsPage />} />
+                    <Route path="/teacher/events" element={<ComingSoonPage title="Events" />} />
+                    <Route path="/teacher/complaints" element={<ComingSoonPage title="Complaints" />} />
+                    <Route path="/teacher/counseling" element={<ComingSoonPage title="Counseling" />} />
+                    <Route path="/teacher/planner" element={<ComingSoonPage title="Planner" />} />
+                    <Route path="/teacher/lost-and-found" element={<ComingSoonPage title="Lost & Found" />} />
                     <Route path="/teacher/notifications" element={<NotificationsPage />} />
                     <Route path="/teacher/profile" element={<MyProfilePage />} />
                     <Route path="/teacher/messages" element={<MessagingStudioPage />} />

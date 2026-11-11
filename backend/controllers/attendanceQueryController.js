@@ -30,7 +30,7 @@ const getAttendanceSheet = async (req, res) => {
 
     const [students, attendanceRecords] = await Promise.all([
       Student.find(studentFilter)
-        .select('name father_name gr_number serial_no photo_url current_grade current_section campus_id')
+        .select('name father_name gr_number serial_no photo_url current_grade current_section campus_id contact_number emergency_contact_no')
         .sort({ name: 1 })
         .lean(),
       StudentAttendance.find(attFilter).lean()

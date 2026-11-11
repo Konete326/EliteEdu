@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ArrowLeftRight, X } from 'lucide-react';
 import TransferLedgerRow from './TransferLedgerRow';
+import TransferLedgerCard from './TransferLedgerCard';
 
 const TransferLedgerTable = ({ transfers = [], loading, onPrint, onDelete }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('All');
   const [page, setPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 8;
 
   const filtered = transfers.filter((t) => {
     const matchesType = typeFilter === 'All' || t.entity_type === typeFilter;
@@ -27,7 +28,7 @@ const TransferLedgerTable = ({ transfers = [], loading, onPrint, onDelete }) => 
   const handleType = (t) => { setTypeFilter(t); setPage(1); };
 
   return (
-    <div className="w-full bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
+    <div className="w-full bg-surface dark:bg-surface-dark border border-line dark:border-line-dark rounded-2xl p-3.5 sm:p-5 shadow-xs space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-line dark:border-line-dark">
         <div>
           <h3 className="text-sm sm:text-base font-bold text-ink dark:text-white">
@@ -65,7 +66,7 @@ const TransferLedgerTable = ({ transfers = [], loading, onPrint, onDelete }) => 
                 key={t}
                 type="button"
                 onClick={() => handleType(t)}
-                className={`flex-1 sm:flex-initial px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`flex-1 sm:flex-initial min-h-[38px] px-3.5 flex items-center justify-center rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   typeFilter === t
                     ? 'bg-primary text-white shadow-xs'
                     : 'text-ink-muted hover:text-ink'
@@ -78,7 +79,22 @@ const TransferLedgerTable = ({ transfers = [], loading, onPrint, onDelete }) => 
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-line dark:border-line-dark">
+      <div className="block sm:hidden space-y-3">
+        {loading ? (
+          <div className="p-8 text-center text-xs text-ink-muted">Loading transfer records...</div>
+        ) : filtered.length === 0 ? (
+          <div className="p-8 text-center text-xs text-ink-muted space-y-2">
+            <ArrowLeftRight className="w-8 h-8 mx-auto text-ink-muted" />
+            <p className="font-bold text-ink dark:text-white">No transfer records found</p>
+          </div>
+        ) : (
+          paginated.map((t) => (
+            <TransferLedgerCard key={t._id} transfer={t} onPrint={onPrint} onDelete={onDelete} />
+          ))
+        )}
+      </div>
+
+      <div className="hidden sm:block overflow-x-auto rounded-xl border border-line dark:border-line-dark">
         <table className="w-full text-left text-xs">
           <thead className="bg-surface-secondary/60 dark:bg-surface-secondary-dark/60 text-[10px] uppercase font-bold text-ink-muted border-b border-line dark:border-line-dark">
             <tr>
@@ -124,40 +140,40 @@ const TransferLedgerTable = ({ transfers = [], loading, onPrint, onDelete }) => 
             type="button"
             disabled={page <= 1}
             onClick={() => setPage(1)}
-            className="p-1.5 rounded-lg border border-line dark:border-line-dark disabled:opacity-40 cursor-pointer hover:bg-surface-secondary transition-colors"
+            className="min-w-[38px] min-h-[38px] flex items-center justify-center rounded-xl border border-line dark:border-line-dark disabled:opacity-30 cursor-pointer hover:bg-surface-secondary transition-colors"
             title="First Page"
           >
-            <ChevronsLeft size={14} />
+            <ChevronsLeft size={16} />
           </button>
           <button
             type="button"
             disabled={page <= 1}
             onClick={() => setPage((p) => p - 1)}
-            className="p-1.5 rounded-lg border border-line dark:border-line-dark disabled:opacity-40 cursor-pointer hover:bg-surface-secondary transition-colors"
+            className="min-w-[38px] min-h-[38px] flex items-center justify-center rounded-xl border border-line dark:border-line-dark disabled:opacity-30 cursor-pointer hover:bg-surface-secondary transition-colors"
             title="Previous Page"
           >
-            <ChevronLeft size={14} />
+            <ChevronLeft size={16} />
           </button>
-          <span className="px-2 text-xs font-mono font-bold text-ink dark:text-white">
+          <span className="px-3 min-h-[38px] flex items-center justify-center text-xs font-mono font-bold text-ink dark:text-white">
             {page} / {totalPages}
           </span>
           <button
             type="button"
             disabled={page >= totalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="p-1.5 rounded-lg border border-line dark:border-line-dark disabled:opacity-40 cursor-pointer hover:bg-surface-secondary transition-colors"
+            className="min-w-[38px] min-h-[38px] flex items-center justify-center rounded-xl border border-line dark:border-line-dark disabled:opacity-30 cursor-pointer hover:bg-surface-secondary transition-colors"
             title="Next Page"
           >
-            <ChevronRight size={14} />
+            <ChevronRight size={16} />
           </button>
           <button
             type="button"
             disabled={page >= totalPages}
             onClick={() => setPage(totalPages)}
-            className="p-1.5 rounded-lg border border-line dark:border-line-dark disabled:opacity-40 cursor-pointer hover:bg-surface-secondary transition-colors"
+            className="min-w-[38px] min-h-[38px] flex items-center justify-center rounded-xl border border-line dark:border-line-dark disabled:opacity-30 cursor-pointer hover:bg-surface-secondary transition-colors"
             title="Last Page"
           >
-            <ChevronsRight size={14} />
+            <ChevronsRight size={16} />
           </button>
         </div>
       </div>

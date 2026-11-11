@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { formatStandardTime } from '../utils/timeFormatters';
 
 const getTodayLocalDate = () => {
@@ -11,6 +12,8 @@ const getTodayLocalDate = () => {
 };
 
 export const useStudentAttendance = () => {
+  const { user } = useAuth();
+  const isTeacher = user?.role === 'Teacher';
   const [mode, setMode] = useState('student');
   const [date, setDate] = useState(getTodayLocalDate());
   const [grades, setGrades] = useState([]);
@@ -84,7 +87,18 @@ export const useStudentAttendance = () => {
         const fallbackRes = await api.get('/grades');
         list = fallbackRes.data?.grades || fallbackRes.data?.data || fallbackRes.data || [];
       }
-      const valid = Array.isArray(list) ? list : [];
+      let valid = Array.isArray(list) ? list : [];
+      if (isTeacher && valid.length > 0) {
+        const userId = String(user?.id || user?._id || '');
+        const filtered = valid.filter((g) => {
+          const isCt = String(g.class_teacher?._id || g.class_teacher) === userId;
+          const hasSec = (g.section_teachers || []).some(
+            (st) => String(st.teacher_id?._id || st.teacher_id) === userId
+          );
+          return isCt || hasSec;
+        });
+        if (filtered.length > 0) valid = filtered;
+      }
       setGrades(valid);
 
       if (valid.length > 0 && !selectedGradeId) {
@@ -255,9 +269,22 @@ export const useStudentAttendance = () => {
   const currentGrade = useMemo(() => grades.find((g) => g._id === selectedGradeId), [grades, selectedGradeId]);
   const currentSections = useMemo(() => {
     if (!currentGrade) return [];
-    if (Array.isArray(currentGrade.sections)) return currentGrade.sections;
-    return [];
-  }, [currentGrade]);
+    if (!Array.isArray(currentGrade.sections)) return [];
+    if (isTeacher) {
+      const userId = String(user?.id || user?._id || '');
+      const mySections = (currentGrade.section_teachers || [])
+        .filter((st) => String(st.teacher_id?._id || st.teacher_id) === userId)
+        .map((st) => st.section);
+      if (mySections.length > 0) return mySections;
+    }
+    return currentGrade.sections;
+  }, [currentGrade, isTeacher, user]);
+
+  useEffect(() => {
+    if (currentSections.length > 0 && (!selectedSection || !currentSections.includes(selectedSection))) {
+      setSelectedSection(currentSections[0]);
+    }
+  }, [currentSections, selectedSection]);
 
   return {
     mode, setMode, date, setDate, grades, selectedGradeId, setSelectedGradeId,
