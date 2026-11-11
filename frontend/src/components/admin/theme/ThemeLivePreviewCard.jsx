@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, ChevronRight, Bell, Sparkles } from 'lucide-react';
+import { Eye, ChevronRight, Bell, CheckCircle2 } from 'lucide-react';
 import { useTheme } from '../../../context/ThemeContext';
 import { getActiveColorMeta } from '../../../utils/themeConstants';
 
@@ -40,7 +40,7 @@ const ThemeLivePreviewCard = () => {
         <div className="space-y-1 p-1.5 rounded-xl bg-surface-secondary dark:bg-surface-secondary-dark border border-line dark:border-line-dark">
           <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold shadow-2xs">
             <span className="flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3" /> Active Item
+              <CheckCircle2 className="w-3 h-3 text-white" /> Active Item
             </span>
             <ChevronRight className="w-3 h-3" />
           </div>

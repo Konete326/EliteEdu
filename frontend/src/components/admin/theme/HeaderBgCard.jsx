@@ -47,9 +47,9 @@ const HeaderBgCard = () => {
                   </div>
                 </div>
               </div>
-              <span className="text-[11px] font-semibold text-ink dark:text-ink-dark truncate flex items-center gap-1">
+              <span className="text-[10px] sm:text-[11px] font-semibold text-ink dark:text-ink-dark truncate flex items-center justify-center gap-1 max-w-full">
                 <span className="w-1.5 h-1.5 rounded-full inline-block shrink-0 border border-slate-300 dark:border-slate-600" style={{ backgroundColor: preset.previewBg }} />
-                {preset.label}
+                <span className="truncate">{preset.label}</span>
               </span>
             </button>
           );
