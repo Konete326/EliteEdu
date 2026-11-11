@@ -4,7 +4,7 @@ const TABS = [
   { id: 'personal', label: 'Personal & Identity', icon: User },
   { id: 'contact', label: 'Contact & Address', icon: Phone },
   { id: 'qualification', label: 'Qualifications & Bank', icon: GraduationCap },
-  { id: 'security', label: 'Password & Security', icon: Lock },
+  { id: 'security', label: 'Password & Security', icon: Lock, comingSoon: true },
   { id: 'permissions', label: 'Permissions & Classes', icon: ShieldCheck, comingSoon: true }
 ];
 
