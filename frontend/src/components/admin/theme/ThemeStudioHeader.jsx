@@ -5,7 +5,7 @@ const ThemeStudioHeader = () => {
   const { resetThemeToDefault, isSyncing } = useTheme();
 
   return (
-    <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8 mb-4 sm:mb-6 px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-5 border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 transition-colors shrink-0">
+    <div className="-mx-2.5 sm:-mx-6 lg:-mx-8 -mt-2.5 sm:-mt-6 lg:-mt-8 mb-4 sm:mb-6 px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-5 border-b border-line dark:border-line-dark bg-surface dark:bg-surface-dark shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 transition-colors shrink-0">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 font-bold">
           <Palette className="w-5 h-5 sm:w-6 sm:h-6" />

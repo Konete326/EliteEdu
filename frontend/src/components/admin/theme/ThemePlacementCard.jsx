@@ -21,7 +21,7 @@ const ThemePlacementCard = () => {
         <button
           type="button"
           onClick={(e) => updateThemeSetting('placement', 'ltr', e)}
-          className={`relative p-2.5 rounded-xl border flex items-center gap-2.5 transition-all cursor-pointer ${
+          className={`relative p-2.5 pr-6 rounded-xl border flex items-center gap-2.5 transition-all cursor-pointer ${
             currentPlacement === 'ltr'
               ? 'border-primary ring-2 ring-primary/20 bg-primary/5 shadow-xs'
               : 'border-line dark:border-line-dark hover:border-primary/40 bg-surface-secondary/40 dark:bg-surface-secondary-dark/40'
@@ -44,7 +44,7 @@ const ThemePlacementCard = () => {
         <button
           type="button"
           onClick={(e) => updateThemeSetting('placement', 'rtl', e)}
-          className={`relative p-2.5 rounded-xl border flex items-center gap-2.5 transition-all cursor-pointer ${
+          className={`relative p-2.5 pr-6 rounded-xl border flex items-center gap-2.5 transition-all cursor-pointer ${
             currentPlacement === 'rtl'
               ? 'border-primary ring-2 ring-primary/20 bg-primary/5 shadow-xs'
               : 'border-line dark:border-line-dark hover:border-primary/40 bg-surface-secondary/40 dark:bg-surface-secondary-dark/40'
