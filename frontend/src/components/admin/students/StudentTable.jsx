@@ -3,6 +3,7 @@ import StudentTableRow from './StudentTableRow';
 
 const StudentTable = ({
   students,
+  isGovernment = false,
   onToggleStatus,
   onEdit,
   onDelete,
@@ -10,7 +11,9 @@ const StudentTable = ({
   onOpenLedger,
   onOpenAttendance,
   onOpenAdmissionLetter,
-  onOpenIdCard
+  onOpenIdCard,
+  onOpenReportCard,
+  onOpenCertificate
 }) => {
   const { canDelete } = usePermissions();
   const hasDelete = canDelete('students');
@@ -26,9 +29,9 @@ const StudentTable = ({
             <th className="px-5 py-3.5">Class</th>
             <th className="px-5 py-3.5">Section</th>
             <th className="px-5 py-3.5">Phone</th>
-            <th className="px-5 py-3.5">Monthly Fee</th>
+            {!isGovernment && <th className="px-5 py-3.5">Monthly Fee</th>}
             <th className="px-5 py-3.5">Status</th>
-            <th className="px-5 py-3.5">Fee Ledger</th>
+            {!isGovernment && <th className="px-5 py-3.5">Fee Ledger</th>}
             <th className="px-5 py-3.5">Attendance</th>
             <th className="px-5 py-3.5 text-right">Actions</th>
           </tr>
@@ -38,6 +41,7 @@ const StudentTable = ({
             <StudentTableRow
               key={student._id}
               student={student}
+              isGovernment={isGovernment}
               hasDelete={hasDelete}
               onToggleStatus={onToggleStatus}
               onEdit={onEdit}
@@ -47,6 +51,8 @@ const StudentTable = ({
               onOpenAttendance={onOpenAttendance}
               onOpenAdmissionLetter={onOpenAdmissionLetter}
               onOpenIdCard={onOpenIdCard}
+              onOpenReportCard={onOpenReportCard}
+              onOpenCertificate={onOpenCertificate}
             />
           ))}
         </tbody>

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
+import { X, Clock } from 'lucide-react';
 
 const ComingSoonModal = ({
   isOpen,
@@ -22,66 +22,44 @@ const ComingSoonModal = ({
   const modalNode = (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-md transition-opacity animate-in fade-in duration-200"
+        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
         onClick={onClose}
       />
-      <div className="relative w-full max-w-md bg-surface/95 dark:bg-[#111116]/95 backdrop-blur-xl border border-line/80 dark:border-white/10 rounded-3xl p-6 sm:p-7 shadow-2xl z-10 space-y-6 overflow-hidden animate-in zoom-in-95 duration-200">
-        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-56 h-32 bg-primary/15 dark:bg-primary/25 rounded-full blur-3xl pointer-events-none" />
-
+      <div className="relative w-full max-w-sm bg-surface dark:bg-[#111116] border border-line dark:border-white/10 rounded-3xl p-6 shadow-2xl z-10 space-y-4 text-center animate-in zoom-in-95 duration-200">
         <button
           type="button"
           onClick={onClose}
           aria-label="Close dialog"
-          className="absolute right-4 top-4 w-8 h-8 rounded-full flex items-center justify-center text-ink-muted hover:text-ink dark:hover:text-white hover:bg-surface-secondary dark:hover:bg-white/10 transition-colors cursor-pointer z-20"
+          className="absolute right-3.5 top-3.5 w-7 h-7 rounded-xl flex items-center justify-center text-ink-muted hover:text-ink dark:hover:text-white hover:bg-surface-secondary dark:hover:bg-white/10 transition-colors cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
 
-        <div className="flex flex-col items-center text-center space-y-4 pt-1">
-          <div className="relative flex items-center justify-center">
-            <div className="absolute -inset-2 bg-gradient-to-r from-primary/20 via-cyan-500/20 to-primary/20 rounded-3xl blur-xl opacity-70 dark:opacity-90" />
-            <div className="relative w-20 h-20 rounded-2xl bg-surface-secondary/80 dark:bg-white/[0.04] border border-line/80 dark:border-white/10 p-3.5 shadow-lg flex items-center justify-center backdrop-blur-md">
-              <img
-                src="/logo.png"
-                alt="EliteEdu Logo"
-                className="w-full h-full object-contain drop-shadow-md select-none"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary-light border border-primary/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              <span>{badge}</span>
-            </div>
-
-            <h3 className="text-xl font-bold text-ink dark:text-white tracking-tight">
-              {title}
-            </h3>
-
-            <p className="text-xs sm:text-sm text-ink-sub dark:text-ink-sub-dark leading-relaxed max-w-sm mx-auto">
-              {description}
-            </p>
-          </div>
-
-          <div className="w-full p-3.5 rounded-2xl bg-surface-secondary/60 dark:bg-white/[0.03] border border-line/60 dark:border-white/5 flex items-center justify-between text-xs text-ink-muted dark:text-ink-muted-dark">
-            <span className="font-medium">Module Status</span>
-            <span className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              In Active Development
-            </span>
-          </div>
+        <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto border border-primary/20 shadow-inner">
+          <Clock className="w-6 h-6 text-primary" />
         </div>
 
-        <div className="pt-1">
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-semibold tracking-wide transition-all shadow-md shadow-primary/20 active:scale-[0.99] cursor-pointer"
-          >
-            Understood
-          </button>
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
+            <span>{badge}</span>
+          </div>
+
+          <h3 className="text-base sm:text-lg font-bold text-ink dark:text-white tracking-tight">
+            {title}
+          </h3>
+
+          <p className="text-xs text-ink-muted leading-relaxed max-w-xs mx-auto">
+            {description}
+          </p>
         </div>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="w-full py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+        >
+          Got It
+        </button>
       </div>
     </div>
   );

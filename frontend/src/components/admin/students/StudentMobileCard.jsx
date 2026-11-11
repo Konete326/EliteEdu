@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import {
   FileText,
   Calendar,
@@ -18,6 +17,7 @@ import usePermissions from '../../../hooks/usePermissions';
 
 const StudentMobileCard = ({
   student,
+  isGovernment = false,
   onToggleStatus,
   onEdit,
   onDelete,
@@ -25,7 +25,9 @@ const StudentMobileCard = ({
   onOpenLedger,
   onOpenAttendance,
   onOpenAdmissionLetter,
-  onOpenIdCard
+  onOpenIdCard,
+  onOpenReportCard,
+  onOpenCertificate
 }) => {
   const { canDelete } = usePermissions();
   const hasDelete = canDelete('students');
@@ -132,10 +134,12 @@ const StudentMobileCard = ({
           </span>
         )}
 
-        <div className="ml-auto inline-flex items-center text-xs font-bold text-ink dark:text-white">
-          <span>Rs. {(student.monthly_fee || 0).toLocaleString()}</span>
-          <span className="text-[10px] text-ink-muted dark:text-ink-muted-dark font-normal ml-0.5">/mo</span>
-        </div>
+        {!isGovernment && (
+          <div className="ml-auto inline-flex items-center text-xs font-bold text-ink dark:text-white">
+            <span>Rs. {(student.monthly_fee || 0).toLocaleString()}</span>
+            <span className="text-[10px] text-ink-muted dark:text-ink-muted-dark font-normal ml-0.5">/mo</span>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center justify-between gap-2 text-xs text-ink-muted dark:text-ink-muted-dark pt-0.5">
@@ -159,15 +163,17 @@ const StudentMobileCard = ({
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-2 pt-2 border-t border-line/60 dark:border-white/5">
-        <button
-          type="button"
-          onClick={() => onOpenLedger(student)}
-          className="h-10 inline-flex items-center justify-center gap-2 px-3 rounded-xl border border-line dark:border-white/10 hover:border-primary text-xs font-semibold text-ink dark:text-white hover:text-primary dark:hover:text-primary-dark bg-surface-secondary/50 dark:bg-[#181818] transition-colors cursor-pointer"
-        >
-          <FileText className="w-4 h-4 text-primary shrink-0" />
-          <span>Fee Ledger</span>
-        </button>
+      <div className={`grid ${isGovernment ? 'grid-cols-1' : 'grid-cols-2'} gap-2 pt-2 border-t border-line/60 dark:border-white/5`}>
+        {!isGovernment && (
+          <button
+            type="button"
+            onClick={() => onOpenLedger(student)}
+            className="h-10 inline-flex items-center justify-center gap-2 px-3 rounded-xl border border-line dark:border-white/10 hover:border-primary text-xs font-semibold text-ink dark:text-white hover:text-primary dark:hover:text-primary-dark bg-surface-secondary/50 dark:bg-[#181818] transition-colors cursor-pointer"
+          >
+            <FileText className="w-4 h-4 text-primary shrink-0" />
+            <span>Fee Ledger</span>
+          </button>
+        )}
 
         <button
           type="button"
@@ -240,23 +246,31 @@ const StudentMobileCard = ({
                 <span>Admission Letter</span>
               </button>
 
-              <Link
-                to={`/admin/reports/report-cards?studentId=${student._id}`}
-                onClick={() => setMenuOpen(false)}
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  if (onOpenReportCard) onOpenReportCard(student);
+                  else onOpenAdmissionLetter(student);
+                }}
                 className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-ink dark:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#202020] text-left cursor-pointer"
               >
                 <Award className="w-4 h-4 text-primary shrink-0" />
                 <span>Report Card</span>
-              </Link>
+              </button>
 
-              <Link
-                to={`/admin/certificates?studentId=${student._id}`}
-                onClick={() => setMenuOpen(false)}
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  if (onOpenCertificate) onOpenCertificate(student);
+                  else onOpenAdmissionLetter(student);
+                }}
                 className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-ink dark:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#202020] text-left cursor-pointer"
               >
                 <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>Certificate</span>
-              </Link>
+              </button>
 
               {hasDelete && (
                 <>

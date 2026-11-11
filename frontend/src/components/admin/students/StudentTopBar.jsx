@@ -1,5 +1,6 @@
-import { Plus, Search, X, FileText, CreditCard, Award, GraduationCap } from 'lucide-react';
+import { Plus, Search, X, FileText, CreditCard, Award, GraduationCap, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useComingSoon } from '../../../context/ComingSoonContext';
 
 const StudentTopBar = ({
   searchQuery,
@@ -14,6 +15,8 @@ const StudentTopBar = ({
   onStatusChange,
   totalCount
 }) => {
+  const { openComingSoon } = useComingSoon();
+
   return (
     <div className="p-3 sm:p-5 rounded-2xl bg-surface dark:bg-[#0c0c0c] border border-line dark:border-white/10 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-3 sm:gap-4">
       <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
@@ -97,13 +100,18 @@ const StudentTopBar = ({
           <option value="Left">Left / Inactive</option>
         </select>
 
-        <Link
-          to="/admin/reports/report-cards"
-          className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-line dark:border-white/10 hover:border-primary text-ink-sub dark:text-ink-muted-dark hover:text-primary dark:hover:text-primary-dark text-xs sm:text-sm font-semibold transition-all shadow-xs shrink-0"
+        <button
+          type="button"
+          onClick={() => openComingSoon({
+            title: 'Progress Report Card',
+            description: 'Comprehensive term-wise student report card generator jald active kiya ja raha hai.',
+            badge: 'Coming Soon'
+          })}
+          className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-line dark:border-white/10 hover:border-primary text-ink-sub dark:text-ink-muted-dark hover:text-primary dark:hover:text-primary-dark text-xs sm:text-sm font-semibold transition-all shadow-xs shrink-0 cursor-pointer"
         >
           <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
           <span className="hidden sm:inline">Report Cards</span>
-        </Link>
+        </button>
 
         <Link
           to="/admin/students/id-cards"
@@ -113,12 +121,25 @@ const StudentTopBar = ({
           <span className="hidden sm:inline">ID Cards</span>
         </Link>
 
-        <Link
-          to="/admin/students/admission-letter"
-          className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-line dark:border-white/10 hover:border-primary text-ink-sub dark:text-ink-muted-dark hover:text-primary dark:hover:text-primary-dark text-xs sm:text-sm font-semibold transition-all shadow-xs shrink-0"
+        <button
+          type="button"
+          onClick={() => openComingSoon({
+            title: 'Admission & Official Letters',
+            description: 'Official student admission offer, bonafide aur recommendation letters jald active kiye ja rahe hain.',
+            badge: 'Coming Soon'
+          })}
+          className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-line dark:border-white/10 hover:border-primary text-ink-sub dark:text-ink-muted-dark hover:text-primary dark:hover:text-primary-dark text-xs sm:text-sm font-semibold transition-all shadow-xs shrink-0 cursor-pointer"
         >
           <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
           <span className="hidden sm:inline">Letters</span>
+        </button>
+
+        <Link
+          to="/admin/export-center?dataset=students"
+          className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-line dark:border-white/10 hover:border-primary text-ink-sub dark:text-ink-muted-dark hover:text-primary dark:hover:text-primary-dark text-xs sm:text-sm font-semibold transition-all shadow-xs shrink-0"
+        >
+          <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
+          <span className="hidden sm:inline">Export</span>
         </Link>
 
         <Link

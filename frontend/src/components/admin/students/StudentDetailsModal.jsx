@@ -1,6 +1,6 @@
-import { X, UserCheck, BookOpen, Home, CreditCard, Users, FileText, ExternalLink } from 'lucide-react';
+import { X, UserCheck, Home, CreditCard, Users, FileText, ExternalLink } from 'lucide-react';
 
-const StudentDetailsModal = ({ isOpen, student, onClose, onOpenLedger, onEdit }) => {
+const StudentDetailsModal = ({ isOpen, student, isGovernment = false, onClose, onOpenLedger, onEdit }) => {
   if (!isOpen || !student) return null;
   const initials = student.name ? student.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) : 'ST';
 
@@ -56,15 +56,17 @@ const StudentDetailsModal = ({ isOpen, student, onClose, onOpenLedger, onEdit })
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-          <div className="p-3.5 rounded-xl bg-surface-secondary/70 dark:bg-[#141414] border border-line dark:border-white/10 space-y-1.5">
-            <h4 className="font-bold text-ink dark:text-white flex items-center gap-1.5 uppercase text-primary dark:text-primary-dark">
-              <CreditCard className="w-3.5 h-3.5" /> Fee & Financials
-            </h4>
-            <p><span className="text-ink-muted dark:text-ink-muted-dark">Monthly Fee:</span> <strong className="text-ink dark:text-white">Rs. {Number(student.monthly_fee || 0).toLocaleString()}</strong></p>
-            <p><span className="text-ink-muted dark:text-ink-muted-dark">Concession:</span> Rs. {Number(student.discount || 0).toLocaleString()}</p>
-            <p><span className="text-ink-muted dark:text-ink-muted-dark">Net Monthly:</span> <strong className="text-primary dark:text-primary-dark">Rs. {Math.max(0, Number(student.monthly_fee || 0) - Number(student.discount || 0)).toLocaleString()}</strong></p>
-          </div>
+        <div className={`grid grid-cols-1 ${!isGovernment ? 'md:grid-cols-2' : ''} gap-3 text-xs`}>
+          {!isGovernment && (
+            <div className="p-3.5 rounded-xl bg-surface-secondary/70 dark:bg-[#141414] border border-line dark:border-white/10 space-y-1.5">
+              <h4 className="font-bold text-ink dark:text-white flex items-center gap-1.5 uppercase text-primary dark:text-primary-dark">
+                <CreditCard className="w-3.5 h-3.5" /> Fee & Financials
+              </h4>
+              <p><span className="text-ink-muted dark:text-ink-muted-dark">Monthly Fee:</span> <strong className="text-ink dark:text-white">Rs. {Number(student.monthly_fee || 0).toLocaleString()}</strong></p>
+              <p><span className="text-ink-muted dark:text-ink-muted-dark">Concession:</span> Rs. {Number(student.discount || 0).toLocaleString()}</p>
+              <p><span className="text-ink-muted dark:text-ink-muted-dark">Net Monthly:</span> <strong className="text-primary dark:text-primary-dark">Rs. {Math.max(0, Number(student.monthly_fee || 0) - Number(student.discount || 0)).toLocaleString()}</strong></p>
+            </div>
+          )}
 
           <div className="p-3.5 rounded-xl bg-surface-secondary/70 dark:bg-[#141414] border border-line dark:border-white/10 space-y-1.5">
             <h4 className="font-bold text-ink dark:text-white flex items-center gap-1.5 uppercase text-primary dark:text-primary-dark">
@@ -92,7 +94,7 @@ const StudentDetailsModal = ({ isOpen, student, onClose, onOpenLedger, onEdit })
 
         <div className="flex items-center justify-between pt-3 border-t border-line dark:border-white/10">
           <div className="flex items-center gap-2">
-            {onOpenLedger && (
+            {!isGovernment && onOpenLedger && (
               <button
                 type="button"
                 onClick={() => {

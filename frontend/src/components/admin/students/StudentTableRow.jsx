@@ -1,9 +1,9 @@
 import { memo } from 'react';
-import { Link } from 'react-router-dom';
 import { FileText, Calendar, Pencil, Trash2, Eye, CreditCard, Award, ShieldCheck } from 'lucide-react';
 
 const StudentTableRow = memo(({
   student,
+  isGovernment = false,
   hasDelete,
   onToggleStatus,
   onEdit,
@@ -12,7 +12,9 @@ const StudentTableRow = memo(({
   onOpenLedger,
   onOpenAttendance,
   onOpenAdmissionLetter,
-  onOpenIdCard
+  onOpenIdCard,
+  onOpenReportCard,
+  onOpenCertificate
 }) => {
   const initials = student.name ? student.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) : 'ST';
   const admissionDateStr = student.admission_date ? new Date(student.admission_date).toLocaleDateString() : '—';
@@ -60,9 +62,11 @@ const StudentTableRow = memo(({
       <td className="px-5 py-3.5 text-xs text-ink-muted dark:text-ink-muted-dark font-mono">
         {student.contact_number || '—'}
       </td>
-      <td className="px-5 py-3.5 text-xs font-semibold text-ink dark:text-ink-dark">
-        Rs. {(student.monthly_fee || 0).toLocaleString()}
-      </td>
+      {!isGovernment && (
+        <td className="px-5 py-3.5 text-xs font-semibold text-ink dark:text-ink-dark">
+          Rs. {(student.monthly_fee || 0).toLocaleString()}
+        </td>
+      )}
       <td className="px-5 py-3.5">
         <div className="flex items-center gap-2">
           <button
@@ -86,21 +90,23 @@ const StudentTableRow = memo(({
           </span>
         </div>
       </td>
-      <td className="px-5 py-3.5">
-        <button
-          type="button"
-          onClick={() => onOpenLedger(student)}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-line dark:border-white/10 text-xs font-medium text-ink-sub dark:text-ink-sub-dark hover:bg-surface-secondary dark:hover:bg-[#1f1f1f] transition-colors"
-        >
-          <FileText className="w-3.5 h-3.5 text-primary" />
-          <span>Ledger</span>
-        </button>
-      </td>
+      {!isGovernment && (
+        <td className="px-5 py-3.5">
+          <button
+            type="button"
+            onClick={() => onOpenLedger(student)}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-line dark:border-white/10 text-xs font-medium text-ink-sub dark:text-ink-sub-dark hover:bg-surface-secondary dark:hover:bg-[#1f1f1f] transition-colors cursor-pointer"
+          >
+            <FileText className="w-3.5 h-3.5 text-primary" />
+            <span>Ledger</span>
+          </button>
+        </td>
+      )}
       <td className="px-5 py-3.5">
         <button
           type="button"
           onClick={() => onOpenAttendance(student)}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-line dark:border-white/10 text-xs font-medium text-ink-sub dark:text-ink-sub-dark hover:bg-surface-secondary dark:hover:bg-[#1f1f1f] transition-colors"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-line dark:border-white/10 text-xs font-medium text-ink-sub dark:text-ink-sub-dark hover:bg-surface-secondary dark:hover:bg-[#1f1f1f] transition-colors cursor-pointer"
         >
           <Calendar className="w-3.5 h-3.5 text-primary" />
           <span>Attendance</span>
@@ -108,26 +114,61 @@ const StudentTableRow = memo(({
       </td>
       <td className="px-5 py-3.5 text-right">
         <div className="flex items-center justify-end gap-1">
-          <button type="button" onClick={() => onOpenAdmissionLetter(student)} title="Admission Letter" className="p-1.5 rounded-lg text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20">
+          <button
+            type="button"
+            onClick={() => onOpenAdmissionLetter(student)}
+            title="Admission Letter"
+            className="p-1.5 rounded-lg text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20 cursor-pointer"
+          >
             <FileText className="w-4 h-4 text-primary" />
           </button>
-          <button type="button" onClick={() => onOpenIdCard(student)} title="Print ID Card" className="p-1.5 rounded-lg text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20">
+          <button
+            type="button"
+            onClick={() => onOpenIdCard(student)}
+            title="Print ID Card"
+            className="p-1.5 rounded-lg text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20 cursor-pointer"
+          >
             <CreditCard className="w-4 h-4 text-primary" />
           </button>
-          <Link to={`/admin/reports/report-cards?studentId=${student._id}`} title="Report Card" className="p-1.5 rounded-lg text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20">
+          <button
+            type="button"
+            onClick={() => (onOpenReportCard ? onOpenReportCard(student) : onOpenAdmissionLetter(student))}
+            title="Report Card"
+            className="p-1.5 rounded-lg text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20 cursor-pointer"
+          >
             <Award className="w-4 h-4 text-primary" />
-          </Link>
-          <Link to={`/admin/certificates?studentId=${student._id}`} title="Generate Certificate" className="p-1.5 rounded-lg text-ink-muted hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20">
+          </button>
+          <button
+            type="button"
+            onClick={() => (onOpenCertificate ? onOpenCertificate(student) : onOpenAdmissionLetter(student))}
+            title="Student Certificate"
+            className="p-1.5 rounded-lg text-ink-muted hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 cursor-pointer"
+          >
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
-          </Link>
-          <button type="button" onClick={() => onView(student)} title="View Details" className="p-1.5 rounded-lg text-ink-muted hover:text-ink dark:hover:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#1f1f1f]">
+          </button>
+          <button
+            type="button"
+            onClick={() => onView(student)}
+            title="View Details"
+            className="p-1.5 rounded-lg text-ink-muted hover:text-ink dark:hover:text-ink-dark hover:bg-surface-secondary dark:hover:bg-[#1f1f1f] cursor-pointer"
+          >
             <Eye className="w-4 h-4" />
           </button>
-          <button type="button" onClick={() => onEdit(student)} title="Edit Student" className="p-1.5 rounded-lg text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20">
+          <button
+            type="button"
+            onClick={() => onEdit(student)}
+            title="Edit Student"
+            className="p-1.5 rounded-lg text-ink-muted hover:text-primary dark:hover:text-primary-dark hover:bg-primary-soft dark:hover:bg-primary/20 cursor-pointer"
+          >
             <Pencil className="w-4 h-4" />
           </button>
           {hasDelete && (
-            <button type="button" onClick={() => onDelete(student)} title="Delete Student" className="p-1.5 rounded-lg text-bad/80 hover:text-bad hover:bg-bad-soft dark:hover:bg-bad/20">
+            <button
+              type="button"
+              onClick={() => onDelete(student)}
+              title="Delete Student"
+              className="p-1.5 rounded-lg text-bad/80 hover:text-bad hover:bg-bad-soft dark:hover:bg-bad/20 cursor-pointer"
+            >
               <Trash2 className="w-4 h-4" />
             </button>
           )}

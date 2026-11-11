@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { GraduationCap, AlertCircle } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { useComingSoon } from '../../context/ComingSoonContext';
 import { useStudentsList } from '../../hooks/useStudentsList';
 import StudentTopBar from '../../components/admin/students/StudentTopBar';
 import StudentKpiStrip from '../../components/admin/students/StudentKpiStrip';
@@ -13,6 +15,10 @@ import PageLoader from '../../components/common/PageLoader';
 
 const StudentsList = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { openComingSoon } = useComingSoon();
+  const isGovernment = user?.school_type === 'Government' || user?.school_id?.school_type === 'Government';
+
   const {
     students, campuses, grades, selectedCampus, setSelectedCampus, selectedGrade, setSelectedGrade,
     selectedStatus, setSelectedStatus, kpis, searchQuery, setSearchQuery, loading, error, setError,
@@ -20,6 +26,39 @@ const StudentsList = () => {
     setLedgerStudent, studentToDelete, setStudentToDelete, deleteLoading, handleToggleStatus,
     handleDeleteConfirm
   } = useStudentsList();
+
+  const handleOpenLedger = (s) => {
+    if (isGovernment) return;
+    openComingSoon({
+      title: 'Fee Ledger & Invoicing',
+      description: 'Student fee ledger, auto monthly challan generation, aur payment history jald active ki ja rahi hai.',
+      badge: 'Coming Soon'
+    });
+  };
+
+  const handleOpenAdmissionLetter = (s) => {
+    openComingSoon({
+      title: 'Admission Letter & Welcome Kit',
+      description: 'Official student admission letter with QR verification jald active kiya ja raha hai.',
+      badge: 'Coming Soon'
+    });
+  };
+
+  const handleOpenReportCard = (s) => {
+    openComingSoon({
+      title: 'Progress Report Card',
+      description: 'Comprehensive term-wise student report card generator jald active kiya ja raha hai.',
+      badge: 'Coming Soon'
+    });
+  };
+
+  const handleOpenCertificate = (s) => {
+    openComingSoon({
+      title: 'School Leaving Certificate',
+      description: 'Official school leaving aur character certificate generator jald active kiya ja raha hai.',
+      badge: 'Coming Soon'
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -79,13 +118,16 @@ const StudentsList = () => {
             <div className="hidden md:block">
               <StudentTable
                 students={students}
+                isGovernment={isGovernment}
                 onToggleStatus={handleToggleStatus}
                 onEdit={(s) => navigate(`/admin/students/${s._id}/edit`)}
                 onDelete={setStudentToDelete}
                 onView={setViewStudent}
-                onOpenLedger={setLedgerStudent}
+                onOpenLedger={handleOpenLedger}
                 onOpenAttendance={(s) => navigate(`/admin/attendance/students?gradeId=${s.current_grade?._id || ''}&studentId=${s._id}`)}
-                onOpenAdmissionLetter={(s) => navigate(`/admin/students/admission-letter?studentId=${s._id}`)}
+                onOpenAdmissionLetter={handleOpenAdmissionLetter}
+                onOpenReportCard={handleOpenReportCard}
+                onOpenCertificate={handleOpenCertificate}
                 onOpenIdCard={(s) => navigate(`/admin/students/id-cards?studentId=${s._id}`)}
               />
             </div>
@@ -95,13 +137,16 @@ const StudentsList = () => {
                 <StudentMobileCard
                   key={student._id}
                   student={student}
+                  isGovernment={isGovernment}
                   onToggleStatus={handleToggleStatus}
                   onEdit={(s) => navigate(`/admin/students/${s._id}/edit`)}
                   onDelete={setStudentToDelete}
                   onView={setViewStudent}
-                  onOpenLedger={setLedgerStudent}
+                  onOpenLedger={handleOpenLedger}
                   onOpenAttendance={(s) => navigate(`/admin/attendance/students?gradeId=${s.current_grade?._id || ''}&studentId=${s._id}`)}
-                  onOpenAdmissionLetter={(s) => navigate(`/admin/students/admission-letter?studentId=${s._id}`)}
+                  onOpenAdmissionLetter={handleOpenAdmissionLetter}
+                  onOpenReportCard={handleOpenReportCard}
+                  onOpenCertificate={handleOpenCertificate}
                   onOpenIdCard={(s) => navigate(`/admin/students/id-cards?studentId=${s._id}`)}
                 />
               ))}
@@ -121,8 +166,9 @@ const StudentsList = () => {
       <StudentDetailsModal
         isOpen={!!viewStudent}
         student={viewStudent}
+        isGovernment={isGovernment}
         onClose={() => setViewStudent(null)}
-        onOpenLedger={setLedgerStudent}
+        onOpenLedger={handleOpenLedger}
         onEdit={(s) => navigate(`/admin/students/${s._id}/edit`)}
       />
       <StudentLedgerModal

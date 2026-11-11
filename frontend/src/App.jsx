@@ -116,6 +116,7 @@ const AdmissionLetterComingSoonPage = lazy(() => import('./pages/admin/Admission
 const ZoomComingSoonPage = lazy(() => import('./pages/admin/ZoomComingSoonPage'));
 const BulkImportComingSoonPage = lazy(() => import('./pages/admin/BulkImportComingSoonPage'));
 const BackupComingSoonPage = lazy(() => import('./pages/admin/BackupComingSoonPage'));
+const DataExportStudioPage = lazy(() => import('./pages/admin/DataExportStudioPage'));
 
 function App() {
   return (
@@ -266,7 +267,8 @@ function App() {
                     <Route path="/admin/messaging/whatsapp" element={<InternalMessengerPage defaultTab="whatsapp" />} />
                     <Route path="/admin/messaging/email" element={<InternalMessengerPage defaultTab="email" />} />
                     <Route path="/admin/circular" element={<InternalMessengerPage defaultTab="circular" />} />
-                    <Route path="/admin/settings/backup" element={<BackupComingSoonPage />} />
+                    <Route path="/admin/settings/backup" element={<DataExportStudioPage />} />
+                    <Route path="/admin/export-center" element={<DataExportStudioPage />} />
                     <Route path="/admin/van/routes" element={<TransportComingSoonPage />} />
                     <Route path="/admin/van/vehicles" element={<TransportComingSoonPage />} />
                     <Route path="/admin/van/drivers" element={<TransportComingSoonPage />} />

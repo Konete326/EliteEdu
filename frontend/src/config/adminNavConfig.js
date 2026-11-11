@@ -157,7 +157,7 @@ export const getAdminNavItems = (schoolType) => [
       { name: 'Class Transfer', path: '/admin/control-panel/class-transfer', badge: 'Coming Soon' },
       { name: 'Logo & Theme', path: '/admin/control-panel/branding' },
       { name: 'Bulk Import', path: '/admin/control-panel/bulk-import', badge: 'Coming Soon' },
-      { name: 'Backup', path: '/admin/settings/backup', badge: 'Coming Soon' }
+      { name: 'Data Export Center', path: '/admin/export-center' }
     ]
   }
 ];
@@ -485,7 +485,7 @@ export const getAllAdminRoutes = () => {
     '/admin/messaging', '/admin/messaging/messages', '/admin/messaging/internal', '/admin/messages', '/teacher/messages', '/student/messages', '/admin/messaging/chat', '/admin/messaging/sms', '/admin/messaging/whatsapp', '/admin/messaging/email',
     '/admin/planners', '/admin/planners/academic-calendar', '/admin/planners/lesson-plans', '/admin/planners/activity-planner',
     '/admin/operations', '/admin/counseling',
-    '/admin/settings/backup', '/admin/online-classes',
+    '/admin/online-classes',
     '/admin/lms/courses', '/admin/lms/syllabus', '/admin/lms/assignments', '/admin/lms/material', '/admin/lms/live',
     '/admin/crm/inquiries', '/admin/crm/admissions', '/admin/crm/follow-ups', '/admin/crm/analytics'
   ]);

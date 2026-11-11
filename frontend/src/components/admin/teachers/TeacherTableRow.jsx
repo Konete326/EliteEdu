@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import usePermissions from '../../../hooks/usePermissions';
+import { useComingSoon } from '../../../context/ComingSoonContext';
 
 const TeacherTableRow = ({
   teacher,
@@ -22,6 +23,7 @@ const TeacherTableRow = ({
   onOpenPassword,
   onAssignPeriod
 }) => {
+  const { openComingSoon } = useComingSoon();
   const { canDelete } = usePermissions();
   const hasDelete = canDelete('teachers');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -224,14 +226,21 @@ const TeacherTableRow = ({
                 <span>Service ID Card</span>
               </Link>
 
-              <Link
-                to={`/admin/certificates?staffId=${teacher._id}`}
-                onClick={() => setMenuOpen(false)}
-                className="w-full px-3.5 py-2 text-left flex items-center gap-2.5 text-ink dark:text-white hover:bg-surface-secondary dark:hover:bg-[#222222]"
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  openComingSoon({
+                    title: 'Staff Experience & Service Certificate',
+                    description: 'Staff experience aur service certificate generator jald active kiya ja raha hai.',
+                    badge: 'Coming Soon'
+                  });
+                }}
+                className="w-full px-3.5 py-2 text-left flex items-center gap-2.5 text-ink dark:text-white hover:bg-surface-secondary dark:hover:bg-[#222222] cursor-pointer"
               >
                 <ShieldCheck className="w-4 h-4 text-purple-600" />
                 <span>Staff Certificate</span>
-              </Link>
+              </button>
 
               <button
                 type="button"

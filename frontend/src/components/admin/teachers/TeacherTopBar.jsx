@@ -1,4 +1,4 @@
-import { Plus, Search, X, CreditCard, CalendarCheck, Users, Building2, Briefcase } from 'lucide-react';
+import { Plus, Search, X, CreditCard, CalendarCheck, Users, Building2, Briefcase, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SearchableSelect from '../../common/SearchableSelect';
 
@@ -106,6 +106,14 @@ const TeacherTopBar = ({
         >
           <CalendarCheck className="w-3.5 h-3.5 text-primary" />
           <span className="hidden sm:inline">Staff Attendance</span>
+        </Link>
+
+        <Link
+          to="/admin/export-center?dataset=teachers"
+          className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-line dark:border-white/10 bg-surface dark:bg-[#181818] hover:bg-surface-secondary text-ink dark:text-white text-xs font-semibold transition-all shadow-xs shrink-0"
+        >
+          <Download className="w-3.5 h-3.5 text-primary" />
+          <span className="hidden sm:inline">Export</span>
         </Link>
 
         <Link
